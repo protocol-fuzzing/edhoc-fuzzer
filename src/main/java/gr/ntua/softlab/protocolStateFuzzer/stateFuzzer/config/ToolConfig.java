@@ -1,0 +1,160 @@
+package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config;
+
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.DynamicParameter;
+import gr.ntua.softlab.protocolStateFuzzer.sul.config.ProtocolVersion;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
+
+public class ToolConfig {
+
+	@Parameter(names = { "-h", "-help" }, help = true, description = "Print usage for all existing commands")
+	protected boolean help = false;
+
+	@Parameter(names = "-debug", description = "Debug output shown")
+	protected boolean debug = false;
+
+	@Parameter(names = "-quiet", description = "No output shown")
+	protected boolean quiet = false;
+
+	public boolean isHelp() {
+		return help;
+	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public boolean isQuiet() {
+		return quiet;
+	}
+
+	public void applyDelegate() {
+		String parentLogger = this.getClass().getPackageName();
+
+		if (isDebug()) {
+			 Configurator.setAllLevels(parentLogger, Level.DEBUG);
+	    } else if (isQuiet()) {
+			 Configurator.setAllLevels(parentLogger, Level.OFF);
+	    }
+	}
+	
+	public static final String FUZZER_PROPS = "fuzzer.properties";
+	public static final String DEFAULT_FUZZER_PROPS = "default-fuzzer.properties";
+	
+	public static final String FUZZER_DIR = "fuzzer.dir";
+	public static final String SULS_DIR = "suls.dir";
+	public static final String SUL_PORT = "sul.port";
+	public static final String FUZZER_PORT = "fuzzer.port";
+
+	/* delimiter-separated strings */
+	public static final String PROTOCOL_VERSIONS = "protocol.versions";
+	public static final String PROTOCOL_VERSION_DELIMITER = ",";
+
+	/* Stores system properties */
+	@DynamicParameter(names = "-D", description = "Definitions for variables, which can be referred to in arguments by ${var}. "
+			+ "Variables are replaced with their corresponding values before the arguments are parsed."
+			+ "Can be passed as either JVM properties (after java) or as application properties.")
+	protected static Map<String, String> props = new LinkedHashMap<>();
+	
+	// initialize system properties
+	static {
+		Properties fuzzerProps = new Properties();
+		String fuzzerPropsLocation = System.getProperty(FUZZER_PROPS);
+		try {
+			if (fuzzerPropsLocation == null) {
+				InputStream resource = ToolConfig.class.getClassLoader().getResourceAsStream(DEFAULT_FUZZER_PROPS);
+				fuzzerProps.load(resource);
+			} else {
+				fuzzerProps.load(new FileReader(fuzzerPropsLocation));
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("Could not load properties");
+		}
+		
+		for (String propName : fuzzerProps.stringPropertyNames()) {
+			String systemPropValue = System.getProperty(propName);
+			if (systemPropValue != null) {
+				props.put(propName, systemPropValue);
+			} else {
+				props.put(propName, fuzzerProps.getProperty(propName));
+			}
+		}
+		
+		String fuzzerDir = System.getProperty(FUZZER_DIR);
+		if (fuzzerDir == null) {
+			fuzzerDir = System.getProperty("user.dir");
+		}
+		props.put(FUZZER_DIR, fuzzerDir);
+		
+		String sulsDir = fuzzerProps.getProperty(SULS_DIR);
+		if (sulsDir == null) {
+			sulsDir = fuzzerDir + File.separator + "suls";
+		}
+		props.put(SULS_DIR, sulsDir);
+		
+		/*
+		 * SUL port: between 10000 and 39999
+		 */
+		String sulPort = fuzzerProps.getProperty(SUL_PORT);
+		if (sulPort == null) {
+			long sulSec = (System.currentTimeMillis() / 1000 % 30000) + 10000;
+			sulPort = Long.toString(sulSec);
+		}
+		props.put(SUL_PORT, sulPort);
+		
+		/*
+		 * Fuzzer port: between 40000 and 65535 (= 0xFFFF or max port)
+		 */
+		String fuzzerPort = fuzzerProps.getProperty(FUZZER_PORT);
+		if (fuzzerPort == null) {
+			long fuzzSec = (System.currentTimeMillis() / 1000 % 25536) + 40000;
+			fuzzerPort = Long.toString(fuzzSec);
+		}
+		props.put(FUZZER_PORT, fuzzerPort);
+
+		/*
+		 * Initialize static map of  ProtocolVersion class
+		 */
+		 String protocolVersionsString = props.get(PROTOCOL_VERSIONS);
+		 if (protocolVersionsString == null) {
+			 throw new RuntimeException("Property " + PROTOCOL_VERSIONS + "is missing");
+		 }
+
+		String[] protocolVersions = protocolVersionsString.split(PROTOCOL_VERSION_DELIMITER);
+		 if (protocolVersions.length > 0) {
+			 ProtocolVersion.fillMapOnce(protocolVersions);
+		 } else {
+			 throw new RuntimeException("Property " + PROTOCOL_VERSIONS + "is empty");
+		 }
+	}
+	
+	// so we don't replaceAll each time
+	protected static Map<String, String> resolutionCache = new HashMap<>();
+	
+	/**
+	 * Resolves are the system properties in a given user string.
+	 */
+	public static String resolve(String userString) {
+		if (userString == null) {
+			return null;
+		}
+		
+		if (resolutionCache.containsKey(userString)) {
+			return resolutionCache.get(userString);
+		}
+		
+		String resolvedStr = userString;
+		for (Map.Entry<String,String> prop : props.entrySet()) {
+			resolvedStr = resolvedStr.replaceAll("\\$\\{" + prop.getKey() + "\\}", prop.getValue());
+		}
+		resolutionCache.put(userString, resolvedStr);
+		return resolvedStr;
+	}
+}
