@@ -46,7 +46,7 @@ public class ToolConfig {
 	}
 	
 	public static final String FUZZER_PROPS = "fuzzer.properties";
-	public static final String DEFAULT_FUZZER_PROPS = "default-fuzzer.properties";
+	public static final String DEFAULT_FUZZER_PROPS = "default_fuzzer.properties";
 	
 	public static final String FUZZER_DIR = "fuzzer.dir";
 	public static final String SULS_DIR = "suls.dir";
@@ -124,14 +124,14 @@ public class ToolConfig {
 		 */
 		 String protocolVersionsString = props.get(PROTOCOL_VERSIONS);
 		 if (protocolVersionsString == null) {
-			 throw new RuntimeException("Property " + PROTOCOL_VERSIONS + "is missing");
+			 throw new RuntimeException("Property " + PROTOCOL_VERSIONS + " is missing");
 		 }
 
 		String[] protocolVersions = protocolVersionsString.split(PROTOCOL_VERSION_DELIMITER);
 		 if (protocolVersions.length > 0) {
 			 ProtocolVersion.fillMapOnce(protocolVersions);
 		 } else {
-			 throw new RuntimeException("Property " + PROTOCOL_VERSIONS + "is empty");
+			 throw new RuntimeException("Property " + PROTOCOL_VERSIONS + " is empty");
 		 }
 	}
 	

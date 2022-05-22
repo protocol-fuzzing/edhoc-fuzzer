@@ -1,8 +1,7 @@
 package gr.ntua.softlab.protocolStateFuzzer.mapper.abstractSymbols.xml;
 
 import gr.ntua.softlab.protocolStateFuzzer.mapper.abstractSymbols.AbstractInput;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 public abstract class AbstractInputXml extends AbstractInput {
     public AbstractInputXml() {
@@ -41,6 +40,7 @@ public abstract class AbstractInputXml extends AbstractInput {
 
     @Override
     public void setExtendedWait(Integer extendedWait) {
+        super.setExtendedWait(extendedWait);
         this.extendedWait = extendedWait;
     }
 }

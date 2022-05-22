@@ -3,34 +3,37 @@ package gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.xml;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetSerializer;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetSerializerException;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.mapper.abstractSymbols.xml.AbstractInputXml;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.ListAlphabet;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class AlphabetSerializerXml implements AlphabetSerializer {
+public class AlphabetSerializerXml<AP extends AlphabetPojoXml> implements AlphabetSerializer {
     protected JAXBContext context;
-    protected final AlphabetPojoXml alphabetPojoXml;
+    protected final Class<AP> alphabetPojoXmlChildClass;
 
     protected synchronized JAXBContext getJAXBContext() throws JAXBException {
         if (context == null) {
-            context = JAXBContext.newInstance(alphabetPojoXml.getClass(), AbstractInput.class);
+            context = JAXBContext.newInstance(alphabetPojoXmlChildClass, AbstractInputXml.class);
         }
         return context;
     }
 
-    public AlphabetSerializerXml(AlphabetPojoXml alphabetPojoXml) {
-        this.alphabetPojoXml = alphabetPojoXml;
+    public AlphabetSerializerXml(Class<AP> alphabetPojoXmlChildClass) {
+        this.alphabetPojoXmlChildClass = alphabetPojoXmlChildClass;
     }
 
     public Alphabet<AbstractInput> read(InputStream alphabetStream) throws AlphabetSerializerException {
@@ -51,13 +54,14 @@ public class AlphabetSerializerXml implements AlphabetSerializer {
     public void write(OutputStream alphabetStream, Alphabet<AbstractInput> alphabet) throws AlphabetSerializerException {
         try {
             Marshaller m = getJAXBContext().createMarshaller();
+            m.setProperty(Marshaller.JAXB_FRAGMENT, true);
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            AlphabetPojoXml alphabetPojo = alphabetPojoXml.getNewPojo(new ArrayList<>(alphabet));
+            AP alphabetPojo = alphabetPojoXmlChildClass.getConstructor(List.class).newInstance(new ArrayList<>(alphabet));
             m.marshal(alphabetPojo, alphabetStream);
-            
-        } catch (JAXBException e) {
+
+        } catch (JAXBException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |
+                 InstantiationException e) {
             throw new AlphabetSerializerException(e.getMessage());
         }
     }
-
 }

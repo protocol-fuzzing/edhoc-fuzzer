@@ -37,15 +37,15 @@ public class AlphabetBuilderStandard implements AlphabetBuilder {
             } catch (AlphabetSerializerException | FileNotFoundException e) {
                 LOGGER.fatal("Failed to instantiate alphabet");
                 LOGGER.fatal(e.getMessage());
-                System.exit(0);
+                System.exit(1);
             }
         } else {
             try {
                 alphabet = buildDefaultAlphabet();
             } catch (AlphabetSerializerException e) {
                 LOGGER.fatal("Failed to instantiate default alphabet");
-                LOGGER.fatal(e);
-                System.exit(0);
+                LOGGER.fatal(e.getMessage());
+                System.exit(1);
             }
         }
 

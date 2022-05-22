@@ -2,19 +2,19 @@ package gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.xml;
 
 import gr.ntua.softlab.protocolStateFuzzer.mapper.abstractSymbols.AbstractInput;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * POJO class used for .xml de-serialization.
  */
-@XmlRootElement(name = "alphabet")
-@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AlphabetPojoXml {
     /*
-     * To be extended with class annotating variable inputs like this:
+     * To be extended with class annotating header like this:
+     *  @XmlRootElement(name = "alphabet")
+     *  @XmlAccessorType(XmlAccessType.FIELD)
+     *  public class AlphabetPojoXmlExt extends AlphabetPojoXml
+     *
+     * and variable inputs like this:
      *  @XmlElements(value = {
      *		@XmlElement(type = InputA.class, name = "InputA"),
      *		@XmlElement(type = InputB.class, name = "InputB"),
@@ -24,6 +24,8 @@ public abstract class AlphabetPojoXml {
      *
      * Example of such class:
 
+     @XmlRootElement(name = "alphabet")
+     @XmlAccessorType(XmlAccessType.FIELD)
      public class AlphabetPojoXmlExt extends AlphabetPojoXml {
          @XmlElements(value = {
             @XmlElement(type = InputA.class, name = "InputA"),
@@ -31,12 +33,10 @@ public abstract class AlphabetPojoXml {
          })
          protected List<AbstractInput> inputs;
 
+         public AlphabetPojoExt AlphabetPojoXmlExt() {}
+
          public AlphabetPojoExt AlphabetPojoXmlExt(List<AbstractInput> inputs) {
             this.inputs = inputs;
-         }
-
-         public AlphabetPojoXml getNewPojo(List<AbstractInput> inputs) {
-            return new AlphabetPojoXmlExt(inputs);
          }
 
          public List<AbstractInput> getInputs(){
@@ -44,12 +44,11 @@ public abstract class AlphabetPojoXml {
          }
       }
 
-     *
      */
 
-    public AlphabetPojoXml getNewPojo(List<AbstractInput> inputs) {
-        return null;
-    }
+    public AlphabetPojoXml() {}
+
+    public AlphabetPojoXml(List<AbstractInput> inputs) {}
 
     public List<AbstractInput> getInputs(){
         return null;

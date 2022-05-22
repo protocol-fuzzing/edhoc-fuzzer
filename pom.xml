@@ -11,15 +11,21 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+
+        <!-- protocolStateFuzzer properties -->
         <learnlib.version>0.16.0</learnlib.version>
         <automatalib.version>0.10.0</automatalib.version>
         <jcommander.version>1.82</jcommander.version>
         <log4j.version>2.17.2</log4j.version>
-        <javax.xml.bind.version>2.4.0-b180830.0359</javax.xml.bind.version>
+        <jaxb-api.version>4.0.0</jaxb-api.version>
+        <jaxb-impl.version>4.0.0-M4</jaxb-impl.version>
+
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- protocolStateFuzzer dependencies -->
+
             <!-- learnlib and automatalib-->
             <dependency>
                 <groupId>de.learnlib</groupId>
@@ -45,17 +51,27 @@
                 <type>pom</type>
             </dependency>
 
-            <!-- javax.xml.bind -->
+            <!-- jaxb api -->
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${javax.xml.bind.version}</version>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+
+            <!-- jaxb implementation -->
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${jaxb-impl.version}</version>
+                <scope>runtime</scope>
             </dependency>
 
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
+        <!-- protocolStateFuzzer dependencies -->
+
         <!-- https://mvnrepository.com/artifact/de.learnlib.distribution/learnlib-distribution -->
         <dependency>
             <groupId>de.learnlib.distribution</groupId>
@@ -81,10 +97,19 @@
             <artifactId>log4j-core</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+        <!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>${jaxb-impl.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 </project>
