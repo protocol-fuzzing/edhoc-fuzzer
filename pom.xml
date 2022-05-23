@@ -20,6 +20,8 @@
         <jaxb-api.version>4.0.0</jaxb-api.version>
         <jaxb-impl.version>4.0.0-M4</jaxb-impl.version>
 
+        <!-- edhocFuzzer properties -->
+        <cf-edhoc-version>0.0.0</cf-edhoc-version>
     </properties>
 
     <dependencyManagement>
@@ -66,6 +68,14 @@
                 <scope>runtime</scope>
             </dependency>
 
+            <!-- edhocFuzzer dependencies -->
+
+            <!-- manually installed cf-edhoc -->
+            <dependency>
+                <groupId>se.ri.org.eclipse.californium</groupId>
+                <artifactId>cf-edhoc</artifactId>
+                <version>${cf-edhoc-version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -111,5 +121,14 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- edhocFuzzer dependencies -->
+
+        <!-- manually built jar and locally installed cf-edhoc
+             https://github.com/rikard-sics/californium/tree/e7eae2775722a48e7f898cf77ca17b4d590b61b7/cf-edhoc
+        -->
+        <dependency>
+            <groupId>se.ri.org.eclipse.californium</groupId>
+            <artifactId>cf-edhoc</artifactId>
+        </dependency>
     </dependencies>
 </project>
