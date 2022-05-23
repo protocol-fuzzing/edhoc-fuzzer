@@ -47,8 +47,7 @@ public class TestRunner {
     }
 
     public TestRunner(TestRunnerEnabler testRunnerEnabler, AlphabetBuilder alphabetBuilder,
-                      MapperBuilder mapperBuilder, WrappedSulBuilder wrappedSulBuilder)
-            throws IOException {
+                      MapperBuilder mapperBuilder, WrappedSulBuilder wrappedSulBuilder) {
         this.testRunnerEnabler = testRunnerEnabler;
         this.alphabet = alphabetBuilder.build(testRunnerEnabler);
         this.cleanupTasks = new CleanupTasks();
@@ -58,11 +57,14 @@ public class TestRunner {
         this.sulOracle = new SULOracle<>(
                 wrappedSulBuilder.build(testRunnerEnabler.getSulDelegate(), mapper, cleanupTasks));
 
-
         this.testSpecification = null;
         if (testRunnerEnabler.getTestRunnerConfig().getTestSpecification() != null) {
-            this.testSpecification = ModelFactory.buildProtocolModel(alphabet,
-                    testRunnerEnabler.getTestRunnerConfig().getTestSpecification());
+            try {
+                this.testSpecification = ModelFactory.buildProtocolModel(
+                        alphabet, testRunnerEnabler.getTestRunnerConfig().getTestSpecification());
+            } catch (IOException e) {
+                throw new RuntimeException("Could not build protocol model from test specification: " + e.getMessage());
+            }
         }
 
     }

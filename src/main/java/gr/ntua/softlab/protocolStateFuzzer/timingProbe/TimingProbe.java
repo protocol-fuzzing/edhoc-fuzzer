@@ -30,7 +30,7 @@ public class TimingProbe {
     }
 
     public TimingProbe(TimingProbeEnabler config, AlphabetBuilder alphabetBuilder,
-                       MapperBuilder mapperBuilder, WrappedSulBuilder wrappedSulBuilder) throws IOException {
+                       MapperBuilder mapperBuilder, WrappedSulBuilder wrappedSulBuilder) {
         this.timingProbeConfig = config.getTimingProbeConfig();
         this.alphabetBuilder = alphabetBuilder;
 

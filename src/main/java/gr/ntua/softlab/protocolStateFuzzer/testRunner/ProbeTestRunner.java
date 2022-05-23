@@ -16,8 +16,7 @@ public class ProbeTestRunner extends TestRunner {
     protected List<TestRunnerResult<AbstractInput, AbstractOutput>> control = null;
 
     public ProbeTestRunner(TestRunnerEnabler testRunnerEnabler, AlphabetBuilder alphabetBuilder,
-                           MapperBuilder mapperBuilder, WrappedSulBuilder wrappedSulBuilder)
-            throws IOException {
+                           MapperBuilder mapperBuilder, WrappedSulBuilder wrappedSulBuilder) {
         super(testRunnerEnabler, alphabetBuilder, mapperBuilder, wrappedSulBuilder);
     }
 
