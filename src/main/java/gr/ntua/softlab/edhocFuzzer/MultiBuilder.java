@@ -1,13 +1,18 @@
 package gr.ntua.softlab.edhocFuzzer;
 
 import gr.ntua.softlab.edhocFuzzer.learner.EdhocAlphabetPojoXml;
+import gr.ntua.softlab.edhocFuzzer.sul.EdhocSulClientDelegate;
+import gr.ntua.softlab.edhocFuzzer.sul.EdhocSulServerDelegate;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetBuilderStandard;
-import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetSerializerException;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.xml.AlphabetSerializerXml;
+import gr.ntua.softlab.protocolStateFuzzer.learner.config.LearningConfig;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.MapperBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.mapper.abstractSymbols.AbstractInput;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.*;
+import gr.ntua.softlab.protocolStateFuzzer.mapper.config.MapperConfig;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.StateFuzzer;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.StateFuzzerBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.StateFuzzerComposerStandard;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.StateFuzzerStandard;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerClientConfig;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerConfigBuilder;
@@ -15,17 +20,18 @@ import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerServerC
 import gr.ntua.softlab.protocolStateFuzzer.sul.WrappedSulBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.TestRunner;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.TestRunnerBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.testRunner.config.TestRunnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.config.TestRunnerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.timingProbe.TimingProbe;
 import gr.ntua.softlab.protocolStateFuzzer.timingProbe.TimingProbeBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.timingProbe.config.TimingProbeConfig;
 import gr.ntua.softlab.protocolStateFuzzer.timingProbe.config.TimingProbeEnabler;
-import net.automatalib.words.Alphabet;
 
-import java.io.FileNotFoundException;
+public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilder, TestRunnerBuilder, TimingProbeBuilder {
 
-public class MultiBuilder implements StateFuzzerBuilder, StateFuzzerConfigBuilder, TestRunnerBuilder, TimingProbeBuilder {
-
-    private AlphabetBuilder alphabetBuilder = new AlphabetBuilderStandard(new AlphabetSerializerXml<>(EdhocAlphabetPojoXml.class));
+    private AlphabetBuilder alphabetBuilder = new AlphabetBuilderStandard(
+            new AlphabetSerializerXml<>(EdhocAlphabetPojoXml.class)
+    );
 
     private MapperBuilder mapperBuilder = null;
 
@@ -33,34 +39,40 @@ public class MultiBuilder implements StateFuzzerBuilder, StateFuzzerConfigBuilde
 
     @Override
     public StateFuzzerClientConfig buildClientConfig() {
-        Alphabet<AbstractInput> alphabet = alphabetBuilder.build(()->null);
-        try {
-            alphabetBuilder.exportAlphabetToFile("alphabetTest.xml", alphabet);
-        } catch (FileNotFoundException | AlphabetSerializerException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
+        return new StateFuzzerClientConfig(
+                new LearningConfig(),
+                new MapperConfig(),
+                new TestRunnerConfig(),
+                new TimingProbeConfig(),
+                new EdhocSulServerDelegate()
+        );
     }
 
     @Override
     public StateFuzzerServerConfig buildServerConfig() {
-        return null;
+        return new StateFuzzerServerConfig(
+                new LearningConfig(),
+                new MapperConfig(),
+                new TestRunnerConfig(),
+                new TimingProbeConfig(),
+                new EdhocSulClientDelegate()
+        );
     }
 
     @Override
     public StateFuzzer build(StateFuzzerConfig stateFuzzerConfig) {
-        StateFuzzerComposer stateFuzzerComposer = new StateFuzzerComposerStandard(stateFuzzerConfig,
-                alphabetBuilder, mapperBuilder, wrappedSulBuilder);
-        return new StateFuzzerStandard(stateFuzzerComposer);
+        return new StateFuzzerStandard(
+                new StateFuzzerComposerStandard(stateFuzzerConfig, alphabetBuilder, mapperBuilder, wrappedSulBuilder)
+        );
     }
 
     @Override
     public TestRunner build(TestRunnerEnabler testRunnerEnabler) {
-        return null;
+        return new TestRunner(testRunnerEnabler, alphabetBuilder, mapperBuilder, wrappedSulBuilder);
     }
 
     @Override
     public TimingProbe build(TimingProbeEnabler timingProbeEnabler) {
-        return null;
+        return new TimingProbe(timingProbeEnabler, alphabetBuilder, mapperBuilder, wrappedSulBuilder);
     }
 }
