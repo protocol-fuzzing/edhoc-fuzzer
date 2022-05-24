@@ -2,7 +2,7 @@ package gr.ntua.softlab.protocolStateFuzzer.testRunner;
 
 import de.learnlib.api.oracle.MembershipOracle.MealyMembershipOracle;
 import de.learnlib.oracle.membership.SULOracle;
-import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulDelegate;
+import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulConfig;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.config.TestRunnerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.Mapper;
@@ -55,7 +55,7 @@ public class TestRunner {
         this.mapper = mapperBuilder.build(testRunnerEnabler.getMapperConfig());
 
         this.sulOracle = new SULOracle<>(
-                wrappedSulBuilder.build(testRunnerEnabler.getSulDelegate(), mapper, cleanupTasks));
+                wrappedSulBuilder.build(testRunnerEnabler.getSulConfig(), mapper, cleanupTasks));
 
         this.testSpecification = null;
         if (testRunnerEnabler.getTestRunnerConfig().getTestSpecification() != null) {
@@ -73,8 +73,8 @@ public class TestRunner {
         return alphabet;
     }
 
-    public SulDelegate getSulDelegate() {
-        return testRunnerEnabler.getSulDelegate();
+    public SulConfig getSulConfig() {
+        return testRunnerEnabler.getSulConfig();
     }
 
     /**
@@ -90,7 +90,7 @@ public class TestRunner {
                     LOGGER.info("");
                     LOGGER.info("Displaying Transition Sequence");
                     LOGGER.info("");
-                    LOGGER.info(getTransitionSequenceString(result, !getSulDelegate().isClient()));
+                    LOGGER.info(getTransitionSequenceString(result, !getSulConfig().isClient()));
                 }
             }
 

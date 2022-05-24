@@ -1,8 +1,8 @@
 package gr.ntua.softlab.edhocFuzzer;
 
 import gr.ntua.softlab.edhocFuzzer.learner.EdhocAlphabetPojoXml;
-import gr.ntua.softlab.edhocFuzzer.sul.EdhocSulClientDelegate;
-import gr.ntua.softlab.edhocFuzzer.sul.EdhocSulServerDelegate;
+import gr.ntua.softlab.edhocFuzzer.sul.EdhocSulClientConfig;
+import gr.ntua.softlab.edhocFuzzer.sul.EdhocSulServerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetBuilderStandard;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.xml.AlphabetSerializerXml;
@@ -44,7 +44,7 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
                 new MapperConfig(),
                 new TestRunnerConfig(),
                 new TimingProbeConfig(),
-                new EdhocSulServerDelegate()
+                new EdhocSulServerConfig()
         );
     }
 
@@ -55,7 +55,7 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
                 new MapperConfig(),
                 new TestRunnerConfig(),
                 new TimingProbeConfig(),
-                new EdhocSulClientDelegate()
+                new EdhocSulClientConfig()
         );
     }
 

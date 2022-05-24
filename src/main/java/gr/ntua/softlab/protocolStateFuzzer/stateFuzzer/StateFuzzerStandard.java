@@ -179,10 +179,10 @@ public class StateFuzzerStandard implements StateFuzzer {
         }
 
         try {
-            dumpToFile(stateFuzzerConfig.getSulDelegate().getSulConfigInputStream(), new File(outputFolder,
-                    SUL_CONFIG_FILENAME));
+            dumpToFile(stateFuzzerConfig.getSulConfig().getMapperToSulConfigInputStream(),
+                    new File(outputFolder, MAPPER_TO_SUL_CONFIG_FILENAME));
         } catch (IOException e) {
-            LOGGER.fatal("Could not copy sul configuration to output folder");
+            LOGGER.fatal("Could not copy mapper_to_sul configuration to output folder");
         }
     }
 

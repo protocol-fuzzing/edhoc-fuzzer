@@ -1,7 +1,7 @@
 package gr.ntua.softlab.protocolStateFuzzer.mapper.abstractSymbols;
 
 import gr.ntua.softlab.protocolStateFuzzer.mapper.config.MapperConfig;
-import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulDelegate;
+import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulConfig;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.context.ExecutionContext;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.Mapper;
 import gr.ntua.softlab.protocolStateFuzzer.sul.protocol.ProtocolMessage;
@@ -34,7 +34,7 @@ public abstract class AbstractInput extends AbstractSymbol {
      * Returns the preferred mapper for this input, or null, if there isn't one,
      * meaning the input does not require alterations to the typical mapping of the input.
      */
-    public Mapper getPreferredMapper(SulDelegate sulConfig, MapperConfig mapperConfig) {
+    public Mapper getPreferredMapper(SulConfig sulConfig, MapperConfig mapperConfig) {
         return null;
     }
 

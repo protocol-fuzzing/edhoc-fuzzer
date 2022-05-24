@@ -2,7 +2,7 @@ package gr.ntua.softlab.protocolStateFuzzer.sul.config;
 
 import com.beust.jcommander.Parameter;
 
-public abstract class SulServerDelegate extends SulDelegate {
+public abstract class SulServerConfig extends SulConfig {
 
 	@Parameter(names = "-clientWait", required = false, description = "Time before starting the client")
 	protected Long clientWait = 50L;
@@ -10,17 +10,17 @@ public abstract class SulServerDelegate extends SulDelegate {
 	@Parameter(names = "-port", required = true, description = "The port on which the server should listen")
 	protected Integer port = null;
 
-	public SulServerDelegate() {
+	public SulServerConfig() {
 		super();
 	}
 
-	public abstract void applyDelegate(SulConfig config) throws SulConfigurationException;
+	public abstract void applyDelegate(MapperToSulConfig config) throws MapperToSulConfigException;
 
-	public Long getClientWait() {
+	public long getClientWait() {
 		return clientWait;
 	}
 
-	public Integer getPort() {
+	public int getPort() {
 		return port;
 	}
 

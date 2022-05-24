@@ -15,37 +15,37 @@ public class LearningConfig {
     protected List<EquivalenceAlgorithmName> equivalenceAlgorithms = List.of(EquivalenceAlgorithmName.RANDOM_WP_METHOD);
 
     @Parameter(names = "-depth", description = "Maximal depth ( W/WP Method)")
-    protected int maxDepth = 1;
+    protected Integer maxDepth = 1;
 
     @Parameter(names = "-minLength", description = "Min length (random words, Random WP Method)")
-    protected int minLength = 5;
+    protected Integer minLength = 5;
 
     @Parameter(names = "-maxLength", description = "Max length (random words)")
-    protected int maxLength = 15;
+    protected Integer maxLength = 15;
 
     @Parameter(names = "-randLength", description = "Size of the random part (Random WP Method)")
-    protected int randLength = 5;
+    protected Integer randLength = 5;
 
     @Parameter(names = "-queries", description = "Number of queries (all)")
-    protected int numberOfQueries = 1000;
+    protected Integer numberOfQueries = 1000;
 
     @Parameter(names = "-memQueryRuns", description = "The number of times each membership query is executed before an answer is returned. Setting it to more than 1 enables an multiple-run oracle which may prevent non-determinism.")
-    protected int runsPerMembershipQuery = 1;
+    protected Integer runsPerMembershipQuery = 1;
 
     @Parameter(names = "-memQueryRetries", description = "The number of times a membership query is executed in case cache inconsistency is detected.")
-    protected int membershipQueryRetries = 3;
+    protected Integer membershipQueryRetries = 3;
 
     @Parameter(names = "-queryFile", description = "If set, logs all membership queries to this file.")
     protected String queryFile = null;
 
     @Parameter(names = "-probReset", description = "Probability of stopping execution of a test after each input")
-    protected int probReset = 0;
+    protected Integer probReset = 0;
 
     @Parameter(names = "-testFile", description = "A file with tests to be run.")
     protected String testFile = null;
 
     @Parameter(names = "-seed", description = "Seed used for random value generation.")
-    protected long seed = 0;
+    protected Long seed = 0L;
 
     @Parameter(names = "-cacheTests", description = "Cache tests, which increases the memory footprint but improves performance. It also renders useless most forms of non-determinism sanitization")
     protected boolean cacheTests = false;
@@ -60,7 +60,7 @@ public class LearningConfig {
     protected boolean skipNonDetTests = false;
 
     @Parameter(names = "-ceReruns", description = "Represents the number of times a CE is re-run in order for it to be confirmed")
-    protected int ceReruns = 3;
+    protected Integer ceReruns = 3;
 
     @Parameter(names = "-probabilisticSanitization", description = "Enables probabilistic sanitization of the CEs resulting in non determinism")
     protected boolean probabilisticSanitization = true;

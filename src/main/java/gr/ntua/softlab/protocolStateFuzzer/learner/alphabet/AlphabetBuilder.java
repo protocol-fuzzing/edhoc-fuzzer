@@ -9,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.util.Objects;
 
 public interface AlphabetBuilder {
-    String DEFAULT_ALPHABET = "/default_alphabet.xml";
+    String DEFAULT_ALPHABET = "default_alphabet.xml";
 
     // TODO this probably doesn't work when executing via .jar
     static File getAlphabetFile(AlphabetOptionProvider config) {

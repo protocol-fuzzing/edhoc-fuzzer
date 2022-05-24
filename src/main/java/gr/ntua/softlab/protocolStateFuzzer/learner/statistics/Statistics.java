@@ -3,7 +3,7 @@ package gr.ntua.softlab.protocolStateFuzzer.learner.statistics;
 import de.learnlib.api.query.DefaultQuery;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.learner.config.LearningConfig;
-import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulDelegate;
+import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulConfig;
 import net.automatalib.words.Alphabet;
 
 import java.io.PrintWriter;
@@ -106,13 +106,13 @@ public class Statistics {
         out.println("Max Queries: " + learningConfig.getNumberOfQueries());
         out.println("SUL Parameters");
 
-        SulDelegate sulDelegate = config.getSulDelegate();
-        out.println("Protocol: " + sulDelegate.getProtocolVersion());
-        out.println("ResetWait: " + sulDelegate.getResetWait());
-        out.println("Timeout: " + sulDelegate.getTimeout());
-        if (sulDelegate.getCommand() != null) {
-            out.println("RunWait: " + sulDelegate.getRunWait());
-            out.println("Command: " + sulDelegate.getCommand());
+        SulConfig sulConfig = config.getSulConfig();
+        out.println("Protocol: " + sulConfig.getProtocolVersion());
+        out.println("ResetWait: " + sulConfig.getResetWait());
+        out.println("Timeout: " + sulConfig.getTimeout());
+        if (sulConfig.getCommand() != null) {
+            out.println("RunWait: " + sulConfig.getRunWait());
+            out.println("Command: " + sulConfig.getCommand());
         }
 
         out.close();

@@ -60,7 +60,7 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
         // set up SUL (System Under Learning)
         Mapper mapper = mapperBuilder.build(stateFuzzerConfig.getMapperConfig());
 
-        this.sul = wrappedSulBuilder.build(stateFuzzerConfig.getSulDelegate(), mapper, cleanupTasks);
+        this.sul = wrappedSulBuilder.build(stateFuzzerConfig.getSulConfig(), mapper, cleanupTasks);
         if (learningConfig.getTimeLimit() != null) {
             wrappedSulBuilder.setTimeLimit(this.sul, learningConfig.getTimeLimit());
         }

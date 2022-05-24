@@ -5,14 +5,14 @@ import com.beust.jcommander.ParametersDelegate;
 import gr.ntua.softlab.protocolStateFuzzer.learner.config.AlphabetOptionProvider;
 import gr.ntua.softlab.protocolStateFuzzer.learner.config.LearningConfig;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.config.MapperConfig;
-import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulDelegateProvider;
+import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulConfigProvider;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.config.TestRunnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.timingProbe.config.TimingProbeConfig;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.config.TestRunnerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.timingProbe.config.TimingProbeEnabler;
 
 public abstract class StateFuzzerConfig extends ToolConfig implements TimingProbeEnabler, TestRunnerEnabler,
-		AlphabetOptionProvider, RoleProvider, SulDelegateProvider {
+		AlphabetOptionProvider, RoleProvider, SulConfigProvider {
 	
 	@Parameter(names = "-alphabet", required = false, description = "A file defining the input alphabet. "
 			+ "The alphabet is used to interpret inputs from a given specification, as well as to learn. "

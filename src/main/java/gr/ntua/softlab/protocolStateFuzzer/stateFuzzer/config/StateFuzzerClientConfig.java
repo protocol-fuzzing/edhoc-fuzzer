@@ -4,31 +4,31 @@ import com.beust.jcommander.Parameters;
 import com.beust.jcommander.ParametersDelegate;
 import gr.ntua.softlab.protocolStateFuzzer.learner.config.LearningConfig;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.config.MapperConfig;
-import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulDelegate;
-import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulServerDelegate;
+import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulConfig;
+import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulServerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.config.TestRunnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.timingProbe.config.TimingProbeConfig;
 
 @Parameters(commandDescription = "Performs state-fuzzing on a protocol client generating a model of the system")
 public class StateFuzzerClientConfig extends StateFuzzerConfig {
 	@ParametersDelegate
-	protected SulServerDelegate sulServerDelegate;
+	protected SulServerConfig sulServerConfig;
 
-	public StateFuzzerClientConfig(SulServerDelegate sulServerDelegate) {
+	public StateFuzzerClientConfig(SulServerConfig sulServerConfig) {
 		super();
-		this.sulServerDelegate = sulServerDelegate;
+		this.sulServerConfig = sulServerConfig;
 	}
 
 	public StateFuzzerClientConfig(LearningConfig learningConfig, MapperConfig mapperConfig,
 								   TestRunnerConfig testRunnerConfig, TimingProbeConfig timingProbeConfig,
-								   SulServerDelegate sulServerDelegate) {
+								   SulServerConfig sulServerConfig) {
 		super(learningConfig, mapperConfig, testRunnerConfig, timingProbeConfig);
-		this.sulServerDelegate = sulServerDelegate;
+		this.sulServerConfig = sulServerConfig;
 	}
 
 	@Override
-	public SulDelegate getSulDelegate() {
-		return sulServerDelegate;
+	public SulConfig getSulConfig() {
+		return sulServerConfig;
 	}
 
 	public boolean isClient() {

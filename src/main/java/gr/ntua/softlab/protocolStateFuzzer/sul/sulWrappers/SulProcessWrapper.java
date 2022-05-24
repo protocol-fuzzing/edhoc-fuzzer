@@ -2,7 +2,7 @@ package gr.ntua.softlab.protocolStateFuzzer.sul.sulWrappers;
 
 import de.learnlib.api.SUL;
 import de.learnlib.api.exception.SULException;
-import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulDelegate;
+import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulConfig;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,13 +26,13 @@ public class SulProcessWrapper<I, O> implements SUL<I, O> {
 
     // TODO We should pass here ProcessConfig class, handlers becoming a map
     // from ProcessConfig to ProcessHandler.
-    public SulProcessWrapper(SUL<I, O> sul, SulDelegate sulDelegate) {
+    public SulProcessWrapper(SUL<I, O> sul, SulConfig sulConfig) {
         this.sul = sul;
-        if (!handlers.containsKey(sulDelegate.getCommand())) {
-            handlers.put(sulDelegate.getCommand(), new ProcessHandler(sulDelegate));
+        if (!handlers.containsKey(sulConfig.getCommand())) {
+            handlers.put(sulConfig.getCommand(), new ProcessHandler(sulConfig));
         }
-        this.handler = handlers.get(sulDelegate.getCommand());
-        this.trigger = sulDelegate.getProcessTrigger();
+        this.handler = handlers.get(sulConfig.getCommand());
+        this.trigger = sulConfig.getProcessTrigger();
         if (trigger == ProcessLaunchTrigger.START && !handler.hasLaunched()) {
             handler.launchProcess();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> handler.terminateProcess()));

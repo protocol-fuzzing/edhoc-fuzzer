@@ -2,7 +2,7 @@ package gr.ntua.softlab.protocolStateFuzzer.sul.sulWrappers;
 
 import de.learnlib.api.SUL;
 import de.learnlib.api.exception.SULException;
-import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulDelegate;
+import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulConfig;
 import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,10 +36,10 @@ public class ResettingClientWrapper<I, O> implements SUL<I, O> {
     protected long resetCommandWait;
     protected BufferedReader reader;
 
-    public ResettingClientWrapper(SUL<I, O> sul, SulDelegate sulDelegate, CleanupTasks tasks) {
+    public ResettingClientWrapper(SUL<I, O> sul, SulConfig sulConfig, CleanupTasks tasks) {
         this.sul = sul;
-        resetAddress = new InetSocketAddress(sulDelegate.getResetAddress(), sulDelegate.getResetPort());
-        resetCommandWait = sulDelegate.getResetCommandWait();
+        resetAddress = new InetSocketAddress(sulConfig.getResetAddress(), sulConfig.getResetPort());
+        resetCommandWait = sulConfig.getResetCommandWait();
         try {
             resetSocket = new Socket();
             resetSocket.setReuseAddress(true);

@@ -1,6 +1,6 @@
 package gr.ntua.softlab.protocolStateFuzzer.sul.sulWrappers;
 
-import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulDelegate;
+import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +35,7 @@ public class ProcessHandler {
         LOGGER.info("Command to launch SUT: {}", command);
     }
 
-    public ProcessHandler(SulDelegate sulConfig) {
+    public ProcessHandler(SulConfig sulConfig) {
         this(sulConfig.getCommand(), sulConfig.getRunWait());
         if (sulConfig.getProcessDir() != null) {
             setDirectory(new File(sulConfig.getProcessDir()));

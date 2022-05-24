@@ -95,10 +95,10 @@ public class TimingProbe {
 
     protected void setTimingParameter(String cmd, Integer time) throws IllegalArgumentException {
         if (cmd.contains("timeout")) {
-            probeTestRunner.getSulDelegate().setTimeout(time);
+            probeTestRunner.getSulConfig().setTimeout(time);
         } else if (cmd.contains("runWait")) {
             Long runWait = time == null ? 0L : time;
-            probeTestRunner.getSulDelegate().setRunWait(runWait);
+            probeTestRunner.getSulConfig().setRunWait(runWait);
         } else {
             for (AbstractInput in : probeTestRunner.getAlphabet()) {
                 if (in.toString().contains(cmd)) in.setExtendedWait(time);
