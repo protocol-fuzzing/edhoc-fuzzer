@@ -15,6 +15,7 @@ public class ToolPropertyAwareConverterFactory implements IStringConverterFactor
 		converters.put(String.class, FromStringConverter.class);
 		converters.put(Integer.class, FromIntegerConverter.class);
 		converters.put(Long.class, FromLongConverter.class);
+		converters.put(Double.class, FromDoubleConverter.class);
 	}
 
 	@Override
@@ -42,5 +43,11 @@ public class ToolPropertyAwareConverterFactory implements IStringConverterFactor
 			return Long.valueOf(ToolConfig.resolve(value.trim()));
 		}
 	}
-	
+
+	protected static class FromDoubleConverter implements IStringConverter<Double> {
+		@Override
+		public Double convert(String value) {
+			return Double.valueOf(ToolConfig.resolve(value.trim()));
+		}
+	}
 }

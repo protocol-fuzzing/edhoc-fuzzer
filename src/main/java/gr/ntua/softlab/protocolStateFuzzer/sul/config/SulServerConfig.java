@@ -4,7 +4,7 @@ import com.beust.jcommander.Parameter;
 
 public abstract class SulServerConfig extends SulConfig {
 
-	@Parameter(names = "-clientWait", required = false, description = "Time before starting the client")
+	@Parameter(names = "-clientWait", description = "Time (ms) before starting the client")
 	protected Long clientWait = 50L;
 
 	@Parameter(names = "-port", required = true, description = "The port on which the server should listen")

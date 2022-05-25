@@ -55,7 +55,7 @@ public class AlphabetBuilderStandard implements AlphabetBuilder {
 
 
     protected Alphabet<AbstractInput> buildDefaultAlphabet() throws AlphabetSerializerException {
-        return alphabetSerializer.read(AlphabetBuilderStandard.class.getResourceAsStream(DEFAULT_ALPHABET));
+        return alphabetSerializer.read(AlphabetBuilderStandard.class.getClassLoader().getResourceAsStream(DEFAULT_ALPHABET));
     }
 
     protected Alphabet<AbstractInput> buildConfiguredAlphabet(AlphabetOptionProvider config)

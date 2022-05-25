@@ -6,26 +6,23 @@ import gr.ntua.softlab.edhocFuzzer.sul.EdhocSulServerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetBuilderStandard;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.xml.AlphabetSerializerXml;
-import gr.ntua.softlab.protocolStateFuzzer.learner.config.LearningConfig;
+import gr.ntua.softlab.protocolStateFuzzer.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.MapperBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.StateFuzzer;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.StateFuzzerBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.StateFuzzerComposerStandard;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.StateFuzzerStandard;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerClientConfig;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerConfig;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerConfigBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerServerConfig;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.*;
 import gr.ntua.softlab.protocolStateFuzzer.sul.WrappedSulBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.TestRunner;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.TestRunnerBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.config.TestRunnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.config.TestRunnerEnabler;
-import gr.ntua.softlab.protocolStateFuzzer.timingProbe.TimingProbe;
-import gr.ntua.softlab.protocolStateFuzzer.timingProbe.TimingProbeBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.timingProbe.config.TimingProbeConfig;
-import gr.ntua.softlab.protocolStateFuzzer.timingProbe.config.TimingProbeEnabler;
+import gr.ntua.softlab.protocolStateFuzzer.testRunner.timingProbe.TimingProbe;
+import gr.ntua.softlab.protocolStateFuzzer.testRunner.timingProbe.TimingProbeBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.testRunner.timingProbe.config.TimingProbeConfig;
+import gr.ntua.softlab.protocolStateFuzzer.testRunner.timingProbe.config.TimingProbeEnabler;
 
 public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilder, TestRunnerBuilder, TimingProbeBuilder {
 
@@ -40,7 +37,7 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
     @Override
     public StateFuzzerClientConfig buildClientConfig() {
         return new StateFuzzerClientConfig(
-                new LearningConfig(),
+                new LearnerConfig(),
                 new MapperConfig(),
                 new TestRunnerConfig(),
                 new TimingProbeConfig(),
@@ -51,7 +48,7 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
     @Override
     public StateFuzzerServerConfig buildServerConfig() {
         return new StateFuzzerServerConfig(
-                new LearningConfig(),
+                new LearnerConfig(),
                 new MapperConfig(),
                 new TestRunnerConfig(),
                 new TimingProbeConfig(),
@@ -60,9 +57,9 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
     }
 
     @Override
-    public StateFuzzer build(StateFuzzerConfig stateFuzzerConfig) {
+    public StateFuzzer build(StateFuzzerEnabler stateFuzzerEnabler) {
         return new StateFuzzerStandard(
-                new StateFuzzerComposerStandard(stateFuzzerConfig, alphabetBuilder, mapperBuilder, wrappedSulBuilder)
+                new StateFuzzerComposerStandard(stateFuzzerEnabler, alphabetBuilder, mapperBuilder, wrappedSulBuilder)
         );
     }
 

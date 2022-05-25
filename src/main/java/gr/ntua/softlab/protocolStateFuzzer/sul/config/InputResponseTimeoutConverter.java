@@ -28,7 +28,7 @@ public class InputResponseTimeoutConverter implements IStringConverter<InputResp
 	
 	protected String errMessage(String value) {
 		return String.format("Error processing InputResponseTimeoutMap from \"%s\". "
-				+ "Expected format: \"input1:value1,input2:value2...\"; e.g. \"SERVER_HELLO_DONE:100\" ", value);
+				+ "Expected format: \"input1:value1,input2:value2...\"; e.g. \"CLIENT_HELLO:100\" ", value);
 	}
 
 }

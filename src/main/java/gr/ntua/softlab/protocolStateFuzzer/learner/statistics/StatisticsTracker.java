@@ -3,7 +3,7 @@ package gr.ntua.softlab.protocolStateFuzzer.learner.statistics;
 import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.filter.statistic.Counter;
 
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerConfig;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.learner.StateMachine;
 
 import net.automatalib.words.Alphabet;
@@ -37,7 +37,7 @@ public class StatisticsTracker {
 	long time; 
 
 	// learning inputs and results
-	protected StateFuzzerConfig config;
+	protected StateFuzzerEnabler stateFuzzerEnabler;
 	protected Alphabet<?> alphabet;
 	protected List<DefaultQuery<?, ?>> counterexamples;
 	protected List<HypothesisStatistics> hypStats;
@@ -113,7 +113,7 @@ public class StatisticsTracker {
 	/**
 	 * Should be called before starting learning.
 	 */
-	public void startLearning(StateFuzzerConfig config, Alphabet<?> alphabet) {
+	public void startLearning(StateFuzzerEnabler stateFuzzerEnabler, Alphabet<?> alphabet) {
 		learnInputs = 0;
 		learnResets = 0;
 		time = System.currentTimeMillis();
@@ -121,7 +121,7 @@ public class StatisticsTracker {
 		allResets = 0;
 		lastHypInputs = 0;
 		lastHypResets = 0;
-		this.config = config;
+		this.stateFuzzerEnabler = stateFuzzerEnabler;
 		this.alphabet = alphabet;
 		counterexamples = new ArrayList<>();
 		finished = false;
@@ -180,7 +180,7 @@ public class StatisticsTracker {
 	public Statistics generateStatistics() {
 		Statistics statistics = new Statistics();
 		statistics.setFinished(finished, notFinishedReason);
-		statistics.generateRunDescription(config, alphabet);
+		statistics.generateRunDescription(stateFuzzerEnabler, alphabet);
 		statistics.setAllInputs(allInputs);
 		statistics.setAllResets(allResets);
 		statistics.setLearnInputs(learnInputs);

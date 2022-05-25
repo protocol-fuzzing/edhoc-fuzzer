@@ -16,7 +16,8 @@ public interface AlphabetBuilder {
         if (config.getAlphabet() != null) {
             return new File(config.getAlphabet());
         } else {
-            return new File(Objects.requireNonNull(AlphabetBuilder.class.getResource(DEFAULT_ALPHABET)).getFile());
+            return new File(Objects.requireNonNull(AlphabetBuilder.class.getClassLoader()
+                    .getResource(DEFAULT_ALPHABET)).getFile());
         }
     }
 

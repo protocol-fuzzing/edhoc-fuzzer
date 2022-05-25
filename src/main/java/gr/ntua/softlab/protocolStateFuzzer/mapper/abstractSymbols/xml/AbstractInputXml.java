@@ -30,7 +30,7 @@ public abstract class AbstractInputXml extends AbstractInput {
         return name;
     }
 
-    @XmlAttribute(name = "extendedWait", required = false)
+    @XmlAttribute(name = "extendedWait")
     protected Integer extendedWait;
 
     @Override

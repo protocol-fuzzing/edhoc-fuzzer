@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ToolConfig {
 
@@ -35,16 +37,6 @@ public class ToolConfig {
 		return quiet;
 	}
 
-	public void applyDelegate() {
-		String parentLogger = this.getClass().getPackageName();
-
-		if (isDebug()) {
-			 Configurator.setAllLevels(parentLogger, Level.DEBUG);
-	    } else if (isQuiet()) {
-			 Configurator.setAllLevels(parentLogger, Level.OFF);
-	    }
-	}
-	
 	public static final String FUZZER_PROPS = "fuzzer.properties";
 	public static final String DEFAULT_FUZZER_PROPS = "default_fuzzer.properties";
 	
@@ -135,7 +127,7 @@ public class ToolConfig {
 		 }
 	}
 	
-	// so we don't replaceAll each time
+	// cache userStrings in need of resolution, so as not to parse duplicates
 	protected static Map<String, String> resolutionCache = new HashMap<>();
 	
 	/**
@@ -145,16 +137,35 @@ public class ToolConfig {
 		if (userString == null) {
 			return null;
 		}
-		
+
 		if (resolutionCache.containsKey(userString)) {
 			return resolutionCache.get(userString);
 		}
-		
-		String resolvedStr = userString;
-		for (Map.Entry<String,String> prop : props.entrySet()) {
-			resolvedStr = resolvedStr.replaceAll("\\$\\{" + prop.getKey() + "\\}", prop.getValue());
+
+		boolean neededResolution = false;
+		StringBuilder resolvedSB = new StringBuilder();
+		// pattern starts with '${' then follows anything other than '$' and ends with '}'
+		Matcher matcher = Pattern.compile("(\\$\\{)([^\\$]*)(\\})").matcher(userString);
+
+		while (matcher.find()) {
+			if (!neededResolution) {
+				neededResolution = true;
+			}
+			// replace found pattern '${prop_key}' with the prop_key's value in props
+			// if the provided prop_key is unknown, the pattern is not resolved
+			if (props.containsKey(matcher.group(2))) {
+				matcher.appendReplacement(resolvedSB, props.get(matcher.group(2)));
+			}
 		}
-		resolutionCache.put(userString, resolvedStr);
-		return resolvedStr;
+
+		// append remaining characters from userString to resolvedSB
+		matcher.appendTail(resolvedSB);
+
+		// in case of no resolution, resolvedString has the same value as userString
+		String resolvedString = resolvedSB.toString();
+		if (neededResolution) {
+			resolutionCache.put(userString, resolvedString);
+		}
+		return resolvedString;
 	}
 }

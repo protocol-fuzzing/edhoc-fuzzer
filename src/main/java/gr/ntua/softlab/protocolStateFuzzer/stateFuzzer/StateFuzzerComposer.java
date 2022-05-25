@@ -2,7 +2,7 @@ package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer;
 
 import de.learnlib.api.algorithm.LearningAlgorithm;
 import de.learnlib.api.oracle.EquivalenceOracle;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerConfig;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.learner.statistics.StatisticsTracker;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.abstractSymbols.AbstractOutput;
@@ -26,7 +26,7 @@ public interface StateFuzzerComposer {
 
     Alphabet<AbstractInput> getAlphabet();
 
-    StateFuzzerConfig getStateFuzzerConfig();
+    StateFuzzerEnabler getStateFuzzerEnabler();
 
     File getOutputFolder();
 

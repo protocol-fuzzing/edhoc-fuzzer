@@ -2,16 +2,14 @@ package gr.ntua.softlab.protocolStateFuzzer.utils;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.*;
-import gr.ntua.softlab.protocolStateFuzzer.testRunner.config.TestRunnerEnabler;
-import gr.ntua.softlab.protocolStateFuzzer.timingProbe.config.TimingProbeEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.StateFuzzerBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.*;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.TestRunnerBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.timingProbe.TimingProbeBuilder;
-
+import gr.ntua.softlab.protocolStateFuzzer.testRunner.timingProbe.TimingProbeBuilder;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,6 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandLineParser {
     private static final Logger LOGGER = LogManager.getLogger(CommandLineParser.class);
@@ -33,8 +33,9 @@ public class CommandLineParser {
     protected TestRunnerBuilder testRunnerBuilder;
     protected TimingProbeBuilder timingProbeBuilder;
 
-    public CommandLineParser(StateFuzzerBuilder stateFuzzerBuilder, StateFuzzerConfigBuilder stateFuzzerConfigBuilder,
+    public CommandLineParser(StateFuzzerConfigBuilder stateFuzzerConfigBuilder, StateFuzzerBuilder stateFuzzerBuilder,
                              TestRunnerBuilder testRunnerBuilder, TimingProbeBuilder timingProbeBuilder){
+        Configurator.setLevel(LOGGER, Level.INFO);
         this.stateFuzzerBuilder = stateFuzzerBuilder;
         this.stateFuzzerConfigBuilder = stateFuzzerConfigBuilder;
         this.testRunnerBuilder = testRunnerBuilder;
@@ -68,7 +69,7 @@ public class CommandLineParser {
 
         JCommander commander = JCommander.newBuilder()
                 .allowParameterOverwriting(true)
-                .programName("protocol-state-fuzzer")
+                .programName("")
                 .addCommand(CMD_STATE_FUZZER_CLIENT, stateFuzzerClientConfig)
                 .addCommand(CMD_STATE_FUZZER_SERVER, stateFuzzerServerConfig)
                 .addConverterFactory(new ToolPropertyAwareConverterFactory())
@@ -91,64 +92,66 @@ public class CommandLineParser {
 
             LOGGER.info("Processing command {}", commander.getParsedCommand());
             switch (commander.getParsedCommand()) {
-                case CMD_STATE_FUZZER_CLIENT -> {
-                    if (stateFuzzerClientConfig.isHelp()) {
-                        commander.usage();
-                        break;
-                    }
-
-                    stateFuzzerClientConfig.applyDelegate();
-                    debugOptionCheck(stateFuzzerClientConfig);
-                    LOGGER.info("State-fuzzing a client implementation");
-
-                    // this is an extra step done to store the running arguments
-                    prepareOutputDir(args, stateFuzzerClientConfig.getOutput());
-
-                    stateFuzzerBuilder.build(stateFuzzerClientConfig).startFuzzing();
-                }
-                case CMD_STATE_FUZZER_SERVER -> {
-                    if (stateFuzzerServerConfig.isHelp()) {
-                        commander.usage();
-                        break;
-                    }
-
-                    stateFuzzerServerConfig.applyDelegate();
-                    debugOptionCheck(stateFuzzerServerConfig);
-                    LOGGER.info("State-fuzzing a server implementation");
-
-                    // this is an extra step done to store the running arguments
-                    prepareOutputDir(args, stateFuzzerServerConfig.getOutput());
-
-                    stateFuzzerBuilder.build(stateFuzzerServerConfig).startFuzzing();
-                }
+                case CMD_STATE_FUZZER_CLIENT -> executeCommand(args, commander, stateFuzzerClientConfig);
+                case CMD_STATE_FUZZER_SERVER -> executeCommand(args, commander, stateFuzzerServerConfig);
             }
+
         } catch (ParameterException E) {
-            LOGGER.error("Could not parse provided parameters. " + E.getLocalizedMessage());
+            LOGGER.error("Could not parse provided parameters. " + E.getMessage());
             LOGGER.debug(E);
             commander.usage();
         } catch (Exception E) {
             LOGGER.error("Encountered an exception. See debug for more info.");
             E.printStackTrace();
-            LOGGER.error(E);
         }
     }
 
-    /*
-     * Checks if debug options have been supplied for launching the test runner/timing probe.
-     * Executes these tools and exits if that is the case.
-     */
-    protected void debugOptionCheck(TestRunnerEnabler config) throws IOException {
-        if (config.getTestRunnerConfig().getTest() != null) {
-            LOGGER.info("Debug operation is engaged");
-            if (config instanceof TimingProbeEnabler) {
+    protected void executeCommand(String[] args, JCommander commander, StateFuzzerConfig stateFuzzerConfig)
+            throws IOException {
+
+        if (stateFuzzerConfig.isHelp()) {
+            commander.usage();
+            return;
+        }
+
+        String parentLogger = getBasePackageName();
+        if (stateFuzzerConfig.isDebug()) {
+            Configurator.setAllLevels(parentLogger, Level.DEBUG);
+        } else if (stateFuzzerConfig.isQuiet()) {
+            Configurator.setAllLevels(parentLogger, Level.ERROR);
+        } else {
+            Configurator.setAllLevels(parentLogger, Level.INFO);
+        }
+
+        // check if test options have been supplied for launching the available test runners
+        if (stateFuzzerConfig.getTestRunnerConfig().getTest() != null) {
+            LOGGER.info("Test option is found");
+
+            if (stateFuzzerConfig.getTimingProbeConfig().getProbeCmd() != null) {
                 LOGGER.info("Running timing probe");
-                timingProbeBuilder.build((TimingProbeEnabler) config).run();
+                timingProbeBuilder.build(stateFuzzerConfig).run();
             } else {
                 LOGGER.info("Running test runner");
-                testRunnerBuilder.build(config).run();
+                testRunnerBuilder.build(stateFuzzerConfig).run();
             }
-            System.exit(0);
+        } else {
+            // run state fuzzer
+            LOGGER.info("State-fuzzing a " + stateFuzzerConfig.getSulConfig().getRole() + " implementation");
+
+            // this is an extra step done to store the running arguments
+            prepareOutputDir(args, stateFuzzerConfig.getOutput());
+
+            stateFuzzerBuilder.build(stateFuzzerConfig).startFuzzing();
         }
+    }
+
+    protected String getBasePackageName(){
+        String currentPackageName = this.getClass().getPackageName();
+        // pattern matches {a}.{a}.{a}.{a}, where a is anything other than '.'
+        // at first {a} (anything other than '.') and then 3 times '.{a}'
+        // implying that basename is in format suffix.inner2.inner1.base
+        Matcher matcher = Pattern.compile("[^\\.]*(\\.[^\\.]*){3}").matcher(currentPackageName);
+        return matcher.find() ? matcher.group() : currentPackageName;
     }
 
     /*

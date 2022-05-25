@@ -1,5 +1,7 @@
-package gr.ntua.softlab.protocolStateFuzzer.testRunner;
+package gr.ntua.softlab.protocolStateFuzzer.testRunner.timingProbe;
 
+import gr.ntua.softlab.protocolStateFuzzer.testRunner.TestRunner;
+import gr.ntua.softlab.protocolStateFuzzer.testRunner.TestRunnerResult;
 import gr.ntua.softlab.protocolStateFuzzer.testRunner.config.TestRunnerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.mapper.MapperBuilder;

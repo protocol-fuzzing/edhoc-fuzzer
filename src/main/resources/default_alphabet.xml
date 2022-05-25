@@ -1,5 +1,5 @@
 <alphabet>
-    <Message1Input name="EDHOC_MESSAGE_1" extendedWait="1" />
+    <Message1Input name="EDHOC_MESSAGE_1"/>
     <Message2Input name="EDHOC_MESSAGE_2"/>
     <Message3Input name="EDHOC_MESSAGE_3"/>
     <Message4Input name="EDHOC_MESSAGE_4"/>

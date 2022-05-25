@@ -13,51 +13,51 @@ public abstract class SulConfig {
     public static final String FUZZER_DIR = "fuzzer.dir";
     public static final String SULS_DIR = "suls.dir";
 
-    @Parameter(names = "-protocol", required = false, description = "Protocol analyzed, determines transport layer used",
+    @Parameter(names = "-protocolVersion", required = true, description = "Protocol version to be analyzed",
             converter = ProtocolVersionConverter.class)
     protected ProtocolVersion protocolVersion = null;
 
-    @Parameter(names = "-timeout", required = false, description = "Time the SUL spends waiting for a response")
+    @Parameter(names = "-timeout", description = "Time the SUL spends waiting for a response")
     protected Integer timeout = 100;
 
-    @Parameter(names = "-inputResponseTimeout", required = false, description = "Time the SUL spends waiting for a "
+    @Parameter(names = "-inputResponseTimeout", description = "Time the SUL spends waiting for a "
             + "response to a particular input. Expected format is: \"input1:value1,input2:value2...\" ",
             converter = InputResponseTimeoutConverter.class)
     protected InputResponseTimeoutMap inputResponseTimeout;
 
-    @Parameter(names = "-rstWait", required = false, description = "Time the SUL waits after executing each query")
+    @Parameter(names = "-rstWait", description = "Time (ms) the SUL waits after executing each query")
     protected Long resetWait = 0L;
 
-    @Parameter(names = {"-command", "-cmd"}, required = false, description = "Command for starting the client/server process")
+    @Parameter(names = {"-command", "-cmd"}, description = "Command for starting the client/server process")
     protected String command = null;
 
-    @Parameter(names = {"-terminateCommand", "-termCmd"}, required = false, description = "Command for terminating "
+    @Parameter(names = {"-terminateCommand", "-termCmd"}, description = "Command for terminating "
             + "the client/server process. If specified, it is used instead of java.lang.Process#destroy()")
     protected String terminateCommand = null;
 
-    @Parameter(names = {"-processDir"}, required = false, description = "The directory of the client/server process")
+    @Parameter(names = "-processDir", description = "The directory of the client/server process")
     protected String processDir = null;
 
-    @Parameter(names = {"-processTrigger"}, required = false, description = "When is the process launched")
+    @Parameter(names = "-processTrigger", description = "When is the process launched")
     protected ProcessLaunchTrigger processTrigger = ProcessLaunchTrigger.NEW_TEST;
 
-    @Parameter(names = "-runWait", required = false, description = "Time waited after running each command")
+    @Parameter(names = "-runWait", description = "Time (ms) waited after running each command")
     protected Long runWait = 0L;
 
-    // In case a launch server is used to execute the SUL (as is the case of JSSE and Scandium)
-    @Parameter(names = "-resetPort", required = false, description = "Port to which to send a reset command")
+    // In case a launch server is used to execute the SUL
+    @Parameter(names = "-resetPort", description = "Port to which to send a reset command")
     protected Integer resetPort = null;
 
-    @Parameter(names = "-resetAddress", required = false, description = "Address to which to send a reset command")
+    @Parameter(names = "-resetAddress", description = "Address to which to send a reset command")
     protected String resetAddress = "localhost";
 
-    @Parameter(names = "-resetCommandWait", required = false, description = "Time waited after sending a reset command")
+    @Parameter(names = "-resetCommandWait", description = "Time (ms) waited after sending a reset command")
     protected Long resetCommandWait = 0L;
 
-    @Parameter(names = "-resetAck", required = false, description = "Wait from acknowledgement from the other side")
+    @Parameter(names = "-resetAck", description = "Wait from acknowledgement from the other side")
     protected boolean resetAck = false;
 
-    @Parameter(names = "-mapperToSulConfig", required = false, description = "Configuration for the Mapper to SUL connection")
+    @Parameter(names = "-mapperToSulConfig", description = "Configuration for the Mapper to SUL connection")
     protected String mapperToSulConfig = null;
 
     public abstract String getRole();

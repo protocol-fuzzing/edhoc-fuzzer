@@ -1,8 +1,8 @@
 package gr.ntua.softlab.protocolStateFuzzer.learner.statistics;
 
 import de.learnlib.api.query.DefaultQuery;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerConfig;
-import gr.ntua.softlab.protocolStateFuzzer.learner.config.LearningConfig;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.StateFuzzerEnabler;
+import gr.ntua.softlab.protocolStateFuzzer.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.sul.config.SulConfig;
 import net.automatalib.words.Alphabet;
 
@@ -88,25 +88,25 @@ public class Statistics {
         out.close();
     }
 
-    protected void generateRunDescription(StateFuzzerConfig config, Alphabet<?> alphabet) {
+    protected void generateRunDescription(StateFuzzerEnabler stateFuzzerEnabler, Alphabet<?> alphabet) {
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
         out.println("=== RUN DESCRIPTION ===");
         out.println("Learning Parameters");
         out.println("Alphabet: " + alphabet);
 
-        LearningConfig learningConfig = config.getLearningConfig();
-        out.println("Learning Algorithm: " + learningConfig.getLearningAlgorithm());
-        out.println("Equivalence Algorithms: " + learningConfig.getEquivalenceAlgorithms());
-        out.println("Min Length: " + learningConfig.getMinLength());
-        out.println("Max Length: " + learningConfig.getMaxLength());
-        out.println("Random Length: " + learningConfig.getRandLength());
-        out.println("Max Depth: " + learningConfig.getMaxDepth());
-        out.println("Prob Reset: " + learningConfig.getProbReset());
-        out.println("Max Queries: " + learningConfig.getNumberOfQueries());
+        LearnerConfig learnerConfig = stateFuzzerEnabler.getLearnerConfig();
+        out.println("Learning Algorithm: " + learnerConfig.getLearningAlgorithm());
+        out.println("Equivalence Algorithms: " + learnerConfig.getEquivalenceAlgorithms());
+        out.println("Min Length: " + learnerConfig.getMinLength());
+        out.println("Max Length: " + learnerConfig.getMaxLength());
+        out.println("Random Length: " + learnerConfig.getRandLength());
+        out.println("Max Depth: " + learnerConfig.getMaxDepth());
+        out.println("Prob Reset: " + learnerConfig.getProbReset());
+        out.println("Max Queries: " + learnerConfig.getNumberOfQueries());
         out.println("SUL Parameters");
 
-        SulConfig sulConfig = config.getSulConfig();
+        SulConfig sulConfig = stateFuzzerEnabler.getSulConfig();
         out.println("Protocol: " + sulConfig.getProtocolVersion());
         out.println("ResetWait: " + sulConfig.getResetWait());
         out.println("Timeout: " + sulConfig.getTimeout());

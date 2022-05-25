@@ -49,7 +49,7 @@ public class TestRunner {
     public TestRunner(TestRunnerEnabler testRunnerEnabler, AlphabetBuilder alphabetBuilder,
                       MapperBuilder mapperBuilder, WrappedSulBuilder wrappedSulBuilder) {
         this.testRunnerEnabler = testRunnerEnabler;
-        this.alphabet = alphabetBuilder.build(testRunnerEnabler);
+        this.alphabet = alphabetBuilder.build(testRunnerEnabler.getLearnerConfig());
         this.cleanupTasks = new CleanupTasks();
 
         this.mapper = mapperBuilder.build(testRunnerEnabler.getMapperConfig());

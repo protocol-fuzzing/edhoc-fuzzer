@@ -15,7 +15,7 @@ import de.learnlib.oracle.equivalence.MealyWMethodEQOracle;
 import de.learnlib.oracle.equivalence.MealyWpMethodEQOracle;
 import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
 
-import gr.ntua.softlab.protocolStateFuzzer.learner.config.LearningConfig;
+import gr.ntua.softlab.protocolStateFuzzer.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.learner.oracles.RandomWpMethodEQOracle;
 import gr.ntua.softlab.protocolStateFuzzer.learner.oracles.SampledTestsEQOracle;
 import gr.ntua.softlab.protocolStateFuzzer.learner.oracles.WpSampledTestsEQOracle;
@@ -37,7 +37,7 @@ public class LearnerFactory {
     public static final long SEED = 123456L;
 
     public static MealyLearner<AbstractInput, AbstractOutput> loadLearner(
-            LearningConfig config, MealyMembershipOracle<AbstractInput, AbstractOutput> sulOracle,
+            LearnerConfig config, MealyMembershipOracle<AbstractInput, AbstractOutput> sulOracle,
             Alphabet<AbstractInput> alphabet) {
         return switch (config.getLearningAlgorithm()) {
             case LSTAR ->
@@ -62,7 +62,7 @@ public class LearnerFactory {
     // W_METHOD, MODIFIED_W_METHOD, WP_METHOD, RANDOM_WORDS, RANDOM_WALK, RANDOM_WP_METHOD
     public static EquivalenceOracle<
             MealyMachine<?, AbstractInput, ?, AbstractOutput>, AbstractInput, Word<AbstractOutput>
-            > loadTester(LearningConfig config, SUL<AbstractInput, AbstractOutput> sul,
+            > loadTester(LearnerConfig config, SUL<AbstractInput, AbstractOutput> sul,
                          MealyMembershipOracle<AbstractInput, AbstractOutput> sulOracle,
                          Alphabet<AbstractInput> alphabet) {
 
@@ -83,7 +83,7 @@ public class LearnerFactory {
     }
 
     protected static EquivalenceOracle.MealyEquivalenceOracle<AbstractInput, AbstractOutput>
-        loadTesterForAlgorithm(EquivalenceAlgorithmName algorithm, LearningConfig config,
+        loadTesterForAlgorithm(EquivalenceAlgorithmName algorithm, LearnerConfig config,
                                SUL<AbstractInput, AbstractOutput> sul,
                                MealyMembershipOracle<AbstractInput, AbstractOutput> sulOracle,
                                Alphabet<AbstractInput> alphabet) {
@@ -111,7 +111,7 @@ public class LearnerFactory {
         };
     }
 
-    protected static List<Word<AbstractInput>> readTests(LearningConfig config, Alphabet<AbstractInput> alphabet) {
+    protected static List<Word<AbstractInput>> readTests(LearnerConfig config, Alphabet<AbstractInput> alphabet) {
         TestParser parser = new TestParser();
         try {
             return parser.readTests(alphabet, config.getTestFile());
