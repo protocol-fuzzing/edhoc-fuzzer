@@ -2,10 +2,10 @@ package gr.ntua.softlab.protocolStateFuzzer.utils;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.StateFuzzerBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.config.*;
-import gr.ntua.softlab.protocolStateFuzzer.testRunner.TestRunnerBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.testRunner.timingProbe.TimingProbeBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.StateFuzzerBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.*;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.TestRunnerBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.TimingProbeBuilder;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -136,7 +136,7 @@ public class CommandLineParser {
             }
         } else {
             // run state fuzzer
-            LOGGER.info("State-fuzzing a " + stateFuzzerConfig.getSulConfig().getRole() + " implementation");
+            LOGGER.info("State-fuzzing a " + stateFuzzerConfig.getSulConfig().getFuzzingRole() + " implementation");
 
             // this is an extra step done to store the running arguments
             prepareOutputDir(args, stateFuzzerConfig.getOutput());
