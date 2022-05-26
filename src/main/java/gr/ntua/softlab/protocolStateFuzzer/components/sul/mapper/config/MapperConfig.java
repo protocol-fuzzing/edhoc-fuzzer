@@ -9,6 +9,11 @@ import java.util.List;
  * Configures how actual messages are mapped to abstract output strings.
  */
 public class MapperConfig {
+
+    @Parameter(names = "-mapperConnectionConfig", description = "Configuration file for the connection of "
+            + "Mapper with the running process")
+    protected String mapperConnectionConfig = null;
+
     @Parameter(names = "-repeatingOutputs", description = "Single or repeated occurrences of these "
             + "outputs are mapped to a single repeating output (e.g. CLIENT_HELLO is mapped to "
             + "CLIENT_HELLO" + AbstractOutput.REPEATING_INDICATOR + " ). "
@@ -30,6 +35,10 @@ public class MapperConfig {
             + "into a single output to which '" + AbstractOutput.REPEATING_INDICATOR + "' is post-pended "
             + "(CLIENT_HELLO" + AbstractOutput.REPEATING_INDICATOR + ")")
     protected boolean dontMergeRepeating = false;
+
+    public String getMapperConnectionConfig() {
+        return mapperConnectionConfig;
+    }
 
     public List<String> getRepeatingOutputs() {
         return repeatingOutputs;

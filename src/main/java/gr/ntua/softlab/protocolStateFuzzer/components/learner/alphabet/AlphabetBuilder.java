@@ -1,27 +1,19 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.AlphabetOptionProvider;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.AlphabetOptionProvider;
 import net.automatalib.words.Alphabet;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Objects;
 
 public interface AlphabetBuilder {
-    String DEFAULT_ALPHABET = "default_alphabet.xml";
-
-    // TODO this probably doesn't work when executing via .jar
-    static File getAlphabetFile(AlphabetOptionProvider config) {
-        if (config.getAlphabet() != null) {
-            return new File(config.getAlphabet());
-        } else {
-            return new File(Objects.requireNonNull(AlphabetBuilder.class.getClassLoader()
-                    .getResource(DEFAULT_ALPHABET)).getFile());
-        }
-    }
+    String DEFAULT_ALPHABET_NO_EXTENSION = "default_alphabet";
 
     Alphabet<AbstractInput> build(AlphabetOptionProvider config);
+
+    String getAlphabetFileName(AlphabetOptionProvider config);
+
+    String getAlphabetFileExtension();
 
     void exportAlphabetToFile(String outputFileName, Alphabet<AbstractInput> alphabet) throws FileNotFoundException,
             AlphabetSerializerException;

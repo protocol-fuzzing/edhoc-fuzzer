@@ -1,14 +1,14 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.core.config;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.MapperToSulConfig;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfig;
 import org.eclipse.californium.elements.config.Configuration;
 
 import java.io.InputStream;
 
-public class EdhocMapperToSulConfig implements MapperToSulConfig {
+public class EdhocMapperConnectionConfig implements MapperConnectionConfig {
     private Configuration configuration;
 
-    public EdhocMapperToSulConfig(InputStream inputStream) {
+    public EdhocMapperConnectionConfig(InputStream inputStream) {
         this.configuration = Configuration.createFromStream(inputStream, null);
     }
 

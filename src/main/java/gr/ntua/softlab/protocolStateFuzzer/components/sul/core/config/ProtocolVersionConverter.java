@@ -10,9 +10,7 @@ public class ProtocolVersionConverter implements IStringConverter<ProtocolVersio
         try {
             return ProtocolVersion.valueOf(value);
         } catch (IllegalArgumentException e) {
-            throw new ParameterException("Value " + value
-                    + " cannot be converted to a ProtocolVersion. "
-                    + "Available values are: "
+            throw new ParameterException("Protocol version " + value + " is not supported. Available versions are: "
                     + String.join(", ", ProtocolVersion.names()));
         }
     }

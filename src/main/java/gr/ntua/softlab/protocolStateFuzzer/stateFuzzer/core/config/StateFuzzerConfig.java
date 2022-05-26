@@ -31,9 +31,9 @@ public abstract class StateFuzzerConfig extends ToolConfig implements
 
 	public StateFuzzerConfig(LearnerConfig learnerConfig, TestRunnerConfig testRunnerConfig,
 							 TimingProbeConfig timingProbeConfig) {
-		this.learnerConfig = learnerConfig;
-		this.testRunnerConfig = testRunnerConfig;
-		this.timingProbeConfig = timingProbeConfig;
+		this.learnerConfig = learnerConfig == null ? new LearnerConfig() : learnerConfig;
+		this.testRunnerConfig = testRunnerConfig == null ? new TestRunnerConfig() : testRunnerConfig;
+		this.timingProbeConfig = timingProbeConfig == null ? new TimingProbeConfig() : timingProbeConfig;
 	}
 
 	public String getOutput() {

@@ -9,4 +9,5 @@ import java.io.OutputStream;
 public interface AlphabetSerializer {
     Alphabet<AbstractInput> read(InputStream alphabetStream) throws AlphabetSerializerException;
     void write(OutputStream alphabetStream, Alphabet<AbstractInput> alphabet) throws AlphabetSerializerException;
+    String getAlphabetFileExtension();
 }

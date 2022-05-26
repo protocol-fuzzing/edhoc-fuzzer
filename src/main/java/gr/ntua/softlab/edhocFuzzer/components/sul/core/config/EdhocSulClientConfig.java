@@ -1,8 +1,8 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.core.config;
 
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulClientConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.MapperToSulConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.MapperToSulConfigException;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfig;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfigException;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 
 public class EdhocSulClientConfig extends SulClientConfig {
@@ -11,6 +11,6 @@ public class EdhocSulClientConfig extends SulClientConfig {
     }
 
     @Override
-    public void applyDelegate(MapperToSulConfig config) throws MapperToSulConfigException {
+    public void applyDelegate(MapperConnectionConfig config) throws MapperConnectionConfigException {
     }
 }

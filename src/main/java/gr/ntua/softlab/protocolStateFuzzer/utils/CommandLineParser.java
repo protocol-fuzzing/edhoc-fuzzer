@@ -97,9 +97,7 @@ public class CommandLineParser {
             }
 
         } catch (ParameterException E) {
-            LOGGER.error("Could not parse provided parameters. " + E.getMessage());
-            LOGGER.debug(E);
-            commander.usage();
+            LOGGER.error("Could not parse provided parameters: " + E.getMessage());
         } catch (Exception E) {
             LOGGER.error("Encountered an exception. See debug for more info.");
             E.printStackTrace();

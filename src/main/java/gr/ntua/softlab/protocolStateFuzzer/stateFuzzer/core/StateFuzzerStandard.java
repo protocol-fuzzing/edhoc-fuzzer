@@ -6,15 +6,15 @@ import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.LearnerResult;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.StateMachine;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.factory.EquivalenceAlgorithmName;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics.Statistics;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics.StatisticsTracker;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractOutput;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.sulWrappers.ExperimentTimeoutException;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Alphabet;
@@ -32,6 +32,7 @@ import java.nio.file.StandardCopyOption;
  */
 public class StateFuzzerStandard implements StateFuzzer {
     private static final Logger LOGGER = LogManager.getLogger(StateFuzzerStandard.class);
+    protected final String ALPHABET_FILENAME;
     protected StateFuzzerComposer stateFuzzerComposer;
     protected Alphabet<AbstractInput> alphabet;
     protected File outputFolder;
@@ -44,6 +45,7 @@ public class StateFuzzerStandard implements StateFuzzer {
         this.alphabet = stateFuzzerComposer.getAlphabet();
         this.outputFolder = stateFuzzerComposer.getOutputFolder();
         this.cleanupTasks = stateFuzzerComposer.getCleanupTasks();
+        this.ALPHABET_FILENAME = ALPHABET_FILENAME_NO_EXTENSION + stateFuzzerComposer.getAlphabetFileExtension();
     }
 
     @Override
@@ -160,7 +162,7 @@ public class StateFuzzerStandard implements StateFuzzer {
 
     protected void copyInputsToOutputFolder(File outputFolder) {
         try {
-            Path originalAlphabetPath = AlphabetBuilder.getAlphabetFile(stateFuzzerEnabler.getLearnerConfig()).toPath();
+            Path originalAlphabetPath = Path.of(stateFuzzerComposer.getAlphabetFileName());
             Path outputAlphabetPath = Path.of(outputFolder.getPath(), ALPHABET_FILENAME);
             Files.copy(originalAlphabetPath, outputAlphabetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
@@ -179,8 +181,8 @@ public class StateFuzzerStandard implements StateFuzzer {
         }
 
         try {
-            dumpToFile(stateFuzzerEnabler.getSulConfig().getMapperToSulConfigInputStream(),
-                    new File(outputFolder, MAPPER_TO_SUL_CONFIG_FILENAME));
+            dumpToFile(stateFuzzerEnabler.getSulConfig().getMapperConnectionConfigInputStream(),
+                    new File(outputFolder, SulConfig.DEFAULT_MAPPER_CONNECTION_CONFIG));
         } catch (IOException e) {
             LOGGER.fatal("Could not copy mapperToSulConfig to output folder");
         }

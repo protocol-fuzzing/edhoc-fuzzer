@@ -22,8 +22,12 @@ public class ProtocolVersion {
         return versionMap.containsKey(version);
     }
 
-    public static ProtocolVersion valueOf(String version) {
-        return versionMap.get(version);
+    public static ProtocolVersion valueOf(String version) throws IllegalArgumentException {
+        if (versionMap.containsKey(version)) {
+            return versionMap.get(version);
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     public static List<ProtocolVersion> values() {

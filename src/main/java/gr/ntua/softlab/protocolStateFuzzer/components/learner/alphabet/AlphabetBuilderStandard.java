@@ -11,10 +11,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class AlphabetBuilderStandard implements AlphabetBuilder {
     private static final Logger LOGGER = LogManager.getLogger(AlphabetBuilderStandard.class);
-
+    protected String DEFAULT_ALPHABET;
     protected AlphabetSerializer alphabetSerializer;
 
     // store already built maps, so as not to rebuild them if needed
@@ -22,6 +23,7 @@ public class AlphabetBuilderStandard implements AlphabetBuilder {
 
     public AlphabetBuilderStandard(AlphabetSerializer alphabetSerializer) {
         this.alphabetSerializer = alphabetSerializer;
+        this.DEFAULT_ALPHABET = DEFAULT_ALPHABET_NO_EXTENSION + alphabetSerializer.getAlphabetFileExtension();
     }
 
     @Override
@@ -30,32 +32,25 @@ public class AlphabetBuilderStandard implements AlphabetBuilder {
             return builtMap.get(config);
         }
 
-        Alphabet<AbstractInput> alphabet = null;
+        Alphabet<AbstractInput> alphabet;
         if (config.getAlphabet() != null) {
             try {
                 alphabet = buildConfiguredAlphabet(config);
             } catch (AlphabetSerializerException | FileNotFoundException e) {
-                LOGGER.fatal("Failed to instantiate alphabet");
-                LOGGER.fatal(e.getMessage());
-                System.exit(1);
+                LOGGER.fatal("Failed to instantiate provided alphabet");
+                throw new RuntimeException(e);
             }
         } else {
             try {
                 alphabet = buildDefaultAlphabet();
             } catch (AlphabetSerializerException e) {
                 LOGGER.fatal("Failed to instantiate default alphabet");
-                LOGGER.fatal(e.getMessage());
-                System.exit(1);
+                throw new RuntimeException(e);
             }
         }
 
         builtMap.put(config, alphabet);
         return alphabet;
-    }
-
-
-    protected Alphabet<AbstractInput> buildDefaultAlphabet() throws AlphabetSerializerException {
-        return alphabetSerializer.read(AlphabetBuilderStandard.class.getClassLoader().getResourceAsStream(DEFAULT_ALPHABET));
     }
 
     protected Alphabet<AbstractInput> buildConfiguredAlphabet(AlphabetOptionProvider config)
@@ -67,12 +62,28 @@ public class AlphabetBuilderStandard implements AlphabetBuilder {
         return alphabet;
     }
 
+    protected Alphabet<AbstractInput> buildDefaultAlphabet() throws AlphabetSerializerException {
+        return alphabetSerializer.read(this.getClass().getClassLoader().getResourceAsStream(DEFAULT_ALPHABET));
+    }
+
+    @Override
+    public String getAlphabetFileName(AlphabetOptionProvider config) {
+        if (config.getAlphabet() != null) {
+            return config.getAlphabet();
+        } else {
+            return Objects.requireNonNull(this.getClass().getClassLoader().getResource(DEFAULT_ALPHABET)).getPath();
+        }
+    }
+
+    @Override
+    public String getAlphabetFileExtension() {
+        return alphabetSerializer.getAlphabetFileExtension();
+    }
+
     @Override
     public void exportAlphabetToFile(String outputFileName, Alphabet<AbstractInput> alphabet)
             throws FileNotFoundException, AlphabetSerializerException {
-        if (outputFileName != null) {
-            FileOutputStream alphabetStream = new FileOutputStream(outputFileName);
-            alphabetSerializer.write(alphabetStream, alphabet);
-        }
+        FileOutputStream alphabetStream = new FileOutputStream(outputFileName);
+        alphabetSerializer.write(alphabetStream, alphabet);
     }
 }

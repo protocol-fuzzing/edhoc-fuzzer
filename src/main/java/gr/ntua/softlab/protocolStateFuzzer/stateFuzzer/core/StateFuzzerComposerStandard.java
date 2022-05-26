@@ -6,17 +6,16 @@ import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.filter.statistic.Counter;
 import de.learnlib.oracle.membership.SULOracle;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.factory.LearnerFactory;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.*;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics.StatisticsTracker;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.MapperBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractOutput;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.WrappedSulBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.MapperBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Alphabet;
@@ -29,6 +28,7 @@ import java.io.IOException;
 public class StateFuzzerComposerStandard implements StateFuzzerComposer {
     protected final StateFuzzerEnabler stateFuzzerEnabler;
     protected final LearnerConfig learnerConfig;
+    protected final AlphabetBuilder alphabetBuilder;
     protected final Alphabet<AbstractInput> alphabet;
     protected final SUL<AbstractInput, AbstractOutput> sul;
     protected final ObservationTree<AbstractInput, AbstractOutput> cache;
@@ -40,7 +40,6 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
     protected EquivalenceOracle<MealyMachine<?, AbstractInput, ?, AbstractOutput>, AbstractInput, Word<AbstractOutput>>
         equivalenceOracle;
 
-
     public StateFuzzerComposerStandard(
             StateFuzzerEnabler stateFuzzerEnabler, AlphabetBuilder alphabetBuilder,
             MapperBuilder mapperBuilder, WrappedSulBuilder wrappedSulBuilder){
@@ -48,6 +47,7 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
         this.learnerConfig = stateFuzzerEnabler.getLearnerConfig();
 
         // de-serialize and build alphabet
+        this.alphabetBuilder = alphabetBuilder;
         this.alphabet = alphabetBuilder.build(stateFuzzerEnabler.getLearnerConfig());
 
         // set up output directory
@@ -103,6 +103,16 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
     @Override
     public Alphabet<AbstractInput> getAlphabet(){
         return alphabet;
+    }
+
+    @Override
+    public String getAlphabetFileName() {
+        return alphabetBuilder.getAlphabetFileName(learnerConfig);
+    }
+
+    @Override
+    public String getAlphabetFileExtension() {
+        return alphabetBuilder.getAlphabetFileExtension();
     }
 
     @Override

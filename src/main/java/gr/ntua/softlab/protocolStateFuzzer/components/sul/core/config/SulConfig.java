@@ -5,6 +5,8 @@ import com.beust.jcommander.ParametersDelegate;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.sulWrappers.ProcessLaunchTrigger;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfigProvider;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfig;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfigException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.io.InputStream;
 import java.util.Objects;
 
 public abstract class SulConfig implements MapperConfigProvider {
-    public static final String MAPPER_TO_SUL_CONFIG = "mapper_to_sul.config";
+    public static final String DEFAULT_MAPPER_CONNECTION_CONFIG = "default_mapper_connection.config";
     public static final String FUZZER_DIR = "fuzzer.dir";
     public static final String SULS_DIR = "suls.dir";
 
@@ -60,32 +62,34 @@ public abstract class SulConfig implements MapperConfigProvider {
     @Parameter(names = "-resetAck", description = "Wait from acknowledgement from the other side")
     protected boolean resetAck = false;
 
-    @Parameter(names = "-mapperToSulConfig", description = "Configuration for the Mapper to SUL connection")
-    protected String mapperToSulConfig = null;
-
     @ParametersDelegate
     protected MapperConfig mapperConfig;
 
+    public SulConfig() {
+        this.mapperConfig = new MapperConfig();
+    }
+
     public SulConfig(MapperConfig mapperConfig) {
-        this.mapperConfig = mapperConfig;
+        this.mapperConfig = mapperConfig == null ? new MapperConfig() : mapperConfig;
     }
 
     public abstract String getFuzzingRole();
 
     public abstract boolean isFuzzingClient();
 
-    public abstract void applyDelegate(MapperToSulConfig config) throws MapperToSulConfigException;
+    public abstract void applyDelegate(MapperConnectionConfig config) throws MapperConnectionConfigException;
 
     @Override
     public MapperConfig getMapperConfig() {
         return mapperConfig;
     }
 
-    public InputStream getMapperToSulConfigInputStream() throws IOException {
-        if (mapperToSulConfig == null) {
-            return Objects.requireNonNull(SulConfig.class.getResource(MAPPER_TO_SUL_CONFIG)).openStream();
+    public InputStream getMapperConnectionConfigInputStream() throws IOException {
+        String mapperConnectionConfig = mapperConfig.getMapperConnectionConfig();
+        if (mapperConnectionConfig == null) {
+            return Objects.requireNonNull(SulConfig.class.getResource(DEFAULT_MAPPER_CONNECTION_CONFIG)).openStream();
         } else {
-            return new FileInputStream(mapperToSulConfig);
+            return new FileInputStream(mapperConnectionConfig);
         }
     }
 

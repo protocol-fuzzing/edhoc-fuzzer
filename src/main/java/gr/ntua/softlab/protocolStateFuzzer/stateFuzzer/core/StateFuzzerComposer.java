@@ -2,6 +2,7 @@ package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core;
 
 import de.learnlib.api.algorithm.LearningAlgorithm;
 import de.learnlib.api.oracle.EquivalenceOracle;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.AlphabetOptionProvider;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics.StatisticsTracker;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
@@ -25,6 +26,10 @@ public interface StateFuzzerComposer {
     getEquivalenceOracle();
 
     Alphabet<AbstractInput> getAlphabet();
+
+    String getAlphabetFileName();
+
+    String getAlphabetFileExtension();
 
     StateFuzzerEnabler getStateFuzzerEnabler();
 

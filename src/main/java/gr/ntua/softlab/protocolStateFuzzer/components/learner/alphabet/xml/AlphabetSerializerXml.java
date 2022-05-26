@@ -64,4 +64,9 @@ public class AlphabetSerializerXml<AP extends AlphabetPojoXml> implements Alphab
             throw new AlphabetSerializerException(e.getMessage());
         }
     }
+
+    @Override
+    public String getAlphabetFileExtension() {
+        return ".xml";
+    }
 }
