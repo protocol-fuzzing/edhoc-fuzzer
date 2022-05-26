@@ -3,11 +3,10 @@ package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeConfig;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.config.TestRunnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.config.TestRunnerEnabler;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeConfig;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeEnabler;
 
 public abstract class StateFuzzerConfig extends ToolConfig implements
 		StateFuzzerEnabler, TestRunnerEnabler, TimingProbeEnabler {
@@ -19,9 +18,6 @@ public abstract class StateFuzzerConfig extends ToolConfig implements
 	protected LearnerConfig learnerConfig;
 
 	@ParametersDelegate
-	protected MapperConfig mapperConfig;
-	
-	@ParametersDelegate
 	protected TestRunnerConfig testRunnerConfig;
 
 	@ParametersDelegate
@@ -29,15 +25,13 @@ public abstract class StateFuzzerConfig extends ToolConfig implements
 
 	public StateFuzzerConfig() {
 		learnerConfig = new LearnerConfig();
-		mapperConfig = new MapperConfig();
 		testRunnerConfig = new TestRunnerConfig();
 		timingProbeConfig = new TimingProbeConfig();
 	}
 
-	public StateFuzzerConfig(LearnerConfig learnerConfig, MapperConfig mapperConfig,
-							 TestRunnerConfig testRunnerConfig, TimingProbeConfig timingProbeConfig) {
+	public StateFuzzerConfig(LearnerConfig learnerConfig, TestRunnerConfig testRunnerConfig,
+							 TimingProbeConfig timingProbeConfig) {
 		this.learnerConfig = learnerConfig;
-		this.mapperConfig = mapperConfig;
 		this.testRunnerConfig = testRunnerConfig;
 		this.timingProbeConfig = timingProbeConfig;
 	}
@@ -48,10 +42,6 @@ public abstract class StateFuzzerConfig extends ToolConfig implements
 
 	public LearnerConfig getLearnerConfig() {
 		return learnerConfig;
-	}
-
-	public MapperConfig getMapperConfig() {
-		return mapperConfig;
 	}
 
 	public TestRunnerConfig getTestRunnerConfig() {

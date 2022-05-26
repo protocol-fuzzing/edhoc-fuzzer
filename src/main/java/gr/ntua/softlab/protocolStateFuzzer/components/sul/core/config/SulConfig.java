@@ -1,14 +1,17 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config;
 
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParametersDelegate;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.sulWrappers.ProcessLaunchTrigger;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfigProvider;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-public abstract class SulConfig {
+public abstract class SulConfig implements MapperConfigProvider {
     public static final String MAPPER_TO_SUL_CONFIG = "mapper_to_sul.config";
     public static final String FUZZER_DIR = "fuzzer.dir";
     public static final String SULS_DIR = "suls.dir";
@@ -60,11 +63,23 @@ public abstract class SulConfig {
     @Parameter(names = "-mapperToSulConfig", description = "Configuration for the Mapper to SUL connection")
     protected String mapperToSulConfig = null;
 
+    @ParametersDelegate
+    protected MapperConfig mapperConfig;
+
+    public SulConfig(MapperConfig mapperConfig) {
+        this.mapperConfig = mapperConfig;
+    }
+
     public abstract String getFuzzingRole();
 
     public abstract boolean isFuzzingClient();
 
     public abstract void applyDelegate(MapperToSulConfig config) throws MapperToSulConfigException;
+
+    @Override
+    public MapperConfig getMapperConfig() {
+        return mapperConfig;
+    }
 
     public InputStream getMapperToSulConfigInputStream() throws IOException {
         if (mapperToSulConfig == null) {

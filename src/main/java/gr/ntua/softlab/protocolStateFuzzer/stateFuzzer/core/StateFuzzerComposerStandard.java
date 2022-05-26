@@ -58,9 +58,7 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
         this.cleanupTasks = new CleanupTasks();
 
         // set up SUL (System Under Learning)
-        Mapper mapper = mapperBuilder.build(stateFuzzerEnabler.getMapperConfig());
-
-        this.sul = wrappedSulBuilder.build(stateFuzzerEnabler.getSulConfig(), mapper, cleanupTasks);
+        this.sul = wrappedSulBuilder.build(stateFuzzerEnabler.getSulConfig(), mapperBuilder, cleanupTasks);
         if (learnerConfig.getTimeLimit() != null) {
             wrappedSulBuilder.setTimeLimit(this.sul, learnerConfig.getTimeLimit());
         }
@@ -73,7 +71,7 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
         }
 
         AbstractOutput[] cacheTerminatingOutputs = null;
-        if (stateFuzzerEnabler.getMapperConfig().isSocketClosedAsTimeout()) {
+        if (stateFuzzerEnabler.getSulConfig().getMapperConfig().isSocketClosedAsTimeout()) {
             cacheTerminatingOutputs = new AbstractOutput[]{AbstractOutput.socketClosed()};
         }
 

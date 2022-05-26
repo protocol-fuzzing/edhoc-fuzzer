@@ -52,10 +52,8 @@ public class TestRunner {
         this.alphabet = alphabetBuilder.build(testRunnerEnabler.getLearnerConfig());
         this.cleanupTasks = new CleanupTasks();
 
-        this.mapper = mapperBuilder.build(testRunnerEnabler.getMapperConfig());
-
         this.sulOracle = new SULOracle<>(
-                wrappedSulBuilder.build(testRunnerEnabler.getSulConfig(), mapper, cleanupTasks));
+                wrappedSulBuilder.build(testRunnerEnabler.getSulConfig(), mapperBuilder, cleanupTasks));
 
         this.testSpecification = null;
         if (testRunnerEnabler.getTestRunnerConfig().getTestSpecification() != null) {

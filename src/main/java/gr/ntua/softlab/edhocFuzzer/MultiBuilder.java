@@ -41,10 +41,9 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
     public StateFuzzerClientConfig buildClientConfig() {
         return new StateFuzzerClientConfig(
                 new LearnerConfig(),
-                new MapperConfig(),
+                new EdhocSulClientConfig(new MapperConfig()),
                 new TestRunnerConfig(),
-                new TimingProbeConfig(),
-                new EdhocSulClientConfig()
+                new TimingProbeConfig()
         );
     }
 
@@ -52,10 +51,9 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
     public StateFuzzerServerConfig buildServerConfig() {
         return new StateFuzzerServerConfig(
                 new LearnerConfig(),
-                new MapperConfig(),
+                new EdhocSulServerConfig(new MapperConfig()),
                 new TestRunnerConfig(),
-                new TimingProbeConfig(),
-                new EdhocSulServerConfig()
+                new TimingProbeConfig()
         );
     }
 

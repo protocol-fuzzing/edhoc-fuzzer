@@ -5,7 +5,6 @@ import com.beust.jcommander.ParametersDelegate;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulClientConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.config.TestRunnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeConfig;
 
@@ -19,10 +18,9 @@ public class StateFuzzerClientConfig extends StateFuzzerConfig {
 		this.sulClientConfig = sulClientConfig;
 	}
 
-	public StateFuzzerClientConfig(LearnerConfig learnerConfig, MapperConfig mapperConfig,
-                                   TestRunnerConfig testRunnerConfig, TimingProbeConfig timingProbeConfig,
-                                   SulClientConfig sulClientConfig) {
-		super(learnerConfig, mapperConfig, testRunnerConfig, timingProbeConfig);
+	public StateFuzzerClientConfig(LearnerConfig learnerConfig, SulClientConfig sulClientConfig,
+								   TestRunnerConfig testRunnerConfig, TimingProbeConfig timingProbeConfig) {
+		super(learnerConfig, testRunnerConfig, timingProbeConfig);
 		this.sulClientConfig = sulClientConfig;
 	}
 
