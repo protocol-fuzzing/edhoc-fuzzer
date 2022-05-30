@@ -11,7 +11,7 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.Executi
  * Given an input symbol, the mapper should:
  * <ol>
  * 	<li> generate a corresponding packet </li>
- * 	<li> send it to the SUT </li>
+ * 	<li> send it to the SUL </li>
  * 	<li> receive the response </li>
  * 	<li> convert it into an appropriate response </li>
  * </ol>

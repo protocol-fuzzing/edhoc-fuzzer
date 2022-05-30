@@ -79,7 +79,7 @@ public class ResettingClientWrapper<I, O> implements SUL<I, O> {
             LOGGER.info("Client connecting");
 
             /*
-             * We have to pre before the SUT does, so we have a port available
+             * We have to pre before the SUL does, so we have a port available
              * for it.
              */
 

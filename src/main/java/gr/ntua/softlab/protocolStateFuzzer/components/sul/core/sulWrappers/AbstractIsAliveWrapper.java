@@ -7,30 +7,30 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols
 
 public class AbstractIsAliveWrapper implements SUL<AbstractInput, AbstractOutput> {
 
-	protected SUL<AbstractInput, AbstractOutput> sut;
+	protected SUL<AbstractInput, AbstractOutput> sul;
 	protected boolean isAlive;
 	protected AbstractOutput socketClosedOutput;
 
-	public AbstractIsAliveWrapper(SUL<AbstractInput, AbstractOutput> sut, AbstractOutput socketClosedOutput) {
-		this.sut = sut;
+	public AbstractIsAliveWrapper(SUL<AbstractInput, AbstractOutput> sul, AbstractOutput socketClosedOutput) {
+		this.sul = sul;
 		this.socketClosedOutput = socketClosedOutput;
 	}
 
 	@Override
 	public void pre() {
-		sut.pre();
+		sul.pre();
 		isAlive = true;
 	}
 
 	@Override
 	public void post() {
-		sut.post();
+		sul.post();
 	}
 
 	@Override
 	public AbstractOutput step(AbstractInput in) throws SULException {
 		if (isAlive) {
-			AbstractOutput out = sut.step(in);
+			AbstractOutput out = sul.step(in);
 			isAlive = out.isAlive();
 			return out;
 		} else {

@@ -88,7 +88,7 @@ public class ResettingServerWrapper<I, O> implements SUL<I, O>, DynamicPortProvi
             LOGGER.info("Server listening at port {}", portString);
 
             /*
-             * We have to pre before the SUT does, so we have a port available
+             * We have to pre before the SUL does, so we have a port available
              * for it.
              */
 

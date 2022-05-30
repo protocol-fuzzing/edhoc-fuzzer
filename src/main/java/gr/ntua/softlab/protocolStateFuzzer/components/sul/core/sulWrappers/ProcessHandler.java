@@ -32,7 +32,7 @@ public class ProcessHandler {
         this.runWait = runWait;
         output = System.out;
         error = System.err;
-        LOGGER.info("Command to launch SUT: {}", command);
+        LOGGER.info("Command to launch SUL process: {}", command);
     }
 
     public ProcessHandler(SulConfig sulConfig) {
@@ -42,7 +42,7 @@ public class ProcessHandler {
         }
         terminateCommand = sulConfig.getTerminateCommand();
         if (terminateCommand != null) {
-            LOGGER.info("Command to terminate SUT: {}", terminateCommand);
+            LOGGER.info("Command to terminate SUL process: {}", terminateCommand);
         }
     }
 
