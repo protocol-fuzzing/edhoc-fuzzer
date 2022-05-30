@@ -1,11 +1,10 @@
 package gr.ntua.softlab.edhocFuzzer.components.learner;
 
-import gr.ntua.softlab.edhocFuzzer.components.learner.symbols.*;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.*;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.xml.AlphabetPojoXml;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
-
 import jakarta.xml.bind.annotation.*;
+
 import java.util.List;
 
 @XmlRootElement(name = "alphabet")

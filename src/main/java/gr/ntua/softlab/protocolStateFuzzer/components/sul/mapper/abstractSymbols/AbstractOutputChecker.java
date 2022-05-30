@@ -1,4 +1,4 @@
-package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper;
+package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols;
 
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 

@@ -28,7 +28,7 @@ public class ApplicationDataInput extends AbstractInputXml {
     }
 
     @Override
-    public Enum<?> getInputType() {
-        return null;
+    public Enum<EdhocInputType> getInputType() {
+        return EdhocInputType.APPLICATION_DATA_MESSAGE;
     }
 }

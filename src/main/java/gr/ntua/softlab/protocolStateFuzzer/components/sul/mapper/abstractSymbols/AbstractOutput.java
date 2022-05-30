@@ -13,14 +13,17 @@ import java.util.stream.IntStream;
 public class AbstractOutput extends AbstractSymbol {
     public static final String MESSAGE_SEPARATOR = "|";
     public static final String REPEATING_INDICATOR = "+";
+
     // Special abstract outputs
     public static final String TIMEOUT = "TIMEOUT";
     public static final String UNKNOWN_MESSAGE = "UNKNOWN_MESSAGE";
     public static final String SOCKET_CLOSED = "SOCKET_CLOSED";
     public static final String DISABLED = "DISABLED";
     protected static Map<String, AbstractOutput> specialOutputsMap = new HashMap<>();
+
     // alive indicates whether the process/connection is alive or was lost
     protected boolean alive = true;
+
     // concrete list of messages
     protected List<ProtocolMessage> messages;
 

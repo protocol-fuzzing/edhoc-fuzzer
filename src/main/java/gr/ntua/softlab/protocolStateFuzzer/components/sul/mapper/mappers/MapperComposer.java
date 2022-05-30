@@ -3,13 +3,13 @@ package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.AbstractOutputChecker;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutputChecker;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class MapperComposer implements Mapper {
+public class MapperComposer implements Mapper {
 	private static final Logger LOGGER = LogManager.getLogger(MapperComposer.class);
 	protected InputMapper inputMapper;
 	protected OutputMapper outputMapper;

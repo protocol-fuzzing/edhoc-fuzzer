@@ -3,12 +3,18 @@ package gr.ntua.softlab.edhocFuzzer;
 import gr.ntua.softlab.edhocFuzzer.components.learner.EdhocAlphabetPojoXml;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulClientConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulServerConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.EdhocMapperBuilder;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocInputMapper;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocOutputMapper;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.EdhocOutputChecker;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilderStandard;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.MapperBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers.MapperComposer;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.StateFuzzer;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.StateFuzzerBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.StateFuzzerComposerStandard;
@@ -29,13 +35,13 @@ import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.co
 
 public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilder, TestRunnerBuilder, TimingProbeBuilder {
 
-    private AlphabetBuilder alphabetBuilder = new AlphabetBuilderStandard(
+    protected AlphabetBuilder alphabetBuilder = new AlphabetBuilderStandard(
             new AlphabetSerializerXml<>(EdhocAlphabetPojoXml.class)
     );
 
-    private MapperBuilder mapperBuilder = null;
+    protected MapperBuilder mapperBuilder = new EdhocMapperBuilder();
 
-    private WrappedSulBuilder wrappedSulBuilder = null;
+    protected WrappedSulBuilder wrappedSulBuilder = null;
 
     @Override
     public StateFuzzerClientConfig buildClientConfig() {

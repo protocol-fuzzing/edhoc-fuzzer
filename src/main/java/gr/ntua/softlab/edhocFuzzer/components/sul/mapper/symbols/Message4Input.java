@@ -28,7 +28,7 @@ public class Message4Input extends AbstractInputXml {
     }
 
     @Override
-    public Enum<?> getInputType() {
-        return null;
+    public Enum<EdhocInputType> getInputType() {
+        return EdhocInputType.EDHOC_MESSAGE_4;
     }
 }

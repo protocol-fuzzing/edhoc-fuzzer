@@ -39,7 +39,7 @@ public abstract class AlphabetPojoXml {
             this.inputs = inputs;
          }
 
-         public List<AbstractInput> getInputs(){
+         public List<AbstractInput> getInputs() {
             return inputs;
          }
       }

@@ -40,7 +40,6 @@ public abstract class AbstractInputXml extends AbstractInput {
 
     @Override
     public void setExtendedWait(Integer extendedWait) {
-        super.setExtendedWait(extendedWait);
         this.extendedWait = extendedWait;
     }
 }
