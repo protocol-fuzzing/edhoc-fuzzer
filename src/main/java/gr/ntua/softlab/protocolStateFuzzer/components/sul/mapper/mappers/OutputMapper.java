@@ -1,6 +1,6 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractOutput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;

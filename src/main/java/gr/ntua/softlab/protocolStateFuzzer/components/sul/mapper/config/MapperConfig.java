@@ -1,7 +1,7 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config;
 
 import com.beust.jcommander.Parameter;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractOutput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 
 import java.util.List;
 

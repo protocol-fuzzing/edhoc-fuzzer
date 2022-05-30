@@ -1,6 +1,6 @@
-package gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.xml;
+package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.xml;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import jakarta.xml.bind.annotation.XmlAttribute;
 
 public abstract class AbstractInputXml extends AbstractInput {

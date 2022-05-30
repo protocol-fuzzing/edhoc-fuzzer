@@ -2,11 +2,10 @@ package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core;
 
 import de.learnlib.api.algorithm.LearningAlgorithm;
 import de.learnlib.api.oracle.EquivalenceOracle;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.AlphabetOptionProvider;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics.StatisticsTracker;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractOutput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Alphabet;

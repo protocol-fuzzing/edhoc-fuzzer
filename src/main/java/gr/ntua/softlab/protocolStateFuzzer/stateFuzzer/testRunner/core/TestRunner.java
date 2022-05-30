@@ -7,8 +7,8 @@ import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.config.Te
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.MapperBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractOutput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.WrappedSulBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
 import net.automatalib.automata.transducers.MealyMachine;

@@ -2,8 +2,8 @@ package gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.xml;
 
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetSerializer;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetSerializerException;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.xml.AbstractInputXml;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.xml.AbstractInputXml;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;

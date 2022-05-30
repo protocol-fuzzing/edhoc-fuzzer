@@ -1,11 +1,11 @@
-package gr.ntua.softlab.edhocFuzzer.components.learner.symbols;
+package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractOutput;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.xml.AbstractInputXml;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.xml.AbstractInputXml;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
 
-public class Message2Input extends AbstractInputXml {
+public class Message1Input extends AbstractInputXml {
 
     @Override
     public ProtocolMessage generateProtocolMessage(ExecutionContext context) {

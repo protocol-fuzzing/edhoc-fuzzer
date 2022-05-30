@@ -19,8 +19,8 @@ import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.RandomWpMe
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.SampledTestsEQOracle;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.WpSampledTestsEQOracle;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractOutput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.TestParser;
 
 import net.automatalib.automata.transducers.MealyMachine;

@@ -1,6 +1,6 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 
 import java.util.ArrayList;
 import java.util.Collections;

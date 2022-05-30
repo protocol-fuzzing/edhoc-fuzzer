@@ -1,4 +1,4 @@
-package gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols;
+package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols;
 
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.MealyDotParser;
 import net.automatalib.commons.util.Pair;

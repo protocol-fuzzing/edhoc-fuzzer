@@ -1,4 +1,4 @@
-package gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols;
+package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols;
 
 import java.io.Serial;
 import java.util.Collection;

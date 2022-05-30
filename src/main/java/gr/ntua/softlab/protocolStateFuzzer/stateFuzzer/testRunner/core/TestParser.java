@@ -1,6 +1,6 @@
 package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.apache.logging.log4j.LogManager;

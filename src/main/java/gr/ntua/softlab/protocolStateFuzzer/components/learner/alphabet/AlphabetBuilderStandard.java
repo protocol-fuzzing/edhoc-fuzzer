@@ -1,7 +1,7 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet;
 
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.AlphabetOptionProvider;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import net.automatalib.words.Alphabet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

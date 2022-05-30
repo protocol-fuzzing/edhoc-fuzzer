@@ -5,7 +5,7 @@ import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.co
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetSerializerException;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.MapperBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.WrappedSulBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
