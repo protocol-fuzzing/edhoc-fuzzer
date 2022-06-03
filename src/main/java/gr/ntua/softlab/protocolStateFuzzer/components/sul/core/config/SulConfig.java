@@ -22,16 +22,13 @@ public abstract class SulConfig implements MapperConfigProvider {
             converter = ProtocolVersionConverter.class)
     protected ProtocolVersion protocolVersion = null;
 
-    @Parameter(names = "-timeout", description = "Time the SUL spends waiting for a response")
-    protected Integer timeout = 100;
+    @Parameter(names = {"-responseWait", "-respWait"}, description = "Time the SUL spends waiting for a response")
+    protected Integer responseWait = 100;
 
     @Parameter(names = "-inputResponseTimeout", description = "Time the SUL spends waiting for a "
             + "response to a particular input. Expected format is: \"input1:value1,input2:value2...\" ",
             converter = InputResponseTimeoutConverter.class)
     protected InputResponseTimeoutMap inputResponseTimeout;
-
-    @Parameter(names = "-rstWait", description = "Time (ms) the SUL waits after executing each query")
-    protected Long resetWait = 0L;
 
     @Parameter(names = {"-command", "-cmd"}, description = "Command for starting the client/server process")
     protected String command = null;
@@ -43,11 +40,15 @@ public abstract class SulConfig implements MapperConfigProvider {
     @Parameter(names = "-processDir", description = "The directory of the client/server process")
     protected String processDir = null;
 
+    @Parameter(names = {"-redirectOutputStreams", "-ros"}, required = false, description = "Redirects process output "
+             + "streams to STDOUT and STDERR.")
+    protected boolean redirectOutputStreams = false;
+
     @Parameter(names = "-processTrigger", description = "When is the process launched")
     protected ProcessLaunchTrigger processTrigger = ProcessLaunchTrigger.NEW_TEST;
 
-    @Parameter(names = "-runWait", description = "Time (ms) waited after running each command")
-    protected Long runWait = 0L;
+    @Parameter(names = "-startWait", description = "Time (ms) waited after executing the command to start the SUT process.")
+    protected Long startWait = 0L;
 
     // In case a launch server is used to execute the SUL
     @Parameter(names = "-resetPort", description = "Port to which to send a reset command")
@@ -93,12 +94,12 @@ public abstract class SulConfig implements MapperConfigProvider {
         }
     }
 
-    public Integer getTimeout() {
-        return timeout;
+    public Integer getResponseWait() {
+        return responseWait;
     }
 
-    public void setTimeout(Integer timeout) {
-        this.timeout = timeout;
+    public void setResponseWait(Integer responseWait) {
+        this.responseWait = responseWait;
     }
 
     public ProtocolVersion getProtocolVersion() {
@@ -107,10 +108,6 @@ public abstract class SulConfig implements MapperConfigProvider {
 
     public InputResponseTimeoutMap getInputResponseTimeout() {
         return inputResponseTimeout;
-    }
-
-    public Long getResetWait() {
-        return resetWait;
     }
 
     public String getCommand() {
@@ -129,12 +126,12 @@ public abstract class SulConfig implements MapperConfigProvider {
         return processTrigger;
     }
 
-    public Long getRunWait() {
-        return runWait;
+    public Long getStartWait() {
+        return startWait;
     }
 
-    public void setRunWait(Long runWait) {
-        this.runWait = runWait;
+    public void setStartWait(Long startWait) {
+        this.startWait = startWait;
     }
 
     public Integer getResetPort() {
@@ -153,4 +150,7 @@ public abstract class SulConfig implements MapperConfigProvider {
         return resetAck;
     }
 
+    public boolean isRedirectOutputStreams() {
+        return redirectOutputStreams;
+    }
 }

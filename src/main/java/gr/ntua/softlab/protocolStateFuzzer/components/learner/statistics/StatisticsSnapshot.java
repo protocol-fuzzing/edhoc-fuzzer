@@ -1,8 +1,15 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics;
 
+/**
+ * Used to store a snapshot of relevant statistics at selected phases during the learning process. 
+ */
 public class StatisticsSnapshot {
-	public long getResets() {
-		return resets;
+	protected long inputs;
+	protected long tests;
+	protected long time;
+
+	public long getTests() {
+		return tests;
 	}
 
 	public long getInputs() {
@@ -12,14 +19,9 @@ public class StatisticsSnapshot {
 	public long getTime() {
 		return time;
 	}
-
-	protected long resets;
-	protected long inputs;
-	protected long time;
 	
-	public StatisticsSnapshot(long resets, long inputs, long time) {
-		super();
-		this.resets = resets;
+	public StatisticsSnapshot(long tests, long inputs, long time) {
+		this.tests = tests;
 		this.inputs = inputs;
 		this.time = time;
 	}

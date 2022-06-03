@@ -22,28 +22,33 @@ public class ProcessHandler {
     protected String terminateCommand;
     protected OutputStream output;
     protected OutputStream error;
-    protected long runWait;
+    protected long startWait;
     protected boolean hasLaunched;
 
-    protected ProcessHandler(String command, long runWait) {
-        // '+' after \\s takes care of multiple consecutive spaces so that they
-        // don't result in empty arguments
-        pb = new ProcessBuilder(command.split("\\s+"));
-        this.runWait = runWait;
-        output = System.out;
-        error = System.err;
-        LOGGER.info("Command to launch SUL process: {}", command);
-    }
-
     public ProcessHandler(SulConfig sulConfig) {
-        this(sulConfig.getCommand(), sulConfig.getRunWait());
+        this(sulConfig.getCommand(), sulConfig.getStartWait());
+
         if (sulConfig.getProcessDir() != null) {
             setDirectory(new File(sulConfig.getProcessDir()));
         }
+
+        if (sulConfig.isRedirectOutputStreams()) {
+            output = System.out;
+            error = System.err;
+        }
+
         terminateCommand = sulConfig.getTerminateCommand();
         if (terminateCommand != null) {
             LOGGER.info("Command to terminate SUL process: {}", terminateCommand);
         }
+    }
+
+    protected ProcessHandler(String command, long startWait) {
+        // '+' after \\s takes care of multiple consecutive spaces so that they
+        // don't result in empty arguments
+        pb = new ProcessBuilder(command.split("\\s+"));
+        this.startWait = startWait;
+        LOGGER.info("Command to launch SUL process: {}", command);
     }
 
     public void redirectOutput(OutputStream toOutput) {
@@ -66,7 +71,7 @@ public class ProcessHandler {
      * the process, making {@link ProcessHandler#hasLaunched()} return true
      * thereafter.
      * <p>
-     * After launching, it sleeps for {@link ProcessHandler#runWait}
+     * After launching, it sleeps for {@link ProcessHandler#startWait}
      * milliseconds.
      */
     public void launchProcess() {
@@ -76,7 +81,7 @@ public class ProcessHandler {
                 currentProcess = pb.start();
                 if (output != null) inheritIO(currentProcess.getInputStream(), new PrintStream(output));
                 if (error != null) inheritIO(currentProcess.getErrorStream(), new PrintStream(error));
-                if (runWait > 0) Thread.sleep(runWait);
+                if (startWait > 0) Thread.sleep(startWait);
             } else {
                 LOGGER.warn("Process has already been started");
             }
@@ -95,7 +100,8 @@ public class ProcessHandler {
         if (currentProcess != null) {
             if (terminateCommand != null) {
                 try {
-                    Runtime.getRuntime().exec(terminateCommand);
+                    // '+' after \\s takes care of multiple consecutive spaces
+                    Runtime.getRuntime().exec(terminateCommand.split("\\s+"));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

@@ -86,13 +86,18 @@ public class LearnerConfig implements AlphabetOptionProvider {
             converter = DurationConverter.class)
     protected Duration timeLimit = null;
 
+    @Parameter(names = "-testLimit", description = "If set, imposes a test limit on the learning experiment. Once the "
+            + "the number of tests has reached this limit, learning is stopped and statistics for the incomplete "
+            + "learning run are published")
+    protected Long testLimit = null;
+
     public String getAlphabet() {
         return alphabet;
     }
+
     public LearningAlgorithmName getLearningAlgorithm() {
         return learningAlgorithm;
     }
-
     public List<EquivalenceAlgorithmName> getEquivalenceAlgorithms() {
         return equivalenceAlgorithms;
     }
@@ -109,16 +114,28 @@ public class LearnerConfig implements AlphabetOptionProvider {
         return maxLength;
     }
 
+    public int getRandLength() {
+        return randLength;
+    }
+
     public int getNumberOfQueries() {
         return numberOfQueries;
     }
 
-    public double getProbReset() {
-        return probReset;
+    public int getRunsPerMembershipQuery() {
+        return runsPerMembershipQuery;
     }
 
-    public int getRandLength() {
-        return randLength;
+    public int getMembershipQueryRetries() {
+        return membershipQueryRetries;
+    }
+
+    public String getQueryFile() {
+        return queryFile;
+    }
+
+    public double getProbReset() {
+        return probReset;
     }
 
     public String getTestFile() {
@@ -133,20 +150,16 @@ public class LearnerConfig implements AlphabetOptionProvider {
         return cacheTests;
     }
 
-    public int getCeReruns() {
-        return ceReruns;
-    }
-
-    public String getQueryFile() {
-        return queryFile;
-    }
-
     public boolean isCeSanitization() {
         return !ceSanitizationDisable;
     }
 
     public boolean isSkipNonDetTests() {
         return skipNonDetTests;
+    }
+
+    public int getCeReruns() {
+        return ceReruns;
     }
 
     public boolean isProbabilisticSanitization() {
@@ -157,11 +170,7 @@ public class LearnerConfig implements AlphabetOptionProvider {
         return timeLimit;
     }
 
-    public int getRunsPerMembershipQuery() {
-        return runsPerMembershipQuery;
-    }
-
-    public int getMembershipQueryRetries() {
-        return membershipQueryRetries;
+    public Long getTestLimit() {
+        return testLimit;
     }
 }

@@ -4,6 +4,7 @@ import de.learnlib.api.SUL;
 import de.learnlib.api.exception.SULException;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 
 public class AbstractIsAliveWrapper implements SUL<AbstractInput, AbstractOutput> {
 
@@ -11,9 +12,10 @@ public class AbstractIsAliveWrapper implements SUL<AbstractInput, AbstractOutput
 	protected boolean isAlive;
 	protected AbstractOutput socketClosedOutput;
 
-	public AbstractIsAliveWrapper(SUL<AbstractInput, AbstractOutput> sul, AbstractOutput socketClosedOutput) {
+	public AbstractIsAliveWrapper(SUL<AbstractInput, AbstractOutput> sul, MapperConfig mapperConfig) {
 		this.sul = sul;
-		this.socketClosedOutput = socketClosedOutput;
+		this.socketClosedOutput = mapperConfig.isSocketClosedAsTimeout() ?
+				AbstractOutput.timeout() : AbstractOutput.socketClosed();
 	}
 
 	@Override

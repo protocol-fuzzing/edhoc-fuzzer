@@ -1,12 +1,13 @@
 package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe;
 
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeConfig;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetSerializerException;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.MapperBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.WrappedSulBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,12 +30,12 @@ public class TimingProbe {
     }
 
     public TimingProbe(TimingProbeEnabler config, AlphabetBuilder alphabetBuilder,
-                       MapperBuilder mapperBuilder, WrappedSulBuilder wrappedSulBuilder) {
+                       MapperBuilder mapperBuilder, SulBuilder sulBuilder, SulWrapper sulWrapper) {
         this.timingProbeConfig = config.getTimingProbeConfig();
         this.alphabetBuilder = alphabetBuilder;
 
         if(isActive()) {
-            probeTestRunner = new ProbeTestRunner(config, alphabetBuilder, mapperBuilder, wrappedSulBuilder);
+            probeTestRunner = new ProbeTestRunner(config, alphabetBuilder, mapperBuilder, sulBuilder, sulWrapper);
         }
     }
 
@@ -94,10 +95,10 @@ public class TimingProbe {
 
     protected void setTimingParameter(String cmd, Integer time) throws IllegalArgumentException {
         if (cmd.contains("timeout")) {
-            probeTestRunner.getSulConfig().setTimeout(time);
+            probeTestRunner.getSulConfig().setResponseWait(time);
         } else if (cmd.contains("runWait")) {
             Long runWait = time == null ? 0L : time;
-            probeTestRunner.getSulConfig().setRunWait(runWait);
+            probeTestRunner.getSulConfig().setStartWait(runWait);
         } else {
             for (AbstractInput in : probeTestRunner.getAlphabet()) {
                 if (in.toString().contains(cmd)) in.setExtendedWait(time);

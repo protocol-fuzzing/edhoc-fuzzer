@@ -4,17 +4,14 @@ import gr.ntua.softlab.edhocFuzzer.components.learner.EdhocAlphabetPojoXml;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulClientConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulServerConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.EdhocMapperBuilder;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocInputMapper;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocOutputMapper;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.EdhocOutputChecker;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilderStandard;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulWrapperStandard;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.MapperBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers.MapperComposer;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.StateFuzzer;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.StateFuzzerBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.StateFuzzerComposerStandard;
@@ -23,7 +20,7 @@ import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerCl
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerConfigBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerServerConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.WrappedSulBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulWrapper;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.TestRunner;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.TestRunnerBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.config.TestRunnerConfig;
@@ -41,7 +38,8 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
 
     protected MapperBuilder mapperBuilder = new EdhocMapperBuilder();
 
-    protected WrappedSulBuilder wrappedSulBuilder = null;
+    protected SulBuilder sulBuilder = null;
+    protected SulWrapper sulWrapper = new SulWrapperStandard();
 
     @Override
     public StateFuzzerClientConfig buildClientConfig() {
@@ -66,17 +64,19 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
     @Override
     public StateFuzzer build(StateFuzzerEnabler stateFuzzerEnabler) {
         return new StateFuzzerStandard(
-                new StateFuzzerComposerStandard(stateFuzzerEnabler, alphabetBuilder, mapperBuilder, wrappedSulBuilder)
+                new StateFuzzerComposerStandard(
+                        stateFuzzerEnabler, alphabetBuilder, mapperBuilder, sulBuilder, sulWrapper
+                )
         );
     }
 
     @Override
     public TestRunner build(TestRunnerEnabler testRunnerEnabler) {
-        return new TestRunner(testRunnerEnabler, alphabetBuilder, mapperBuilder, wrappedSulBuilder);
+        return new TestRunner(testRunnerEnabler, alphabetBuilder, mapperBuilder, sulBuilder, sulWrapper);
     }
 
     @Override
     public TimingProbe build(TimingProbeEnabler timingProbeEnabler) {
-        return new TimingProbe(timingProbeEnabler, alphabetBuilder, mapperBuilder, wrappedSulBuilder);
+        return new TimingProbe(timingProbeEnabler, alphabetBuilder, mapperBuilder, sulBuilder, sulWrapper);
     }
 }
