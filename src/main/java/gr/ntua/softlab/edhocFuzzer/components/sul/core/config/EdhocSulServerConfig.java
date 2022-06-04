@@ -4,6 +4,10 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperCo
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfigException;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulServerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
+import org.eclipse.californium.elements.config.Configuration;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class EdhocSulServerConfig extends SulServerConfig {
     public EdhocSulServerConfig(MapperConfig mapperConfig) {
@@ -12,5 +16,25 @@ public class EdhocSulServerConfig extends SulServerConfig {
 
     @Override
     public void applyDelegate(MapperConnectionConfig config) throws MapperConnectionConfigException {
+        Configuration.setStandard(((EdhocMapperConnectionConfig) config).getConfiguration());
+    }
+
+    public String getCoapHostURI() {
+        String host = getHost();
+        String[] hostArray = host.split(":");
+
+        if (hostArray.length != 2) {
+            throw new RuntimeException("Argument provided to -connect has not the correct format: ip:port");
+        }
+
+        try{
+            Integer.parseInt(hostArray[1]);
+            String edhocURI = "coap://" + host + "/.well-known/edhoc";
+            return (new URI(edhocURI)).toString();
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Port number '" + hostArray[1] + "' in -connect is not an integer");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

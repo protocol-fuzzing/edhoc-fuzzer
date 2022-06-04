@@ -1,13 +1,12 @@
 package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeConfig;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetSerializerException;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.MapperBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulWrapper;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeConfig;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeEnabler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,13 +28,13 @@ public class TimingProbe {
                 .collect(Collectors.joining(", ", "{", "}"));
     }
 
-    public TimingProbe(TimingProbeEnabler config, AlphabetBuilder alphabetBuilder,
-                       MapperBuilder mapperBuilder, SulBuilder sulBuilder, SulWrapper sulWrapper) {
+    public TimingProbe(TimingProbeEnabler config, AlphabetBuilder alphabetBuilder, SulBuilder sulBuilder,
+                       SulWrapper sulWrapper) {
         this.timingProbeConfig = config.getTimingProbeConfig();
         this.alphabetBuilder = alphabetBuilder;
 
         if(isActive()) {
-            probeTestRunner = new ProbeTestRunner(config, alphabetBuilder, mapperBuilder, sulBuilder, sulWrapper);
+            probeTestRunner = new ProbeTestRunner(config, alphabetBuilder, sulBuilder, sulWrapper);
         }
     }
 

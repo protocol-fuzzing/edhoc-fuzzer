@@ -2,16 +2,15 @@ package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core;
 
 import de.learnlib.api.oracle.MembershipOracle.MealyMembershipOracle;
 import de.learnlib.oracle.membership.SULOracle;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.AbstractSul;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulWrapper;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.config.TestRunnerEnabler;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.MapperBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulWrapper;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.config.TestRunnerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Alphabet;
@@ -48,13 +47,13 @@ public class TestRunner {
         return new TestRunnerResult<>(test, answerMap);
     }
 
-    public TestRunner(TestRunnerEnabler testRunnerEnabler, AlphabetBuilder alphabetBuilder, MapperBuilder mapperBuilder,
-                      SulBuilder sulBuilder, SulWrapper sulWrapper) {
+    public TestRunner(TestRunnerEnabler testRunnerEnabler, AlphabetBuilder alphabetBuilder, SulBuilder sulBuilder,
+                      SulWrapper sulWrapper) {
         this.testRunnerEnabler = testRunnerEnabler;
         this.alphabet = alphabetBuilder.build(testRunnerEnabler.getLearnerConfig());
         this.cleanupTasks = new CleanupTasks();
 
-        AbstractSul abstractSul = sulBuilder.build(testRunnerEnabler.getSulConfig(), mapperBuilder, cleanupTasks);
+        AbstractSul abstractSul = sulBuilder.build(testRunnerEnabler.getSulConfig(), cleanupTasks);
         this.sulOracle = new SULOracle<>(sulWrapper.wrap(abstractSul).getWrappedSul());
 
         this.testSpecification = null;

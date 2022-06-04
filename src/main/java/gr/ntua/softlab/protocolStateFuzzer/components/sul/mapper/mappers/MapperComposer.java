@@ -23,10 +23,12 @@ public class MapperComposer implements Mapper {
 		this.abstractOutputChecker = abstractOutputChecker;
 	}
 
+	@Override
 	public MapperConfig getMapperConfig(){
 		return outputMapper.getMapperConfig();
 	}
 
+	@Override
 	public AbstractOutputChecker getAbstractOutputChecker() {
 		return abstractOutputChecker;
 	}

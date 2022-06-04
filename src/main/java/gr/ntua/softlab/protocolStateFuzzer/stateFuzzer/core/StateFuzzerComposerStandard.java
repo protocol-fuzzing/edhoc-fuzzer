@@ -6,17 +6,16 @@ import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.filter.statistic.Counter;
 import de.learnlib.oracle.membership.SULOracle;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.AbstractSul;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.factory.LearnerFactory;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.*;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics.StatisticsTracker;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.AbstractSul;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulWrapper;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.MapperBuilder;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
 import net.automatalib.automata.transducers.MealyMachine;
@@ -42,9 +41,8 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
     protected EquivalenceOracle<MealyMachine<?, AbstractInput, ?, AbstractOutput>, AbstractInput, Word<AbstractOutput>>
         equivalenceOracle;
 
-    public StateFuzzerComposerStandard(
-            StateFuzzerEnabler stateFuzzerEnabler, AlphabetBuilder alphabetBuilder, MapperBuilder mapperBuilder,
-            SulBuilder sulBuilder, SulWrapper sulWrapper){
+    public StateFuzzerComposerStandard(StateFuzzerEnabler stateFuzzerEnabler, AlphabetBuilder alphabetBuilder,
+                                       SulBuilder sulBuilder, SulWrapper sulWrapper){
         this.stateFuzzerEnabler = stateFuzzerEnabler;
         this.learnerConfig = stateFuzzerEnabler.getLearnerConfig();
 
@@ -60,7 +58,7 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
         this.cleanupTasks = new CleanupTasks();
 
         // set up wrapped SUL (System Under Learning)
-        AbstractSul abstractSul = sulBuilder.build(stateFuzzerEnabler.getSulConfig(), mapperBuilder, cleanupTasks);
+        AbstractSul abstractSul = sulBuilder.build(stateFuzzerEnabler.getSulConfig(), cleanupTasks);
         this.sul = sulWrapper
                 .wrap(abstractSul)
                 .setTimeLimit(learnerConfig.getTimeLimit())

@@ -1,6 +1,6 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors;
 
-public class ClientConnector implements MapperConnector {
+public class ConnectorToClient implements MapperConnector {
     @Override
     public void send(byte[] payload) {
 

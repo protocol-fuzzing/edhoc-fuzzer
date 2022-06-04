@@ -9,13 +9,13 @@ import org.eclipse.californium.elements.exception.ConnectorException;
 
 import java.io.IOException;
 
-public class ServerConnector implements MapperConnector {
+public class ConnectorToServer implements MapperConnector {
     protected CoapClient client;
     protected CoapResponse response;
     protected byte[] emptyPayload = new byte[0];
 
-    public ServerConnector(CoapClient client){
-        this.client = client;
+    public ConnectorToServer(String uri){
+        this.client = new CoapClient(uri);
     }
 
     @Override

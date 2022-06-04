@@ -7,7 +7,7 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperCo
 
 public abstract class SulServerConfig extends SulConfig {
 
-	@Parameter(names = "-connect", required = true, description = "Address of server to connect the client. Format: ip:port")
+	@Parameter(names = "-connect", required = true, description = "Address of server to connect the mapper. Format: ip:port")
 	protected String host = null;
 
 	public SulServerConfig() {
