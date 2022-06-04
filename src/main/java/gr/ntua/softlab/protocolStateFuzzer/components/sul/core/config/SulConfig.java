@@ -88,7 +88,7 @@ public abstract class SulConfig implements MapperConfigProvider {
     public InputStream getMapperConnectionConfigInputStream() throws IOException {
         String mapperConnectionConfig = mapperConfig.getMapperConnectionConfig();
         if (mapperConnectionConfig == null) {
-            return Objects.requireNonNull(SulConfig.class.getResource(DEFAULT_MAPPER_CONNECTION_CONFIG)).openStream();
+            return this.getClass().getClassLoader().getResourceAsStream(DEFAULT_MAPPER_CONNECTION_CONFIG);
         } else {
             return new FileInputStream(mapperConnectionConfig);
         }
