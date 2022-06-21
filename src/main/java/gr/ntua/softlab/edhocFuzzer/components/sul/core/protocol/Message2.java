@@ -6,7 +6,7 @@ import org.eclipse.californium.edhoc.MessageProcessor;
 
 public class Message2 extends EdhocProtocolMessage {
 
-    Message2(EdhocSession edhocSession, CBORObject[] ead) {
+    public Message2(EdhocSession edhocSession, CBORObject[] ead) {
         cborSequence = MessageProcessor.writeMessage2(edhocSession, ead);
     }
 }

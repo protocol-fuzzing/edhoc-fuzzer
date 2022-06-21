@@ -47,7 +47,7 @@ public abstract class SulConfig implements MapperConfigProvider {
     @Parameter(names = "-processTrigger", description = "When is the process launched")
     protected ProcessLaunchTrigger processTrigger = ProcessLaunchTrigger.NEW_TEST;
 
-    @Parameter(names = "-startWait", description = "Time (ms) waited after executing the command to start the SUT process.")
+    @Parameter(names = "-startWait", description = "Time (ms) waited after executing the command to start the SUL process.")
     protected Long startWait = 0L;
 
     // In case a launch server is used to execute the SUL

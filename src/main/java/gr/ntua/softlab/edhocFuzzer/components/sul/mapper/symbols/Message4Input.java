@@ -1,15 +1,19 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols;
 
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.Message4;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocState;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.xml.AbstractInputXml;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
+import org.eclipse.californium.edhoc.EdhocSession;
 
 public class Message4Input extends AbstractInputXml {
 
     @Override
     public ProtocolMessage generateProtocolMessage(ExecutionContext context) {
-        return null;
+        EdhocSession edhocSession = ((EdhocState) context.getState()).getEdhocSession();
+        return new Message4(edhocSession, null);
     }
 
     @Override

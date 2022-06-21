@@ -17,6 +17,7 @@ public class EdhocOutputMapper extends OutputMapper {
     @Override
     public AbstractOutput receiveOutput(ExecutionContext context) {
         byte[] receivedPayload = mapperConnector.receive();
+        // TODO
         return null;
     }
 }

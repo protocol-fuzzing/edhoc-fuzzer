@@ -23,6 +23,14 @@ public class MapperComposer implements Mapper {
 		this.abstractOutputChecker = abstractOutputChecker;
 	}
 
+	public InputMapper getInputMapper() {
+		return inputMapper;
+	}
+
+	public OutputMapper getOutputMapper() {
+		return outputMapper;
+	}
+
 	@Override
 	public MapperConfig getMapperConfig(){
 		return outputMapper.getMapperConfig();
@@ -41,7 +49,7 @@ public class MapperComposer implements Mapper {
 		if (context.isExecutionEnabled() && input.isEnabled(context)) {
 			output = doExecute(input, context);
 		} else {
-			output = outputMapper.disabled(); 
+			output = outputMapper.disabled();
 		}
 		LOGGER.info("Produced output symbol {}", output.getName());
 		return output;

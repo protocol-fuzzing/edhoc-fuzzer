@@ -34,7 +34,7 @@ public abstract class AbstractInput extends AbstractSymbol {
      * Returns the preferred mapper for this input, or null, if there isn't one,
      * meaning the input does not require alterations to the typical mapping of the input.
      */
-    public Mapper getPreferredMapper(SulConfig sulConfig, MapperConfig mapperConfig) {
+    public Mapper getPreferredMapper(SulConfig sulConfig) {
         return null;
     }
 
