@@ -131,7 +131,8 @@
         <!-- edhocFuzzer dependencies -->
 
         <!-- manually built jar and locally installed cf-edhoc
-             https://github.com/rikard-sics/californium/tree/e7eae2775722a48e7f898cf77ca17b4d590b61b7/cf-edhoc
+             link: https://github.com/rikard-sics/californium/tree/edhoc-dev/cf-edhoc
+             commit: 065201657ab98ba2849a8b00553512291ac7bd8c
         -->
         <dependency>
             <groupId>se.ri.org.eclipse.californium</groupId>
