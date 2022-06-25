@@ -190,7 +190,7 @@ public class StatisticsTracker {
 		statistics.setDuration(duration);
 		statistics.setCounterexamples(counterexamples);
 		statistics.setAlphabetSize(alphabet.size());
-		statistics.setStates(learnedModel.getMealyMachine().size());
+		statistics.setStates(learnedModel == null ? 0 : learnedModel.getMealyMachine().size());
 		statistics.setHypStats(hypStats);
 		return statistics;
 	}

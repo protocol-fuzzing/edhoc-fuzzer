@@ -93,14 +93,14 @@ public class TimingProbe {
     }
 
     protected void setTimingParameter(String cmd, Integer time) throws IllegalArgumentException {
+        Long timeL = time == null ? 0L : Long.valueOf(time);
         if (cmd.contains("timeout")) {
-            probeTestRunner.getSulConfig().setResponseWait(time);
+            probeTestRunner.getSulConfig().setResponseWait(timeL);
         } else if (cmd.contains("runWait")) {
-            Long runWait = time == null ? 0L : time;
-            probeTestRunner.getSulConfig().setStartWait(runWait);
+            probeTestRunner.getSulConfig().setStartWait(timeL);
         } else {
             for (AbstractInput in : probeTestRunner.getAlphabet()) {
-                if (in.toString().contains(cmd)) in.setExtendedWait(time);
+                if (in.toString().contains(cmd)) in.setExtendedWait(timeL);
             }
         }
     }

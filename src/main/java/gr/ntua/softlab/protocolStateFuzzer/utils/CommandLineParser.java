@@ -33,13 +33,28 @@ public class CommandLineParser {
     protected TestRunnerBuilder testRunnerBuilder;
     protected TimingProbeBuilder timingProbeBuilder;
 
+    protected String[] externalParentLoggers;
+
+    /*
+     * Extracts from packageName the basePackageName containing, at most, the first four components
+     * For example if packageName = "suffix.inner2.inner1.base.name" then basePackageName = "suffix.inner2.inner1.base"
+     */
+    public static String getBasePackageName(String packageName){
+        // pattern matches {a}.{a}.{a}.{a}, where a is anything other than '.'
+        // at first {a} (anything other than '.') and then 3 times '.{a}'
+        Matcher matcher = Pattern.compile("[^\\.]*(\\.[^\\.]*){3}").matcher(packageName);
+        return matcher.find() ? matcher.group() : packageName;
+    }
+
     public CommandLineParser(StateFuzzerConfigBuilder stateFuzzerConfigBuilder, StateFuzzerBuilder stateFuzzerBuilder,
-                             TestRunnerBuilder testRunnerBuilder, TimingProbeBuilder timingProbeBuilder){
+                             TestRunnerBuilder testRunnerBuilder, TimingProbeBuilder timingProbeBuilder,
+                             String[] externalParentLoggers){
         Configurator.setLevel(LOGGER, Level.INFO);
         this.stateFuzzerBuilder = stateFuzzerBuilder;
         this.stateFuzzerConfigBuilder = stateFuzzerConfigBuilder;
         this.testRunnerBuilder = testRunnerBuilder;
         this.timingProbeBuilder =  timingProbeBuilder;
+        this.externalParentLoggers = externalParentLoggers;
     }
 
     public void parse(String[] args){
@@ -99,7 +114,7 @@ public class CommandLineParser {
         } catch (ParameterException E) {
             LOGGER.error("Could not parse provided parameters: " + E.getMessage());
         } catch (Exception E) {
-            LOGGER.error("Encountered an exception. See debug for more info.");
+            LOGGER.error("Encountered an exception. See below for more info.");
             E.printStackTrace();
         }
     }
@@ -112,13 +127,13 @@ public class CommandLineParser {
             return;
         }
 
-        String parentLogger = getBasePackageName();
+        String ownParentLogger = getBasePackageName(this.getClass().getPackageName());
         if (stateFuzzerConfig.isDebug()) {
-            Configurator.setAllLevels(parentLogger, Level.DEBUG);
+            updateLoggingLevels(ownParentLogger, externalParentLoggers, Level.DEBUG);
         } else if (stateFuzzerConfig.isQuiet()) {
-            Configurator.setAllLevels(parentLogger, Level.ERROR);
+            updateLoggingLevels(ownParentLogger, externalParentLoggers, Level.ERROR);
         } else {
-            Configurator.setAllLevels(parentLogger, Level.INFO);
+            updateLoggingLevels(ownParentLogger, externalParentLoggers, Level.INFO);
         }
 
         // check if test options have been supplied for launching the available test runners
@@ -143,13 +158,11 @@ public class CommandLineParser {
         }
     }
 
-    protected String getBasePackageName(){
-        String currentPackageName = this.getClass().getPackageName();
-        // pattern matches {a}.{a}.{a}.{a}, where a is anything other than '.'
-        // at first {a} (anything other than '.') and then 3 times '.{a}'
-        // implying that basename is in format suffix.inner2.inner1.base
-        Matcher matcher = Pattern.compile("[^\\.]*(\\.[^\\.]*){3}").matcher(currentPackageName);
-        return matcher.find() ? matcher.group() : currentPackageName;
+    protected void updateLoggingLevels(String ownParentLogger, String[] externalParentLoggers, Level level) {
+        Configurator.setAllLevels(ownParentLogger, level);
+        for (String externalParentLogger: externalParentLoggers) {
+            Configurator.setAllLevels(externalParentLogger, level);
+        }
     }
 
     /*

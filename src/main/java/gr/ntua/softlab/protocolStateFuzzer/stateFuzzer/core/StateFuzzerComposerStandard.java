@@ -159,7 +159,7 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
         if (learnerConfig.getQueryFile() != null) {
             FileWriter queryWriter;
             try {
-                queryWriter = new FileWriter(new File(outputFolder, learnerConfig.getQueryFile()));
+                queryWriter = new FileWriter(learnerConfig.getQueryFile());
             } catch (IOException e1) {
                 throw new RuntimeException("Could not create queryfile writer");
             }

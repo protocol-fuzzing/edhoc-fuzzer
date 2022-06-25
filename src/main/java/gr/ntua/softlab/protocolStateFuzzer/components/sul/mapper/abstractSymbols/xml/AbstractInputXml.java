@@ -31,15 +31,15 @@ public abstract class AbstractInputXml extends AbstractInput {
     }
 
     @XmlAttribute(name = "extendedWait")
-    protected Integer extendedWait;
+    protected Long extendedWait;
 
     @Override
-    public Integer getExtendedWait() {
+    public Long getExtendedWait() {
         return extendedWait;
     }
 
     @Override
-    public void setExtendedWait(Integer extendedWait) {
+    public void setExtendedWait(Long extendedWait) {
         this.extendedWait = extendedWait;
     }
 }

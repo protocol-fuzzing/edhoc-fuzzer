@@ -1,10 +1,9 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 
 /**
  * This is the parent class of all input symbols.
@@ -20,13 +19,13 @@ public abstract class AbstractInput extends AbstractSymbol {
         super(name, true);
     }
 
-    protected Integer extendedWait;
+    protected Long extendedWait;
 
-    public Integer getExtendedWait() {
+    public Long getExtendedWait() {
         return extendedWait;
     }
 
-    public void setExtendedWait(Integer extendedWait) {
+    public void setExtendedWait(Long extendedWait) {
         this.extendedWait = extendedWait;
     }
 

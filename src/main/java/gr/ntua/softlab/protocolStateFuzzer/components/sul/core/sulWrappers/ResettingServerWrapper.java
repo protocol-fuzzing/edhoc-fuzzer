@@ -48,7 +48,7 @@ public class ResettingServerWrapper<I, O> implements SUL<I, O>, DynamicPortProvi
             tasks.submit(() -> {
                 try {
                     if (!resetSocket.isClosed()) {
-                        System.out.println("Closing socket");
+                        LOGGER.info("Closing socket");
                         resetSocket.close();
                     }
                 } catch (IOException e) {

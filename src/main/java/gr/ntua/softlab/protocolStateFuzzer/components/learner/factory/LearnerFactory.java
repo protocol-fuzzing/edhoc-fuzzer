@@ -55,7 +55,7 @@ public class LearnerFactory {
             case KV ->
                     new KearnsVaziraniMealy<>(alphabet, sulOracle, false, AcexAnalyzers.LINEAR_FWD);
             default ->
-                    throw new RuntimeException("Learner algorithm not supported");
+                    throw new RuntimeException("Learner algorithm '" + config.getLearningAlgorithm() + "' not supported");
         };
     }
 
@@ -107,7 +107,7 @@ public class LearnerFactory {
                     new WpSampledTestsEQOracle<>(readTests(config, alphabet), sulOracle, config.getMinLength(),
                             config.getRandLength(), config.getSeed(), config.getNumberOfQueries());
             default ->
-                    throw new RuntimeException("Equivalence algorithm not supported");
+                    throw new RuntimeException("Equivalence algorithm '" + algorithm + "' not supported");
         };
     }
 

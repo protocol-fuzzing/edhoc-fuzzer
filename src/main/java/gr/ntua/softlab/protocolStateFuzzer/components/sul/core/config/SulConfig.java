@@ -11,7 +11,6 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperCo
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
 public abstract class SulConfig implements MapperConfigProvider {
     public static final String DEFAULT_MAPPER_CONNECTION_CONFIG = "default_mapper_connection.config";
@@ -22,10 +21,10 @@ public abstract class SulConfig implements MapperConfigProvider {
             converter = ProtocolVersionConverter.class)
     protected ProtocolVersion protocolVersion = null;
 
-    @Parameter(names = {"-responseWait", "-respWait"}, description = "Time the SUL spends waiting for a response")
-    protected Integer responseWait = 100;
+    @Parameter(names = {"-responseWait", "-respWait"}, description = "Time (ms) the SUL spends waiting for a response")
+    protected Long responseWait = 100L;
 
-    @Parameter(names = "-inputResponseTimeout", description = "Time the SUL spends waiting for a "
+    @Parameter(names = "-inputResponseTimeout", description = "Time (ms) the SUL spends waiting for a "
             + "response to a particular input. Expected format is: \"input1:value1,input2:value2...\" ",
             converter = InputResponseTimeoutConverter.class)
     protected InputResponseTimeoutMap inputResponseTimeout;
@@ -40,7 +39,7 @@ public abstract class SulConfig implements MapperConfigProvider {
     @Parameter(names = "-processDir", description = "The directory of the client/server process")
     protected String processDir = null;
 
-    @Parameter(names = {"-redirectOutputStreams", "-ros"}, required = false, description = "Redirects process output "
+    @Parameter(names = {"-redirectOutputStreams", "-ros"}, description = "Redirects process output "
              + "streams to STDOUT and STDERR.")
     protected boolean redirectOutputStreams = false;
 
@@ -60,7 +59,7 @@ public abstract class SulConfig implements MapperConfigProvider {
     @Parameter(names = "-resetCommandWait", description = "Time (ms) waited after sending a reset command")
     protected Long resetCommandWait = 0L;
 
-    @Parameter(names = "-resetAck", description = "Wait from acknowledgement from the other side")
+    @Parameter(names = "-resetAck", description = "Wait for acknowledgement from the other side")
     protected boolean resetAck = false;
 
     @ParametersDelegate
@@ -94,11 +93,11 @@ public abstract class SulConfig implements MapperConfigProvider {
         }
     }
 
-    public Integer getResponseWait() {
+    public Long getResponseWait() {
         return responseWait;
     }
 
-    public void setResponseWait(Integer responseWait) {
+    public void setResponseWait(Long responseWait) {
         this.responseWait = responseWait;
     }
 

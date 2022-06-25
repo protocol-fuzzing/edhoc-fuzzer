@@ -53,10 +53,11 @@ public class StateFuzzerStandard implements StateFuzzer {
         try {
             inferStateMachine();
         } catch (RuntimeException e) {
-            cleanupTasks.execute();
+            LOGGER.error("Exception encountered during state fuzzing");
             throw e;
+        } finally {
+            cleanupTasks.execute();
         }
-        cleanupTasks.execute();
     }
 
 
@@ -89,10 +90,10 @@ public class StateFuzzerStandard implements StateFuzzer {
             throw new RuntimeException("Could not create runtime state tracking output stream");
         }
 
-        statisticsTracker.startLearning(stateFuzzerEnabler, alphabet);
-        learner.startLearning();
-
         try {
+            statisticsTracker.startLearning(stateFuzzerEnabler, alphabet);
+            learner.startLearning();
+
             do {
                 hypothesis = learner.getHypothesisModel();
                 stateMachine = new StateMachine(hypothesis, alphabet);
@@ -115,13 +116,13 @@ public class StateFuzzerStandard implements StateFuzzer {
             finished = true;
 
         } catch (ExperimentTimeoutException exc) {
-            LOGGER.fatal("Learning timed out after a duration of " + exc.getDuration() + " (i.e. "
+            LOGGER.warn("Learning timed out after a duration of " + exc.getDuration() + " (i.e. "
                     + exc.getDuration().toHours() + " hours, or" + exc.getDuration().toMinutes() + " minutes" + " )");
             notFinishedReason = "learning timed out";
 
         } catch (Exception exc) {
             notFinishedReason = exc.getMessage();
-            LOGGER.fatal("Exception generated during learning");
+            LOGGER.error("Exception generated during learning");
             // useful to log what actually went wrong
             try (FileWriter fw = new FileWriter(new File(outputFolder, ERROR_FILENAME))) {
                 PrintWriter pw = new PrintWriter(fw);
@@ -129,11 +130,11 @@ public class StateFuzzerStandard implements StateFuzzer {
                 exc.printStackTrace(pw);
                 pw.close();
             } catch (IOException e) {
-                LOGGER.fatal("Could not create error file writer");
+                LOGGER.error("Could not create error file writer");
             }
         }
 
-        // building results:
+        // building results
         statisticsTracker.finishedLearning(stateMachine, finished, notFinishedReason);
         Statistics statistics = statisticsTracker.generateStatistics();
 
@@ -156,7 +157,7 @@ public class StateFuzzerStandard implements StateFuzzer {
         try {
             statistics.export(new FileWriter(new File(outputFolder, STATISTICS_FILENAME)));
         } catch (IOException e) {
-            LOGGER.fatal("Could not copy statistics to output folder");
+            LOGGER.error("Could not copy statistics to output folder");
         }
     }
 
@@ -166,7 +167,7 @@ public class StateFuzzerStandard implements StateFuzzer {
             Path outputAlphabetPath = Path.of(outputFolder.getPath(), ALPHABET_FILENAME);
             Files.copy(originalAlphabetPath, outputAlphabetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            LOGGER.fatal("Could not copy alphabet to output folder");
+            LOGGER.error("Could not copy alphabet to output folder");
         }
 
         LearnerConfig learnerConfig = stateFuzzerEnabler.getLearnerConfig();
@@ -176,7 +177,7 @@ public class StateFuzzerStandard implements StateFuzzer {
                 Path outputTestFilePath = Path.of(outputFolder.getPath(), learnerConfig.getTestFile());
                 Files.copy(originalTestFilePath, outputTestFilePath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                LOGGER.fatal("Could not copy sampled tests file to output folder");
+                LOGGER.error("Could not copy sampled tests file to output folder");
             }
         }
 
@@ -184,7 +185,7 @@ public class StateFuzzerStandard implements StateFuzzer {
             dumpToFile(stateFuzzerEnabler.getSulConfig().getMapperConnectionConfigInputStream(),
                     new File(outputFolder, SulConfig.DEFAULT_MAPPER_CONNECTION_CONFIG));
         } catch (IOException e) {
-            LOGGER.fatal("Could not copy mapperToSulConfig to output folder");
+            LOGGER.error("Could not copy mapperToSulConfig to output folder");
         }
     }
 
