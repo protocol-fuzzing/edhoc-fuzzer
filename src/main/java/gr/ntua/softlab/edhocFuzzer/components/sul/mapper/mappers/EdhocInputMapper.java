@@ -1,21 +1,21 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers;
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocProtocolMessage;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.MapperConnector;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers.InputMapper;
 
 public class EdhocInputMapper extends InputMapper {
-    MapperConnector mapperConnector;
+    EdhocMapperConnector edhocMapperConnector;
 
-    public EdhocInputMapper(MapperConnector mapperConnector) {
-        this.mapperConnector = mapperConnector;
+    public EdhocInputMapper(EdhocMapperConnector edhocMapperConnector) {
+        this.edhocMapperConnector = edhocMapperConnector;
     }
 
     @Override
     protected void sendMessage(ProtocolMessage message, ExecutionContext context) {
         EdhocProtocolMessage edhocProtocolMessage = (EdhocProtocolMessage) message;
-        mapperConnector.send(edhocProtocolMessage.getCBORSequence());
+        edhocMapperConnector.send(edhocProtocolMessage.getCBORSequence());
     }
 }

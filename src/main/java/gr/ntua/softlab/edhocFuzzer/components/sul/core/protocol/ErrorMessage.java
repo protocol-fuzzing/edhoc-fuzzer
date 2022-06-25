@@ -6,7 +6,7 @@ import org.eclipse.californium.edhoc.MessageProcessor;
 
 public class ErrorMessage extends EdhocProtocolMessage {
 
-    public ErrorMessage(int errorCode, int replyTo, boolean isErrorReq, CBORObject cX, String errMsg, CBORObject suitesR) {
+    public ErrorMessage(int errorCode, int replyTo, boolean isErrorReq, byte[] cX, String errMsg, CBORObject suitesR) {
         cborSequence = MessageProcessor.writeErrorMessage(errorCode, replyTo, isErrorReq, cX, errMsg, suitesR);
     }
 }

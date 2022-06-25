@@ -1,12 +1,13 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.core;
 
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocMapperConnectionConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulClientConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulServerConfig;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.ConnectorToClient;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.ConnectorToServer;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.MapperConnector;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocState;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.ServerMapperConnector;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.ClientMapperConnector;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.ClientMapperState;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.ServerMapperState;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocInputMapper;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocOutputMapper;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.EdhocOutputChecker;
@@ -17,55 +18,79 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContextStepped;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.State;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers.MapperComposer;
 import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.californium.core.config.CoapConfig;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class EdhocSul extends AbstractSul {
     private static final Logger LOGGER = LogManager.getLogger(EdhocSul.class);
     protected ExecutionContextStepped executionContextStepped;
+    protected Long originalTimeout;
+    protected EdhocMapperConnector edhocMapperConnector;
 
     public EdhocSul(SulConfig sulConfig, CleanupTasks cleanupTasks) {
         super(sulConfig, cleanupTasks);
 
         try {
-            sulConfig.applyDelegate(new EdhocMapperConnectionConfig(sulConfig.getMapperConnectionConfigInputStream()));
+            EdhocMapperConnectionConfig mapperConnectionConfig = new EdhocMapperConnectionConfig(
+                    sulConfig.getMapperConnectionConfigInputStream());
+
+            // timeout taken from configuration file
+            Long coapExchangeLifetime = mapperConnectionConfig.getConfiguration().get(
+                    CoapConfig.EXCHANGE_LIFETIME, TimeUnit.MILLISECONDS);
+
+            // timeout taken from responseWait in command-line
+            Long responseWait = sulConfig.getResponseWait();
+
+            if (responseWait < coapExchangeLifetime) {
+                LOGGER.warn("Provided responseWait ({} ms) is less than COAP.EXCHANGE_LIFETIME ({} ms) in "
+                                + "mapper_connection config file", responseWait, coapExchangeLifetime);
+            }
+
+            this.originalTimeout = responseWait;
+
+            // apply delegate
+            sulConfig.applyDelegate(mapperConnectionConfig);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         // build mapper for this sul
-        MapperConnector mapperConnector;
         if (sulConfig.isFuzzingClient()){
-            mapperConnector = new ConnectorToClient(); // TODO
+            this.edhocMapperConnector = new ServerMapperConnector();
         } else {
             String uri = ((EdhocSulServerConfig) sulConfig).getCoapHostURI();
-            mapperConnector = new ConnectorToServer(uri);
+            this.edhocMapperConnector = new ClientMapperConnector(uri, originalTimeout);
         }
 
-        this.mapper = buildMapper(sulConfig.getMapperConfig(), mapperConnector);
+        this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);
     }
 
-    protected Mapper buildMapper(MapperConfig mapperConfig, MapperConnector mapperConnector) {
+    protected Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
         return new MapperComposer(
-                new EdhocInputMapper(mapperConnector),
-                new EdhocOutputMapper(mapperConfig, mapperConnector),
+                new EdhocInputMapper(edhocMapperConnector),
+                new EdhocOutputMapper(mapperConfig, edhocMapperConnector),
                 new EdhocOutputChecker()
         );
     }
 
     @Override
     public void pre() {
-        // TODO create edhocSession
-        executionContextStepped = new ExecutionContextStepped(new EdhocState(null));
+        // state to pass on ExecutionContextStepped
+        State state;
 
-        // in case of state-fuzzing a client implementation
-        // that means mapper behaves like a server
         if (sulConfig.isFuzzingClient()) {
-            long clientWait = ((EdhocSulClientConfig) sulConfig).getClientWait();
+            EdhocSulClientConfig config = (EdhocSulClientConfig) sulConfig;
+
+            state = new ServerMapperState();
+
+            long clientWait = config.getClientWait();
             if (clientWait > 0) {
                 try {
                     Thread.sleep(clientWait);
@@ -73,7 +98,12 @@ public class EdhocSul extends AbstractSul {
                     LOGGER.error("Interrupted 'pre' sleep for {} ms", clientWait);
                 }
             }
+        } else {
+            String coapHostURI = ((EdhocSulServerConfig) sulConfig).getCoapHostURI();
+            state = new ClientMapperState(coapHostURI);
         }
+
+        executionContextStepped = new ExecutionContextStepped(state);
     }
 
     @Override
@@ -111,10 +141,24 @@ public class EdhocSul extends AbstractSul {
     }
 
     protected AbstractOutput executeInput(AbstractInput abstractInput, Mapper mapper) {
-        LOGGER.debug("mapper sent: {}", abstractInput);
-        // TODO handle timeout from extendedWait and inputResponse
+        boolean timeoutChanged = false;
+
+        // handle timeout from extendedWait and from inputResponse
+        if (abstractInput.getExtendedWait() != null) {
+            edhocMapperConnector.setTimeout(originalTimeout + abstractInput.getExtendedWait());
+            timeoutChanged = true;
+        } else if (sulConfig.getInputResponseTimeout() != null &&
+                sulConfig.getInputResponseTimeout().containsKey(abstractInput.getName())) {
+            edhocMapperConnector.setTimeout(sulConfig.getInputResponseTimeout().get(abstractInput.getName()));
+            timeoutChanged = true;
+        }
+
         AbstractOutput abstractOutput = mapper.execute(abstractInput, executionContextStepped);
-        LOGGER.debug("mapper received: {}", abstractOutput);
+
+        // reset timeout
+        if (timeoutChanged) {
+            edhocMapperConnector.setTimeout(originalTimeout);
+        }
         return abstractOutput;
     }
 

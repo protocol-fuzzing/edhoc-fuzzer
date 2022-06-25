@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocFuzzer.components.sul.core.config;
+package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config;
 
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfig;
 import org.eclipse.californium.elements.config.Configuration;

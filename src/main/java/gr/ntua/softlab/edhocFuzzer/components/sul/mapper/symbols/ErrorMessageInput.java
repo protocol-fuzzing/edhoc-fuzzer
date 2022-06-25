@@ -11,7 +11,7 @@ public class ErrorMessageInput extends AbstractInputXml {
 
     @Override
     public ProtocolMessage generateProtocolMessage(ExecutionContext context) {
-        return new ErrorMessage(Constants.ERR_CODE_UNSPECIFIED, Constants.EDHOC_MESSAGE_1, true, null,
+        return new ErrorMessage(Constants.ERR_CODE_UNSPECIFIED_ERROR, Constants.EDHOC_MESSAGE_1, true, null,
                 "Error Message", null);
     }
 

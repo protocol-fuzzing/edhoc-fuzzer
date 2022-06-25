@@ -1,5 +1,6 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.core.config;
 
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulClientConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfigException;

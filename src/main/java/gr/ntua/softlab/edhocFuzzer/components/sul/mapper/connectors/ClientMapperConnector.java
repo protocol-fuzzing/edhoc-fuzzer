@@ -9,13 +9,14 @@ import org.eclipse.californium.elements.exception.ConnectorException;
 
 import java.io.IOException;
 
-public class ConnectorToServer implements MapperConnector {
+public class ClientMapperConnector implements EdhocMapperConnector {
     protected CoapClient client;
     protected CoapResponse response;
     protected byte[] emptyPayload = new byte[0];
 
-    public ConnectorToServer(String uri){
+    public ClientMapperConnector(String uri, Long originalTimeout){
         this.client = new CoapClient(uri);
+        this.client.setTimeout(originalTimeout);
     }
 
     @Override
@@ -32,5 +33,10 @@ public class ConnectorToServer implements MapperConnector {
     @Override
     public byte[] receive() {
         return response == null ? emptyPayload : response.getPayload();
+    }
+
+    @Override
+    public void setTimeout(Long timeout) {
+        this.client.setTimeout(timeout);
     }
 }
