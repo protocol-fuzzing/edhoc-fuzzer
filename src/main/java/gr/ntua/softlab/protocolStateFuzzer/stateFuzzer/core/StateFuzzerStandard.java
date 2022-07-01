@@ -174,7 +174,9 @@ public class StateFuzzerStandard implements StateFuzzer {
         if (learnerConfig.getEquivalenceAlgorithms().contains(EquivalenceAlgorithmName.SAMPLED_TESTS)) {
             try {
                 Path originalTestFilePath = Path.of(learnerConfig.getTestFile());
-                Path outputTestFilePath = Path.of(outputFolder.getPath(), learnerConfig.getTestFile());
+                int pathNameCount = originalTestFilePath.getNameCount();
+                String testFilename = originalTestFilePath.subpath(pathNameCount - 1, pathNameCount).toString();
+                Path outputTestFilePath = Path.of(outputFolder.getPath(), testFilename);
                 Files.copy(originalTestFilePath, outputTestFilePath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 LOGGER.error("Could not copy sampled tests file to output folder");

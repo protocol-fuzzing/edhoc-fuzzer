@@ -38,12 +38,6 @@ public abstract class AbstractInput extends AbstractSymbol {
     }
 
     /**
-     * Generates the corresponding concrete symbol (aka protocol message) for the current abstract symbol,
-     * providing this way the functionality of abstract-to-concrete mapper.
-     */
-    public abstract ProtocolMessage generateProtocolMessage(ExecutionContext context);
-
-    /**
      * Enables the input for execution.
      */
     public boolean isEnabled(ExecutionContext context) {
@@ -51,9 +45,15 @@ public abstract class AbstractInput extends AbstractSymbol {
     }
 
     /**
-     * Updates context before sending the input
+     * Updates context before sending the input and before {@link AbstractInput#generateProtocolMessage}
      */
     public abstract void preSendUpdate(ExecutionContext context);
+
+    /**
+     * Generates the corresponding concrete symbol (aka protocol message) for the current abstract symbol,
+     * providing this way the functionality of abstract-to-concrete mapper.
+     */
+    public abstract ProtocolMessage generateProtocolMessage(ExecutionContext context);
 
     /**
      * Updates the context after sending the input.

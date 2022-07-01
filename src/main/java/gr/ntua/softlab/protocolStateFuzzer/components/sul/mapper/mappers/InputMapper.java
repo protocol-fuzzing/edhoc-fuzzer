@@ -7,9 +7,8 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.Protocol
 
 public abstract class InputMapper {
     public void sendInput(AbstractInput input, ExecutionContext context) {
-        ProtocolMessage message = input.generateProtocolMessage(context);
-		input.preSendUpdate(context);
-		sendMessage(message, context);
+        input.preSendUpdate(context);
+		sendMessage(input.generateProtocolMessage(context), context);
 		input.postSendUpdate(context);
     }
 
