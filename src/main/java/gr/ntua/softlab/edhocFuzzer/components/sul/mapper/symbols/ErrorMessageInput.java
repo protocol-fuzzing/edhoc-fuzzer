@@ -1,18 +1,18 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols;
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.ErrorMessage;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.xml.AbstractInputXml;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
-import org.eclipse.californium.edhoc.Constants;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 
-public class ErrorMessageInput extends AbstractInputXml {
+public class ErrorMessageInput extends EdhocInput {
 
     @Override
     public ProtocolMessage generateProtocolMessage(ExecutionContext context) {
-        return new ErrorMessage(Constants.ERR_CODE_UNSPECIFIED_ERROR, Constants.EDHOC_MESSAGE_1, true, null,
-                "Error Message", null);
+        MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(
+                getEdhocMapperState(context));
+        return new ErrorMessage(messageProcessorPersistent).createAsInitiatorWithoutSuites();
     }
 
     @Override

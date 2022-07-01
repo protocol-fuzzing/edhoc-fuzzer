@@ -61,15 +61,21 @@ public class EdhocSul extends AbstractSul {
             throw new RuntimeException(e);
         }
 
-        // build mapper for this sul
+
+        // state to pass on ExecutionContextStepped
+        State state;
+
         if (sulConfig.isFuzzingClient()){
             this.edhocMapperConnector = new ServerMapperConnector();
+            state = new ServerMapperState();
         } else {
-            String uri = ((EdhocSulServerConfig) sulConfig).getCoapHostURI();
-            this.edhocMapperConnector = new ClientMapperConnector(uri, originalTimeout);
+            String coapHostURI = ((EdhocSulServerConfig) sulConfig).getCoapHostURI();
+            this.edhocMapperConnector = new ClientMapperConnector(coapHostURI, originalTimeout);
+            state = new ClientMapperState(coapHostURI);
         }
 
         this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);
+        this.executionContextStepped = new ExecutionContextStepped(state);
     }
 
     protected Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
@@ -82,14 +88,10 @@ public class EdhocSul extends AbstractSul {
 
     @Override
     public void pre() {
-        // state to pass on ExecutionContextStepped
-        State state;
+        LOGGER.debug("Executing SUL 'pre'");
 
         if (sulConfig.isFuzzingClient()) {
             EdhocSulClientConfig config = (EdhocSulClientConfig) sulConfig;
-
-            state = new ServerMapperState();
-
             long clientWait = config.getClientWait();
             if (clientWait > 0) {
                 try {
@@ -98,16 +100,12 @@ public class EdhocSul extends AbstractSul {
                     LOGGER.error("Interrupted 'pre' sleep for {} ms", clientWait);
                 }
             }
-        } else {
-            String coapHostURI = ((EdhocSulServerConfig) sulConfig).getCoapHostURI();
-            state = new ClientMapperState(coapHostURI);
         }
-
-        executionContextStepped = new ExecutionContextStepped(state);
     }
 
     @Override
     public void post() {
+        LOGGER.debug("Executing SUL 'post'");
         long startWait = sulConfig.getStartWait();
         if (startWait > 0) {
             try {
@@ -120,6 +118,7 @@ public class EdhocSul extends AbstractSul {
 
     @Override
     public AbstractOutput step(AbstractInput abstractInput) {
+        LOGGER.debug("Executing SUL 'step'");
         executionContextStepped.addStepContext();
         Mapper preferredMapper = abstractInput.getPreferredMapper(sulConfig);
         if (preferredMapper == null) {
