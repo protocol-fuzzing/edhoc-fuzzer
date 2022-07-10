@@ -52,6 +52,7 @@ public class MessageProcessorPersistent {
         return stringBuilder.toString();
     }
 
+    /** Tries to match the byte sequence's structure of CBOR elements with an edhoc message */
     public int messageTypeFromStructure(byte[] sequence, boolean isReq) {
         LOGGER.debug("Start of messageTypeFromStructure");
         if (sequence == null) {
@@ -863,8 +864,7 @@ public class MessageProcessorPersistent {
 
         // Verify Signature_or_MAC_2
         byte[] signatureOrMac2 = plaintextElementList[baseIndex + 1].GetByteString();
-        Util.nicePrint("Signature_or_MAC_2", signatureOrMac2);
-
+        LOGGER.debug(byteArrayToString("Signature_or_MAC_2", signatureOrMac2));
 
         // Prepare the External Data, as a CBOR sequence
         byte[] externalData = computeExternalData(th2, peerCredential, ead2);
@@ -1611,6 +1611,7 @@ public class MessageProcessorPersistent {
         }
     }
 
+    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#writeErrorMessage} */
     public byte[] writeErrorMessage(int errorCode, int replyTo, boolean isErrorReq, byte[] connectionIdentifier,
                                     String errMsg, CBORObject suitesR) {
 

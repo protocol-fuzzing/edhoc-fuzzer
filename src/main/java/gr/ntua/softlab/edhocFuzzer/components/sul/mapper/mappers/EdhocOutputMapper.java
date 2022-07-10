@@ -25,11 +25,15 @@ public class EdhocOutputMapper extends OutputMapper {
 
         byte[] responsePayload = edhocMapperConnector.receive();
 
-        // check for timeout or other error
         if (responsePayload == null) {
+            // in case of response after exception
             return socketClosed();
         } else if (responsePayload.length == 0) {
+            // in case of timeout
             return timeout();
+        } else if (!edhocMapperConnector.isLatestResponseSuccessful()) {
+            // in case of error identified from the coap response
+            return new AbstractOutput("EDHOC_ERROR_MESSAGE");
         }
 
         MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(edhocMapperState);

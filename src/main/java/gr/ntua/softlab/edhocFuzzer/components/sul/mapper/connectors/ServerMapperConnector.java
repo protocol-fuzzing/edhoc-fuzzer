@@ -14,6 +14,11 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     }
 
     @Override
+    public boolean isLatestResponseSuccessful() {
+        return false;
+    }
+
+    @Override
     public void setTimeout(Long timeout) {
 
     }

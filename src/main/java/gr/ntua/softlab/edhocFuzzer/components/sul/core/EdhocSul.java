@@ -61,21 +61,14 @@ public class EdhocSul extends AbstractSul {
             throw new RuntimeException(e);
         }
 
-
-        // state to pass on ExecutionContextStepped
-        State state;
-
         if (sulConfig.isFuzzingClient()){
             this.edhocMapperConnector = new ServerMapperConnector();
-            state = new ServerMapperState();
         } else {
             String coapHostURI = ((EdhocSulServerConfig) sulConfig).getCoapHostURI();
             this.edhocMapperConnector = new ClientMapperConnector(coapHostURI, originalTimeout);
-            state = new ClientMapperState(coapHostURI);
         }
 
         this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);
-        this.executionContextStepped = new ExecutionContextStepped(state);
     }
 
     protected Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
@@ -90,8 +83,12 @@ public class EdhocSul extends AbstractSul {
     public void pre() {
         LOGGER.debug("Executing SUL 'pre'");
 
+        // state to pass on ExecutionContextStepped
+        State state;
+
         if (sulConfig.isFuzzingClient()) {
             EdhocSulClientConfig config = (EdhocSulClientConfig) sulConfig;
+            state = new ServerMapperState();
             long clientWait = config.getClientWait();
             if (clientWait > 0) {
                 try {
@@ -100,7 +97,13 @@ public class EdhocSul extends AbstractSul {
                     LOGGER.error("Interrupted 'pre' sleep for {} ms", clientWait);
                 }
             }
+        } else {
+            EdhocSulServerConfig config = (EdhocSulServerConfig) sulConfig;
+            String coapHostURI = config.getCoapHostURI();
+            state = new ClientMapperState(coapHostURI, config.getAuthenticationFileConfig());
         }
+
+        this.executionContextStepped = new ExecutionContextStepped(state);
     }
 
     @Override
