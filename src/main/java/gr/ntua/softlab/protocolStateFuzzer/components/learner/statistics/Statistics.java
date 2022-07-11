@@ -59,7 +59,7 @@ public class Statistics {
         out.println("Number of learning tests: " + learnTests);
         out.println("Number of inputs up to last hypothesis: " + lastHypInputs);
         out.println("Number of tests up to last hypothesis: " + lastHypTests);
-        out.println("Time it took to learn model: " + duration);
+        out.println("Time (ms) to learn model: " + duration);
         out.println("Counterexamples:");
         int ind = 1;
         for (Object ce : counterexamples) {
@@ -70,7 +70,7 @@ public class Statistics {
                     + hypStats.stream().map(s -> s.getSnapshot().getInputs()).toList());
             out.println("Number of tests when hypothesis was generated: "
                     + hypStats.stream().map(s -> s.getSnapshot().getTests()).toList());
-            out.println("Time when hypothesis was generated: "
+            out.println("Time (ms) when hypothesis was generated: "
                     + hypStats.stream().map(s -> s.getSnapshot().getTime()).toList());
 
             List<HypothesisStatistics> invalidatedHypStates = new ArrayList<>(hypStats);
@@ -82,7 +82,7 @@ public class Statistics {
                     + invalidatedHypStates.stream().map(s -> s.getCounterexampleSnapshot().getInputs()).toList());
             out.println("Number of tests when counterexample was found: "
                     + invalidatedHypStates.stream().map(s -> s.getCounterexampleSnapshot().getTests()).toList());
-            out.println("Time when counterexample was found: "
+            out.println("Time (ms) when counterexample was found: "
                     + invalidatedHypStates.stream().map(s -> s.getCounterexampleSnapshot().getTime()).toList());
         }
         out.close();

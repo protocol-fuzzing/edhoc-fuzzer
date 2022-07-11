@@ -63,16 +63,16 @@ public class LearnerConfig implements AlphabetOptionProvider {
             + "but improves performance. It also renders useless most forms of non-determinism sanitization")
     protected boolean cacheTests = false;
 
-    @Parameter(names = "-ceSanitizationDisable", description = "Disables CE sanitization, which involves re-running "
-            + "potential CE's ensuring they are not spurious")
+    @Parameter(names = "-ceSanitizationDisable", description = "Disables counterexamples (CE) sanitization, "
+            + "which involves re-running potential CE's ensuring they are not spurious")
     protected boolean ceSanitizationDisable = false;
 
     @Parameter(names = "-skipNonDetTests", description = "Rather than throw an exception, logs and skips tests, "
             + "whose execution turned out non-deterministic")
     protected boolean skipNonDetTests = false;
 
-    @Parameter(names = "-ceReruns", description = "Represents the number of times a CE is re-run in order for it "
-            + "to be confirmed")
+    @Parameter(names = "-ceReruns", description = "Represents the number of times a CE is re-run in order for it to "
+            + "be confirmed")
     protected Integer ceReruns = 3;
 
     @Parameter(names = "-probabilisticSanitizationDisable", description = "Disables probabilistic sanitization of "
@@ -91,6 +91,11 @@ public class LearnerConfig implements AlphabetOptionProvider {
             + "learning run are published")
     protected Long testLimit = null;
 
+    @Parameter(names = "-roundLimit", description = "If set, limits the number of hypothesis construction rounds "
+            + "and with that, the number of hypotheses generated. Once the limit is reached, learning is stopped and "
+            + "statistics for the incomplete learning run are published.")
+    protected Integer roundLimit = null;
+
     public String getAlphabet() {
         return alphabet;
     }
@@ -98,6 +103,7 @@ public class LearnerConfig implements AlphabetOptionProvider {
     public LearningAlgorithmName getLearningAlgorithm() {
         return learningAlgorithm;
     }
+
     public List<EquivalenceAlgorithmName> getEquivalenceAlgorithms() {
         return equivalenceAlgorithms;
     }
@@ -172,5 +178,9 @@ public class LearnerConfig implements AlphabetOptionProvider {
 
     public Long getTestLimit() {
         return testLimit;
+    }
+
+    public Integer getRoundLimit() {
+        return roundLimit;
     }
 }

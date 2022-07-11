@@ -1,6 +1,7 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.sul.core.sulWrappers;
 
 import de.learnlib.api.SUL;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.TestLimitReachedException;
 
 public class TestLimitWrapper<I, O> implements SUL<I, O> {
     private SUL<I, O> sul;

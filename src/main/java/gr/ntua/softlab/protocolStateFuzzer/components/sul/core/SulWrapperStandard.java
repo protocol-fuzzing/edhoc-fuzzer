@@ -42,14 +42,10 @@ public class SulWrapperStandard implements SulWrapper {
 
         wrappedSul = new AbstractIsAliveWrapper(wrappedSul, sulConfig.getMapperConfig());
 
-//		if (!sulConfig.isFuzzingClient()) {
-//			wrappedSul = new ClientConnectWrapper(wrappedSul);
-//		}
-
         wrappedSul = new SymbolCounterSUL<>("symbol counter", wrappedSul);
         inputCounter = ((SymbolCounterSUL<AbstractInput, AbstractOutput>) wrappedSul).getStatisticalData();
 
-        wrappedSul = new ResetCounterSUL<>("reset counter", wrappedSul);
+        wrappedSul = new ResetCounterSUL<>("test counter", wrappedSul);
         testCounter = ((ResetCounterSUL<AbstractInput, AbstractOutput>) wrappedSul).getStatisticalData();
         return this;
     }
@@ -57,24 +53,26 @@ public class SulWrapperStandard implements SulWrapper {
     @Override
     public SulWrapper setTimeLimit(Duration timeLimit) {
         if (timeLimit == null || timeLimit.isNegative() || timeLimit.isZero()) {
-            LOGGER.warn("Time limit given with erroneous value: " + timeLimit);
+            LOGGER.info("Learning time limit NOT set (provided value: {})", timeLimit);
         } else if (this.timeLimit == null) {
             this.timeLimit = timeLimit;
             wrappedSul = new TimeoutWrapper<>(wrappedSul, timeLimit);
+            LOGGER.info("Learning time limit set to {}", timeLimit);
         } else {
-            LOGGER.warn("Time limit for sul already set to " + timeLimit);
+            LOGGER.info("Learning time limit already set to {}", timeLimit);
         }
         return this;
     }
 
     public SulWrapper setTestLimit(Long testLimit) {
         if (testLimit == null || testLimit <= 0L) {
-            LOGGER.warn("Test limit with erroneous value: " + testLimit);
+            LOGGER.info("Learning test limit NOT set (provided value: {})", testLimit);
         } else if (this.testLimit == null) {
             this.testLimit = testLimit;
             wrappedSul = new TestLimitWrapper<>(wrappedSul, testLimit);
+            LOGGER.info("Learning test limit set to {}", testLimit);
         } else {
-            LOGGER.warn("Test limit for sul already set to " + testLimit);
+            LOGGER.info("Learning test limit already set to {}", testLimit);
         }
         return this;
     }

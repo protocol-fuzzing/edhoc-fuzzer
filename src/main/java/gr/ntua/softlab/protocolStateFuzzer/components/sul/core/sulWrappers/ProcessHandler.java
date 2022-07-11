@@ -49,6 +49,7 @@ public class ProcessHandler {
         pb = new ProcessBuilder(command.split("\\s+"));
         this.startWait = startWait;
         LOGGER.info("Command to launch SUL process: {}", command);
+        LOGGER.info("Wait time after launching SUL process: {} ms", startWait);
     }
 
     public void redirectOutput(OutputStream toOutput) {

@@ -2,6 +2,7 @@ package gr.ntua.softlab.protocolStateFuzzer.components.sul.core.sulWrappers;
 
 import de.learnlib.api.SUL;
 import de.learnlib.api.exception.SULException;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.TimeLimitReachedException;
 
 import java.time.Duration;
 
@@ -25,7 +26,7 @@ public class TimeoutWrapper<I, O> implements SUL<I, O> {
     public void post() {
         sul.post();
         if (System.currentTimeMillis() > duration.toMillis() + startTime) {
-            throw new ExperimentTimeoutException(duration);
+            throw new TimeLimitReachedException(duration);
         }
     }
 

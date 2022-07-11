@@ -6,6 +6,8 @@ import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.LearnerResult;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.StateMachine;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.RoundLimitReachedException;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.TestLimitReachedException;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
@@ -13,7 +15,7 @@ import gr.ntua.softlab.protocolStateFuzzer.components.learner.factory.Equivalenc
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics.Statistics;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics.StatisticsTracker;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.sulWrappers.ExperimentTimeoutException;
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.TimeLimitReachedException;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
 import net.automatalib.automata.transducers.MealyMachine;
@@ -27,9 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-/**
- * Taken/adapted from StateVulnFinder tool (Extractor Component).
- */
 public class StateFuzzerStandard implements StateFuzzer {
     private static final Logger LOGGER = LogManager.getLogger(StateFuzzerStandard.class);
     protected final String ALPHABET_FILENAME;
@@ -74,14 +73,15 @@ public class StateFuzzerStandard implements StateFuzzer {
         EquivalenceOracle<MealyMachine<?, AbstractInput, ?, AbstractOutput>, AbstractInput, Word<AbstractOutput>>
                 equivalenceOracle = stateFuzzerComposer.getEquivalenceOracle();
 
-        // running learning and collecting important statistics
+
         MealyMachine<?, AbstractInput, ?, AbstractOutput> hypothesis;
         StateMachine stateMachine = null;
         LearnerResult learnerResult = new LearnerResult();
         DefaultQuery<AbstractInput, Word<AbstractOutput>> counterExample;
         boolean finished = false;
         String notFinishedReason = null;
-        int rounds = 0;
+        int current_round = 0;
+        int round_limit = roundLimitToInt(stateFuzzerEnabler.getLearnerConfig().getRoundLimit());
 
         try {
             statisticsTracker.setRuntimeStateTracking(new FileOutputStream(
@@ -91,67 +91,92 @@ public class StateFuzzerStandard implements StateFuzzer {
         }
 
         try {
+            LOGGER.info("Input alphabet: {}", alphabet);
+            LOGGER.info("Starting Learning");
             statisticsTracker.startLearning(stateFuzzerEnabler, alphabet);
             learner.startLearning();
+            current_round++;
 
             do {
                 hypothesis = learner.getHypothesisModel();
                 stateMachine = new StateMachine(hypothesis, alphabet);
                 learnerResult.addHypothesis(stateMachine);
                 // it is useful to print intermediate hypothesis as learning is running
-                serializeHypothesis(stateMachine, outputFolder, "hyp" + (rounds + 1) + ".dot", false);
+                String hypName = "hyp" + current_round + ".dot";
+                serializeHypothesis(stateMachine, outputFolder, hypName, false);
                 statisticsTracker.newHypothesis(stateMachine);
+                LOGGER.info("Generated new hypothesis: " + hypName);
+
+                if (current_round == round_limit) {
+                    // round_limit can be either -1 (no limit) or a positive int
+                    throw new RoundLimitReachedException(round_limit);
+                }
+
+                LOGGER.info("Validating hypothesis");
                 counterExample = equivalenceOracle.findCounterExample(hypothesis, alphabet);
+
                 if (counterExample != null) {
                     LOGGER.warn("Counterexample: " + counterExample);
                     statisticsTracker.newCounterExample(counterExample);
                     // we create a copy, since the hypothesis reference will not be valid after refinement,
                     // but we may still need it (if learning abruptly terminates)
                     stateMachine = stateMachine.copy();
+                    LOGGER.info("Refining hypothesis");
                     learner.refineHypothesis(counterExample);
+                    current_round++;
                 }
-                rounds++;
             } while (counterExample != null);
 
             finished = true;
 
-        } catch (ExperimentTimeoutException exc) {
-            LOGGER.warn("Learning timed out after a duration of " + exc.getDuration() + " (i.e. "
-                    + exc.getDuration().toHours() + " hours, or" + exc.getDuration().toMinutes() + " minutes" + " )");
-            notFinishedReason = "learning timed out";
+        } catch (TimeLimitReachedException e) {
+            LOGGER.warn("Learning timed out after a duration of {} (i.e. {} hours, or {} minutes)",
+                    e.getDuration(), e.getDuration().toHours(), e.getDuration().toMinutes());
+            notFinishedReason = "time limit reached";
 
-        } catch (Exception exc) {
-            notFinishedReason = exc.getMessage();
-            LOGGER.error("Exception generated during learning");
+        } catch (TestLimitReachedException e) {
+            LOGGER.warn("Learning exhausted the number of tests allowed ({} tests)", e.getTestLimit());
+            notFinishedReason = "test limit reached";
+
+        } catch (RoundLimitReachedException e) {
+            LOGGER.info("Learning exhausted the number of hypothesis construction rounds allowed ({} rounds)",
+                    e.getRoundLimit());
+            notFinishedReason = "hypothesis construction round limit reached";
+
+        } catch (Exception e) {
+            notFinishedReason = e.getMessage();
+            LOGGER.error("Exception generated during learning\n" + e);
             // useful to log what actually went wrong
-            try (FileWriter fw = new FileWriter(new File(outputFolder, ERROR_FILENAME))) {
-                PrintWriter pw = new PrintWriter(fw);
-                pw.println(exc.getMessage());
-                exc.printStackTrace(pw);
-                pw.close();
-            } catch (IOException e) {
+            try (PrintWriter pw = new PrintWriter(new FileWriter(new File(outputFolder, ERROR_FILENAME)))) {
+                pw.println(e.getMessage());
+                e.printStackTrace(pw);
+            } catch (IOException exc) {
                 LOGGER.error("Could not create error file writer");
             }
+        }
+
+        LOGGER.info("Finished Experiment");
+        LOGGER.info("Number of refinement rounds: {}", current_round);
+        LOGGER.info("Results stored in {}", outputFolder.getPath());
+
+        if (stateMachine == null) {
+            LOGGER.info("Could not generate a first hypothesis, nothing to report on");
+            if (notFinishedReason != null) {
+                LOGGER.info("Potential cause: {}", notFinishedReason);
+            }
+            return;
         }
 
         // building results
         statisticsTracker.finishedLearning(stateMachine, finished, notFinishedReason);
         Statistics statistics = statisticsTracker.generateStatistics();
-
-        LOGGER.info("Finished Experiment");
-        LOGGER.info("Number of Rounds:" + rounds);
-        LOGGER.info(statistics.toString());
+        LOGGER.info(statistics);
 
         learnerResult.setLearnedModel(stateMachine);
         learnerResult.setStatistics(statistics);
 
         // exporting to output files
         serializeHypothesis(stateMachine, outputFolder, LEARNED_MODEL_FILENAME, true);
-
-        // we disable this feature for now, as models are too large for it
-        // serializeHypothesis(stateMachine, outputFolder,
-        //        LEARNED_MODEL_FILENAME.replace(".dot", "FullOutput.dot"), false, true);
-
         learnerResult.setLearnedModelFile(new File(outputFolder, LEARNED_MODEL_FILENAME));
 
         try {
@@ -173,7 +198,7 @@ public class StateFuzzerStandard implements StateFuzzer {
         LearnerConfig learnerConfig = stateFuzzerEnabler.getLearnerConfig();
         if (learnerConfig.getEquivalenceAlgorithms().contains(EquivalenceAlgorithmName.SAMPLED_TESTS)) {
             try {
-                Path originalTestFilePath = Path.of(learnerConfig.getTestFile());
+                Path originalTestFilePath = Path.of(learnerConfig.getQueryFile());
                 int pathNameCount = originalTestFilePath.getNameCount();
                 String testFilename = originalTestFilePath.subpath(pathNameCount - 1, pathNameCount).toString();
                 Path outputTestFilePath = Path.of(outputFolder.getPath(), testFilename);
@@ -197,6 +222,16 @@ public class StateFuzzerStandard implements StateFuzzer {
             while (inputStream.read(bytes) > 0) {
                 fw.write(bytes);
             }
+        }
+    }
+
+    protected int roundLimitToInt(Integer roundLimit) {
+        if (roundLimit == null || roundLimit <= 0) {
+            LOGGER.info("Learning round limit NOT set (provided value: {})", roundLimit);
+            return -1;
+        } else {
+            LOGGER.info("Learning round limit set to {}", roundLimit);
+            return roundLimit;
         }
     }
 

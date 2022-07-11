@@ -132,8 +132,8 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
         return cleanupTasks;
     }
 
-    protected void composeStatisticsTracker(Counter inputCounter, Counter resetCounter) {
-        this.statisticsTracker = new StatisticsTracker(inputCounter, resetCounter);
+    protected void composeStatisticsTracker(Counter inputCounter, Counter testCounter) {
+        this.statisticsTracker = new StatisticsTracker(inputCounter, testCounter);
     }
     protected void composeLearner(AbstractOutput[] terminatingOutputs) {
 
@@ -186,7 +186,8 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
         if (terminatingOutputs == null || terminatingOutputs.length == 0) {
             testOracle = new CachingSULOracle<>(testOracle, cache, !learnerConfig.isCacheTests());
         } else {
-            testOracle = new CachingSULOracle<>(testOracle, cache, !learnerConfig.isCacheTests(), AbstractOutput.socketClosed());
+            testOracle = new CachingSULOracle<>(testOracle, cache, !learnerConfig.isCacheTests(),
+                    AbstractOutput.socketClosed());
         }
 
         this.equivalenceOracle = LearnerFactory.loadTester(learnerConfig, sul, testOracle, alphabet);

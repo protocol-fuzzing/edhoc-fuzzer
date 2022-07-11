@@ -76,8 +76,7 @@ public class CachingSULOracle<I, O> implements MealyMembershipOracle<I, O> {
 					if (terminatingOutputs.contains(output.lastSymbol())) {
 						Word<O> extendedOutput = output;
 						while (extendedOutput.length() < input.length()) {
-							extendedOutput = extendedOutput.append(output
-									.lastSymbol());
+							extendedOutput = extendedOutput.append(output.lastSymbol());
 						}
 						return extendedOutput;
 					} else {
