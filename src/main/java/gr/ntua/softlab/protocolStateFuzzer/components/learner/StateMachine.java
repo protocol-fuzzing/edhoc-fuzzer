@@ -52,12 +52,20 @@ public class StateMachine {
         try {
             graphFile.createNewFile();
             export(new FileWriter(graphFile));
-            if (generatePdf) {
-                Runtime.getRuntime().exec("dot -Tpdf -O " + graphFile.getAbsolutePath());
-            }
         } catch (IOException e) {
-            LOGGER.info("Could not export model!");
+            LOGGER.warn("Could not create file {}", graphFile.getAbsolutePath());
         }
+
+        if (generatePdf) {
+            String pdfFile = graphFile.getAbsolutePath().replace(".dot", "");
+            String[] cmdArray = new String[]{"dot",  "-Tpdf", "-O", pdfFile};
+            try {
+                Runtime.getRuntime().exec(cmdArray);
+            } catch (IOException e) {
+                LOGGER.warn("Could not export model to pdf");
+            }
+        }
+
     }
 
     public void export(Writer writer) {
@@ -65,7 +73,7 @@ public class StateMachine {
             GraphDOT.write(mealyMachine, alphabet, writer);
             writer.close();
         } catch (IOException e) {
-            LOGGER.info("Could not export model!");
+            LOGGER.warn("Could not export model to dot file");
         }
     }
 
