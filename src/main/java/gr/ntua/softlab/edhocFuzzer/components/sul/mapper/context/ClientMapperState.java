@@ -2,6 +2,7 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context;
 
 import com.upokecenter.cbor.CBORObject;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.authentication.AuthenticationConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.authentication.keyConfigs.KeyConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocSessionPersistent;
 import net.i2p.crypto.eddsa.EdDSASecurityProvider;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
@@ -111,12 +112,12 @@ public class ClientMapperState extends EdhocMapperState {
 				OSCORE_REPLAY_WINDOW, MAX_UNFRAGMENTED_SIZE);
 
 		// Set authentication params
-		this.authenticationMethod = authenticationConfig.getAuthenticationMethod();
-		this.credType = authenticationConfig.getCredType();
-		this.idCredType = authenticationConfig.getIdCredType();
+		this.authenticationMethod = authenticationConfig.getMapAuthenticationMethod();
+		this.credType = authenticationConfig.getMapCredType();
+		this.idCredType = authenticationConfig.getMapIdCredType();
 
 		// Add the supported cipher suites in decreasing order of preference
-		this.supportedCipherSuites.addAll(authenticationConfig.getSupportedCipherSuites());
+		this.supportedCipherSuites.addAll(authenticationConfig.getMapSupportedCipherSuites());
 
 		// Set up the authentication credentials for this peer
 		setupOwnAuthenticationCredentials(authenticationConfig);
@@ -197,174 +198,156 @@ public class ClientMapperState extends EdhocMapperState {
 
 		// The subject name used for the identity key of this peer
 		String subjectName = "";
+		KeyConfig keyConfig;
+		byte[] privateKey, publicKey;
+		OneKey keyPair;
 
-		// Add one authentication credential for curve Ed25519 (SIG) and one for curve X25519 (STAT)
+		if (supportedCipherSuites.contains(Constants.EDHOC_CIPHER_SUITE_0)
+				|| supportedCipherSuites.contains(Constants.EDHOC_CIPHER_SUITE_1)) {
 
-		if (supportedCipherSuites.contains(Constants.EDHOC_CIPHER_SUITE_0) ||
-				supportedCipherSuites.contains(Constants.EDHOC_CIPHER_SUITE_1)) {
+			switch (authenticationMethod) {
+				case Constants.EDHOC_AUTH_METHOD_0, Constants.EDHOC_AUTH_METHOD_1 -> {
+					// Curve Ed25519 (SIG)
+					keyConfig = authenticationConfig.getEd25519KeySigConfig();
+					privateKey = readEd25519PrivateDerFile(keyConfig.getMapPrivateFilename());
+					publicKey = readEd25519PublicDerFile(keyConfig.getMapPublicFilename());
 
-			// Curve Ed25519 (SIG)
-			byte[] ed25519_privateKey = readEd25519PrivateDerFile(
-					authenticationConfig.getEd25519KeySigConfig().getMapPrivateFilename());
-			byte[] ed25519_publicKey = readEd25519PublicDerFile(
-					authenticationConfig.getEd25519KeySigConfig().getMapPublicFilename());
-			byte[] ed25519_cert = derFileToBytes(authenticationConfig.getEd25519KeySigConfig().getMapX509Filename());
-			String ed25519_x5uLink = authenticationConfig.getEd25519KeySigConfig().getMapX5uLink();
+					// Build key pair
+					keyPair = SharedSecretCalculation.buildEd25519OneKey(privateKey, publicKey);
 
-			// If the type of credential identifier is 'kid', use 0x00,
-			// i.e. the serialized ID_CRED_X is 0xa1, 0x04, 0x41, 0x00
-			byte[] ed25519_kid = new byte[] {(byte) 0x00};
+					// Add the credentials
+					addOwnCredentials(credType, idCredType, keyPair, keyConfig,
+							Constants.SIGNATURE_KEY, Constants.CURVE_Ed25519, subjectName);
+				}
+				case Constants.EDHOC_AUTH_METHOD_2,  Constants.EDHOC_AUTH_METHOD_3 -> {
+					// Curve X25519 (STAT)
+					keyConfig = authenticationConfig.getX25519KeyStatConfig();
+					privateKey = readX25519PrivateDerFile(keyConfig.getMapPrivateFilename());
+					publicKey = readX25519PublicDerFile(keyConfig.getMapPublicFilename());
 
-			// Build key pair
-			OneKey ed25519_keyPair = SharedSecretCalculation.buildEd25519OneKey(ed25519_privateKey, ed25519_publicKey);
+					// Build key pair
+					keyPair = SharedSecretCalculation.buildCurve25519OneKey(privateKey, publicKey);
 
-			// Add the credentials
-			addOwnCredentials(credType, idCredType, ed25519_kid, ed25519_keyPair, ed25519_cert,
-					Constants.SIGNATURE_KEY, Constants.CURVE_Ed25519, subjectName, ed25519_x5uLink);
-
-			// Curve X25519 (STAT)
-			byte[] x25519_privateKey = readX25519PrivateDerFile(
-					authenticationConfig.getX25519KeyStatConfig().getMapPrivateFilename());
-			byte[] x25519_publicKey = readX25519PublicDerFile(
-					authenticationConfig.getX25519KeyStatConfig().getMapPublicFilename());
-			byte[] x25519_cert = derFileToBytes(authenticationConfig.getX25519KeyStatConfig().getMapX509Filename());
-			String x25519_x5uLink = authenticationConfig.getX25519KeyStatConfig().getMapX5uLink();
-
-			// If the type of credential identifier is 'kid', use 0x01,
-			// i.e. the serialized ID_CRED_X is 0xa1, 0x04, 0x41, 0x01
-			byte[] x25519_kid = new byte[] {(byte) 0x01};
-
-			// Build key pair
-			OneKey x25519_keyPair = SharedSecretCalculation.buildCurve25519OneKey(x25519_privateKey, x25519_publicKey);
-
-			// Add the credentials
-			addOwnCredentials(credType, idCredType, x25519_kid, x25519_keyPair, x25519_cert,
-					Constants.ECDH_KEY, Constants.CURVE_X25519, subjectName, x25519_x5uLink);
+					// Add the credentials
+					addOwnCredentials(credType, idCredType, keyPair, keyConfig,
+							Constants.ECDH_KEY, Constants.CURVE_X25519, subjectName);
+				}
+				default -> throw new RuntimeException("Invalid authentication method: " + authenticationMethod);
+			}
 		}
 
-		// Add two authentication credentials for curve P-256 (one for SIG and one for STAT)
 		if (supportedCipherSuites.contains(Constants.EDHOC_CIPHER_SUITE_2) ||
 				supportedCipherSuites.contains(Constants.EDHOC_CIPHER_SUITE_3)) {
+			byte[] publicKeyX, publicKeyY;
 
-			// P-256 (SIG)
-			byte[] p256_sig_privateKey = readP256PrivateDerFile(
-					authenticationConfig.getP256KeySigConfig().getMapPrivateFilename());
-			byte[] p256_sig_publicKeyX = new byte[32];
-			byte[] p256_sig_publicKeyY = new byte[32];
-			readP256PublicDerFile(authenticationConfig.getP256KeySigConfig().getMapPublicFilename(),
-					p256_sig_publicKeyX, p256_sig_publicKeyY);
-			byte[] p256_sig_cert = derFileToBytes(authenticationConfig.getP256KeySigConfig().getMapX509Filename());
-			String p256_sig_x5uLink = authenticationConfig.getP256KeySigConfig().getMapX5uLink();
+			switch (authenticationMethod) {
+				case Constants.EDHOC_AUTH_METHOD_0, Constants.EDHOC_AUTH_METHOD_1 -> {
+					// P-256 (SIG)
+					keyConfig = authenticationConfig.getP256KeySigConfig();
+					privateKey = readP256PrivateDerFile(keyConfig.getMapPrivateFilename());
+					publicKeyX = new byte[32];
+					publicKeyY = new byte[32];
+					readP256PublicDerFile(keyConfig.getMapPublicFilename(), publicKeyX, publicKeyY);
 
-			// If the type of credential identifier is 'kid', use 0x02,
-			// i.e. the serialized ID_CRED_X is 0xa1, 0x04, 0x41, 0x02
-			byte[] p256_sig_kid = new byte[] {(byte) 0x02};
+					// Build the key pair
+					keyPair = SharedSecretCalculation.buildEcdsa256OneKey(privateKey, publicKeyX, publicKeyY);
 
-			// Build the key pair
-			OneKey p256_sig_keyPair = SharedSecretCalculation.buildEcdsa256OneKey(p256_sig_privateKey,
-					p256_sig_publicKeyX, p256_sig_publicKeyY);
+					// Add the credentials
+					addOwnCredentials(credType, idCredType, keyPair, keyConfig,
+							Constants.SIGNATURE_KEY, Constants.CURVE_P256, subjectName);
+				}
+				case Constants.EDHOC_AUTH_METHOD_2, Constants.EDHOC_AUTH_METHOD_3 -> {
+					// P-256 (STAT)
+					keyConfig = authenticationConfig.getP256KeyStatConfig();
+					privateKey = readP256PrivateDerFile(keyConfig.getMapPrivateFilename());
+					publicKeyX = new byte[32];
+					publicKeyY = new byte[32];
+					readP256PublicDerFile(keyConfig.getMapPublicFilename(), publicKeyX, publicKeyY);
 
-			// Add the credentials
-			addOwnCredentials(credType, idCredType, p256_sig_kid, p256_sig_keyPair, p256_sig_cert,
-					Constants.SIGNATURE_KEY, Constants.CURVE_P256, subjectName, p256_sig_x5uLink);
+					// Build the key pair
+					keyPair = SharedSecretCalculation.buildEcdsa256OneKey(privateKey, publicKeyX, publicKeyY);
 
-			// P-256 (STAT)
-			byte[] p256_stat_privateKey = readP256PrivateDerFile(
-					authenticationConfig.getP256KeyStatConfig().getMapPrivateFilename());
-			byte[] p256_stat_publicKeyX = new byte[32];
-			byte[] p256_stat_publicKeyY = new byte[32];
-			readP256PublicDerFile(authenticationConfig.getP256KeyStatConfig().getMapPublicFilename(),
-					p256_stat_publicKeyX, p256_stat_publicKeyY);
-			byte[] p256_stat_cert = derFileToBytes(authenticationConfig.getP256KeyStatConfig().getMapX509Filename());
-			String p256_stat_x5uLink = authenticationConfig.getP256KeyStatConfig().getMapX5uLink();
-
-			// If the type of credential identifier is 'kid', use 0x03,
-			// i.e. the serialized ID_CRED_X is 0xa1, 0x04, 0x41, 0x03
-			byte[] p256_stat_kid = new byte[] {(byte) 0x03};
-
-			// Build the key pair
-			OneKey p256_stat_keyPair = SharedSecretCalculation.buildEcdsa256OneKey(p256_stat_privateKey,
-					p256_stat_publicKeyX, p256_stat_publicKeyY);
-
-			// Add the credentials
-			addOwnCredentials(credType, idCredType, p256_stat_kid, p256_stat_keyPair, p256_stat_cert,
-					Constants.ECDH_KEY, Constants.CURVE_P256, subjectName, p256_stat_x5uLink);
+					// Add the credentials
+					addOwnCredentials(credType, idCredType, keyPair, keyConfig,
+							Constants.ECDH_KEY, Constants.CURVE_P256, subjectName);
+				}
+				default -> throw new RuntimeException("Invalid authentication method: " + authenticationMethod);
+			}
 		}
 	}
 
 	protected void setupPeerAuthenticationCredentials (AuthenticationConfig authenticationConfig) {
+		// Add as many authentication credentials are provided
+
 		// The subject name used for the identity key of the other peer
+		Integer credType = authenticationConfig.getSulCredType();
+		Integer idCredType = authenticationConfig.getSulIdCredType();
 		String subjectName = "";
+		String publicKeyFilename;
+		KeyConfig keyConfig;
+		OneKey keyPair;
+		byte[] publicKey, publicKeyX, publicKeyY;
 
-		// Add other peers' authentication credentials for curve Ed25519 (SIG)
-		byte[] ed25519_publicKey = readEd25519PublicDerFile(
-				authenticationConfig.getEd25519KeySigConfig().getSulPublicFilename());
-		byte[] ed25519_cert = derFileToBytes(authenticationConfig.getEd25519KeySigConfig().getSulX509Filename());
-		String ed25519_x5uLink = authenticationConfig.getEd25519KeySigConfig().getSulX5uLink();
+		switch (authenticationMethod) {
+			case Constants.EDHOC_AUTH_METHOD_0, Constants.EDHOC_AUTH_METHOD_2 -> {
+				// Add other peers' authentication credentials for curve Ed25519 (SIG)
+				keyConfig = authenticationConfig.getEd25519KeySigConfig();
+				publicKeyFilename = keyConfig.getSulPublicFilename();
+				if (publicKeyFilename != null) {
+					publicKey = readEd25519PublicDerFile(publicKeyFilename);
 
-		// If the type of credential identifier is 'kid', use 0x07,
-		// i.e. the serialized ID_CRED_X is 0xa1, 0x04, 0x41, 0x07
-		byte[] ed25519_kid = new byte[] {(byte) 0x07};
+					// Build the keyPair only from public key
+					keyPair = SharedSecretCalculation.buildEd25519OneKey(null, publicKey);
 
-		// Build the keyPair only from public key
-		OneKey ed25519_keyPair = SharedSecretCalculation.buildEd25519OneKey(null, ed25519_publicKey);
+					// Add the credentials
+					addPeerCredentials(credType, idCredType, keyPair, keyConfig, subjectName);
+				}
 
-		// Add the credentials
-		addPeerCredentials(ed25519_keyPair, ed25519_kid, ed25519_cert, subjectName, ed25519_x5uLink);
+				// Add other peers' authentication credentials for curve P-256 (SIG)
+				keyConfig = authenticationConfig.getP256KeySigConfig();
+				publicKeyFilename = keyConfig.getSulPublicFilename();
+				if (publicKeyFilename != null) {
+					publicKeyX = new byte[32];
+					publicKeyY = new byte[32];
+					readP256PublicDerFile(publicKeyFilename, publicKeyX, publicKeyY);
 
-		// Add other peers' authentication credentials for curve X25519 (STAT)
-		byte[] x25519_publicKey = readX25519PublicDerFile(
-				authenticationConfig.getX25519KeyStatConfig().getSulPublicFilename());
-		byte[] x25519_cert = derFileToBytes(authenticationConfig.getX25519KeyStatConfig().getSulX509Filename());
-		String x25519_x5uLink = authenticationConfig.getX25519KeyStatConfig().getSulX5uLink();
+					// Build the keyPair from only the public key
+					keyPair = SharedSecretCalculation.buildEcdsa256OneKey(null, publicKeyX, publicKeyY);
 
-		// If the type of credential identifier is 'kid', use 0x08,
-		// i.e. the serialized ID_CRED_X is 0xa1, 0x04, 0x41, 0x08
-		byte[] x25519_kid = new byte[] {(byte) 0x08};
+					// Add the credentials
+					addPeerCredentials(credType, idCredType, keyPair, keyConfig, subjectName);
+				}
+			}
+			case Constants.EDHOC_AUTH_METHOD_1, Constants.EDHOC_AUTH_METHOD_3 -> {
+				// Add other peers' authentication credentials for curve X25519 (STAT)
+				keyConfig = authenticationConfig.getX25519KeyStatConfig();
+				publicKeyFilename = keyConfig.getSulPublicFilename();
+				if (publicKeyFilename != null) {
+					publicKey = readX25519PublicDerFile(publicKeyFilename);
 
-		// Build the keyPair only from public key
-		OneKey x25519_keyPair = SharedSecretCalculation.buildCurve25519OneKey(null, x25519_publicKey);
+					// Build the keyPair only from public key
+					keyPair = SharedSecretCalculation.buildCurve25519OneKey(null, publicKey);
 
-		// Add the credentials
-		addPeerCredentials(x25519_keyPair, x25519_kid, x25519_cert, subjectName, x25519_x5uLink);
+					// Add the credentials
+					addPeerCredentials(credType, idCredType, keyPair, keyConfig, subjectName);
+				}
 
-		// Add other peers' authentication credentials for curve P-256 (SIG)
-		byte[] p256_sig_publicKeyX = new byte[32];
-		byte[] p256_sig_publicKeyY = new byte[32];
-		readP256PublicDerFile(authenticationConfig.getP256KeySigConfig().getSulPublicFilename(),
-				p256_sig_publicKeyX, p256_sig_publicKeyY);
-		byte[] p256_sig_cert = derFileToBytes(authenticationConfig.getP256KeySigConfig().getSulX509Filename());
-		String p256_sig_x5uLink = authenticationConfig.getP256KeySigConfig().getSulX5uLink();
+				// Add other peers' authentication credentials for curve P-256 (STAT)
+				keyConfig = authenticationConfig.getP256KeyStatConfig();
+				publicKeyFilename = keyConfig.getSulPublicFilename();
+				if (publicKeyFilename != null) {
+					publicKeyX = new byte[32];
+					publicKeyY = new byte[32];
+					readP256PublicDerFile(publicKeyFilename, publicKeyX, publicKeyY);
 
-		// If the type of credential identifier is 'kid', use 0x09,
-		// i.e. the serialized ID_CRED_X is 0xa1, 0x04, 0x41, 0x09
-		byte[] p256_sig_kid = new byte[] {(byte) 0x09};
+					// Build the keyPair from only the public key
+					keyPair = SharedSecretCalculation.buildEcdsa256OneKey(null, publicKeyX, publicKeyY);
 
-		// Build the keyPair from only the public key
-		OneKey p256_sig_keyPair = SharedSecretCalculation.buildEcdsa256OneKey(null, p256_sig_publicKeyX,
-				p256_sig_publicKeyY);
-
-		// Add the credentials
-		addPeerCredentials(p256_sig_keyPair, p256_sig_kid, p256_sig_cert, subjectName, p256_sig_x5uLink);
-
-		// Add other peers' authentication credentials for curve P-256 (STAT)
-		byte[] p256_stat_publicKeyX = new byte[32];
-		byte[] p256_stat_publicKeyY = new byte[32];
-		readP256PublicDerFile(authenticationConfig.getP256KeyStatConfig().getSulPublicFilename(),
-				p256_stat_publicKeyX, p256_stat_publicKeyY);
-		byte[] p256_stat_cert = derFileToBytes(authenticationConfig.getP256KeyStatConfig().getSulX509Filename());
-		String p256_stat_x5uLink = authenticationConfig.getP256KeyStatConfig().getSulX5uLink();
-
-		// If the type of credential identifier is 'kid', use 0x0a,
-		// i.e. the serialized ID_CRED_X is 0xa1, 0x04, 0x41, 0x0a
-		byte[] p256_stat_kid = new byte[] {(byte) 0x0a};
-
-		// Build the keyPair from only the public key
-		OneKey p256_stat_keyPair = SharedSecretCalculation.buildEcdsa256OneKey(null, p256_stat_publicKeyX,
-				p256_stat_publicKeyY);
-
-		// Add the credentials
-		addPeerCredentials(p256_stat_keyPair, p256_stat_kid, p256_stat_cert, subjectName, p256_stat_x5uLink);
+					// Add the credentials
+					addPeerCredentials(credType, idCredType, keyPair, keyConfig, subjectName);
+				}
+			}
+		}
 	}
 
 	protected byte[] derFileToBytes(String filename) {
@@ -444,52 +427,75 @@ public class ClientMapperState extends EdhocMapperState {
 
 	protected byte[] buildCred(int credType, byte[] kid, OneKey keyPair, String subjectName, byte[] serializedCert) {
 		switch (credType) {
-			case Constants.CRED_TYPE_CWT -> {
-				return null;
-			}
+			case Constants.CRED_TYPE_CWT -> throw new UnsupportedOperationException("Cred type: CWT");
 			case Constants.CRED_TYPE_CCS -> {
+				String error = "";
+				error += kid == null ? " kid" : "";
+				error += keyPair == null ? " keyPair" : "";
+				error += subjectName == null ? " subject name" : "";
+
+				if (!error.equals("")) {
+					throw new RuntimeException("Null provided:" + error);
+				}
+
 				CBORObject idCredKidCbor = CBORObject.FromObject(kid);
 				return Util.buildCredRawPublicKeyCcs(keyPair, subjectName, idCredKidCbor);
 			}
 			case Constants.CRED_TYPE_X509 -> {
+				if (serializedCert == null) {
+					throw new RuntimeException("Null provided serialized certificate");
+				}
 				// CRED, as serialization of a CBOR byte string wrapping the serialized certificate
 				return CBORObject.FromObject(serializedCert).EncodeToBytes();
 			}
-			default -> {
-				throw new IllegalStateException("Unexpected credType value: " + credType);
-			}
+			default -> throw new IllegalStateException("Unexpected credType value: " + credType);
 		}
 	}
 
 	protected CBORObject buildIdCred(int idCredType, byte[] kid, byte[] cred, byte[] serializedCert, String x5uLink) {
 		switch (idCredType) {
 			case Constants.ID_CRED_TYPE_KID -> {
+				if (kid == null) {
+					throw new RuntimeException("Null provided kid");
+				}
 				return Util.buildIdCredKid(kid);
 			}
-			case Constants.ID_CRED_TYPE_CWT -> {
-				// TODO
-				return null;
-			}
+			case Constants.ID_CRED_TYPE_CWT -> throw new UnsupportedOperationException("Id Cred type: CWT ");
 			case Constants.ID_CRED_TYPE_CCS -> {
+				if (cred == null) {
+					throw new RuntimeException("Null provided cred");
+				}
 				return Util.buildIdCredKccs(CBORObject.DecodeFromBytes(cred));
 			}
 			case Constants.ID_CRED_TYPE_X5T -> {
+				if (serializedCert == null) {
+					throw new RuntimeException("Null provided serialized certificate");
+				}
 				return Util.buildIdCredX5t(serializedCert);
 			}
 			case Constants.ID_CRED_TYPE_X5U -> {
+				if (x5uLink == null) {
+					throw new RuntimeException("Null provided x5uLink");
+				}
 				return Util.buildIdCredX5u(x5uLink);
 			}
 			case Constants.ID_CRED_TYPE_X5CHAIN -> {
+				if (serializedCert == null) {
+					throw new RuntimeException("Null provided serialized certificate");
+				}
 				return Util.buildIdCredX5chain(serializedCert);
 			}
-			default -> {
-				throw new IllegalStateException("Unexpected credType value: " + credType);
-			}
+			default -> throw new IllegalStateException("Unexpected idCredType value: " + idCredType);
 		}
 	}
 
-	protected void addOwnCredentials(int credType, int idCredType, byte[] kid, OneKey keyPair, byte[] serializedCert,
-									 int keyUsage, int keyCurve, String subjectName, String x5uLink){
+	protected void addOwnCredentials(int credType, int idCredType, OneKey keyPair, KeyConfig keyConfig,
+									 int keyUsage, int keyCurve, String subjectName){
+		byte[] kid = keyConfig.getMapKid();
+		String certFilename = keyConfig.getMapX509Filename();
+		byte[] serializedCert = certFilename == null ? null : derFileToBytes(certFilename);
+		String x5uLink = keyConfig.getMapX5uLink();
+
 		// Build CRED
 		byte[] cred = buildCred(credType, kid, keyPair, subjectName, serializedCert);
 
@@ -505,37 +511,92 @@ public class ClientMapperState extends EdhocMapperState {
 		ownIdCreds.add(idCred);
 	}
 
-	protected void addPeerCredentials(OneKey peerPublicKey, byte[] kid, byte[] serializedCert, String subjectName,
-									  String x5uLink) {
-		// Build CRED as a CCS, and the corresponding ID_CRED as 'kccs' and 'kid'
-		byte[] cred = buildCred(Constants.CRED_TYPE_CCS, kid, peerPublicKey, subjectName, serializedCert);
-
+	protected void addAllPeerIdCredForCCSCred(byte[] cred, OneKey peerPublicKey, byte[] kid) {
 		// ID_CRED as 'kccs'
-		CBORObject idCredkccs = buildIdCred(Constants.ID_CRED_TYPE_CCS, kid, cred, serializedCert, x5uLink);
-		// ID_CRED as 'kid'
-		CBORObject idCredkid = buildIdCred(Constants.ID_CRED_TYPE_KID, kid, cred, serializedCert, x5uLink);
-
+		CBORObject idCredkccs = buildIdCred(Constants.ID_CRED_TYPE_CCS, null, cred, null, null);
 		peerPublicKeys.put(idCredkccs, peerPublicKey);
 		peerCredentials.put(idCredkccs, CBORObject.FromObject(cred));
+
+		// ID_CRED as 'kid'
+		CBORObject idCredkid = buildIdCred(Constants.ID_CRED_TYPE_KID, kid, null, null, null);
 		peerPublicKeys.put(idCredkid, peerPublicKey);
 		peerCredentials.put(idCredkid, CBORObject.FromObject(cred));
+	}
 
-		// Build CRED as an X.509 certificate, and the corresponding ID_CRED as 'x5t', 'x5u' and 'x5chain'
-		cred = buildCred(Constants.CRED_TYPE_X509, kid, peerPublicKey, subjectName, serializedCert);
-
+	protected void addAllPeerIdCredForX509Cred(byte[] cred, OneKey peerPublicKey, byte[] serializedCert,
+											   String x5uLink) {
 		// ID_CRED as 'x5t'
-		CBORObject idCredx5t = buildIdCred(Constants.ID_CRED_TYPE_X5T, kid, cred, serializedCert, x5uLink);
-		// ID_CRED as 'x5u'
-		CBORObject idCredx5u = buildIdCred(Constants.ID_CRED_TYPE_X5U, kid, cred, serializedCert, x5uLink);
-		// ID_CRED as 'x5chain'
-		CBORObject idCredx5chain = buildIdCred(Constants.ID_CRED_TYPE_X5CHAIN, kid, cred, serializedCert, x5uLink);
-
+		CBORObject idCredx5t = buildIdCred(Constants.ID_CRED_TYPE_X5T, null, null, serializedCert, null);
 		peerPublicKeys.put(idCredx5t, peerPublicKey);
 		peerCredentials.put(idCredx5t, CBORObject.FromObject(cred));
-		peerPublicKeys.put(idCredx5u, peerPublicKey);
-		peerCredentials.put(idCredx5u, CBORObject.FromObject(cred));
+
+		// ID_CRED as 'x5chain'
+		CBORObject idCredx5chain = buildIdCred(Constants.ID_CRED_TYPE_X5CHAIN, null, null, serializedCert, null);
 		peerPublicKeys.put(idCredx5chain, peerPublicKey);
 		peerCredentials.put(idCredx5chain, CBORObject.FromObject(cred));
+
+		// ID_CRED as 'x5u'
+		if (x5uLink != null) {
+			CBORObject idCredx5u = buildIdCred(Constants.ID_CRED_TYPE_X5U, null, null, null, x5uLink);
+			peerPublicKeys.put(idCredx5u, peerPublicKey);
+			peerCredentials.put(idCredx5u, CBORObject.FromObject(cred));
+		}
+	}
+
+	protected void addPeerCredentials(Integer credType, Integer idCredType, OneKey peerPublicKey,
+									  KeyConfig keyConfig, String subjectName) {
+
+		byte[] kid = keyConfig.getSulKid();
+		String certFilename = keyConfig.getSulX509Filename();
+		byte[] serializedCert = certFilename == null ? null : derFileToBytes(certFilename);
+		String x5uLink = keyConfig.getSulX5uLink();
+		byte[] cred;
+		CBORObject idCred;
+
+		// Nothing is known for the peer yet, so add as many id_creds and creds as possible
+
+		if (credType != null) {
+			cred = buildCred(credType, kid, peerPublicKey, subjectName, serializedCert);
+
+			if (idCredType != null) {
+				idCred = buildIdCred(idCredType, kid, cred, serializedCert, x5uLink);
+				peerPublicKeys.put(idCred, peerPublicKey);
+				peerCredentials.put(idCred, CBORObject.FromObject(cred));
+			} else {
+				switch (credType) {
+					case Constants.CRED_TYPE_CCS ->
+							addAllPeerIdCredForCCSCred(cred, peerPublicKey, kid);
+					case Constants.CRED_TYPE_X509 ->
+							addAllPeerIdCredForX509Cred(cred, peerPublicKey, serializedCert, x5uLink);
+				}
+			}
+		}
+		else {
+			// Build CRED as a CCS
+			byte[] cred_ccs = buildCred(Constants.CRED_TYPE_CCS, kid, peerPublicKey, subjectName, null);
+			// Build CRED as an X.509 certificate
+			byte[] cred_x509 = buildCred(Constants.CRED_TYPE_X509, null, null, null, serializedCert);
+
+			if (idCredType != null) {
+				if (idCredType == Constants.ID_CRED_TYPE_KID || idCredType == Constants.ID_CRED_TYPE_CCS) {
+						cred = cred_ccs;
+						idCred = buildIdCred(idCredType, kid, cred_ccs, null, null);
+				}
+				else if	(idCredType == Constants.ID_CRED_TYPE_X5T || idCredType == Constants.ID_CRED_TYPE_X5U
+						|| idCredType == Constants.ID_CRED_TYPE_X5CHAIN) {
+					cred = cred_x509;
+					idCred = buildIdCred(idCredType, null, cred_x509, serializedCert, x5uLink);
+				}
+				else {
+					throw new UnsupportedOperationException("Id cred type: " + idCredType);
+				}
+				peerPublicKeys.put(idCred, peerPublicKey);
+				peerCredentials.put(idCred, CBORObject.FromObject(cred));
+			} else {
+				addAllPeerIdCredForCCSCred(cred_ccs, peerPublicKey, kid);
+				addAllPeerIdCredForX509Cred(cred_x509, peerPublicKey, serializedCert, x5uLink);
+			}
+		}
 	}
 
 }

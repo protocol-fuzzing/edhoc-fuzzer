@@ -104,19 +104,20 @@ public class EdhocSul extends AbstractSul {
         }
 
         this.executionContextStepped = new ExecutionContextStepped(state);
-    }
 
-    @Override
-    public void post() {
-        LOGGER.debug("Executing SUL 'post'");
         long startWait = sulConfig.getStartWait();
         if (startWait > 0) {
             try {
                 Thread.sleep(startWait);
             } catch (InterruptedException e) {
-                LOGGER.error("Interrupted 'post' sleep for {} ms", startWait);
+                LOGGER.error("Interrupted 'pre' sleep for {} ms", startWait);
             }
         }
+    }
+
+    @Override
+    public void post() {
+        LOGGER.debug("Executing SUL 'post'");
     }
 
     @Override

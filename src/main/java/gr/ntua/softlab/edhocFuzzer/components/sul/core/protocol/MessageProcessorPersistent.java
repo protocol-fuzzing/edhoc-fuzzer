@@ -740,7 +740,7 @@ public class MessageProcessorPersistent {
         try {
             plaintextElementList = CBORObject.DecodeSequenceFromBytes(plaintext2);
         } catch (Exception e) {
-            LOGGER.debug("ERROR: Malformed or invalid plaintext from CIPHERTEXT_2");
+            LOGGER.debug("ERROR: Malformed or invalid CBOR encoded plaintext from CIPHERTEXT_2");
             return false;
         }
 
@@ -1903,18 +1903,20 @@ public class MessageProcessorPersistent {
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeSignatureOrMac2} */
     protected byte[] computeSignatureOrMac2(EdhocSession session, byte[] mac2, byte[] externalData) {
-
+        // Used by Responder
         byte[] signatureOrMac2 = null;
         int authenticationMethod = session.getMethod();
 
         if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_1
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_3) {
-            // The responder does not use signatures as authentication method, then Signature_or_MAC_2 is equal to MAC_2
+            // The responder does not use signatures as authentication method,
+            // then Signature_or_MAC_2 is equal to MAC_2
             signatureOrMac2 = new byte[mac2.length];
             System.arraycopy(mac2, 0, signatureOrMac2, 0, mac2.length);
         } else if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_0
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_2) {
-            // The responder uses signatures as authentication method, then Signature_or_MAC_2 has to be computed
+            // The responder uses signatures as authentication method,
+            // then Signature_or_MAC_2 is signature that has to be computed
             try {
                 OneKey identityKey = session.getKeyPair();
                 int selectedCipherSuite = session.getSelectedCipherSuite();
@@ -1954,16 +1956,18 @@ public class MessageProcessorPersistent {
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#verifySignatureOrMac2} */
     protected boolean verifySignatureOrMac2(EdhocSession session, OneKey peerLongTerm, CBORObject peerIdCred,
                                             byte[] signatureOrMac2, byte[] externalData, byte[] mac2) {
+        // Used by Initiator
         int authenticationMethod = session.getMethod();
 
         if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_1
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_3) {
-            // The responder does not use signatures as authentication method, then Signature_or_MAC_2 has to be equal to MAC_2
+            // The responder does not use signatures as authentication method,
+            // then Signature_or_MAC_2 has to be equal to MAC_2
             return Arrays.equals(signatureOrMac2, mac2);
         } else if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_0
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_2) {
-            // The responder uses signatures as authentication method, then Signature_or_MAC_2 is a signature to verify
-
+            // The responder uses signatures as authentication method,
+            // then Signature_or_MAC_2 is a signature to verify
             int selectedCipherSuite = session.getSelectedCipherSuite();
 
             // Consistency check of key type and curve against the selected cipher suite
@@ -2002,18 +2006,19 @@ public class MessageProcessorPersistent {
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computePRK4e3m} */
     protected byte[] computePRK4e3m(EdhocSession session, byte[] prk3e2m, byte[] th3, OneKey peerLongTerm,
                                         OneKey peerEphemeral) {
-
         byte[] prk4e3m = null;
         int authenticationMethod = session.getMethod();
 
         if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_0
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_1) {
-            // The initiator uses signatures as authentication method, then PRK_4e3m is equal to PRK_3e2m
+            // The initiator uses signatures as authentication method,
+            // then PRK_4e3m is equal to PRK_3e2m
             prk4e3m = new byte[prk3e2m.length];
             System.arraycopy(prk3e2m, 0, prk4e3m, 0, prk3e2m.length);
         } else if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_2
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_3) {
-            // The initiator does not use signatures as authentication method, then PRK_4e3m has to be computed
+            // The initiator does not use signatures as authentication method,
+            // then PRK_4e3m has to be computed
             byte[] dhSecret;
             OneKey privateKey;
             OneKey publicKey;
@@ -2109,10 +2114,10 @@ public class MessageProcessorPersistent {
         int macLength = 0;
         int method = session.getMethod();
         int selectedCipherSuite = session.getSelectedCipherSuite();
-        if (method == 0 || method == 1) {
+        if (method == Constants.EDHOC_AUTH_METHOD_0 || method == Constants.EDHOC_AUTH_METHOD_1) {
             macLength = EdhocSession.getEdhocHashAlgOutputSize(selectedCipherSuite);
         }
-        if (method == 2 || method == 3) {
+        if (method == Constants.EDHOC_AUTH_METHOD_2 || method == Constants.EDHOC_AUTH_METHOD_3) {
             macLength = EdhocSession.getTagLengthEdhocAEAD(selectedCipherSuite);
         }
 
@@ -2126,7 +2131,7 @@ public class MessageProcessorPersistent {
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeSignatureOrMac3} */
     protected byte[] computeSignatureOrMac3(EdhocSession session, byte[] mac3, byte[] externalData) {
-
+        // Used by Initiator
         byte[] signatureOrMac3 = null;
         int authenticationMethod = session.getMethod();
 
@@ -2138,9 +2143,9 @@ public class MessageProcessorPersistent {
             System.arraycopy(mac3, 0, signatureOrMac3, 0, mac3.length);
         } else if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_0
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_1) {
+            // The initiator uses signatures as authentication method,
+            // then Signature_or_MAC_3 is signature that has to be computed
             try {
-                // The initiator uses signatures as authentication method,
-                // then Signature_or_MAC_3 has to be computed
                 OneKey identityKey = session.getKeyPair();
                 int selectedCipherSuite = session.getSelectedCipherSuite();
 
@@ -2280,7 +2285,7 @@ public class MessageProcessorPersistent {
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#verifySignatureOrMac3} */
     protected boolean verifySignatureOrMac3(EdhocSession session, OneKey peerLongTerm, CBORObject peerIdCred,
                                             byte[] signatureOrMac3, byte[] externalData, byte[] mac3) {
-
+        // Used by Responder
         int authenticationMethod = session.getMethod();
 
         if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_2
@@ -2293,7 +2298,6 @@ public class MessageProcessorPersistent {
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_1) {
             // The initiator uses signatures as authentication method,
             // then Signature_or_MAC_3 is a signature to verify
-
             int selectedCipherSuite = session.getSelectedCipherSuite();
 
             // Consistency check of key type and curve against the selected cipher suite

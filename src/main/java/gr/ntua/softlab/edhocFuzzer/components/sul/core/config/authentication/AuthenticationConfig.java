@@ -11,22 +11,33 @@ import org.eclipse.californium.edhoc.Constants;
 import java.util.List;
 
 public class AuthenticationConfig {
-    @Parameter(names = "-authMethod", description = "The authentication method as an int for the mapper. "
-            + "Available: 0 [Sig-Sig], 1 [Sig-Stat], 2 [Stat - Sig], 3 [Stat - Stat]")
-    protected Integer authenticationMethod = Constants.EDHOC_AUTH_METHOD_0;
+    @Parameter(names = "-mapAuthMethod", required = true, description = "The authentication method as an int for "
+            + "the mapper. Available: 0 [Sig-Sig], 1 [Sig-Stat], 2 [Stat-Sig], 3 [Stat-Stat]")
+    protected Integer mapAuthenticationMethod = null;
 
-    @Parameter(names = "-credType", description = "The credential type as an int for the mapper. "
+    @Parameter(names = "-mapCredType", required = true, description = "The credential type as an int for the mapper. "
             + "Available: 0 [CWT], 1 [CCS], 2 [x509 cert]")
-    protected Integer credType = Constants.CRED_TYPE_X509;
+    protected Integer mapCredType = null;
 
-    @Parameter(names = "-idCredType", description = "The credential identifier type as an int for the "
+    @Parameter(names = "-mapIdCredType", required = true, description = "The credential identifier type as an int for the "
             + "mapper. Available: 0 [KID], 1 [CWT], 2 [CCS], 3 [X5T (x509 cert by hash reference)], "
             + "4 [X5U (x509 cert by retrieval link)], 5 [X5CHAIN (x509 cert by value)]")
-    protected Integer idCredType = Constants.ID_CRED_TYPE_X5T;
+    protected Integer mapIdCredType = null;
 
-    @Parameter(names = "-cipherSuites", description = "The supported cipher suites as comma-separated ints. "
-            + "The cipher suite order defines the decreasing  preference order. Available: 0, 1, 2, 3 (details in RFC)")
-    protected List<Integer> supportedCipherSuites = List.of(0, 1, 2, 3);
+    @Parameter(names = "-mapCipherSuites", required = true , description = "The supported cipher suites as "
+            + "comma-separated ints. The cipher suite order defines the decreasing  preference order. "
+            + "Available: 0, 1, 2, 3 (details in RFC)")
+    protected List<Integer> mapSupportedCipherSuites = null;
+
+    @Parameter(names = "-sulCredType", description = "The credential type as an int for the sul. "
+            + "Available: 0 [CWT], 1 [CCS], 2 [x509 cert]. In case of 'empty' all possible are generated.")
+    protected Integer sulCredType = null;
+
+    @Parameter(names = "-sulIdCredType", description = "The credential identifier type as an int for the "
+            + "sul. Available: 0 [KID], 1 [CWT], 2 [CCS], 3 [X5T (x509 cert by hash reference)], "
+            + "4 [X5U (x509 cert by retrieval link)], 5 [X5CHAIN (x509 cert by value)]. "
+            + "In case of null all possible are generated.")
+    protected Integer sulIdCredType = null;
 
     @ParametersDelegate
     protected Ed25519KeySigConfig ed25519KeySigConfig;
@@ -47,20 +58,28 @@ public class AuthenticationConfig {
         this.p256KeyStatConfig = new P256KeyStatConfig();
     }
 
-    public Integer getAuthenticationMethod() {
-        return authenticationMethod;
+    public Integer getMapAuthenticationMethod() {
+        return mapAuthenticationMethod;
     }
 
-    public int getCredType() {
-        return credType;
+    public int getMapCredType() {
+        return mapCredType;
     }
 
-    public int getIdCredType() {
-        return idCredType;
+    public int getMapIdCredType() {
+        return mapIdCredType;
     }
 
-    public List<Integer> getSupportedCipherSuites() {
-        return supportedCipherSuites;
+    public List<Integer> getMapSupportedCipherSuites() {
+        return mapSupportedCipherSuites;
+    }
+
+    public Integer getSulCredType() {
+        return sulCredType;
+    }
+
+    public Integer getSulIdCredType() {
+        return sulIdCredType;
     }
 
     public Ed25519KeySigConfig getEd25519KeySigConfig() {
