@@ -57,8 +57,10 @@ public class StateMachine {
         }
 
         if (generatePdf) {
-            String pdfFile = graphFile.getAbsolutePath().replace(".dot", "");
-            String[] cmdArray = new String[]{"dot",  "-Tpdf", "-O", pdfFile};
+            String dotFilename = graphFile.getAbsolutePath();
+            String pdfFilename = dotFilename.endsWith(".dot") ? dotFilename.replace(".dot", ".pdf") :
+                    dotFilename + ".pdf";
+            String[] cmdArray = new String[]{"dot", "-Tpdf", dotFilename, "-o", pdfFilename};
             try {
                 Runtime.getRuntime().exec(cmdArray);
             } catch (IOException e) {

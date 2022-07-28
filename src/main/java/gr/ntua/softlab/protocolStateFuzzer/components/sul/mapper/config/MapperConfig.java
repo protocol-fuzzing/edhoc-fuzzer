@@ -3,12 +3,16 @@ package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config;
 import com.beust.jcommander.Parameter;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
  * Configures how actual messages are mapped to abstract output strings.
  */
 public class MapperConfig {
+    public static final String DEFAULT_MAPPER_CONNECTION_CONFIG = "default_mapper_connection.config";
 
     @Parameter(names = "-mapperConnectionConfig", description = "Configuration file for the connection of "
             + "Mapper with the running process")
@@ -38,6 +42,14 @@ public class MapperConfig {
 
     public String getMapperConnectionConfig() {
         return mapperConnectionConfig;
+    }
+
+    public InputStream getMapperConnectionConfigInputStream() throws IOException {
+        if (mapperConnectionConfig == null) {
+            return this.getClass().getClassLoader().getResourceAsStream(DEFAULT_MAPPER_CONNECTION_CONFIG);
+        } else {
+            return new FileInputStream(mapperConnectionConfig);
+        }
     }
 
     public List<String> getRepeatingOutputs() {

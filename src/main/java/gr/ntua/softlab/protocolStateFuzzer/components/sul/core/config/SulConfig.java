@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public abstract class SulConfig implements MapperConfigProvider {
-    public static final String DEFAULT_MAPPER_CONNECTION_CONFIG = "default_mapper_connection.config";
     public static final String FUZZER_DIR = "fuzzer.dir";
     public static final String SULS_DIR = "suls.dir";
 
@@ -82,15 +81,6 @@ public abstract class SulConfig implements MapperConfigProvider {
     @Override
     public MapperConfig getMapperConfig() {
         return mapperConfig;
-    }
-
-    public InputStream getMapperConnectionConfigInputStream() throws IOException {
-        String mapperConnectionConfig = mapperConfig.getMapperConnectionConfig();
-        if (mapperConnectionConfig == null) {
-            return this.getClass().getClassLoader().getResourceAsStream(DEFAULT_MAPPER_CONNECTION_CONFIG);
-        } else {
-            return new FileInputStream(mapperConnectionConfig);
-        }
     }
 
     public Long getResponseWait() {

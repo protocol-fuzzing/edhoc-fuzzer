@@ -86,10 +86,8 @@ public class TestRunner {
             for (TestRunnerResult<AbstractInput, AbstractOutput> result : results) {
                 LOGGER.info(result.toString());
                 if (testRunnerEnabler.getTestRunnerConfig().isShowTransitionSequence()) {
-                    LOGGER.info("");
-                    LOGGER.info("Displaying Transition Sequence");
-                    LOGGER.info("");
-                    LOGGER.info(getTransitionSequenceString(result, getSulConfig().isFuzzingClient()));
+                    LOGGER.info("Displaying Transition Sequence\n{}",
+                            getTransitionSequenceString(result, getSulConfig().isFuzzingClient()));
                 }
             }
 
