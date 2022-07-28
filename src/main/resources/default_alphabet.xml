@@ -5,4 +5,5 @@
     <Message4Input name="EDHOC_MESSAGE_4"/>
     <ErrorMessageInput name="EDHOC_ERROR_MESSAGE"/>
     <ApplicationDataInput name="APPLICATION_DATA"/>
+    <Message3CombinedInput name="EDHOC_MESSAGE_3_COMBINED"/>
 </alphabet>
