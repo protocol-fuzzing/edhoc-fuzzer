@@ -4,6 +4,7 @@ import gr.ntua.softlab.edhocFuzzer.components.learner.EdhocAlphabetPojoXml;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.EdhocSulBuilder;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulClientConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulServerConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.AlphabetBuilderStandard;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
@@ -11,7 +12,6 @@ import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConf
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulWrapper;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulWrapperStandard;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.StateFuzzer;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.StateFuzzerBuilder;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.StateFuzzerComposerStandard;
@@ -42,7 +42,7 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
     public StateFuzzerClientConfig buildClientConfig() {
         return new StateFuzzerClientConfig(
                 new LearnerConfig(),
-                new EdhocSulClientConfig(new MapperConfig()),
+                new EdhocSulClientConfig(new EdhocMapperConfig()),
                 new TestRunnerConfig(),
                 new TimingProbeConfig()
         );
@@ -52,7 +52,7 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
     public StateFuzzerServerConfig buildServerConfig() {
         return new StateFuzzerServerConfig(
                 new LearnerConfig(),
-                new EdhocSulServerConfig(new MapperConfig()),
+                new EdhocSulServerConfig(new EdhocMapperConfig()),
                 new TestRunnerConfig(),
                 new TimingProbeConfig()
         );

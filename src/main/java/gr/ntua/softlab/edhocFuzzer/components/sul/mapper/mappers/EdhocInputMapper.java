@@ -16,6 +16,7 @@ public class EdhocInputMapper extends InputMapper {
     @Override
     protected void sendMessage(ProtocolMessage message, ExecutionContext context) {
         EdhocProtocolMessage edhocProtocolMessage = (EdhocProtocolMessage) message;
-        edhocMapperConnector.send(edhocProtocolMessage.getCBORSequence());
+        edhocMapperConnector.send(edhocProtocolMessage.getPayload(), edhocProtocolMessage.getPayloadType(),
+                edhocProtocolMessage.getCoapCode(), edhocProtocolMessage.getContentFormat());
     }
 }

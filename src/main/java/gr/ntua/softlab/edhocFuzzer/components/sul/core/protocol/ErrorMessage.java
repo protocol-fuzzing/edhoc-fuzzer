@@ -9,7 +9,7 @@ public class ErrorMessage extends EdhocProtocolMessage {
     }
 
     public ErrorMessage createAsInitiatorWithoutSuites() {
-        cborSequence = messageProcessorPersistent.writeErrorMessage(
+        payload = messageProcessorPersistent.writeErrorMessage(
                 Constants.ERR_CODE_UNSPECIFIED_ERROR, Constants.EDHOC_MESSAGE_1, true,
                 null, "Error Message", null);
         return this;

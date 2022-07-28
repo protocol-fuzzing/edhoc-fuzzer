@@ -1,10 +1,13 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
 
 import com.upokecenter.cbor.CBORObject;
+import com.upokecenter.cbor.CBORType;
 import org.eclipse.californium.cose.OneKey;
 import org.eclipse.californium.edhoc.*;
 import org.eclipse.californium.oscore.HashMapCtxDB;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,7 +36,7 @@ public class EdhocSessionPersistent extends EdhocSession {
         setEphemeralKey();
 
         // peer dummy info
-        setPeerConnectionId(new byte[0]);
+        setPeerConnectionId(new byte[]{0, 0, 0, 0});
         setPeerIdCred(CBORObject.Null);
         setPeerLongTermPublicKey(new OneKey());
         // dummy peerEphemeralPublicKey based on selectedCipherSuite 0
@@ -41,10 +44,10 @@ public class EdhocSessionPersistent extends EdhocSession {
         setPeerEphemeralPublicKey(peerEphemeralPublicKey);
 
         // message1 hash
-        setHashMessage1(new byte[0]);
+        setHashMessage1(new byte[]{1});
 
         // plaintext2
-        setPlaintext2(new byte[0]);
+        setPlaintext2(new byte[]{1});
 
         // inner key-derivation Keys
         byte[] dummyDHSecret = SharedSecretCalculation.generateSharedSecret(getEphemeralKey(), getPeerEphemeralPublicKey());
@@ -53,16 +56,16 @@ public class EdhocSessionPersistent extends EdhocSession {
         setPRK4e3m(MessageProcessor.computePRK4e3m(this));
 
         // transcript hashes
-        setTH2(new byte[0]);
-        setTH3(new byte[0]);
-        setTH4(new byte[0]);
+        setTH2(new byte[]{1});
+        setTH3(new byte[]{1});
+        setTH4(new byte[]{1});
 
         // key after successful EDHOC execution
-        setPRKout(new byte[0]);
-        setPRKexporter(new byte[0]);
+        setPRKout(new byte[]{1});
+        setPRKexporter(new byte[]{1});
 
         // message3, to be used for building an EDHOC+OSCORE request
-        setMessage3(new byte[0]);
+        setMessage3(new byte[]{1});
 
         // eads
         this.ead1 = null;
@@ -84,6 +87,14 @@ public class EdhocSessionPersistent extends EdhocSession {
     @Override
     public void cleanMessage3() {
         // do not clean anything
+    }
+
+    @Override
+    public byte[] edhocExporter(int label, CBORObject context, int len) throws InvalidKeyException, NoSuchAlgorithmException {
+        if (label < 0 || context.getType() != CBORType.ByteString || len < 0)
+            return null;
+        // do not check for session currentStep
+        return edhocKDF(getPRKexporter(), label, context, len);
     }
 
     public CBORObject[] getEad1() {

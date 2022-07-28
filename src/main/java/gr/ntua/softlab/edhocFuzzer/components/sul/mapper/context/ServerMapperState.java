@@ -13,12 +13,6 @@ public class ServerMapperState extends EdhocMapperState {
     public EdhocSession getEdhocSession() {
         return null;
     }
-
-    @Override
-    public void setEdhocSession(EdhocSession edhocSession) {
-
-    }
-
     @Override
     public EdhocEndpointInfo getEdhocEndpointInfo() {
         return null;
@@ -27,5 +21,10 @@ public class ServerMapperState extends EdhocMapperState {
     @Override
     public Set<CBORObject> getOwnIdCreds() {
         return null;
+    }
+
+    @Override
+    public void setupOscoreContext() {
+
     }
 }

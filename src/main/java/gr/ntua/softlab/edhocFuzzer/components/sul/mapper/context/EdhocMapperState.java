@@ -10,9 +10,9 @@ import java.util.Set;
 public abstract class EdhocMapperState extends State {
     public abstract EdhocSession getEdhocSession();
 
-    public abstract void setEdhocSession(EdhocSession edhocSession);
-
     public abstract EdhocEndpointInfo getEdhocEndpointInfo();
 
     public abstract Set<CBORObject> getOwnIdCreds();
+
+    public abstract void setupOscoreContext();
 }

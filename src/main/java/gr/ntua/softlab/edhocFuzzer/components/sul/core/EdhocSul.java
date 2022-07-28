@@ -1,8 +1,8 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.core;
 
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulClientConfig;
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulServerConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.ServerMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.ClientMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
@@ -39,7 +39,7 @@ public class EdhocSul extends AbstractSul {
 
         try {
             EdhocMapperConnectionConfig mapperConnectionConfig = new EdhocMapperConnectionConfig(
-                    sulConfig.getMapperConnectionConfigInputStream());
+                    sulConfig.getMapperConfig().getMapperConnectionConfigInputStream());
 
             // timeout taken from configuration file
             Long coapExchangeLifetime = mapperConnectionConfig.getConfiguration().get(
@@ -64,8 +64,9 @@ public class EdhocSul extends AbstractSul {
         if (sulConfig.isFuzzingClient()){
             this.edhocMapperConnector = new ServerMapperConnector();
         } else {
-            String coapHostURI = ((EdhocSulServerConfig) sulConfig).getCoapHostURI();
-            this.edhocMapperConnector = new ClientMapperConnector(coapHostURI, originalTimeout);
+            EdhocMapperConfig config = (EdhocMapperConfig) sulConfig.getMapperConfig();
+            this.edhocMapperConnector = new ClientMapperConnector(config.getEdhocCoapUri(), config.getAppGetCoapUri(),
+                    originalTimeout);
         }
 
         this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);
@@ -98,9 +99,9 @@ public class EdhocSul extends AbstractSul {
                 }
             }
         } else {
-            EdhocSulServerConfig config = (EdhocSulServerConfig) sulConfig;
-            String coapHostURI = config.getCoapHostURI();
-            state = new ClientMapperState(coapHostURI, config.getAuthenticationFileConfig());
+            EdhocMapperConfig config = (EdhocMapperConfig) sulConfig.getMapperConfig();
+            state = new ClientMapperState(config.getEdhocCoapUri(), config.getAppProfileMode(),
+                    config.getAuthenticationConfig(), (ClientMapperConnector) edhocMapperConnector);
         }
 
         this.executionContextStepped = new ExecutionContextStepped(state);

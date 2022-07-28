@@ -28,6 +28,10 @@ public class MessageProcessorPersistent {
         this.edhocMapperState = edhocMapperState;
     }
 
+    public EdhocMapperState getEdhocMapperState() {
+        return edhocMapperState;
+    }
+
     /** Adapted from {@link org.eclipse.californium.edhoc.Util#nicePrint} */
     protected String byteArrayToString(String header, byte[] content) {
         String headerStr = header + " (" + content.length + " bytes):";
@@ -106,8 +110,8 @@ public class MessageProcessorPersistent {
         // Prepare the list of CBOR objects to build the CBOR sequence
         List<CBORObject> objectList = new ArrayList<>();
 
-        // C_X equal to the CBOR simple value 'true' (i.e. 0xf5)
         // if EDHOC message_1 is transported in a CoAP request
+        // CBOR simple value 'true' must be prepended
         if (session.isClientInitiated()) {
             objectList.add(CBORObject.True);
         }
@@ -540,15 +544,16 @@ public class MessageProcessorPersistent {
         // The outer CBOR sequence finishes with the connection identifier C_R
         objectList.add(cR);
 
+        /* Prepare EDHOC Message 2 */
+        byte[] message2 = Util.buildCBORSequence(objectList);
+        LOGGER.debug(byteArrayToString("EDHOC Message 2", message2));
+
         /* Modify session */
         session.setTH2(th2);
         session.setPRK2e(prk2e);
         session.setPRK3e2m(prk3e2m);
         session.setPlaintext2(plaintext2);
 
-        /* Prepare EDHOC Message 2 */
-        byte[] message2 = Util.buildCBORSequence(objectList);
-        LOGGER.debug(byteArrayToString("EDHOC Message 2", message2));
         return message2;
     }
 
@@ -997,7 +1002,7 @@ public class MessageProcessorPersistent {
         CBORObject plaintextElement;
 
         if (session.getIdCred().ContainsKey(HeaderKeys.KID.AsCBOR())) {
-            // ID_CRED_I uses 'kid', whose value is the only thing to include in the plaintext
+            // ID_CRED_I is 'kid', whose value is the only thing to include in the plaintext
             CBORObject kid = session.getIdCred().get(HeaderKeys.KID.AsCBOR());
             plaintextElement = encodeIdentifier(kid.GetByteString());
         } else {
@@ -1047,16 +1052,18 @@ public class MessageProcessorPersistent {
         }
         LOGGER.debug(byteArrayToString("PRK_exporter", prkExporter));
 
+        /* Prepare EDHOC Message 3 */
+        byte[] message3 = Util.buildCBORSequence(objectList);
+        LOGGER.debug(byteArrayToString("EDHOC Message 3", message3));
+
         /* Modify session */
         session.setTH3(th3);
         session.setPRK4e3m(prk4e3m);
         session.setTH4(th4);
         session.setPRKout(prkOut);
         session.setPRKexporter(prkExporter);
+        session.setMessage3(message3);
 
-        /* Prepare EDHOC Message 3 */
-        byte[] message3 = Util.buildCBORSequence(objectList);
-        LOGGER.debug(byteArrayToString("EDHOC Message 3", message3));
         return message3;
     }
 
@@ -1665,6 +1672,109 @@ public class MessageProcessorPersistent {
         return payload;
     }
 
+    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readErrorMessage} */
+    public boolean checkAndReadErrorMessage(byte[] sequence, byte[] connectionIdentifier) {
+        LOGGER.debug("Start of checkAndReadErrorMessage");
+        HashMap<CBORObject, EdhocSession> edhocSessions = edhocMapperState.getEdhocEndpointInfo().getEdhocSessions();
+
+        if (sequence == null || edhocSessions == null) {
+            LOGGER.debug("ERROR: Null initial parameters");
+            return false;
+        }
+
+        int index = 0;
+        EdhocSession mySession = null;
+        CBORObject[] objectList;
+        try {
+            objectList = CBORObject.DecodeSequenceFromBytes(sequence);
+        } catch (Exception e) {
+            LOGGER.debug("ERROR: Malformed or invalid EDHOC Error Message");
+            return false;
+        }
+
+        if (objectList.length == 0 || objectList.length > 3) {
+            LOGGER.debug("ERROR: Zero or too many elements");
+            return false;
+        }
+
+        if (connectionIdentifier != null) {
+            // The connection identifier of the recipient is provided by the method caller
+            CBORObject connectionIdentifierCbor = CBORObject.FromObject(connectionIdentifier);
+            mySession = edhocSessions.get(connectionIdentifierCbor);
+        } else {
+            // The connection identifier is expected as first element in the EDHOC Error Message
+            if (objectList[index].getType() != CBORType.ByteString
+                    && objectList[index].getType() != CBORType.Integer) {
+                LOGGER.debug("ERROR: Invalid format of C_X");
+                return false;
+            }
+
+            byte[] retrievedConnectionIdentifier = decodeIdentifier(objectList[index]);
+            if (retrievedConnectionIdentifier != null) {
+                CBORObject connectionIdentifierCbor = CBORObject.FromObject(connectionIdentifier);
+                mySession = edhocSessions.get(connectionIdentifierCbor);
+                index++;
+            }
+        }
+
+        // No session for this Connection Identifier
+        if (mySession == null) {
+            LOGGER.debug("ERROR: Impossible to retrieve a session from C_X");
+            return false;
+        }
+
+        if (objectList[index].getType() != CBORType.Integer) {
+            LOGGER.debug("ERROR: Invalid format of ERR_CODE");
+            return false;
+        }
+
+        // Retrieve ERR_CODE
+        int errorCode = objectList[index].AsInt32();
+        index++;
+
+        // Check that the rest of the message is consistent
+        if (objectList.length == index){
+            LOGGER.debug("ERROR: ERR_INFO expected but not included");
+            return false;
+        }
+
+        if (objectList.length > (index + 1)){
+            LOGGER.debug("ERROR: Unexpected parameters following ERR_INFO");
+            return false;
+        }
+
+        switch(errorCode) {
+            case Constants.ERR_CODE_SUCCESS -> {
+                LOGGER.debug("ERROR: Error code success");
+            }
+            case Constants.ERR_CODE_UNSPECIFIED_ERROR -> {
+                if (objectList[index].getType() != CBORType.TextString) {
+                    LOGGER.debug("ERROR: Invalid format of ERR_INFO");
+                    return false;
+                }
+            }
+            case Constants.ERR_CODE_WRONG_SELECTED_CIPHER_SUITE -> {
+                if (objectList[index].getType() != CBORType.Array
+                        && objectList[index].getType() != CBORType.Integer) {
+                    LOGGER.debug("ERROR: Invalid format for SUITES_R");
+                    return false;
+                }
+
+                if (objectList[index].getType() == CBORType.Array) {
+                    for (int i = 0; i < objectList[index].size(); i++) {
+                        if (objectList[index].get(i).getType() != CBORType.Integer) {
+                            LOGGER.debug("ERROR: Invalid format for elements of SUITES_R");
+                            return false;
+                        }
+                    }
+                }
+            }
+            default -> LOGGER.debug("Unknown error code: " + errorCode);
+        };
+
+        return true;
+    }
+
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#encodeIdentifier} */
     protected CBORObject encodeIdentifier(byte[] identifier) {
         CBORObject identifierCBOR = null;
@@ -1838,7 +1948,7 @@ public class MessageProcessorPersistent {
     protected byte[] computeMAC2(EdhocSession session, byte[] prk3e2m, byte[] th2,
                                  CBORObject idCredR, byte[] credR, CBORObject[] ead2) {
 
-        // Build the CBOR sequence to use for 'context': ( ID_CRED_R, TH_2, CRED_R, ? EAD_2 )
+        // Build the CBOR sequence to use for 'context': ( ID_CRED_R, TH_2, CRED_R, ?EAD_2 )
         // The actual 'context' is a CBOR byte string with value the serialization of the CBOR sequence
         List<CBORObject> objectList = new ArrayList<>();
         objectList.add(idCredR);
@@ -2097,7 +2207,7 @@ public class MessageProcessorPersistent {
     protected byte[] computeMAC3(EdhocSession session, byte[] prk4e3m, byte[] th3, CBORObject idCredI,
                                  byte[] credI, CBORObject[] ead3) {
 
-        // Build the CBOR sequence for 'context': ( ID_CRED_I, TH_3, CRED_I, ? EAD_3 )
+        // Build the CBOR sequence for 'context': ( ID_CRED_I, TH_3, CRED_I, ?EAD_3 )
         // The actual 'context' is a CBOR byte string with value the serialization of the CBOR sequence
         List<CBORObject> objectList = new ArrayList<>();
         objectList.add(idCredI);

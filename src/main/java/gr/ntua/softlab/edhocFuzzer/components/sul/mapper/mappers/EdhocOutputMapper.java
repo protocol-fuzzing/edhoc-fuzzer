@@ -2,15 +2,22 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers;
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocSessionPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocMapperState;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers.OutputMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.edhoc.Constants;
 
+import java.util.Arrays;
+
 public class EdhocOutputMapper extends OutputMapper {
+    private static final Logger LOGGER = LogManager.getLogger(EdhocOutputMapper.class);
+
     EdhocMapperConnector edhocMapperConnector;
 
     public EdhocOutputMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
@@ -31,9 +38,12 @@ public class EdhocOutputMapper extends OutputMapper {
         } else if (responsePayload.length == 0) {
             // in case of timeout
             return timeout();
-        } else if (!edhocMapperConnector.isLatestResponseSuccessful()) {
-            // in case of error identified from the coap response
-            return new AbstractOutput("EDHOC_ERROR_MESSAGE");
+        } else if (edhocMapperConnector.isLatestResponseSuccessfulAppData()) {
+            // sent oscore protected app data and received oscore protected
+            // app data, handled by oscore layer, so responsePayload is the
+            // decrypted response
+            LOGGER.info("APP_DATA_RESPONSE: {}", Arrays.toString(responsePayload));
+            return new AbstractOutput("APP_DATA_RESPONSE");
         }
 
         MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(edhocMapperState);
@@ -42,7 +52,10 @@ public class EdhocOutputMapper extends OutputMapper {
 
         switch (structuralMessageType) {
             case Constants.EDHOC_ERROR_MESSAGE -> {
-                return new AbstractOutput("EDHOC_ERROR_MESSAGE");
+                boolean ok = messageProcessorPersistent.checkAndReadErrorMessage(responsePayload, null);
+                return (!ok && !edhocMapperConnector.isLatestResponseSuccessful()) ?
+                        coapError() : // coap error without edhoc error message
+                        abstractOutputAfterCheck(ok, "EDHOC_ERROR_MESSAGE");
             }
 
             case Constants.EDHOC_MESSAGE_1 -> {
@@ -69,13 +82,21 @@ public class EdhocOutputMapper extends OutputMapper {
             }
 
             default -> {
-                return AbstractOutput.unknown();
+                return (!edhocMapperConnector.isLatestResponseSuccessful()) ? coapError() : AbstractOutput.unknown();
             }
         }
     }
 
     protected AbstractOutput abstractOutputAfterCheck(boolean successfulCheck, String outputName) {
         return successfulCheck ? new AbstractOutput(outputName) : AbstractOutput.unknown();
+    }
+
+    protected AbstractOutput coapError() {
+        if (((EdhocMapperConfig) mapperConfig).isCoapErrorAsEdhocError()) {
+            return new AbstractOutput("EDHOC_ERROR_MESSAGE");
+        } else {
+            return new AbstractOutput("COAP_ERROR_MESSAGE");
+        }
     }
 
 }

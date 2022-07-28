@@ -9,15 +9,15 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.Executi
 public class ErrorMessageInput extends EdhocInput {
 
     @Override
+    public void preSendUpdate(ExecutionContext context) {
+
+    }
+
+    @Override
     public ProtocolMessage generateProtocolMessage(ExecutionContext context) {
         MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(
                 getEdhocMapperState(context));
         return new ErrorMessage(messageProcessorPersistent).createAsInitiatorWithoutSuites();
-    }
-
-    @Override
-    public void preSendUpdate(ExecutionContext context) {
-
     }
 
     @Override
