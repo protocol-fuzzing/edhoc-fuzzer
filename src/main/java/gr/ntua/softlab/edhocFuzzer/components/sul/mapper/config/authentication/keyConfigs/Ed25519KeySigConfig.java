@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocFuzzer.components.sul.core.config.authentication.keyConfigs;
+package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs;
 
 import com.beust.jcommander.Parameter;
 

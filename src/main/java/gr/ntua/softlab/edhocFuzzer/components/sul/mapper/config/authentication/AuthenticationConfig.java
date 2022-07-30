@@ -1,12 +1,11 @@
-package gr.ntua.softlab.edhocFuzzer.components.sul.core.config.authentication;
+package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.authentication.keyConfigs.Ed25519KeySigConfig;
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.authentication.keyConfigs.P256KeySigConfig;
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.authentication.keyConfigs.P256KeyStatConfig;
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.authentication.keyConfigs.X25519KeyStatConfig;
-import org.eclipse.californium.edhoc.Constants;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs.Ed25519KeySigConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs.P256KeySigConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs.P256KeyStatConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs.X25519KeyStatConfig;
 
 import java.util.List;
 

@@ -10,7 +10,7 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.ClientMapperSta
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.ServerMapperState;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocInputMapper;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocOutputMapper;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.EdhocOutputChecker;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.AbstractSul;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
@@ -74,9 +74,8 @@ public class EdhocSul extends AbstractSul {
 
     protected Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
         return new MapperComposer(
-                new EdhocInputMapper(edhocMapperConnector),
-                new EdhocOutputMapper(mapperConfig, edhocMapperConnector),
-                new EdhocOutputChecker()
+                new EdhocInputMapper(mapperConfig,  new EdhocOutputChecker(), edhocMapperConnector),
+                new EdhocOutputMapper(mapperConfig, edhocMapperConnector)
         );
     }
 

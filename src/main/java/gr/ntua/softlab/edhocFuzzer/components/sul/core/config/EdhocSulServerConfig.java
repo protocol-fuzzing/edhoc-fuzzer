@@ -15,7 +15,7 @@ public class EdhocSulServerConfig extends SulServerConfig {
 
     @Override
     public MapperConfig getMapperConfig() {
-        ((EdhocMapperConfig) mapperConfig).setHost(host);
+        ((EdhocMapperConfig) mapperConfig).initializeHost(host);
         return mapperConfig;
     }
 

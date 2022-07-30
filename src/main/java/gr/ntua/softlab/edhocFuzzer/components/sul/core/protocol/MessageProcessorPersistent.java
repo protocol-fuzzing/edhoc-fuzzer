@@ -4,7 +4,6 @@ import com.upokecenter.cbor.CBORException;
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocMapperState;
-import net.i2p.crypto.eddsa.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.cose.*;
@@ -31,31 +30,7 @@ public class MessageProcessorPersistent {
     public EdhocMapperState getEdhocMapperState() {
         return edhocMapperState;
     }
-
-    /** Adapted from {@link org.eclipse.californium.edhoc.Util#nicePrint} */
-    protected String byteArrayToString(String header, byte[] content) {
-        String headerStr = header + " (" + content.length + " bytes):";
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\n").append(headerStr).append("\n");
-
-        String contentStr = Utils.bytesToHex(content);
-        for (int i = 0; i < (content.length * 2); i++) {
-            if ((i != 0) && (i % 20) == 0) {
-                stringBuilder.append("\n");
-            }
-
-            stringBuilder.append(contentStr.charAt(i));
-
-            if ((i % 2) == 1) {
-                stringBuilder.append(" ");
-            }
-        }
-
-        stringBuilder.append("\n");
-        return stringBuilder.toString();
-    }
-
+    
     /** Tries to match the byte sequence's structure of CBOR elements with an edhoc message */
     public int messageTypeFromStructure(byte[] sequence, boolean isReq) {
         LOGGER.debug("Start of messageTypeFromStructure");
@@ -119,7 +94,7 @@ public class MessageProcessorPersistent {
         // METHOD as CBOR integer
         int method = session.getMethod();
         CBORObject method_cbor = CBORObject.FromObject(method);
-        LOGGER.debug(byteArrayToString("METHOD", method_cbor.EncodeToBytes()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("METHOD", method_cbor.EncodeToBytes()));
         objectList.add(method_cbor);
 
         // SUITES_I as CBOR integer or CBOR array
@@ -177,7 +152,7 @@ public class MessageProcessorPersistent {
                 }
             }
         }
-        LOGGER.debug(byteArrayToString("SUITES_I", suitesI.EncodeToBytes()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("SUITES_I", suitesI.EncodeToBytes()));
         objectList.add(suitesI);
 
         // G_X as a CBOR byte string
@@ -196,13 +171,13 @@ public class MessageProcessorPersistent {
         }
 
         objectList.add(gX);
-        LOGGER.debug(byteArrayToString("G_X", gX.GetByteString()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("G_X", gX.GetByteString()));
 
         // C_I
         byte[] connectionIdentifierInitiator = session.getConnectionId();
         CBORObject cI = encodeIdentifier(connectionIdentifierInitiator);
-        LOGGER.debug(byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
-        LOGGER.debug(byteArrayToString("C_I", cI.EncodeToBytes()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
+        LOGGER.debug(EdhocUtil.byteArrayToString("C_I", cI.EncodeToBytes()));
         objectList.add(cI);
 
         // EAD_1, if provided
@@ -211,8 +186,8 @@ public class MessageProcessorPersistent {
         }
 
         /* Prepare EDHOC Message 1 */
-        byte[] message1 = Util.buildCBORSequence(objectList);
-        LOGGER.debug(byteArrayToString("EDHOC Message 1", message1));
+        byte[] message1 = EdhocUtil.buildCBORSequence(objectList);
+        LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 1", message1));
 
         // Compute and store the hash of Message 1
         // In case of CoAP request the first byte 0xf5 must be skipped
@@ -329,8 +304,8 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
-        LOGGER.debug(byteArrayToString("C_I", cI.EncodeToBytes()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
+        LOGGER.debug(EdhocUtil.byteArrayToString("C_I", cI.EncodeToBytes()));
 
         // EAD_1
         index++;
@@ -382,8 +357,8 @@ public class MessageProcessorPersistent {
         if (!session.isClientInitiated()) {
             byte[] connectionIdentifierInitiator = session.getPeerConnectionId();
             CBORObject cI = encodeIdentifier(connectionIdentifierInitiator);
-            LOGGER.debug(byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
-            LOGGER.debug(byteArrayToString("C_I", cI.EncodeToBytes()));
+            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
+            LOGGER.debug(EdhocUtil.byteArrayToString("C_I", cI.EncodeToBytes()));
             objectList.add(cI);
         }
 
@@ -407,13 +382,13 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Invalid G_Y");
             return null;
         }
-        LOGGER.debug(byteArrayToString("G_Y", gY.GetByteString()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("G_Y", gY.GetByteString()));
 
         // C_R
         byte[] connectionIdentifierResponder = session.getConnectionId();
         CBORObject cR = encodeIdentifier(connectionIdentifierResponder);
-        LOGGER.debug(byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
-        LOGGER.debug(byteArrayToString("C_R", cR.EncodeToBytes()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
+        LOGGER.debug(EdhocUtil.byteArrayToString("C_R", cR.EncodeToBytes()));
 
         // Compute TH_2
         String hashAlgorithm = EdhocSession.getEdhocHashAlg(selectedSuite);
@@ -428,8 +403,8 @@ public class MessageProcessorPersistent {
             return null;
         }
 
-        LOGGER.debug(byteArrayToString("H(message_1)", hashMessage1));
-        LOGGER.debug(byteArrayToString("TH_2", th2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("H(message_1)", hashMessage1));
+        LOGGER.debug(EdhocUtil.byteArrayToString("TH_2", th2));
 
 
         // Compute the key material
@@ -442,7 +417,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing the Diffie-Hellman Secret");
             return null;
         }
-        LOGGER.debug(byteArrayToString("G_XY", dhSecret));
+        LOGGER.debug(EdhocUtil.byteArrayToString("G_XY", dhSecret));
 
         // Compute PRK_2e
         byte[] prk2e = computePRK2e(dhSecret, hashAlgorithm);
@@ -451,7 +426,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing PRK_2e");
             return null;
         }
-        LOGGER.debug(byteArrayToString("PRK_2e", prk2e));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PRK_2e", prk2e));
 
         // Compute PRK_3e2m
         byte[] prk3e2m = computePRK3e2m(session, prk2e, th2, session.getPeerLongTermPublicKey(),
@@ -461,7 +436,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing PRK_3e2m");
             return null;
         }
-        LOGGER.debug(byteArrayToString("PRK_3e2m", prk3e2m));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PRK_3e2m", prk3e2m));
 
         /* Start computing Signature_or_MAC_2 */
 
@@ -471,7 +446,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing MAC_2");
             return null;
         }
-        LOGGER.debug(byteArrayToString("MAC_2", mac2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("MAC_2", mac2));
 
         // Compute Signature_or_MAC_2
 
@@ -488,7 +463,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing Signature_or_MAC_2");
             return null;
         }
-        LOGGER.debug(byteArrayToString("Signature_or_MAC_2", signatureOrMac2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Signature_or_MAC_2", signatureOrMac2));
 
         /* End computing Signature_or_MAC_2 */
 
@@ -500,8 +475,8 @@ public class MessageProcessorPersistent {
 
         if (session.getIdCred().ContainsKey(HeaderKeys.KID.AsCBOR())) {
             // ID_CRED_R uses 'kid', whose value is the only thing to include in the plaintext
-            CBORObject kid = session.getIdCred().get(HeaderKeys.KID.AsCBOR()); // v-14 identifiers
-            plaintextElement = encodeIdentifier(kid.GetByteString());  // v-14 identifiers
+            CBORObject kid = session.getIdCred().get(HeaderKeys.KID.AsCBOR());
+            plaintextElement = encodeIdentifier(kid.GetByteString());
         } else {
             plaintextElement = session.getIdCred();
         }
@@ -513,8 +488,8 @@ public class MessageProcessorPersistent {
             Collections.addAll(plaintextElementList, ead2);
         }
 
-        byte[] plaintext2 = Util.buildCBORSequence(plaintextElementList);
-        LOGGER.debug(byteArrayToString("Plaintext to compute CIPHERTEXT_2", plaintext2));
+        byte[] plaintext2 = EdhocUtil.buildCBORSequence(plaintextElementList);
+        LOGGER.debug(EdhocUtil.byteArrayToString("Plaintext to compute CIPHERTEXT_2", plaintext2));
 
         // Compute KEYSTREAM_2
         byte[] keystream2 = computeKeystream2(session, th2, prk2e, plaintext2.length);
@@ -522,12 +497,12 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing KEYSTREAM_2");
             return null;
         }
-        LOGGER.debug(byteArrayToString("KEYSTREAM_2", keystream2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("KEYSTREAM_2", keystream2));
 
         // Compute CIPHERTEXT_2
-        byte[] ciphertext2 = Util.arrayXor(plaintext2, keystream2);
+        byte[] ciphertext2 = EdhocUtil.arrayXor(plaintext2, keystream2);
 
-        LOGGER.debug(byteArrayToString("CIPHERTEXT_2", ciphertext2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("CIPHERTEXT_2", ciphertext2));
         /* End computing CIPHERTEXT_2 */
 
         // Finish building the outer CBOR sequence
@@ -539,14 +514,14 @@ public class MessageProcessorPersistent {
 
         // Wrap the result in a single CBOR byte string, included in the outer CBOR sequence of EDHOC Message 2
         objectList.add(CBORObject.FromObject(gY_Ciphertext2));
-        LOGGER.debug(byteArrayToString("G_Y | CIPHERTEXT_2", gY_Ciphertext2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("G_Y | CIPHERTEXT_2", gY_Ciphertext2));
 
         // The outer CBOR sequence finishes with the connection identifier C_R
         objectList.add(cR);
 
         /* Prepare EDHOC Message 2 */
-        byte[] message2 = Util.buildCBORSequence(objectList);
-        LOGGER.debug(byteArrayToString("EDHOC Message 2", message2));
+        byte[] message2 = EdhocUtil.buildCBORSequence(objectList);
+        LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 2", message2));
 
         /* Modify session */
         session.setTH2(th2);
@@ -606,7 +581,7 @@ public class MessageProcessorPersistent {
             }
         }
 
-        LOGGER.debug(byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
 
         CBORObject connectionIdentifierInitiatorCbor = CBORObject.FromObject(connectionIdentifierInitiator);
         EdhocSession session = edhocSessions.get(connectionIdentifierInitiatorCbor);
@@ -638,7 +613,7 @@ public class MessageProcessorPersistent {
         byte[] gY = new byte[gYLength];
         System.arraycopy(gY_Ciphertext2, 0, gY, 0, gYLength);
 
-        LOGGER.debug(byteArrayToString("G_Y", gY));
+        LOGGER.debug(EdhocUtil.byteArrayToString("G_Y", gY));
 
         // Ephemeral public key of the Responder
         int selectedCipherSuite = session.getSelectedCipherSuite();
@@ -657,12 +632,12 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("PeerEphemeralPublicKey", peerEphemeralKey.AsCBOR().EncodeToBytes()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PeerEphemeralPublicKey", peerEphemeralKey.AsCBOR().EncodeToBytes()));
 
         // CIPHERTEXT_2
         byte[] ciphertext2 = new byte[ciphertext2Length];
         System.arraycopy(gY_Ciphertext2, gYLength, ciphertext2, 0, ciphertext2Length);
-        LOGGER.debug(byteArrayToString("CIPHERTEXT_2", ciphertext2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("CIPHERTEXT_2", ciphertext2));
 
         // C_R
         index++;
@@ -679,8 +654,8 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
-        LOGGER.debug(byteArrayToString("C_R", cR.EncodeToBytes()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
+        LOGGER.debug(EdhocUtil.byteArrayToString("C_R", cR.EncodeToBytes()));
 
         if (session.getApplicationProfile().getUsedForOSCORE()
                 && Arrays.equals(connectionIdentifierInitiator, connectionIdentifierResponder)) {
@@ -703,8 +678,8 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("H(message_1)", hashMessage1));
-        LOGGER.debug(byteArrayToString("TH_2", th2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("H(message_1)", hashMessage1));
+        LOGGER.debug(EdhocUtil.byteArrayToString("TH_2", th2));
 
         // Compute the Diffie-Hellman secret G_XY
         byte[] dhSecret = SharedSecretCalculation.generateSharedSecret(session.getEphemeralKey(), peerEphemeralKey);
@@ -714,7 +689,7 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("G_XY", dhSecret));
+        LOGGER.debug(EdhocUtil.byteArrayToString("G_XY", dhSecret));
 
         // Compute PRK_2e
         byte[] prk2e = computePRK2e(dhSecret, hashAlgorithm);
@@ -724,7 +699,7 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("PRK_2e", prk2e));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PRK_2e", prk2e));
 
         // Compute KEYSTREAM_2
         byte[] keystream2 = computeKeystream2(session, th2, prk2e, ciphertext2.length);
@@ -733,11 +708,11 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("KEYSTREAM_2", keystream2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("KEYSTREAM_2", keystream2));
 
         // Compute the plaintext
-        byte[] plaintext2 = Util.arrayXor(ciphertext2, keystream2);
-        LOGGER.debug(byteArrayToString("Plaintext retrieved from CIPHERTEXT_2", plaintext2));
+        byte[] plaintext2 = EdhocUtil.arrayXor(ciphertext2, keystream2);
+        LOGGER.debug(EdhocUtil.byteArrayToString("Plaintext retrieved from CIPHERTEXT_2", plaintext2));
 
         // Parse the plaintext as a CBOR sequence
         int baseIndex = 0;
@@ -846,7 +821,7 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("PRK_3e2m", prk3e2m));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PRK_3e2m", prk3e2m));
 
         /* Start verifying Signature_or_MAC_2 */
 
@@ -865,11 +840,11 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("MAC_2", mac2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("MAC_2", mac2));
 
         // Verify Signature_or_MAC_2
         byte[] signatureOrMac2 = plaintextElementList[baseIndex + 1].GetByteString();
-        LOGGER.debug(byteArrayToString("Signature_or_MAC_2", signatureOrMac2));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Signature_or_MAC_2", signatureOrMac2));
 
         // Prepare the External Data, as a CBOR sequence
         byte[] externalData = computeExternalData(th2, peerCredential, ead2);
@@ -878,7 +853,7 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("External Data to verify Signature_or_MAC_2", externalData));
+        LOGGER.debug(EdhocUtil.byteArrayToString("External Data to verify Signature_or_MAC_2", externalData));
 
         if (!verifySignatureOrMac2(session, peerLongTermKey, idCredR, signatureOrMac2, externalData, mac2)) {
             LOGGER.debug("ERROR: Non valid Signature_or_MAC_2");
@@ -913,9 +888,9 @@ public class MessageProcessorPersistent {
         if (session.isClientInitiated()) {
             byte[] connectionIdentifierResponder = session.getPeerConnectionId();
             CBORObject cR = encodeIdentifier(connectionIdentifierResponder);
-            LOGGER.debug(byteArrayToString("Connection Identifier of the Responder",
+            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder",
                     connectionIdentifierResponder));
-            LOGGER.debug(byteArrayToString("C_R", cR.EncodeToBytes()));
+            LOGGER.debug(EdhocUtil.byteArrayToString("C_R", cR.EncodeToBytes()));
             objectList.add(cR);
             }
 
@@ -935,7 +910,7 @@ public class MessageProcessorPersistent {
             return null;
         }
 
-        LOGGER.debug(byteArrayToString("TH_3", th3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("TH_3", th3));
 
         // Compute the key material
         byte[] prk4e3m = computePRK4e3m(session, session.getPRK3e2m(), th3, session.getPeerLongTermPublicKey(),
@@ -945,7 +920,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing PRK_4e3m");
             return null;
         }
-        LOGGER.debug(byteArrayToString("PRK_4e3m", prk4e3m));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PRK_4e3m", prk4e3m));
 
         /* Start computing Signature_or_MAC_3 */
 
@@ -956,7 +931,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing MAC_3");
             return null;
         }
-        LOGGER.debug(byteArrayToString("MAC_3", mac3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("MAC_3", mac3));
 
         // Compute Signature_or_MAC_3
 
@@ -972,7 +947,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing Signature_or_MAC_3");
             return null;
         }
-        LOGGER.debug(byteArrayToString("Signature_or_MAC_3", signatureOrMac3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Signature_or_MAC_3", signatureOrMac3));
 
         /* End computing Signature_or_MAC_3 */
 
@@ -985,14 +960,14 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing K_3");
             return null;
         }
-        LOGGER.debug(byteArrayToString("K_3", k3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("K_3", k3));
 
         byte[] iv3 = computeKeyOrIV3("IV", session, th3, session.getPRK3e2m());
         if (iv3 == null) {
             LOGGER.debug("ERROR: Computing IV_3");
             return null;
         }
-        LOGGER.debug(byteArrayToString("IV_3", iv3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("IV_3", iv3));
 
         // Prepare the External Data as including only TH3
         externalData = th3;
@@ -1015,13 +990,13 @@ public class MessageProcessorPersistent {
             Collections.addAll(plaintextElementList, ead3);
         }
 
-        byte[] plaintext3 = Util.buildCBORSequence(plaintextElementList);
-        LOGGER.debug(byteArrayToString("Plaintext to compute CIPHERTEXT_3", plaintext3));
+        byte[] plaintext3 = EdhocUtil.buildCBORSequence(plaintextElementList);
+        LOGGER.debug(EdhocUtil.byteArrayToString("Plaintext to compute CIPHERTEXT_3", plaintext3));
 
         // Compute CIPHERTEXT_3 and add it to the outer CBOR sequence
 
         byte[] ciphertext3 = computeCiphertext3(session.getSelectedCipherSuite(), externalData, plaintext3, k3, iv3);
-        LOGGER.debug(byteArrayToString("CIPHERTEXT_3", ciphertext3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("CIPHERTEXT_3", ciphertext3));
         objectList.add(CBORObject.FromObject(ciphertext3));
 
         /* End computing CIPHERTEXT_3 */
@@ -1034,7 +1009,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing TH_4");
             return null;
         }
-        LOGGER.debug(byteArrayToString("TH_4", th4));
+        LOGGER.debug(EdhocUtil.byteArrayToString("TH_4", th4));
 
         /* Compute PRK_out */
         byte[] prkOut = computePRKout(session, th4, prk4e3m);
@@ -1042,7 +1017,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing PRK_out");
             return null;
         }
-        LOGGER.debug(byteArrayToString("PRK_out", prkOut));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PRK_out", prkOut));
 
         /* Compute PRK_exporter */
         byte[] prkExporter = computePRKexporter(session, prkOut);
@@ -1050,11 +1025,11 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing PRK_exporter");
             return null;
         }
-        LOGGER.debug(byteArrayToString("PRK_exporter", prkExporter));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PRK_exporter", prkExporter));
 
         /* Prepare EDHOC Message 3 */
-        byte[] message3 = Util.buildCBORSequence(objectList);
-        LOGGER.debug(byteArrayToString("EDHOC Message 3", message3));
+        byte[] message3 = EdhocUtil.buildCBORSequence(objectList);
+        LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 3", message3));
 
         /* Modify session */
         session.setTH3(th3);
@@ -1107,7 +1082,7 @@ public class MessageProcessorPersistent {
                 return false;
             }
 
-            connectionIdentifierResponder = decodeIdentifier(objectListRequest[index]);  // v-14 identifiers
+            connectionIdentifierResponder = decodeIdentifier(objectListRequest[index]);
             if (connectionIdentifierResponder == null) {
                 LOGGER.debug("ERROR: Invalid encoding of C_R");
                 return false;
@@ -1129,7 +1104,7 @@ public class MessageProcessorPersistent {
             return false;
         }
         byte[] ciphertext3 = objectListRequest[index].GetByteString();
-        LOGGER.debug(byteArrayToString("CIPHERTEXT_3", ciphertext3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("CIPHERTEXT_3", ciphertext3));
 
         /* Decrypt CIPHERTEXT_3 */
 
@@ -1144,7 +1119,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing TH3");
             return false;
         }
-        LOGGER.debug(byteArrayToString("TH_3", th3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("TH_3", th3));
 
         // Compute K_3 and IV_3 to protect the outer COSE object
         byte[] k3 = computeKeyOrIV3("KEY", session, th3, session.getPRK3e2m());
@@ -1152,7 +1127,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing TH3");
             return false;
         }
-        LOGGER.debug(byteArrayToString("K_3", k3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("K_3", k3));
 
 
         byte[] iv3 = computeKeyOrIV3("IV", session, th3, session.getPRK3e2m());
@@ -1160,7 +1135,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing IV_3ae");
             return false;
         }
-        LOGGER.debug(byteArrayToString("IV_3", iv3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("IV_3", iv3));
 
         // Prepare the external_aad as including only TH3
         byte[] externalData = th3;
@@ -1171,7 +1146,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Decrypting CIPHERTEXT_3");
             return false;
         }
-        LOGGER.debug(byteArrayToString("Plaintext retrieved from CIPHERTEXT_3", plaintext3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Plaintext retrieved from CIPHERTEXT_3", plaintext3));
 
         // Parse the outer plaintext as a CBOR sequence
         int baseIndex = 0;
@@ -1283,7 +1258,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing PRK_4e3m");
             return false;
         }
-        LOGGER.debug(byteArrayToString("PRK_4e3m", prk4e3m));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PRK_4e3m", prk4e3m));
 
         /* Start verifying Signature_or_MAC_3 */
 
@@ -1293,12 +1268,12 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing MAC_3");
             return false;
         }
-        LOGGER.debug(byteArrayToString("MAC_3", mac3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("MAC_3", mac3));
 
         // Verify Signature_or_MAC_3
 
         byte[] signatureOrMac3 = plaintextElementList[1].GetByteString();
-        LOGGER.debug(byteArrayToString("Signature_or_MAC_3", signatureOrMac3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Signature_or_MAC_3", signatureOrMac3));
 
         // Compute the external data, as a CBOR sequence
         externalData = computeExternalData(th3, peerCredential, ead3);
@@ -1306,7 +1281,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing the external data for MAC_3");
             return false;
         }
-        LOGGER.debug(byteArrayToString("External Data to verify Signature_or_MAC_3", externalData));
+        LOGGER.debug(EdhocUtil.byteArrayToString("External Data to verify Signature_or_MAC_3", externalData));
 
         if (!verifySignatureOrMac3(session, peerLongTermKey, idCredI, signatureOrMac3, externalData, mac3)) {
             LOGGER.debug("ERROR: Non valid Signature_or_MAC_3");
@@ -1323,7 +1298,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing TH_4");
             return false;
         }
-        LOGGER.debug(byteArrayToString("TH_4", th4));
+        LOGGER.debug(EdhocUtil.byteArrayToString("TH_4", th4));
 
         /* Compute PRK_out */
         byte[] prkOut = computePRKout(session, th4, prk4e3m);
@@ -1332,7 +1307,7 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        LOGGER.debug(byteArrayToString("PRK_out", prkOut));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PRK_out", prkOut));
 
         /* Compute PRK_exporter */
         byte[] prkExporter = computePRKexporter(session, prkOut);
@@ -1340,7 +1315,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing PRK_exporter");
             return false;
         }
-        LOGGER.debug(byteArrayToString("PRK_exporter", prkExporter));
+        LOGGER.debug(EdhocUtil.byteArrayToString("PRK_exporter", prkExporter));
 
         /* Modify session */
         session.setTH3(th3);
@@ -1370,9 +1345,9 @@ public class MessageProcessorPersistent {
             byte[] connectionIdentifierInitiator = session.getPeerConnectionId();
             CBORObject cI = encodeIdentifier(connectionIdentifierInitiator);
             objectList.add(cI);
-            LOGGER.debug(byteArrayToString("Connection Identifier of the Initiator",
+            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator",
                     connectionIdentifierInitiator));
-            LOGGER.debug(byteArrayToString("C_I", cI.EncodeToBytes()));
+            LOGGER.debug(EdhocUtil.byteArrayToString("C_I", cI.EncodeToBytes()));
         }
 
         /* End preparing data_4 */
@@ -1388,16 +1363,16 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing the external data for CIPHERTEXT_4");
             return null;
         }
-        LOGGER.debug(byteArrayToString("External Data to compute CIPHERTEXT_4", externalData));
+        LOGGER.debug(EdhocUtil.byteArrayToString("External Data to compute CIPHERTEXT_4", externalData));
 
         // Prepare the plaintext
         byte[] plaintext4 = new byte[] {};
         if (ead4 != null) {
             List<CBORObject> plaintextElementList = new ArrayList<>();
             Collections.addAll(plaintextElementList, ead4);
-            plaintext4 = Util.buildCBORSequence(plaintextElementList);
+            plaintext4 = EdhocUtil.buildCBORSequence(plaintextElementList);
         }
-        LOGGER.debug(byteArrayToString("Plaintext to compute CIPHERTEXT_4", plaintext4));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Plaintext to compute CIPHERTEXT_4", plaintext4));
 
         // Compute the key material
 
@@ -1407,14 +1382,14 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing K_4");
             return null;
         }
-        LOGGER.debug(byteArrayToString("K_4", k4));
+        LOGGER.debug(EdhocUtil.byteArrayToString("K_4", k4));
 
         byte[] iv4 = computeKeyOrIV4("IV", session, session.getTH4(), session.getPRK4e3m());
         if (iv4 == null) {
             LOGGER.debug("ERROR: Computing IV_4");
             return null;
         }
-        LOGGER.debug(byteArrayToString("IV_4", iv4));
+        LOGGER.debug(EdhocUtil.byteArrayToString("IV_4", iv4));
 
         // Encrypt the COSE object and take the ciphertext as CIPHERTEXT_4
         byte[] ciphertext4 = computeCiphertext4(session.getSelectedCipherSuite(), externalData, plaintext4, k4, iv4);
@@ -1422,14 +1397,14 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing CIPHERTEXT_4");
             return null;
         }
-        LOGGER.debug(byteArrayToString("CIPHERTEXT_4", ciphertext4));
+        LOGGER.debug(EdhocUtil.byteArrayToString("CIPHERTEXT_4", ciphertext4));
         objectList.add(CBORObject.FromObject(ciphertext4));
 
         /* End computing the inner COSE object */
 
         /* Prepare EDHOC Message 4 */
-        byte[] message4 = Util.buildCBORSequence(objectList);
-        LOGGER.debug(byteArrayToString("EDHOC Message 4", Util.buildCBORSequence(objectList)));
+        byte[] message4 = EdhocUtil.buildCBORSequence(objectList);
+        LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 4", EdhocUtil.buildCBORSequence(objectList)));
 
         return message4;
     }
@@ -1498,7 +1473,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Retrieving CIPHERTEXT_4");
             return false;
         }
-        LOGGER.debug(byteArrayToString("CIPHERTEXT_4", ciphertext4));
+        LOGGER.debug(EdhocUtil.byteArrayToString("CIPHERTEXT_4", ciphertext4));
 
         /* Compute the plaintext */
 
@@ -1511,7 +1486,7 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing the external data for CIPHERTEXT_4");
             return false;
         }
-        LOGGER.debug(byteArrayToString("External Data to compute CIPHERTEXT_4", externalData));
+        LOGGER.debug(EdhocUtil.byteArrayToString("External Data to compute CIPHERTEXT_4", externalData));
 
         // Compute the key material
 
@@ -1522,21 +1497,21 @@ public class MessageProcessorPersistent {
             LOGGER.debug("ERROR: Computing K");
             return false;
         }
-        LOGGER.debug(byteArrayToString("K", k4ae));
+        LOGGER.debug(EdhocUtil.byteArrayToString("K", k4ae));
 
         byte[] iv4ae = computeKeyOrIV4("IV", session, session.getTH4(), session.getPRK4e3m());
         if (iv4ae == null) {
             LOGGER.debug("ERROR: Computing IV");
             return false;
         }
-        LOGGER.debug(byteArrayToString("IV", iv4ae));
+        LOGGER.debug(EdhocUtil.byteArrayToString("IV", iv4ae));
 
         byte[] plaintext4 = decryptCiphertext4(session.getSelectedCipherSuite(), externalData, ciphertext4, k4ae, iv4ae);
         if (plaintext4 == null) {
             LOGGER.debug("ERROR: Decrypting CIPHERTEXT_4");
             return false;
         }
-        LOGGER.debug(byteArrayToString("Plaintext retrieved from CIPHERTEXT_4", plaintext4));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Plaintext retrieved from CIPHERTEXT_4", plaintext4));
 
         /* End computing the plaintext */
 
@@ -1666,7 +1641,7 @@ public class MessageProcessorPersistent {
         }
 
         // Encode the EDHOC Error Message, as a CBOR sequence
-        payload = Util.buildCBORSequence(objectList);
+        payload = EdhocUtil.buildCBORSequence(objectList);
 
         LOGGER.debug("Successful preparation of EDHOC Error Message");
         return payload;
@@ -1744,9 +1719,8 @@ public class MessageProcessorPersistent {
         }
 
         switch(errorCode) {
-            case Constants.ERR_CODE_SUCCESS -> {
-                LOGGER.debug("ERROR: Error code success");
-            }
+            case Constants.ERR_CODE_SUCCESS ->
+                    LOGGER.debug("ERROR: Error code success");
             case Constants.ERR_CODE_UNSPECIFIED_ERROR -> {
                 if (objectList[index].getType() != CBORType.TextString) {
                     LOGGER.debug("ERROR: Invalid format of ERR_INFO");
@@ -1770,7 +1744,7 @@ public class MessageProcessorPersistent {
                 }
             }
             default -> LOGGER.debug("Unknown error code: " + errorCode);
-        };
+        }
 
         return true;
     }
@@ -1785,7 +1759,7 @@ public class MessageProcessorPersistent {
         }
 
         if (identifier != null && identifier.length == 1) {
-            int byteValue = Util.bytesToInt(identifier);
+            int byteValue = EdhocUtil.bytesToInt(identifier);
 
             if ((byteValue >= 0 && byteValue <= 23) || (byteValue >= 32 && byteValue <= 55)) {
                 // The EDHOC connection identifier is in the range 0x00-0x17 or in the range 0x20-0x37.
@@ -1812,7 +1786,7 @@ public class MessageProcessorPersistent {
 
             // Consistency check
             if (identifier.length == 1) {
-                int byteValue = Util.bytesToInt(identifier);
+                int byteValue = EdhocUtil.bytesToInt(identifier);
                 if ((byteValue >= 0 && byteValue <= 23) || (byteValue >= 32 && byteValue <= 55))
                     // This EDHOC connection identifier should have been encoded as a CBOR integer
                     identifier = null;
@@ -1841,7 +1815,7 @@ public class MessageProcessorPersistent {
         System.arraycopy(hashMessage1, 0, hashInput, offset, hashMessage1.length);
 
         try {
-            return Util.computeHash(hashInput, hashAlgorithm);
+            return EdhocUtil.computeHash(hashInput, hashAlgorithm);
         } catch (NoSuchAlgorithmException e) {
             LOGGER.debug("ERROR: Invalid hash algorithm when computing TH2\n" + e.getMessage());
             return null;
@@ -1897,12 +1871,12 @@ public class MessageProcessorPersistent {
             // Consistency check of key type and curve against the selected cipher suite
             int selectedCipherSuite = session.getSelectedCipherSuite();
 
-            if (!Util.checkDiffieHellmanKeyAgainstCipherSuite(privateKey, selectedCipherSuite)) {
+            if (!EdhocUtil.checkDiffieHellmanKeyAgainstCipherSuite(privateKey, selectedCipherSuite)) {
                 LOGGER.debug("ERROR: Computing the Diffie-Hellman Secret (privateKey check)");
                 return null;
             }
 
-            if (!Util.checkDiffieHellmanKeyAgainstCipherSuite(publicKey, selectedCipherSuite)) {
+            if (!EdhocUtil.checkDiffieHellmanKeyAgainstCipherSuite(publicKey, selectedCipherSuite)) {
                 LOGGER.debug("ERROR: Computing the Diffie-Hellman Secret (publicKey check)");
                 return null;
             }
@@ -1914,7 +1888,7 @@ public class MessageProcessorPersistent {
                 return null;
             }
 
-            LOGGER.debug(byteArrayToString("G_RX", dhSecret));
+            LOGGER.debug(EdhocUtil.byteArrayToString("G_RX", dhSecret));
 
             String hashAlgorithm = EdhocSession.getEdhocHashAlg(selectedCipherSuite);
 
@@ -1930,7 +1904,7 @@ public class MessageProcessorPersistent {
                 return null;
             }
 
-            LOGGER.debug(byteArrayToString("SALT_3e2m", salt3e2m));
+            LOGGER.debug(EdhocUtil.byteArrayToString("SALT_3e2m", salt3e2m));
 
             if (hashAlgorithm.equals("SHA-256") || hashAlgorithm.equals("SHA-384") || hashAlgorithm.equals("SHA-512")) {
                 try {
@@ -1959,9 +1933,9 @@ public class MessageProcessorPersistent {
             Collections.addAll(objectList, ead2);
         }
 
-        byte[] contextSequence = Util.buildCBORSequence(objectList);
+        byte[] contextSequence = EdhocUtil.buildCBORSequence(objectList);
         CBORObject context = CBORObject.FromObject(contextSequence);
-        LOGGER.debug(byteArrayToString( "context_2", contextSequence));
+        LOGGER.debug(EdhocUtil.byteArrayToString( "context_2", contextSequence));
 
         int macLength = 0;
         int method = session.getMethod();
@@ -2003,12 +1977,12 @@ public class MessageProcessorPersistent {
             Collections.addAll(objectList, ead);
 
             // Rebuild how EAD was in the EDHOC message
-            byte[] eadSequence = Util.buildCBORSequence(objectList);
+            byte[] eadSequence = EdhocUtil.buildCBORSequence(objectList);
 
             externalDataList.add(CBORObject.FromObject(eadSequence));
         }
 
-        return Util.concatenateByteArrays(externalDataList);
+        return EdhocUtil.concatenateByteArrays(externalDataList);
     }
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeSignatureOrMac2} */
@@ -2032,15 +2006,15 @@ public class MessageProcessorPersistent {
                 int selectedCipherSuite = session.getSelectedCipherSuite();
 
                 // Consistency check of key type and curve against the selected cipher suite
-                if (!Util.checkSignatureKeyAgainstCipherSuite(identityKey, selectedCipherSuite)) {
+                if (!EdhocUtil.checkSignatureKeyAgainstCipherSuite(identityKey, selectedCipherSuite)) {
                     LOGGER.debug("ERROR: Signing MAC_2 to produce Signature_or_MAC_2 (signature key check)");
                     return null;
                 }
 
-                LOGGER.debug(byteArrayToString("External Data for signing MAC_2 to produce Signature_or_MAC_2",
+                LOGGER.debug(EdhocUtil.byteArrayToString("External Data for signing MAC_2 to produce Signature_or_MAC_2",
                         externalData));
 
-                signatureOrMac2 = Util.computeSignature(session.getIdCred(), externalData, mac2, identityKey);
+                signatureOrMac2 = EdhocUtil.computeSignature(session.getIdCred(), externalData, mac2, identityKey);
 
             } catch (CoseException e) {
                 LOGGER.debug("ERROR: Signing MAC_2 to produce Signature_or_MAC_2\n" + e.getMessage());
@@ -2081,13 +2055,13 @@ public class MessageProcessorPersistent {
             int selectedCipherSuite = session.getSelectedCipherSuite();
 
             // Consistency check of key type and curve against the selected cipher suite
-            if (!Util.checkSignatureKeyAgainstCipherSuite(peerLongTerm, selectedCipherSuite)) {
+            if (!EdhocUtil.checkSignatureKeyAgainstCipherSuite(peerLongTerm, selectedCipherSuite)) {
                 LOGGER.debug("ERROR: Verifying the signature of Signature_or_MAC_2 (signature check)");
                 return false;
             }
 
             try {
-                return Util.verifySignature(signatureOrMac2, peerIdCred, externalData, mac2, peerLongTerm);
+                return EdhocUtil.verifySignature(signatureOrMac2, peerIdCred, externalData, mac2, peerLongTerm);
             } catch (CoseException e) {
                 LOGGER.debug("ERROR: Verifying the signature of Signature_or_MAC_2\n" + e.getMessage());
                 return false;
@@ -2106,7 +2080,7 @@ public class MessageProcessorPersistent {
         System.arraycopy(plaintext2, 0, hashInput, offset, plaintext2.length);
 
         try {
-            return Util.computeHash(hashInput, hashAlgorithm);
+            return EdhocUtil.computeHash(hashInput, hashAlgorithm);
         } catch (NoSuchAlgorithmException e) {
             LOGGER.debug("ERROR: Invalid hash algorithm when computing TH3\n" + e.getMessage());
             return null;
@@ -2150,12 +2124,12 @@ public class MessageProcessorPersistent {
             // Consistency check of key type and curve against the selected cipher suite
             int selectedCipherSuite = session.getSelectedCipherSuite();
 
-            if (!Util.checkDiffieHellmanKeyAgainstCipherSuite(privateKey, selectedCipherSuite)) {
+            if (!EdhocUtil.checkDiffieHellmanKeyAgainstCipherSuite(privateKey, selectedCipherSuite)) {
                 LOGGER.debug("ERROR: Computing the Diffie-Hellman Secret (privateKey check)");
                 return null;
             }
 
-            if (!Util.checkDiffieHellmanKeyAgainstCipherSuite(publicKey, selectedCipherSuite)) {
+            if (!EdhocUtil.checkDiffieHellmanKeyAgainstCipherSuite(publicKey, selectedCipherSuite)) {
                 LOGGER.debug("ERROR: Computing the Diffie-Hellman Secret (publicKey check)");
                 return null;
             }
@@ -2167,7 +2141,7 @@ public class MessageProcessorPersistent {
                 return null;
             }
 
-            LOGGER.debug(byteArrayToString("G_IY", dhSecret));
+            LOGGER.debug(EdhocUtil.byteArrayToString("G_IY", dhSecret));
 
             String hashAlgorithm = EdhocSession.getEdhocHashAlg(session.getSelectedCipherSuite());
 
@@ -2188,7 +2162,7 @@ public class MessageProcessorPersistent {
                 return null;
             }
 
-            LOGGER.debug(byteArrayToString("SALT_4e3m", salt4e3m));
+            LOGGER.debug(EdhocUtil.byteArrayToString("SALT_4e3m", salt4e3m));
 
             if (hashAlgorithm.equals("SHA-256") || hashAlgorithm.equals("SHA-384") || hashAlgorithm.equals("SHA-512")) {
                 try {
@@ -2211,15 +2185,15 @@ public class MessageProcessorPersistent {
         // The actual 'context' is a CBOR byte string with value the serialization of the CBOR sequence
         List<CBORObject> objectList = new ArrayList<>();
         objectList.add(idCredI);
-        objectList.add(CBORObject.FromObject(th3)); // v-14
+        objectList.add(CBORObject.FromObject(th3));
         objectList.add(CBORObject.DecodeFromBytes(credI));
 
         if (ead3 != null) {
             Collections.addAll(objectList, ead3);
         }
-        byte[] contextSequence = Util.buildCBORSequence(objectList);
+        byte[] contextSequence = EdhocUtil.buildCBORSequence(objectList);
         CBORObject context = CBORObject.FromObject(contextSequence);
-        LOGGER.debug(byteArrayToString("context_3", contextSequence));
+        LOGGER.debug(EdhocUtil.byteArrayToString("context_3", contextSequence));
 
         int macLength = 0;
         int method = session.getMethod();
@@ -2260,15 +2234,15 @@ public class MessageProcessorPersistent {
                 int selectedCipherSuite = session.getSelectedCipherSuite();
 
                 // Consistency check of key type and curve against the selected cipher suite
-                if (!Util.checkSignatureKeyAgainstCipherSuite(identityKey, selectedCipherSuite)) {
+                if (!EdhocUtil.checkSignatureKeyAgainstCipherSuite(identityKey, selectedCipherSuite)) {
                     LOGGER.debug("ERROR: Signing MAC_3 to produce Signature_or_MAC_3 (signature key check)");
                     return null;
                 }
 
-                LOGGER.debug(byteArrayToString( "External Data for signing MAC_3 to produce Signature_or_MAC_3",
+                LOGGER.debug(EdhocUtil.byteArrayToString( "External Data for signing MAC_3 to produce Signature_or_MAC_3",
                         externalData));
 
-                signatureOrMac3 = Util.computeSignature(session.getIdCred(), externalData, mac3, identityKey);
+                signatureOrMac3 = EdhocUtil.computeSignature(session.getIdCred(), externalData, mac3, identityKey);
 
             } catch (CoseException e) {
                 LOGGER.debug("ERROR: Signing MAC_3 to produce Signature_or_MAC_3\n" + e.getMessage());
@@ -2327,7 +2301,7 @@ public class MessageProcessorPersistent {
         CBORObject emptyMap = CBORObject.NewMap();
 
         try {
-            return Util.encrypt(emptyMap, externalData, plaintext, alg, iv3ae, k3ae);
+            return EdhocUtil.encrypt(emptyMap, externalData, plaintext, alg, iv3ae, k3ae);
         } catch (CoseException e) {
             LOGGER.debug("ERROR: Computing CIPHERTEXT_3\n" + e.getMessage());
             return null;
@@ -2341,7 +2315,7 @@ public class MessageProcessorPersistent {
         System.arraycopy(th3, 0, hashInput, 0, th3.length);
         System.arraycopy(plaintext3, 0, hashInput, th3.length, plaintext3.length);
         try {
-            return Util.computeHash(hashInput, hashAlgorithm);
+            return EdhocUtil.computeHash(hashInput, hashAlgorithm);
         } catch (NoSuchAlgorithmException e) {
             LOGGER.debug("ERROR: Invalid hash algorithm when computing TH4\n" + e.getMessage());
             return null;
@@ -2385,7 +2359,7 @@ public class MessageProcessorPersistent {
         CBORObject emptyMap = CBORObject.NewMap();
 
         try {
-            return Util.decrypt(emptyMap, externalData, ciphertext, alg, iv3ae, k3ae);
+            return EdhocUtil.decrypt(emptyMap, externalData, ciphertext, alg, iv3ae, k3ae);
         } catch (CoseException e) {
             LOGGER.debug("ERROR: Decrypting CIPHERTEXT_3\n" + e.getMessage());
             return null;
@@ -2411,13 +2385,13 @@ public class MessageProcessorPersistent {
             int selectedCipherSuite = session.getSelectedCipherSuite();
 
             // Consistency check of key type and curve against the selected cipher suite
-            if (!Util.checkSignatureKeyAgainstCipherSuite(peerLongTerm, selectedCipherSuite)) {
+            if (!EdhocUtil.checkSignatureKeyAgainstCipherSuite(peerLongTerm, selectedCipherSuite)) {
                 LOGGER.debug("ERROR: Verifying the signature of Signature_or_MAC_3");
                 return false;
             }
 
             try {
-                return Util.verifySignature(signatureOrMac3, peerIdCred, externalData, mac3, peerLongTerm);
+                return EdhocUtil.verifySignature(signatureOrMac3, peerIdCred, externalData, mac3, peerLongTerm);
             } catch (CoseException e) {
                 LOGGER.debug("ERROR: Verifying the signature of Signature_or_MAC_3\n" + e.getMessage());
                 return false;
@@ -2474,7 +2448,7 @@ public class MessageProcessorPersistent {
         CBORObject emptyMap = CBORObject.NewMap();
 
         try {
-            return Util.encrypt(emptyMap, externalData, plaintext, alg, iv4m, k4m);
+            return EdhocUtil.encrypt(emptyMap, externalData, plaintext, alg, iv4m, k4m);
         } catch (CoseException e) {
             LOGGER.debug("ERROR: Computing CIPHERTEXT_4\n" + e.getMessage());
             return null;
@@ -2490,7 +2464,7 @@ public class MessageProcessorPersistent {
         CBORObject emptyMap = CBORObject.NewMap();
 
         try {
-            return Util.decrypt(emptyMap, externalData, ciphertext, alg, iv4ae, k4ae);
+            return EdhocUtil.decrypt(emptyMap, externalData, ciphertext, alg, iv4ae, k4ae);
         } catch (CoseException e) {
             LOGGER.debug("ERROR: Decrypting CIPHERTEXT_4\n" + e.getMessage());
             return null;

@@ -7,7 +7,7 @@ import org.eclipse.californium.edhoc.EdhocSession;
 
 import java.util.Set;
 
-public abstract class EdhocMapperState extends State {
+public abstract class EdhocMapperState implements State {
     public abstract EdhocSession getEdhocSession();
 
     public abstract EdhocEndpointInfo getEdhocEndpointInfo();

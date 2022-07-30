@@ -2,11 +2,12 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.authentication.AuthenticationConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 public class EdhocMapperConfig extends MapperConfig {
     protected String host = "";
@@ -30,11 +31,17 @@ public class EdhocMapperConfig extends MapperConfig {
             + "'coap://ip:port/applicationGET', -appGetCoapResource = applicationGET")
     protected String appGetCoapResource = "applicationGET";
 
-    @Parameter(names = "-coapErrorAsEdhocError", description = "Uses 'EDHOC_ERROR_MESSAGE' instead of 'COAP_ERROR_MESSAGE'")
+    @Parameter(names = "-coapErrorAsEdhocError", description = "Uses 'EDHOC_ERROR_MESSAGE' instead of "
+            + "'COAP_ERROR_MESSAGE'")
     protected boolean coapErrorAsEdhocError = false;
 
-    public void setHost(String host) {
-        this.host = checkAndReturnHost(host);
+    @Parameter(names = "-disableContentFormat", description = "Do not add CoAP Content-Format in sending messages")
+    protected boolean disableContentFormat = false;
+
+    public void initializeHost(String host) {
+        if (Objects.equals(this.host, "")) {
+            this.host = checkAndReturnHost(host);
+        }
     }
 
     public AuthenticationConfig getAuthenticationConfig() {
@@ -51,6 +58,10 @@ public class EdhocMapperConfig extends MapperConfig {
 
     public String getAppGetCoapResource() {
         return appGetCoapResource;
+    }
+
+    public boolean useContentFormat() {
+        return !disableContentFormat;
     }
 
     public boolean isCoapErrorAsEdhocError() {

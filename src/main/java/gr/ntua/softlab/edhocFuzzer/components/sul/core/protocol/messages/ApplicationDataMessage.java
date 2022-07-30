@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
+package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages;
 
 import org.eclipse.californium.core.coap.CoAP;
 

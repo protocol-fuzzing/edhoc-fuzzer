@@ -1,10 +1,10 @@
-package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
+package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages;
 
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.edhoc.Constants;
 
-public abstract class EdhocProtocolMessage extends ProtocolMessage {
+public abstract class EdhocProtocolMessage implements ProtocolMessage {
     // payload of the message
     protected byte[] payload;
 

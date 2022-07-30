@@ -1,5 +1,6 @@
-package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
+package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages;
 
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import org.eclipse.californium.edhoc.Constants;
 
 public class Message1 extends EdhocProtocolMessage {

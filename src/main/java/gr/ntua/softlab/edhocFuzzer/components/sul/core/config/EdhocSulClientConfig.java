@@ -15,7 +15,7 @@ public class EdhocSulClientConfig extends SulClientConfig {
 
     @Override
     public MapperConfig getMapperConfig() {
-        ((EdhocMapperConfig) mapperConfig).setHost("localhost:" + this.port);
+        ((EdhocMapperConfig) mapperConfig).initializeHost("localhost:" + this.port);
         return mapperConfig;
     }
 

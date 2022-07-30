@@ -1,6 +1,6 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors;
 
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.PayloadType;
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.PayloadType;
 import org.eclipse.californium.core.coap.CoAP;
 
 public class ServerMapperConnector implements EdhocMapperConnector {
@@ -24,6 +24,11 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
     @Override
     public boolean isLatestResponseSuccessfulAppData() {
+        return false;
+    }
+
+    @Override
+    public boolean isLatestResponseEmptyCoapAck() {
         return false;
     }
 
