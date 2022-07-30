@@ -90,7 +90,7 @@ public class LearnerFactory {
         // simplest method, but doesn't perform well in practice, especially for large models
         return switch (algorithm) {
             case RANDOM_WALK ->
-                    new RandomWalkEQOracle<>(sul, config.getProbReset(), config.getNumberOfQueries(),
+                    new RandomWalkEQOracle<>(sul, config.getProbReset(), config.getEquivQueryBound(),
                             true, new Random(config.getSeed()));
             // Other methods are somewhat smarter than random testing:
             // state coverage, trying to distinguish states, etc.
@@ -100,12 +100,12 @@ public class LearnerFactory {
                     new MealyWpMethodEQOracle<>(sulOracle, config.getMaxDepth());
             case RANDOM_WP_METHOD ->
                     new RandomWpMethodEQOracle<>(sulOracle, config.getMinLength(), config.getRandLength(),
-                            config.getNumberOfQueries(), config.getSeed());
+                            config.getEquivQueryBound(), config.getSeed());
             case SAMPLED_TESTS ->
                     new SampledTestsEQOracle<>(readTests(config, alphabet), sulOracle);
             case WP_SAMPLED_TESTS ->
                     new WpSampledTestsEQOracle<>(readTests(config, alphabet), sulOracle, config.getMinLength(),
-                            config.getRandLength(), config.getSeed(), config.getNumberOfQueries());
+                            config.getRandLength(), config.getSeed(), config.getEquivQueryBound());
             default ->
                     throw new RuntimeException("Equivalence algorithm '" + algorithm + "' not supported");
         };

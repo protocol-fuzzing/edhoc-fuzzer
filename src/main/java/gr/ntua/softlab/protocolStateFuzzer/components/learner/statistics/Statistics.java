@@ -103,7 +103,7 @@ public class Statistics {
         out.println("Random Length: " + learnerConfig.getRandLength());
         out.println("Max Depth: " + learnerConfig.getMaxDepth());
         out.println("Prob Reset: " + learnerConfig.getProbReset());
-        out.println("Max Queries: " + learnerConfig.getNumberOfQueries());
+        out.println("Max Equivalence Queries: " + learnerConfig.getEquivQueryBound());
         out.println("SUL Parameters");
 
         SulConfig sulConfig = stateFuzzerEnabler.getSulConfig();

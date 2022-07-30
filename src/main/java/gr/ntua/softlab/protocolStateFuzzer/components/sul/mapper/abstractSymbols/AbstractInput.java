@@ -63,7 +63,8 @@ public abstract class AbstractInput extends AbstractSymbol {
     /**
      * Updates the context after receiving an output.
      */
-    public abstract void postReceiveUpdate(AbstractOutput output, ExecutionContext context);
+    public abstract void postReceiveUpdate(AbstractOutput output, AbstractOutputChecker abstractOutputChecker,
+                                           ExecutionContext context);
 
     /**
      * The type of the input should correspond to the type of the message the

@@ -14,13 +14,9 @@ public class MapperComposer implements Mapper {
 	protected InputMapper inputMapper;
 	protected OutputMapper outputMapper;
 
-	protected AbstractOutputChecker abstractOutputChecker;
-
-	public MapperComposer(InputMapper inputMapper, OutputMapper outputMapper,
-						  AbstractOutputChecker abstractOutputChecker) {
+	public MapperComposer(InputMapper inputMapper, OutputMapper outputMapper) {
 		this.inputMapper = inputMapper;
 		this.outputMapper = outputMapper;
-		this.abstractOutputChecker = abstractOutputChecker;
 	}
 
 	public InputMapper getInputMapper() {
@@ -38,7 +34,7 @@ public class MapperComposer implements Mapper {
 
 	@Override
 	public AbstractOutputChecker getAbstractOutputChecker() {
-		return abstractOutputChecker;
+		return inputMapper.getOutputChecker();
 	}
 
 	@Override

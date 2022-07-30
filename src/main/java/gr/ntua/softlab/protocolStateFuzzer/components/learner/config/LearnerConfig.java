@@ -35,8 +35,9 @@ public class LearnerConfig implements AlphabetOptionProvider {
     @Parameter(names = "-randLength", description = "Size of the random part (Random WP Method)")
     protected Integer randLength = 5;
 
-    @Parameter(names = "-queries", description = "Number of queries (all)")
-    protected Integer numberOfQueries = 1000;
+    @Parameter(names = "-equivQueryBound", description = "Max number of queries used by some equivalence algorithms."
+            + "It is used as the 'bound' parameter in those equivalence algorithms.")
+    protected Integer equivQueryBound = 1000;
 
     @Parameter(names = "-memQueryRuns", description = "The number of times each membership query is executed before "
             + "an answer is returned. Setting it to more than 1 enables an multiple-run oracle "
@@ -124,8 +125,8 @@ public class LearnerConfig implements AlphabetOptionProvider {
         return randLength;
     }
 
-    public int getNumberOfQueries() {
-        return numberOfQueries;
+    public int getEquivQueryBound() {
+        return equivQueryBound;
     }
 
     public int getRunsPerMembershipQuery() {
