@@ -111,11 +111,11 @@ public class CommandLineParser {
                 case CMD_STATE_FUZZER_SERVER -> executeCommand(args, commander, stateFuzzerServerConfig);
             }
 
-        } catch (ParameterException E) {
-            LOGGER.error("Could not parse provided parameters: " + E.getMessage());
-        } catch (Exception E) {
-            LOGGER.error("Encountered an exception. See below for more info.");
-            E.printStackTrace();
+        } catch (ParameterException e) {
+            LOGGER.error("Could not parse provided parameters: {}", e.getMessage());
+        } catch (Exception e) {
+            LOGGER.error("Encountered an exception, see below for more info");
+            e.printStackTrace();
         }
     }
 
@@ -149,7 +149,7 @@ public class CommandLineParser {
             }
         } else {
             // run state fuzzer
-            LOGGER.info("State-fuzzing a " + stateFuzzerConfig.getSulConfig().getFuzzingRole() + " implementation");
+            LOGGER.info("State-fuzzing a {} implementation", stateFuzzerConfig.getSulConfig().getFuzzingRole());
 
             // this is an extra step done to store the running arguments
             prepareOutputDir(args, stateFuzzerConfig.getOutput());
@@ -170,14 +170,24 @@ public class CommandLineParser {
      */
     protected void prepareOutputDir(String[] args, String dirPath) {
         File outputFolder = new File(dirPath);
-        outputFolder.mkdirs();
+        if (outputFolder.exists()) {
+            // output folder exists from previous run, so delete contents
+            File[] fileList = outputFolder.listFiles();
+            if (fileList != null) {
+                for (File f : fileList) {
+                    f.delete();
+                }
+            }
+        } else {
+            outputFolder.mkdirs();
+        }
 
         try {
             copyArgsToOutDir(args, dirPath);
-        } catch (IOException E) {
-            LOGGER.error("Failed to copy arguments file");
-            E.printStackTrace();
-            LOGGER.error(E);
+        } catch (IOException e) {
+            LOGGER.error("Failed to copy arguments");
+            e.printStackTrace();
+            LOGGER.error(e);
         }
     }
 
