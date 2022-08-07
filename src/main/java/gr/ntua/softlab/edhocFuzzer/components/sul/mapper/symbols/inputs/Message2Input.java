@@ -22,7 +22,7 @@ public class Message2Input extends EdhocInput {
     public void postReceiveUpdate(AbstractOutput output, AbstractOutputChecker abstractOutputChecker,
                                   ExecutionContext context) {
         if (((EdhocOutputChecker) abstractOutputChecker).isMessage(output, EdhocOutputType.EDHOC_MESSAGE_3)) {
-            getEdhocMapperState(context).setupOscoreContext();
+            getEdhocSessionPersistent(context).setupOscoreContext();
         }
     }
 

@@ -523,11 +523,14 @@ public class MessageProcessorPersistent {
         byte[] message2 = EdhocUtil.buildCBORSequence(objectList);
         LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 2", message2));
 
-        /* Modify session */
-        session.setTH2(th2);
-        session.setPRK2e(prk2e);
-        session.setPRK3e2m(prk3e2m);
-        session.setPlaintext2(plaintext2);
+
+        /* Modify session if real message 2 is not received yet */
+        if (!((EdhocSessionPersistent) session).isMessage2Received()) {
+            session.setTH2(th2);
+            session.setPRK2e(prk2e);
+            session.setPRK3e2m(prk3e2m);
+            session.setPlaintext2(plaintext2);
+        }
 
         return message2;
     }

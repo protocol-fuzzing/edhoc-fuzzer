@@ -16,10 +16,16 @@ public class EdhocMapperConfig extends MapperConfig {
     protected AuthenticationConfig authenticationConfig = new AuthenticationConfig();
 
     @Parameter(names = "-appProfileMode", description = "The mode, under which, application profile will be set. "
-            +"Available modes are: 1 (message_3 with no application message), 2 (message_3 and application message), "
-            + "3 (message_3 combined with application message), 4 (message_4 with no application message), "
-            + "5 (message_4 with application message). Learning alphabet should be corresponding with it.")
-    protected Integer appProfileMode = 1;
+            + "Available modes are: "
+            + "1 - [m3_no_app] (msg_1, msg_2, msg_3, error_msg), "
+            + "2 - [m3_app] (msg_1, msg_2, msg_3, app, error_msg), "
+            + "3 - [m3_combined_app] (msg_1, msg_2, msg_3, app, msg_3_app, error_msg), "
+            + "4 - [m4_no_app] (msg_1, msg_2, msg_3, msg_4, error_msg), "
+            + "5 - [m4_app] (msg_1, msg_2, msg_3, msg_4, app, error_msg), "
+            + "6 - [all] (msg_1, msg_2, msg_3, msg_4, app, msg_3_app, error_msg). "
+            + "If learning alphabet contains a message not according to this mode, the correct use of this message "
+            + "is not guaranteed.")
+    protected Integer appProfileMode = 6;
 
     @Parameter(names = "-edhocCoapResource", description = "The CoAP uri for mapper to send/receive edhoc messages. "
             + "The format is without protocol and host, e.g. for 'coap://ip:port/.well-known/edhoc', "

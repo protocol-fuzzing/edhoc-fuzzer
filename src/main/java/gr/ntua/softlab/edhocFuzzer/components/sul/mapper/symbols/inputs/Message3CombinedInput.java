@@ -13,7 +13,7 @@ public class Message3CombinedInput extends ApplicationDataInput {
         // and make it available to oscore layer
         new MessageProcessorPersistent(getEdhocMapperState(context)).writeMessage3();
         // setup oscore context
-        getEdhocMapperState(context).setupOscoreContext();
+        getEdhocSessionPersistent(context).setupOscoreContext();
     }
 
     @Override

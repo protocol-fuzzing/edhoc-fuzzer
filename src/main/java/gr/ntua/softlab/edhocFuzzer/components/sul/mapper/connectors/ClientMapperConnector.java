@@ -11,37 +11,36 @@ import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.elements.exception.ConnectorException;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 public class ClientMapperConnector implements EdhocMapperConnector {
-    protected String edhocUri;
-    protected CoapClient edhocClient = null;
-    protected String appUri;
-    protected CoapClient appClient = null;
-    protected Long originalTimeout;
+    protected CoapClient edhocClient;
+    protected CoapClient appClient;
+    protected CoapEndpoint coapEndpoint;
+
     protected CoapResponse response;
     protected boolean exceptionOccurred;
     protected boolean latestAppRequest;
 
     public ClientMapperConnector(String edhocUri, String appUri, Long originalTimeout){
-        this.edhocUri = edhocUri;
-        this.appUri = appUri;
-        this.originalTimeout = originalTimeout;
-    }
-
-    public void createNewClients(EdhocStackFactoryPersistent edhocStackFactoryPersistent) {
-        // shutdown old existing clients
-        if (edhocClient != null) {
-            edhocClient.shutdown();
-        }
-
-        if (appClient != null) {
-            appClient.shutdown();
-        }
-
-        // new endpoint with new edhoc stack
-        CoapEndpoint coapEndpoint = CoapEndpoint.builder().setCoapStackFactory(edhocStackFactoryPersistent).build();
+        this.coapEndpoint = CoapEndpoint.builder().build();
         this.edhocClient = new CoapClient(edhocUri).setEndpoint(coapEndpoint).setTimeout(originalTimeout);
         this.appClient = new CoapClient(appUri).setEndpoint(coapEndpoint).setTimeout(originalTimeout);
+    }
+
+    public void addCoapStackFactory(EdhocStackFactoryPersistent edhocStackFactoryPersistent) {
+        // create new coapEndpoint using provided stackFactory
+        // at the same address as the previous one
+        InetSocketAddress address = coapEndpoint.getAddress();
+        coapEndpoint.destroy();
+        coapEndpoint = CoapEndpoint.builder()
+                .setInetSocketAddress(address)
+                .setCoapStackFactory(edhocStackFactoryPersistent)
+                .build();
+
+        // set the new endpoint to clients
+        edhocClient.setEndpoint(coapEndpoint);
+        appClient.setEndpoint(coapEndpoint);
     }
 
     @Override

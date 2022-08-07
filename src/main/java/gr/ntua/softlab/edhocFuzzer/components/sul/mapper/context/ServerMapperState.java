@@ -22,9 +22,4 @@ public class ServerMapperState extends EdhocMapperState {
     public Set<CBORObject> getOwnIdCreds() {
         return null;
     }
-
-    @Override
-    public void setupOscoreContext() {
-
-    }
 }

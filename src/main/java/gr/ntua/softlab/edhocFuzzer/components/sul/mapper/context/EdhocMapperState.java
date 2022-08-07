@@ -14,5 +14,4 @@ public abstract class EdhocMapperState implements State {
 
     public abstract Set<CBORObject> getOwnIdCreds();
 
-    public abstract void setupOscoreContext();
 }

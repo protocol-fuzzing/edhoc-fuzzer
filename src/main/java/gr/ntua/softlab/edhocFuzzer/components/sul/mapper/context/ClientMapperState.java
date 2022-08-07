@@ -1,11 +1,11 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context;
 
 import com.upokecenter.cbor.CBORObject;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs.KeyConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocSessionPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs.KeyConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.ClientMapperConnector;
 import net.i2p.crypto.eddsa.EdDSASecurityProvider;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
@@ -18,19 +18,15 @@ import org.bouncycastle.jce.interfaces.ECPrivateKey;
 import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.BigIntegers;
-import org.eclipse.californium.cose.AlgorithmID;
 import org.eclipse.californium.cose.OneKey;
 import org.eclipse.californium.edhoc.*;
 import org.eclipse.californium.oscore.HashMapCtxDB;
-import org.eclipse.californium.oscore.OSCoreCtx;
-import org.eclipse.californium.oscore.OSException;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -39,9 +35,6 @@ import java.util.*;
 
 /** Adapted from test file EdhocClient from edhoc repo */
 public class ClientMapperState extends EdhocMapperState {
-
-	protected Provider EdDSA = new EdDSASecurityProvider();
-	protected Provider BouncyCastle = new BouncyCastleProvider();
 
 	// The authentication method to include in EDHOC message_1 (relevant only when Initiator)
 	protected int authenticationMethod;
@@ -107,7 +100,6 @@ public class ClientMapperState extends EdhocMapperState {
 
 	protected EdhocSession edhocSession;
 	protected EdhocEndpointInfo edhocEndpointInfo;
-
 	protected String edhocURI;
 
 	public ClientMapperState(String edhocURI, int appProfileMode, AuthenticationConfig authenticationConfig,
@@ -116,8 +108,8 @@ public class ClientMapperState extends EdhocMapperState {
 		this.edhocURI = edhocURI;
 
 		// Insert security providers
-		Security.insertProviderAt(EdDSA, 1);
-		Security.insertProviderAt(BouncyCastle, 2);
+		Security.insertProviderAt(new EdDSASecurityProvider(), 1);
+		Security.insertProviderAt(new BouncyCastleProvider(), 2);
 
 		// Set authentication params
 		this.authenticationMethod = authenticationConfig.getMapAuthenticationMethod();
@@ -181,8 +173,14 @@ public class ClientMapperState extends EdhocMapperState {
 				usedForOSCORE = true;
 				supportCombinedRequest = false;
 			}
+			case 6 -> {
+				// all true (not in edhoc, just for fuzzing)
+				useMessage4 = true;
+				usedForOSCORE = true;
+				supportCombinedRequest = true;
+			}
 			default -> throw new RuntimeException("Invalid application profile mode: " + appProfileMode
-					+ ". Available application profile modes are 1, 2, 3, 4, 5");
+					+ ". Available application profile modes are 1, 2, 3, 4, 5, 6");
 		}
 
 		AppProfile appProfile = new AppProfile(authMethods, useMessage4, usedForOSCORE, supportCombinedRequest);
@@ -198,23 +196,22 @@ public class ClientMapperState extends EdhocMapperState {
 				MAX_UNFRAGMENTED_SIZE, appProfiles, edp
 		);
 
-		// Prepare this session
+		// large connection id, in order not to be equal with received C_R
+		// in case of mapper using oscore context (for fuzzing only), but
+		// the other peer does not derive oscore context
+		byte[] connectionId = new byte[]{(byte) 255, (byte) 255, (byte) 255};
+		usedConnectionIds.add(CBORObject.FromObject(connectionId));
+
 		HashMapCtxDB oscoreDB = appProfile.getUsedForOSCORE() ? db : null;
-		byte[] connectionId = Util.getConnectionId(usedConnectionIds, oscoreDB, null);
-		edhocSession = new EdhocSessionPersistent(
-				true, true, authenticationMethod, connectionId,
-				keyPairs, idCreds, creds, supportedCipherSuites, appProfile, edp, oscoreDB);
+		// Prepare this session
+		edhocSession = new EdhocSessionPersistent(true, true, authenticationMethod, connectionId,
+				edhocEndpointInfo, oscoreDB);
 
 		// Update edhocSessions
 		edhocSessions.put(CBORObject.FromObject(connectionId), edhocSession);
 
-		// Create a dummy oscore context if needed
-		if (appProfile.getUsedForOSCORE()) {
-			setupOscoreContext();
-		}
-
 		// Create new clients
-		clientMapperConnector.createNewClients(new EdhocStackFactoryPersistent(edhocEndpointInfo,
+		clientMapperConnector.addCoapStackFactory(new EdhocStackFactoryPersistent(edhocEndpointInfo,
 				new MessageProcessorPersistent(this)));
 	}
 
@@ -230,43 +227,6 @@ public class ClientMapperState extends EdhocMapperState {
 	@Override
 	public Set<CBORObject> getOwnIdCreds() {
 		return ownIdCreds;
-	}
-
-	@Override
-	public void setupOscoreContext() {
-		/* Invoke the EDHOC-Exporter to produce OSCORE input material */
-		byte[] masterSecret = EdhocSession.getMasterSecretOSCORE(edhocSession);
-		byte[] masterSalt = EdhocSession.getMasterSaltOSCORE(edhocSession);
-
-		/* Set up the OSCORE Security Context */
-
-		// The Sender ID of this peer is the EDHOC connection identifier of the other peer
-		byte[] senderId = edhocSession.getPeerConnectionId();
-		// The Recipient ID of this peer is the EDHOC connection identifier of this peer
-		byte[] recipientId = edhocSession.getConnectionId();
-
-		int selectedCipherSuite = edhocSession.getSelectedCipherSuite();
-		AlgorithmID alg = EdhocSession.getAppAEAD(selectedCipherSuite);
-		AlgorithmID hkdf = EdhocSession.getAppHkdf(selectedCipherSuite);
-
-		OSCoreCtx ctx;
-		if (Arrays.equals(senderId, recipientId)) {
-			throw new RuntimeException("Error: the Sender ID coincides with the Recipient ID");
-		}
-
-		try {
-			ctx = new OSCoreCtx(masterSecret, true, alg, senderId, recipientId, hkdf,
-					OSCORE_REPLAY_WINDOW, masterSalt, null, MAX_UNFRAGMENTED_SIZE);
-		} catch (OSException e) {
-			throw new RuntimeException("Error when deriving the OSCORE Security Context: " + e.getMessage());
-		}
-
-		try {
-			db.addContext(edhocURI, ctx);
-		} catch (OSException e) {
-			throw new RuntimeException("Error when adding the OSCORE Security Context to the context database: "
-					+ e.getMessage());
-		}
 	}
 
 	protected void setupOwnAuthenticationCredentials (AuthenticationConfig authenticationConfig) {

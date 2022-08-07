@@ -2,16 +2,25 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
 
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
+import org.eclipse.californium.cose.AlgorithmID;
 import org.eclipse.californium.cose.OneKey;
 import org.eclipse.californium.edhoc.*;
 import org.eclipse.californium.oscore.HashMapCtxDB;
+import org.eclipse.californium.oscore.OSCoreCtx;
+import org.eclipse.californium.oscore.OSException;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Arrays;
 
 public class EdhocSessionPersistent extends EdhocSession {
+    protected boolean message2Received;
+
+    protected boolean oscoreCtxGenerated;
+    protected String oscoreUriKey;
+    protected int oscoreReplayWindow;
+    protected int oscoreMaxUnfragmentedSize;
+
     protected CBORObject[] ead1;
     protected CBORObject[] ead2;
     protected CBORObject[] ead3;
@@ -19,17 +28,22 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     public EdhocSessionPersistent(
             boolean initiator, boolean clientInitiated, int method, byte[] connectionId,
-            HashMap<Integer, HashMap<Integer, OneKey>> keyPairs, HashMap<Integer, HashMap<Integer, CBORObject>> idCreds,
-            HashMap<Integer, HashMap<Integer, CBORObject>> creds, List<Integer> cipherSuites, AppProfile appProfile,
-            EDP edp, HashMapCtxDB db
-    ) {
-        super(initiator, clientInitiated, method, connectionId, keyPairs, idCreds, creds, cipherSuites,
-                appProfile, edp, db);
+            EdhocEndpointInfo edhocEndpointInfo, HashMapCtxDB oscoreDB) {
 
-        fillFieldsWithDummyValues();
+        super(initiator, clientInitiated, method, connectionId,
+                edhocEndpointInfo.getKeyPairs(), edhocEndpointInfo.getIdCreds(), edhocEndpointInfo.getCreds(),
+                edhocEndpointInfo.getSupportedCipherSuites(),
+                edhocEndpointInfo.getAppProfiles().get(edhocEndpointInfo.getUri()),
+                edhocEndpointInfo.getEdp(), oscoreDB);
+
+        this.oscoreUriKey = edhocEndpointInfo.getUri();
+        this.oscoreReplayWindow = edhocEndpointInfo.getOscoreReplayWindow();
+        this.oscoreMaxUnfragmentedSize = edhocEndpointInfo.getOscoreMaxUnfragmentedSize();
+
+        reset();
     }
 
-    protected void fillFieldsWithDummyValues() {
+    public void reset() {
         // own info with cipher suite 0
         setSelectedCipherSuite(Constants.EDHOC_CIPHER_SUITE_0);
         setAuthenticationCredential();
@@ -39,6 +53,7 @@ public class EdhocSessionPersistent extends EdhocSession {
         setPeerConnectionId(new byte[]{0, 0, 0, 0});
         setPeerIdCred(CBORObject.Null);
         setPeerLongTermPublicKey(new OneKey());
+
         // dummy peerEphemeralPublicKey based on selectedCipherSuite 0
         OneKey peerEphemeralPublicKey = SharedSecretCalculation.buildCurve25519OneKey(null, new byte[0]);
         setPeerEphemeralPublicKey(peerEphemeralPublicKey);
@@ -72,6 +87,65 @@ public class EdhocSessionPersistent extends EdhocSession {
         this.ead2 = null;
         this.ead3 = null;
         this.ead4 = null;
+
+        // setup dummy oscore context
+        // and reset flag to false
+        oscoreCtxGenerated = false;
+        setupOscoreContext();
+        oscoreCtxGenerated = false;
+
+        // reset other flags
+        message2Received = false;
+    }
+
+    public void setupOscoreContext() {
+        if (!getApplicationProfile().getUsedForOSCORE() || oscoreCtxGenerated) {
+            return;
+        }
+
+        /* Invoke the EDHOC-Exporter to produce OSCORE input material */
+        byte[] masterSecret = getMasterSecretOSCORE(this);
+        byte[] masterSalt = getMasterSaltOSCORE(this);
+
+        /* Set up the OSCORE Security Context */
+
+        // The Sender ID of this peer is the EDHOC connection identifier of the other peer
+        byte[] senderId = getPeerConnectionId();
+        // The Recipient ID of this peer is the EDHOC connection identifier of this peer
+        byte[] recipientId = getConnectionId();
+
+        int selectedCipherSuite = getSelectedCipherSuite();
+        AlgorithmID alg = getAppAEAD(selectedCipherSuite);
+        AlgorithmID hkdf = getAppHkdf(selectedCipherSuite);
+
+        OSCoreCtx ctx;
+        if (Arrays.equals(senderId, recipientId)) {
+            throw new RuntimeException("Error: the Sender ID coincides with the Recipient ID");
+        }
+
+        try {
+            ctx = new OSCoreCtx(masterSecret, true, alg, senderId, recipientId, hkdf,
+                    oscoreReplayWindow, masterSalt, null, oscoreMaxUnfragmentedSize);
+        } catch (OSException e) {
+            throw new RuntimeException("Error when deriving the OSCORE Security Context: " + e.getMessage());
+        }
+
+        try {
+            getOscoreDb().addContext(oscoreUriKey, ctx);
+        } catch (OSException e) {
+            throw new RuntimeException("Error when adding the OSCORE Security Context to the context database: "
+                    + e.getMessage());
+        }
+
+        oscoreCtxGenerated = true;
+    }
+
+    public boolean isMessage2Received() {
+        return message2Received;
+    }
+
+    public void setMessage2Received() {
+        message2Received = true;
     }
 
     @Override
