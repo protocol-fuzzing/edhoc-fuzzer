@@ -35,7 +35,7 @@ public class LearnerConfig implements AlphabetOptionProvider {
     @Parameter(names = "-randLength", description = "Size of the random part (Random WP Method)")
     protected Integer randLength = 5;
 
-    @Parameter(names = "-equivQueryBound", description = "Max number of queries used by some equivalence algorithms."
+    @Parameter(names = {"-equivalenceQueryBound", "-eqvQueries"}, description = "Max number of queries used by some equivalence algorithms."
             + "It is used as the 'bound' parameter in those equivalence algorithms.")
     protected Integer equivQueryBound = 1000;
 
