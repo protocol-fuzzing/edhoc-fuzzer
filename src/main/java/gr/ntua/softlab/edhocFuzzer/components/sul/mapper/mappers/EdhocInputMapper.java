@@ -31,6 +31,6 @@ public class EdhocInputMapper extends InputMapper {
         int contentFormat = edhocMapperConfig.useContentFormat() ? edhocProtocolMessage.getContentFormat() : -1;
 
         edhocMapperConnector.send(edhocProtocolMessage.getPayload(), edhocProtocolMessage.getPayloadType(),
-                edhocProtocolMessage.getCoapCode(), contentFormat);
+                edhocProtocolMessage.getMessageCode(), contentFormat);
     }
 }

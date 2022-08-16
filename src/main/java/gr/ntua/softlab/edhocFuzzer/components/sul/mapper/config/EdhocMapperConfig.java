@@ -15,6 +15,10 @@ public class EdhocMapperConfig extends MapperConfig {
     @ParametersDelegate
     protected AuthenticationConfig authenticationConfig = new AuthenticationConfig();
 
+    @Parameter(names = "-edhocRole", required = true, description = "The Role of this peer in the edhoc protocol. " +
+            "Available are: Initiator, Responder")
+    protected EdhocRole edhocRole;
+
     @Parameter(names = "-appProfileMode", description = "The mode, under which, application profile will be set. "
             + "Available modes are: "
             + "1 - [m3_no_app] (msg_1, msg_2, msg_3, error_msg), "
@@ -50,6 +54,14 @@ public class EdhocMapperConfig extends MapperConfig {
         }
     }
 
+    public boolean isInitiator() {
+        return edhocRole == EdhocRole.Initiator;
+    }
+
+    public boolean isResponder() {
+        return edhocRole == EdhocRole.Responder;
+    }
+
     public AuthenticationConfig getAuthenticationConfig() {
         return authenticationConfig;
     }
@@ -72,6 +84,10 @@ public class EdhocMapperConfig extends MapperConfig {
 
     public boolean isCoapErrorAsEdhocError() {
         return coapErrorAsEdhocError;
+    }
+
+    public String getHostCoapUri() {
+        return "coap://" + host;
     }
 
     public String getEdhocCoapUri() {

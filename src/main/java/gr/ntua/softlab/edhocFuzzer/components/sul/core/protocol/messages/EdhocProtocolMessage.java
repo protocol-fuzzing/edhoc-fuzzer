@@ -1,5 +1,6 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages;
 
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.edhoc.Constants;
@@ -9,20 +10,44 @@ public abstract class EdhocProtocolMessage implements ProtocolMessage {
     protected byte[] payload;
 
     // coap code used on message send
-    protected CoAP.Code coapCode = CoAP.Code.POST;
+    protected int messageCode;
 
     // message content format
-    protected int contentFormat = Constants.APPLICATION_EDHOC_CBOR_SEQ;
+    protected int contentFormat;
 
     // type of payload
-    protected PayloadType payloadType = PayloadType.EDHOC_MESSAGE;
+    protected PayloadType payloadType;
 
+    public EdhocProtocolMessage() {}
+
+    public EdhocProtocolMessage(MessageProcessorPersistent messageProcessorPersistent) {
+        payloadType = PayloadType.EDHOC_MESSAGE;
+
+        if (messageProcessorPersistent.getEdhocMapperState().isCoapClient()) {
+            // mapper is CoAP client and Initiator or Responder
+
+            // message is Coap request with Coap Code POST
+            messageCode = CoAP.Code.POST.value;
+
+            // C_R or 'true' is prepended as Initiator
+            // C_I is prepended as Responder
+            contentFormat = Constants.APPLICATION_CID_EDHOC_CBOR_SEQ;
+        } else {
+            // mapper is CoAP server and Initiator or Responder
+
+            // message is Coap response with Response Code Changed
+            messageCode = CoAP.ResponseCode.CHANGED.value;
+
+            // normal content format without prepended connection identifiers
+            contentFormat = Constants.APPLICATION_EDHOC_CBOR_SEQ;
+        }
+    }
     public byte[] getPayload() {
         return payload;
     }
 
-    public CoAP.Code getCoapCode() {
-        return coapCode;
+    public int getMessageCode() {
+        return messageCode;
     }
 
     public int getContentFormat() {

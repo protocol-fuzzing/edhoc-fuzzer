@@ -15,11 +15,14 @@ import java.util.Arrays;
 
 public class EdhocSessionPersistent extends EdhocSession {
     protected boolean message2Received;
+    protected boolean message3CombinedReceived;
 
     protected boolean oscoreCtxGenerated;
     protected String oscoreUriKey;
     protected int oscoreReplayWindow;
     protected int oscoreMaxUnfragmentedSize;
+
+    protected CBORObject cipherSuitesIncludeInError;
 
     protected CBORObject[] ead1;
     protected CBORObject[] ead2;
@@ -28,17 +31,17 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     public EdhocSessionPersistent(
             boolean initiator, boolean clientInitiated, int method, byte[] connectionId,
-            EdhocEndpointInfo edhocEndpointInfo, HashMapCtxDB oscoreDB) {
+            EdhocEndpointInfoPersistent edhocEndpointInfoPersistent, HashMapCtxDB oscoreDB) {
 
         super(initiator, clientInitiated, method, connectionId,
-                edhocEndpointInfo.getKeyPairs(), edhocEndpointInfo.getIdCreds(), edhocEndpointInfo.getCreds(),
-                edhocEndpointInfo.getSupportedCipherSuites(),
-                edhocEndpointInfo.getAppProfiles().get(edhocEndpointInfo.getUri()),
-                edhocEndpointInfo.getEdp(), oscoreDB);
+                edhocEndpointInfoPersistent.getKeyPairs(), edhocEndpointInfoPersistent.getIdCreds(),
+                edhocEndpointInfoPersistent.getCreds(), edhocEndpointInfoPersistent.getSupportedCipherSuites(),
+                edhocEndpointInfoPersistent.getAppProfiles().get(edhocEndpointInfoPersistent.getUri()),
+                edhocEndpointInfoPersistent.getEdp(), oscoreDB);
 
-        this.oscoreUriKey = edhocEndpointInfo.getUri();
-        this.oscoreReplayWindow = edhocEndpointInfo.getOscoreReplayWindow();
-        this.oscoreMaxUnfragmentedSize = edhocEndpointInfo.getOscoreMaxUnfragmentedSize();
+        this.oscoreUriKey = edhocEndpointInfoPersistent.getUri();
+        this.oscoreReplayWindow = edhocEndpointInfoPersistent.getOscoreReplayWindow();
+        this.oscoreMaxUnfragmentedSize = edhocEndpointInfoPersistent.getOscoreMaxUnfragmentedSize();
 
         reset();
     }
@@ -140,14 +143,6 @@ public class EdhocSessionPersistent extends EdhocSession {
         oscoreCtxGenerated = true;
     }
 
-    public boolean isMessage2Received() {
-        return message2Received;
-    }
-
-    public void setMessage2Received() {
-        message2Received = true;
-    }
-
     @Override
     public void deleteTemporaryMaterial() {
         // do not delete anything
@@ -169,6 +164,30 @@ public class EdhocSessionPersistent extends EdhocSession {
             return null;
         // do not check for session currentStep
         return edhocKDF(getPRKexporter(), label, context, len);
+    }
+
+    public boolean isMessage2Received() {
+        return message2Received;
+    }
+
+    public void setMessage2Received() {
+        message2Received = true;
+    }
+
+    public boolean isMessage3CombinedReceived() {
+        return message3CombinedReceived;
+    }
+
+    public void setMessage3CombinedReceived(boolean message3CombinedReceived) {
+        this.message3CombinedReceived = message3CombinedReceived;
+    }
+
+    public CBORObject getCipherSuitesIncludeInError() {
+        return cipherSuitesIncludeInError;
+    }
+
+    public void setCipherSuitesIncludeInError(CBORObject cipherSuitesIncludeInError) {
+        this.cipherSuitesIncludeInError = cipherSuitesIncludeInError;
     }
 
     public CBORObject[] getEad1() {

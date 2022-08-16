@@ -13,8 +13,7 @@ public abstract class EdhocInput extends AbstractInputXml {
     }
 
     public EdhocSessionPersistent getEdhocSessionPersistent(ExecutionContext context) {
-        EdhocMapperState edhocMapperState = getEdhocMapperState(context);
-        return (EdhocSessionPersistent) edhocMapperState.getEdhocSession();
+        return getEdhocMapperState(context).getEdhocSessionPersistent();
     }
 
     @Override

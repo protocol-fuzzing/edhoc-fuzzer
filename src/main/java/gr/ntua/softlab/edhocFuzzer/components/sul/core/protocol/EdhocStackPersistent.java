@@ -2,7 +2,6 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
 
 import org.eclipse.californium.core.network.Outbox;
 import org.eclipse.californium.core.network.stack.*;
-import org.eclipse.californium.edhoc.EdhocEndpointInfo;
 import org.eclipse.californium.elements.EndpointContextMatcher;
 import org.eclipse.californium.elements.config.Configuration;
 import org.eclipse.californium.oscore.ObjectSecurityContextLayer;
@@ -13,18 +12,18 @@ public class EdhocStackPersistent extends BaseCoapStack {
 
     public EdhocStackPersistent(String tag, final Configuration config, final Outbox outbox,
                                 EndpointContextMatcher matchingStrategy,
-                                EdhocEndpointInfo edhocEndpointInfo,
+                                EdhocEndpointInfoPersistent edhocEndpointInfoPersistent,
                                 MessageProcessorPersistent messageProcessorPersistent) {
         super(outbox);
 
         Layer[] layers = new Layer[] {
-                new ObjectSecurityContextLayer(edhocEndpointInfo.getOscoreDb()),
+                new ObjectSecurityContextLayer(edhocEndpointInfoPersistent.getOscoreDb()),
                 new ExchangeCleanupLayer(config),
                 new ObserveLayer(config),
                 new BlockwiseLayer(tag, false, config, matchingStrategy),
                 CongestionControlLayer.newImplementation(tag, config),
-                new ObjectSecurityLayer(edhocEndpointInfo.getOscoreDb()),
-                new EdhocLayerPersistent(edhocEndpointInfo, messageProcessorPersistent)
+                new ObjectSecurityLayer(edhocEndpointInfoPersistent.getOscoreDb()),
+                new EdhocLayerPersistent(edhocEndpointInfoPersistent, messageProcessorPersistent)
         };
 
         setLayers(layers);

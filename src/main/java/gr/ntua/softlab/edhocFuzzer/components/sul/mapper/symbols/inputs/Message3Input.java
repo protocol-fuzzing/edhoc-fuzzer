@@ -1,6 +1,6 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.inputs;
 
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.Message3;
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.initiator.Message3;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs.EdhocOutputType;
@@ -13,9 +13,7 @@ public class Message3Input extends EdhocInput {
 
     @Override
     public ProtocolMessage generateProtocolMessage(ExecutionContext context) {
-        MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(
-                getEdhocMapperState(context));
-        return new Message3(messageProcessorPersistent);
+        return new Message3(new MessageProcessorPersistent(getEdhocMapperState(context)));
     }
 
     @Override

@@ -4,19 +4,18 @@ import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.network.ExtendedCoapStackFactory;
 import org.eclipse.californium.core.network.Outbox;
 import org.eclipse.californium.core.network.stack.CoapStack;
-import org.eclipse.californium.edhoc.EdhocEndpointInfo;
 import org.eclipse.californium.elements.EndpointContextMatcher;
 import org.eclipse.californium.elements.config.Configuration;
 
 /** Adapted from {@link org.eclipse.californium.edhoc.EdhocCoapStackFactory} */
 public class EdhocStackFactoryPersistent implements ExtendedCoapStackFactory {
 
-    protected EdhocEndpointInfo edhocEndpointInfo;
+    protected EdhocEndpointInfoPersistent edhocEndpointInfoPersistent;
     protected MessageProcessorPersistent messageProcessorPersistent;
 
-    public EdhocStackFactoryPersistent(EdhocEndpointInfo edhocEndpointInfo,
+    public EdhocStackFactoryPersistent(EdhocEndpointInfoPersistent edhocEndpointInfoPersistent,
                                  MessageProcessorPersistent messageProcessorPersistent) {
-        this.edhocEndpointInfo = edhocEndpointInfo;
+        this.edhocEndpointInfoPersistent = edhocEndpointInfoPersistent;
         this.messageProcessorPersistent = messageProcessorPersistent;
     }
 
@@ -32,8 +31,8 @@ public class EdhocStackFactoryPersistent implements ExtendedCoapStackFactory {
             throw new IllegalArgumentException("erroneously provided custom coap stack: " + customStackArgument);
         }
 
-        return new EdhocStackPersistent(tag, config, outbox, matchingStrategy, edhocEndpointInfo,
-                messageProcessorPersistent);
+        return new EdhocStackPersistent(tag, config, outbox, matchingStrategy,
+                edhocEndpointInfoPersistent, messageProcessorPersistent);
     }
 
     @SuppressWarnings("deprecation")

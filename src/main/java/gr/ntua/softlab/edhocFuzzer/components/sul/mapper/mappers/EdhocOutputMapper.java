@@ -1,11 +1,11 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers;
 
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocSessionPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.GenericErrorException;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.TimeoutException;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulServer.ClientMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocMapperState;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs.EdhocOutputType;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
@@ -31,7 +31,6 @@ public class EdhocOutputMapper extends OutputMapper {
     @Override
     public AbstractOutput receiveOutput(ExecutionContext context) {
         EdhocMapperState edhocMapperState = (EdhocMapperState) context.getState();
-        EdhocSessionPersistent edhocSessionPersistent = (EdhocSessionPersistent) edhocMapperState.getEdhocSession();
         byte[] responsePayload;
 
         try {
@@ -42,50 +41,54 @@ public class EdhocOutputMapper extends OutputMapper {
             return timeout();
         }
 
-        if (edhocMapperConnector.isLatestResponseEmptyCoapAck()) {
-            // received empty coap ack, possible when message 3
-            // is the final edhoc message
-            return new AbstractOutput(EdhocOutputType.EMPTY_COAP_ACK.name());
-        } else if (edhocMapperConnector.isLatestResponseSuccessfulAppData()) {
-            // sent oscore protected app data and received oscore protected
-            // app data, handled by oscore layer, so responsePayload is the
-            // decrypted response
-            LOGGER.info("APPLICATION_DATA (response): {}", Arrays.toString(responsePayload));
-            return new AbstractOutput(EdhocOutputType.APPLICATION_DATA.name());
+        if (edhocMapperState.isCoapClient()) {
+            // In case of mapper is a client
+            ClientMapperConnector clientMapperConnector = (ClientMapperConnector) edhocMapperConnector;
+            if (clientMapperConnector.isLatestResponseEmptyCoapAck()) {
+                // received empty coap ack, possible when message 3
+                // is the final edhoc message
+                return new AbstractOutput(EdhocOutputType.EMPTY_COAP_ACK.name());
+            } else if (clientMapperConnector.isLatestResponseSuccessfulAppData()) {
+                // sent oscore protected app data and received oscore protected
+                // app data, handled by oscore layer, so responsePayload is the
+                // decrypted response
+                LOGGER.info("APPLICATION_DATA (response): {}", Arrays.toString(responsePayload));
+                return new AbstractOutput(EdhocOutputType.APPLICATION_DATA.name());
+            }
+        } else {
+            // In case of mapper is a server
         }
 
         MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(edhocMapperState);
 
-        int structuralMessageType = messageProcessorPersistent.messageTypeFromStructure(responsePayload, false);
+        int structuralMessageType = messageProcessorPersistent.messageTypeFromStructure(responsePayload);
 
         switch (structuralMessageType) {
             case Constants.EDHOC_ERROR_MESSAGE -> {
-                boolean ok = messageProcessorPersistent.checkAndReadErrorMessage(responsePayload, null);
+                boolean ok = messageProcessorPersistent.readErrorMessage(responsePayload);
                 return (!ok && !edhocMapperConnector.isLatestResponseSuccessful()) ?
                         coapError() : // coap error without edhoc error message
                         abstractOutputAfterCheck(ok, EdhocOutputType.EDHOC_ERROR_MESSAGE.name());
             }
 
             case Constants.EDHOC_MESSAGE_1 -> {
-                boolean ok = messageProcessorPersistent.readMessage1(responsePayload, true);
+                boolean ok = messageProcessorPersistent.readMessage1(responsePayload);
                 return abstractOutputAfterCheck(ok, EdhocOutputType.EDHOC_MESSAGE_1.name());
             }
 
             case Constants.EDHOC_MESSAGE_2 -> {
-                boolean ok = messageProcessorPersistent.readMessage2(responsePayload, false,
-                        edhocSessionPersistent.getConnectionId());
+                boolean ok = messageProcessorPersistent.readMessage2(responsePayload);
                 return abstractOutputAfterCheck(ok, EdhocOutputType.EDHOC_MESSAGE_2.name());
             }
 
             case Constants.EDHOC_MESSAGE_3 -> {
                 // message may be 3 or 4
-                boolean ok = messageProcessorPersistent.readMessage3(responsePayload, false, null);
+                boolean ok = messageProcessorPersistent.readMessage3(responsePayload);
                 if (ok) {
                     return new AbstractOutput(EdhocOutputType.EDHOC_MESSAGE_3.name());
                 }
 
-                ok = messageProcessorPersistent.readMessage4(responsePayload, false,
-                        edhocSessionPersistent.getConnectionId());
+                ok = messageProcessorPersistent.readMessage4(responsePayload);
                 return abstractOutputAfterCheck(ok, EdhocOutputType.EDHOC_MESSAGE_4.name());
             }
 

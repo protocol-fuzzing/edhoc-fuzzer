@@ -3,8 +3,8 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulClientConfig;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.ServerMapperConnector;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.ClientMapperConnector;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient.ServerMapperConnector;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulServer.ClientMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.ClientMapperState;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.ServerMapperState;
@@ -61,12 +61,14 @@ public class EdhocSul extends AbstractSul {
             throw new RuntimeException(e);
         }
 
+        EdhocMapperConfig edhocMapperConfig = (EdhocMapperConfig) sulConfig.getMapperConfig();
         if (sulConfig.isFuzzingClient()){
-            this.edhocMapperConnector = new ServerMapperConnector();
-        } else {
-            EdhocMapperConfig config = (EdhocMapperConfig) sulConfig.getMapperConfig();
-            this.edhocMapperConnector = new ClientMapperConnector(config.getEdhocCoapUri(), config.getAppGetCoapUri(),
+            this.edhocMapperConnector = new ServerMapperConnector(edhocMapperConfig.getHostCoapUri(),
+                    edhocMapperConfig.getEdhocCoapResource(), edhocMapperConfig.getAppGetCoapResource(),
                     originalTimeout);
+        } else {
+            this.edhocMapperConnector = new ClientMapperConnector(edhocMapperConfig.getEdhocCoapUri(),
+                    edhocMapperConfig.getAppGetCoapUri(), originalTimeout);
         }
 
         this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);
@@ -83,24 +85,27 @@ public class EdhocSul extends AbstractSul {
     public void pre() {
         LOGGER.debug("Executing SUL 'pre'");
 
+        // mapper config
+        EdhocMapperConfig edhocMapperConfig = (EdhocMapperConfig) sulConfig.getMapperConfig();
+
         // state to pass on ExecutionContextStepped
         State state;
 
         if (sulConfig.isFuzzingClient()) {
-            EdhocSulClientConfig config = (EdhocSulClientConfig) sulConfig;
-            state = new ServerMapperState();
-            long clientWait = config.getClientWait();
+            ServerMapperConnector serverMapperConnector = (ServerMapperConnector) edhocMapperConnector;
+            state = new ServerMapperState(edhocMapperConfig, serverMapperConnector);
+
+            EdhocSulClientConfig edhocSulClientConfig = (EdhocSulClientConfig) sulConfig;
+            long clientWait = edhocSulClientConfig.getClientWait();
             if (clientWait > 0) {
                 try {
                     Thread.sleep(clientWait);
                 } catch (InterruptedException e) {
-                    LOGGER.error("Interrupted 'pre' sleep for {} ms", clientWait);
+                    LOGGER.error("Interrupted 'clientWait' sleep for {} ms", clientWait);
                 }
             }
         } else {
-            EdhocMapperConfig config = (EdhocMapperConfig) sulConfig.getMapperConfig();
-            state = new ClientMapperState(config.getEdhocCoapUri(), config.getAppProfileMode(),
-                    config.getAuthenticationConfig(), (ClientMapperConnector) edhocMapperConnector);
+            state = new ClientMapperState(edhocMapperConfig, (ClientMapperConnector) edhocMapperConnector);
         }
 
         this.executionContextStepped = new ExecutionContextStepped(state);
@@ -110,7 +115,7 @@ public class EdhocSul extends AbstractSul {
             try {
                 Thread.sleep(startWait);
             } catch (InterruptedException e) {
-                LOGGER.error("Interrupted 'pre' sleep for {} ms", startWait);
+                LOGGER.error("Interrupted 'startWait' sleep for {} ms", startWait);
             }
         }
     }
@@ -122,6 +127,10 @@ public class EdhocSul extends AbstractSul {
 
     @Override
     public AbstractOutput step(AbstractInput abstractInput) {
+        if (edhocMapperConnector instanceof ServerMapperConnector) {
+            ((ServerMapperConnector) edhocMapperConnector).waitForClientMessage();
+        }
+
         LOGGER.debug("Executing SUL 'step'");
         executionContextStepped.addStepContext();
         Mapper preferredMapper = abstractInput.getPreferredMapper(sulConfig);

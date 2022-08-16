@@ -7,8 +7,6 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.network.Exchange;
 import org.eclipse.californium.core.network.stack.AbstractLayer;
-import org.eclipse.californium.edhoc.EdhocEndpointInfo;
-import org.eclipse.californium.edhoc.EdhocSession;
 import org.eclipse.californium.edhoc.MessageProcessor;
 import org.eclipse.californium.edhoc.Util;
 import org.eclipse.californium.oscore.OSCoreCtx;
@@ -26,21 +24,19 @@ import java.util.List;
 public class EdhocLayerPersistent extends AbstractLayer {
     private static final Logger LOGGER = LoggerFactory.getLogger(EdhocLayerPersistent.class);
 
-
     // The OSCORE context database
     OSCoreCtxDB ctxDb;
 
-
      // Map of existing EDHOC sessions
-    HashMap<CBORObject, EdhocSession> edhocSessions;
+    HashMap<CBORObject, EdhocSessionPersistent> edhocSessionsPersistent;
 
     // MessageProcessor for reading message 3
     MessageProcessorPersistent messageProcessorPersistent;
 
-    public EdhocLayerPersistent(EdhocEndpointInfo edhocEndpointInfo,
+    public EdhocLayerPersistent(EdhocEndpointInfoPersistent edhocEndpointInfoPersistent,
                                 MessageProcessorPersistent messageProcessorPersistent) {
-        this.ctxDb = edhocEndpointInfo.getOscoreDb();
-        this.edhocSessions = edhocEndpointInfo.getEdhocSessions();
+        this.ctxDb = edhocEndpointInfoPersistent.getOscoreDb();
+        this.edhocSessionsPersistent = edhocEndpointInfoPersistent.getEdhocSessionsPersistent();
         this.messageProcessorPersistent = messageProcessorPersistent;
         LOGGER.debug("Initializing EDHOC layer persistent");
     }
@@ -61,7 +57,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
             CBORObject connectionIdentifierInitiatorCbor = CBORObject.FromObject(recipientId);
 
             // Retrieve the EDHOC session associated to C_R and storing EDHOC message_3
-            EdhocSession session = this.edhocSessions.get(connectionIdentifierInitiatorCbor);
+            EdhocSessionPersistent session = edhocSessionsPersistent.get(connectionIdentifierInitiatorCbor);
 
             // Consistency checks
             if (session == null) {
@@ -176,18 +172,24 @@ public class EdhocLayerPersistent extends AbstractLayer {
             LOGGER.debug(EdhocUtil.byteArrayToString("Rebuilt EDHOC message_3", edhocMessage3));
 
             CBORObject kidCbor = CBORObject.FromObject(kid);
-            EdhocSession mySession = edhocSessions.get(kidCbor);
+            EdhocSessionPersistent session = edhocSessionsPersistent.get(kidCbor);
 
             // Consistency checks
-            if (mySession == null) {
+            if (session == null) {
                 LOGGER.debug("ERROR: Unable to retrieve the EDHOC session");
                 return;
             }
 
             // Process EDHOC message_3
-            boolean ok = messageProcessorPersistent.readMessage3(edhocMessage3, true, null);
+            boolean ok = messageProcessorPersistent.readMessage3(edhocMessage3);
 
-            // TODO complete according to need
+            if (ok) {
+                session.setMessage3CombinedReceived(true);
+            } else {
+                // message 3 could not be read successfully,
+                // so do not propagate application data to upper layers
+                return;
+            }
         }
 
         super.receiveRequest(exchange, request);
