@@ -3,7 +3,11 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context;
 import com.upokecenter.cbor.CBORObject;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocEndpointInfoPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocSessionPersistent;
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient.CoapExchangeWrapper;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.State;
 import net.i2p.crypto.eddsa.EdDSASecurityProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -78,11 +82,12 @@ public abstract class EdhocMapperState implements State {
     // The size to consider for MAX_UNFRAGMENTED SIZE
     protected int MAX_UNFRAGMENTED_SIZE = 4096;
 
-    protected EdhocSessionPersistent edhocSessionPersistent = null;
+    protected EdhocSessionPersistent edhocSessionPersistent;
 
     protected EdhocEndpointInfoPersistent edhocEndpointInfoPersistent;
 
-    public EdhocMapperState(EdhocMapperConfig edhocMapperConfig, String edhocEndpointUri) {
+    public EdhocMapperState(EdhocMapperConfig edhocMapperConfig, String edhocSessionUri, String oscoreUri,
+                            EdhocMapperConnector edhocMapperConnector) {
 
         // Insert security providers
         Security.insertProviderAt(new EdDSASecurityProvider(), 1);
@@ -105,7 +110,7 @@ public abstract class EdhocMapperState implements State {
         }
 
         AppProfile appProfile = AppProfileBuilder.build(authMethods, edhocMapperConfig.getAppProfileMode());
-        appProfiles.put(edhocMapperConfig.getEdhocCoapUri(), appProfile);
+        appProfiles.put(edhocSessionUri, appProfile);
 
         // Specify the processor of External Authorization Data
         KissEDP edp = new KissEDP();
@@ -113,7 +118,7 @@ public abstract class EdhocMapperState implements State {
         // Prepare the set of information for this EDHOC endpoint
         edhocEndpointInfoPersistent = new EdhocEndpointInfoPersistent(
                 idCreds, creds, keyPairs, peerPublicKeys, peerCredentials, edhocSessionsPersistent,
-                usedConnectionIds, supportedCipherSuites, db, edhocEndpointUri,
+                usedConnectionIds, supportedCipherSuites, db, oscoreUri,
                 OSCORE_REPLAY_WINDOW, MAX_UNFRAGMENTED_SIZE, appProfiles, edp
         );
 
@@ -123,6 +128,32 @@ public abstract class EdhocMapperState implements State {
 
         authenticator.setupOwnAuthenticationCredentials();
         authenticator.setupPeerAuthenticationCredentials();
+
+        // Prepare new session
+
+        // large connection id, in order not to be equal with received C_I / C_R
+        // in case of mapper using oscore context (for fuzzing only), but
+        // the other peer does not derive oscore context
+        byte[] connectionId = new byte[]{(byte) 255, (byte) 255, (byte) 255};
+        usedConnectionIds.add(CBORObject.FromObject(connectionId));
+
+        HashMapCtxDB oscoreDB = appProfile.getUsedForOSCORE() ? db : null;
+
+        boolean isInitiator = edhocMapperConfig.isInitiator();
+
+        // logically isClientInitiated when (isInitiator && isCoapClient()) || (!isInitiator && !isCoapClient())
+        // which simplifies to isClientInitiated when isInitiator == isCoapClient()
+        boolean isClientInitiated = isInitiator == isCoapClient();
+
+        edhocSessionPersistent = new EdhocSessionPersistent(edhocSessionUri, isInitiator, isClientInitiated,
+                authenticationMethod, connectionId, edhocEndpointInfoPersistent, oscoreDB, new CoapExchangeWrapper());
+
+        // Update edhocSessions
+        edhocSessionsPersistent.put(CBORObject.FromObject(connectionId), edhocSessionPersistent);
+
+        // Initialize connector
+        edhocMapperConnector.initialize(new EdhocStackFactoryPersistent(edhocEndpointInfoPersistent,
+                new MessageProcessorPersistent(this)), edhocSessionPersistent.getCoapExchangeWrapper());
     }
 
     public EdhocSessionPersistent getEdhocSessionPersistent() {

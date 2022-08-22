@@ -6,6 +6,7 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperC
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.GenericErrorException;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.TimeoutException;
 import org.eclipse.californium.core.coap.CoAP;
+import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 
@@ -25,6 +26,9 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     // shared wrapper that holds exchanges of requests, which await a response
     protected CoapExchangeWrapper coapExchangeWrapper;
 
+    // current active CoAP exchange
+    protected CoapExchange currentExchange;
+
     public ServerMapperConnector(String coapHost, String edhocResource, String appGetResource, Long originalTimeout) {
         this.edhocResource = edhocResource;
         this.appGetResource = appGetResource;
@@ -33,12 +37,12 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         String[] hostAndPort = coapHost.replace("coap://", "").split(":");
         this.host = hostAndPort[0];
         this.port = Integer.parseInt(hostAndPort[1]);
-
-        this.coapExchangeWrapper = new CoapExchangeWrapper();
     }
 
-    @Override
-    public void initialize(EdhocStackFactoryPersistent edhocStackFactoryPersistent) {
+    public void initialize(EdhocStackFactoryPersistent edhocStackFactoryPersistent,
+                           CoapExchangeWrapper coapExchangeWrapper) {
+        this.coapExchangeWrapper = coapExchangeWrapper;
+
         // destroy last server
         if (edhocServer != null) {
             edhocServer.destroy();
@@ -52,13 +56,21 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         edhocServer.start();
     }
 
+    public void shutdown() {
+        if (edhocServer != null) {
+            edhocServer.destroy();
+        }
+    }
+
     public void waitForClientMessage() {
-        if (coapExchangeWrapper.getCoapExchange() != null) {
+        currentExchange = coapExchangeWrapper.getCoapExchange();
+        if (currentExchange != null) {
             return;
         }
 
         try {
             coapExchangeWrapper.wait();
+            currentExchange = coapExchangeWrapper.getCoapExchange();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -66,7 +78,6 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
     @Override
     public void send(byte[] payload, PayloadType payloadType, int messageCode, int contentFormat) {
-        CoapExchange currentExchange = coapExchangeWrapper.getCoapExchange();
         if (currentExchange == null) {
             return;
         }
@@ -75,25 +86,48 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
         Response response = new Response(CoAP.ResponseCode.valueOf(messageCode));
         response.getOptions().setContentFormat(contentFormat);
-        response.setPayload(payload);
 
-        coapExchangeWrapper.setCoapExchange(null);
+        switch (payloadType) {
+            case EDHOC_MESSAGE ->
+                    response.setPayload(payload);
+            case APPLICATION_DATA -> {
+                boolean oscoreProtectedExchange = currentExchange.advanced().getCryptographicContextID() != null;
+                if (oscoreProtectedExchange) {
+                    // request was oscore-protected so will be the response
+                    // oscore protection is handled in edhoc layers
+                    response.setPayload(payload);
+                } else {
+                    // request was not oscore-protected so won't be the response.
+                    // Proceeding as the protected case would result in sending
+                    // the payload unprotected, because the oscore layer would
+                    // not have the information needed in order to protect the
+                    // response. Unprotected empty coap ack is sent instead.
+                    response.getOptions().setContentFormat(MediaTypeRegistry.UNDEFINED);
+                    response.setPayload(new byte[0]);
+                }
+            }
+            case MESSAGE_3_COMBINED -> {
+                response.getOptions().setEdhoc(true);
+                response.getOptions().setOscore(payload);
+            }
+        }
+
+        coapExchangeWrapper.reset();
         currentExchange.respond(response);
 
-        if (timeout != null) {
-            try {
-                coapExchangeWrapper.wait(timeout);
-            } catch (InterruptedException e) {
-                exceptionOccurred = true;
-                coapExchangeWrapper.setCoapExchange(null);
-            }
+        try {
+            Thread.sleep(timeout);
+            currentExchange = coapExchangeWrapper.getCoapExchange();
+        } catch (InterruptedException e) {
+            exceptionOccurred = true;
+            currentExchange = null;
         }
     }
 
     @Override
     public byte[] receive() throws GenericErrorException, TimeoutException {
-        if (coapExchangeWrapper.getCoapExchange() != null) {
-            return coapExchangeWrapper.getCoapExchange().advanced().getRequest().getPayload();
+        if (currentExchange != null) {
+            return currentExchange.advanced().getRequest().getPayload();
         }
 
         // exchange is null, something happened
@@ -105,16 +139,26 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     }
 
     @Override
-    public boolean isLatestResponseSuccessful() {
-        // every new exchange is a new request from client
-        // that corresponds to the client's response
-        // successful is a response that invoked a new exchange
-        return coapExchangeWrapper.getCoapExchange() != null;
-    }
-
-
-    @Override
     public void setTimeout(Long timeout) {
         this.timeout = timeout;
+    }
+
+    @Override
+    public boolean receivedError() {
+        // response in the server's case is a possible new request from the client,
+        // therefore error response is neither an empty new exchange nor a non-empty one
+        // there is no way to tell if client's new request (or the absence of it) is
+        // an error
+        return false;
+    }
+
+    @Override
+    public boolean receivedAppData() {
+        return coapExchangeWrapper.hasApplicationData();
+    }
+
+    @Override
+    public boolean receivedAppDataCombinedWithMsg3() {
+        return coapExchangeWrapper.hasApplicationDataAfterMessage3();
     }
 }

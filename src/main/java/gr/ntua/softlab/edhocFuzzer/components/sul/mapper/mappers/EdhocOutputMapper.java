@@ -41,24 +41,23 @@ public class EdhocOutputMapper extends OutputMapper {
             return timeout();
         }
 
+        // mapper client specific possible response
         if (edhocMapperState.isCoapClient()) {
             // In case of mapper is a client
-            ClientMapperConnector clientMapperConnector = (ClientMapperConnector) edhocMapperConnector;
-            if (clientMapperConnector.isLatestResponseEmptyCoapAck()) {
-                // received empty coap ack, possible when message 3
-                // is the final edhoc message
+            if (((ClientMapperConnector) edhocMapperConnector).receivedEmptyCoapAck()) {
+                // received empty coap ack -- possible when client is Initiator
+                // and message 3 is the final edhoc message
                 return new AbstractOutput(EdhocOutputType.EMPTY_COAP_ACK.name());
-            } else if (clientMapperConnector.isLatestResponseSuccessfulAppData()) {
-                // sent oscore protected app data and received oscore protected
-                // app data, handled by oscore layer, so responsePayload is the
-                // decrypted response
-                LOGGER.info("APPLICATION_DATA (response): {}", Arrays.toString(responsePayload));
-                return new AbstractOutput(EdhocOutputType.APPLICATION_DATA.name());
             }
-        } else {
-            // In case of mapper is a server
         }
 
+        // Check for Application Data related response
+        AbstractOutput abstractOutput = appDataOutput(edhocMapperState.isCoapClient(), responsePayload);
+        if (abstractOutput != null) {
+            return abstractOutput;
+        }
+
+        // Check for edhoc message related response
         MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(edhocMapperState);
 
         int structuralMessageType = messageProcessorPersistent.messageTypeFromStructure(responsePayload);
@@ -66,9 +65,7 @@ public class EdhocOutputMapper extends OutputMapper {
         switch (structuralMessageType) {
             case Constants.EDHOC_ERROR_MESSAGE -> {
                 boolean ok = messageProcessorPersistent.readErrorMessage(responsePayload);
-                return (!ok && !edhocMapperConnector.isLatestResponseSuccessful()) ?
-                        coapError() : // coap error without edhoc error message
-                        abstractOutputAfterCheck(ok, EdhocOutputType.EDHOC_ERROR_MESSAGE.name());
+                return abstractOutputAfterCheck(ok, EdhocOutputType.EDHOC_ERROR_MESSAGE.name());
             }
 
             case Constants.EDHOC_MESSAGE_1 -> {
@@ -93,13 +90,50 @@ public class EdhocOutputMapper extends OutputMapper {
             }
 
             default -> {
-                return (!edhocMapperConnector.isLatestResponseSuccessful()) ? coapError() : AbstractOutput.unknown();
+                return abstractOutputAfterCheck(false, null);
             }
         }
     }
 
+    protected AbstractOutput appDataOutput(boolean isCoapClient, byte[] responsePayload) {
+        String messageType = isCoapClient ? "response" : "request";
+
+        if (edhocMapperConnector.receivedAppDataCombinedWithMsg3()) {
+            // received Message3Combined, from which application data propagated and decrypted
+            LOGGER.info("EDHOC_MESSAGE_3_COMBINED | APP_DATA ({}): {}", messageType,
+                    Arrays.toString(responsePayload));
+            return new AbstractOutput(EdhocOutputType.EDHOC_MESSAGE_3_COMBINED.name());
+        }
+
+        if (edhocMapperConnector.receivedAppData()) {
+            /*
+                Client Mapper:
+                    sent oscore protected app data and received oscore protected
+                    app data, handled by oscore layer, so responsePayload is the
+                    decrypted response
+
+                Server Mapper:
+                    received oscore-protected request to application data, so
+                    responsePayload is the decrypted request payload
+             */
+            LOGGER.info("APPLICATION_DATA ({}): {}", messageType, Arrays.toString(responsePayload));
+            return new AbstractOutput(EdhocOutputType.APPLICATION_DATA.name());
+        }
+
+        // no app data related response
+        return null;
+    }
+
     protected AbstractOutput abstractOutputAfterCheck(boolean successfulCheck, String outputName) {
-        return successfulCheck ? new AbstractOutput(outputName) : AbstractOutput.unknown();
+        if (successfulCheck) {
+            return new AbstractOutput(outputName);
+        }
+
+        if (edhocMapperConnector.receivedError()) {
+            return coapError();
+        }
+
+        return AbstractOutput.unknown();
     }
 
     protected AbstractOutput coapError() {

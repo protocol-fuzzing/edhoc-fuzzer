@@ -8,6 +8,7 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers.InputMapper;
+import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
 public class EdhocInputMapper extends InputMapper {
     EdhocMapperConnector edhocMapperConnector;
@@ -26,9 +27,10 @@ public class EdhocInputMapper extends InputMapper {
 
         EdhocProtocolMessage edhocProtocolMessage = (EdhocProtocolMessage) message;
 
-        // enable or disable content format, -1 means no content format
+        // enable or disable content format
         EdhocMapperConfig edhocMapperConfig = (EdhocMapperConfig) mapperConfig;
-        int contentFormat = edhocMapperConfig.useContentFormat() ? edhocProtocolMessage.getContentFormat() : -1;
+        int contentFormat = edhocMapperConfig.useContentFormat() ? edhocProtocolMessage.getContentFormat() :
+                MediaTypeRegistry.UNDEFINED;
 
         edhocMapperConnector.send(edhocProtocolMessage.getPayload(), edhocProtocolMessage.getPayloadType(),
                 edhocProtocolMessage.getMessageCode(), contentFormat);

@@ -1,6 +1,8 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient;
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.network.CoapEndpoint;
@@ -107,6 +109,7 @@ public class EdhocServer extends CoapServer {
 
     // The resource for edhoc protocol requests
     protected static class EdhocResource extends CoapResource {
+        private static final Logger LOGGER = LogManager.getLogger(EdhocResource.class);
         protected CoapExchangeWrapper sharedCoapExhangeWrapper;
 
         public EdhocResource(String name, CoapExchangeWrapper coapExchangeWrapper) {
@@ -121,12 +124,15 @@ public class EdhocServer extends CoapServer {
 
         @Override
         public void handleGET(CoapExchange exchange) {
+            LOGGER.debug("Received GET request");
             // respond to the request
             exchange.respond("EDHOC protocol expects POST requests");
         }
 
         @Override
         public void handlePOST(CoapExchange exchange) {
+            LOGGER.debug("Received POST request");
+
             if (sharedCoapExhangeWrapper == null) {
                 // respond to the request
                 exchange.respond("EDHOC POST response");
@@ -135,13 +141,13 @@ public class EdhocServer extends CoapServer {
                 // in order some observer of this wrapper to respond
                 sharedCoapExhangeWrapper.setCoapExchange(exchange);
                 sharedCoapExhangeWrapper.setHasEdhocMessage(true);
-                sharedCoapExhangeWrapper.setHasApplicationData(false);
             }
         }
     }
 
     // The Resource for application data (oscore-protected) GET requests
     protected static class ApplicationGetResource extends CoapResource {
+        private static final Logger LOGGER = LogManager.getLogger(ApplicationGetResource.class);
         protected CoapExchangeWrapper sharedCoapExhangeWrapper;
 
         public ApplicationGetResource(String name, CoapExchangeWrapper coapExchangeWrapper) {
@@ -156,6 +162,8 @@ public class EdhocServer extends CoapServer {
 
         @Override
         public void handleGET(CoapExchange exchange) {
+            LOGGER.debug("Received GET request");
+
             if (sharedCoapExhangeWrapper == null) {
                 // respond to the request
                 exchange.respond("Application GET response");
@@ -163,7 +171,6 @@ public class EdhocServer extends CoapServer {
                 // save exchange to sharedCoapExchangeWrapper
                 // in order some observer of this wrapper to respond
                 sharedCoapExhangeWrapper.setCoapExchange(exchange);
-                sharedCoapExhangeWrapper.setHasEdhocMessage(false);
                 sharedCoapExhangeWrapper.setHasApplicationData(true);
             }
         }

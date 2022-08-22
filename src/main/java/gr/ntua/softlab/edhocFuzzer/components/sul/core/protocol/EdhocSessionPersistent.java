@@ -2,6 +2,7 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
 
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient.CoapExchangeWrapper;
 import org.eclipse.californium.cose.AlgorithmID;
 import org.eclipse.californium.cose.OneKey;
 import org.eclipse.californium.edhoc.*;
@@ -14,11 +15,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class EdhocSessionPersistent extends EdhocSession {
-    protected boolean message2Received;
-    protected boolean message3CombinedReceived;
+
+    protected String sessionUri;
+
+    // object containing info about last exchange made regarding this session
+    protected CoapExchangeWrapper coapExchangeWrapper;
 
     protected boolean oscoreCtxGenerated;
-    protected String oscoreUriKey;
+    protected String oscoreUri;
     protected int oscoreReplayWindow;
     protected int oscoreMaxUnfragmentedSize;
 
@@ -30,18 +34,21 @@ public class EdhocSessionPersistent extends EdhocSession {
     protected CBORObject[] ead4;
 
     public EdhocSessionPersistent(
-            boolean initiator, boolean clientInitiated, int method, byte[] connectionId,
-            EdhocEndpointInfoPersistent edhocEndpointInfoPersistent, HashMapCtxDB oscoreDB) {
+            String sessionUri, boolean initiator, boolean clientInitiated, int method, byte[] connectionId,
+            EdhocEndpointInfoPersistent edhocEndpointInfoPersistent, HashMapCtxDB oscoreDB,
+            CoapExchangeWrapper coapExchangeWrapper) {
 
         super(initiator, clientInitiated, method, connectionId,
                 edhocEndpointInfoPersistent.getKeyPairs(), edhocEndpointInfoPersistent.getIdCreds(),
                 edhocEndpointInfoPersistent.getCreds(), edhocEndpointInfoPersistent.getSupportedCipherSuites(),
-                edhocEndpointInfoPersistent.getAppProfiles().get(edhocEndpointInfoPersistent.getUri()),
+                edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri),
                 edhocEndpointInfoPersistent.getEdp(), oscoreDB);
 
-        this.oscoreUriKey = edhocEndpointInfoPersistent.getUri();
+        this.sessionUri = sessionUri;
+        this.oscoreUri = edhocEndpointInfoPersistent.getOscoreUri();
         this.oscoreReplayWindow = edhocEndpointInfoPersistent.getOscoreReplayWindow();
         this.oscoreMaxUnfragmentedSize = edhocEndpointInfoPersistent.getOscoreMaxUnfragmentedSize();
+        this.coapExchangeWrapper = coapExchangeWrapper;
 
         reset();
     }
@@ -96,9 +103,6 @@ public class EdhocSessionPersistent extends EdhocSession {
         oscoreCtxGenerated = false;
         setupOscoreContext();
         oscoreCtxGenerated = false;
-
-        // reset other flags
-        message2Received = false;
     }
 
     public void setupOscoreContext() {
@@ -134,7 +138,7 @@ public class EdhocSessionPersistent extends EdhocSession {
         }
 
         try {
-            getOscoreDb().addContext(oscoreUriKey, ctx);
+            getOscoreDb().addContext(oscoreUri, ctx);
         } catch (OSException e) {
             throw new RuntimeException("Error when adding the OSCORE Security Context to the context database: "
                     + e.getMessage());
@@ -166,20 +170,12 @@ public class EdhocSessionPersistent extends EdhocSession {
         return edhocKDF(getPRKexporter(), label, context, len);
     }
 
-    public boolean isMessage2Received() {
-        return message2Received;
+    public String getSessionUri() {
+        return sessionUri;
     }
 
-    public void setMessage2Received() {
-        message2Received = true;
-    }
-
-    public boolean isMessage3CombinedReceived() {
-        return message3CombinedReceived;
-    }
-
-    public void setMessage3CombinedReceived(boolean message3CombinedReceived) {
-        this.message3CombinedReceived = message3CombinedReceived;
+    public CoapExchangeWrapper getCoapExchangeWrapper() {
+        return coapExchangeWrapper;
     }
 
     public CBORObject getCipherSuitesIncludeInError() {

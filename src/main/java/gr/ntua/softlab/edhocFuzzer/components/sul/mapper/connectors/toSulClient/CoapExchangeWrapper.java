@@ -12,8 +12,10 @@ public class CoapExchangeWrapper {
         this.coapExchange = null;
     }
 
-    public CoapExchangeWrapper(CoapExchangeWrapper coapExchangeWrapper) {
-        this.coapExchange = coapExchangeWrapper.getCoapExchange();
+    public void reset() {
+        this.coapExchange = null;
+        this.hasEdhocMessage = false;
+        this.hasApplicationData = false;
     }
 
     public synchronized CoapExchange getCoapExchange() {
@@ -35,6 +37,10 @@ public class CoapExchangeWrapper {
 
     public boolean hasApplicationData() {
         return hasApplicationData;
+    }
+
+    public boolean hasApplicationDataAfterMessage3() {
+        return hasEdhocMessage() && hasApplicationData();
     }
 
     public void setHasApplicationData(boolean hasApplicationData) {

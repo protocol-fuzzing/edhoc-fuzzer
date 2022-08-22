@@ -42,7 +42,7 @@ public class MessageProcessorPersistent {
         try {
             elements = CBORObject.DecodeSequenceFromBytes(sequence);
         } catch (CBORException e) {
-            LOGGER.debug(e.getMessage());
+            LOGGER.error(e.getMessage());
             return -1;
         }
 
@@ -78,7 +78,7 @@ public class MessageProcessorPersistent {
     }
 
 
-    /* Initiator message functions */
+    /* Initiator message functions -- only session of Initiator is modified */
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#writeMessage1} */
     public byte[] writeMessage1() {
@@ -200,7 +200,9 @@ public class MessageProcessorPersistent {
         System.arraycopy(message1, offset, hashMessage1, 0, hashMessage1.length);
 
         /* Modify session */
-        session.setHashMessage1(hashMessage1);
+        if (session.isInitiator()) {
+            session.setHashMessage1(hashMessage1);
+        }
 
         return message1;
     }
@@ -537,15 +539,17 @@ public class MessageProcessorPersistent {
         }
 
         /* Modify session */
-        session.setPeerEphemeralPublicKey(peerEphemeralKey);
-        session.setPeerConnectionId(connectionIdentifierResponder);
-        session.setTH2(th2);
-        session.setPRK2e(prk2e);
-        session.setPeerIdCred(idCredR);
-        session.setPeerLongTermPublicKey(peerLongTermKey);
-        session.setPRK3e2m(prk3e2m);
-        session.setPlaintext2(plaintext2);
-        session.setEad2(ead2);
+        if (session.isInitiator()) {
+            session.setPeerEphemeralPublicKey(peerEphemeralKey);
+            session.setPeerConnectionId(connectionIdentifierResponder);
+            session.setTH2(th2);
+            session.setPRK2e(prk2e);
+            session.setPeerIdCred(idCredR);
+            session.setPeerLongTermPublicKey(peerLongTermKey);
+            session.setPRK3e2m(prk3e2m);
+            session.setPlaintext2(plaintext2);
+            session.setEad2(ead2);
+        }
 
         LOGGER.debug("Successful processing of EDHOC Message 2");
         return true;
@@ -708,12 +712,14 @@ public class MessageProcessorPersistent {
         LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 3", message3));
 
         /* Modify session */
-        session.setTH3(th3);
-        session.setPRK4e3m(prk4e3m);
-        session.setTH4(th4);
-        session.setPRKout(prkOut);
-        session.setPRKexporter(prkExporter);
-        session.setMessage3(message3);
+        if (session.isInitiator()) {
+            session.setTH3(th3);
+            session.setPRK4e3m(prk4e3m);
+            session.setTH4(th4);
+            session.setPRKout(prkOut);
+            session.setPRKexporter(prkExporter);
+            session.setMessage3(message3);
+        }
 
         return message3;
     }
@@ -882,14 +888,16 @@ public class MessageProcessorPersistent {
         }
 
         /* Modify session */
-        session.setEad4(ead4);
+        if (session.isInitiator()) {
+            session.setEad4(ead4);
+        }
 
         LOGGER.debug("Successful processing of EDHOC Message 4");
         return true;
     }
 
 
-    /* Responder message functions */
+    /* Responder message functions -- only session of Responder is modified */
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage1} */
     public boolean readMessage1(byte[] sequence) {
@@ -1040,13 +1048,13 @@ public class MessageProcessorPersistent {
 
         // The Connection Identifier C_I as encoded in the EDHOC message
         CBORObject cI = objectListRequest[index];
-        byte[] connectionIdentifierInitiator = decodeIdentifier(cI);
-        if (connectionIdentifierInitiator == null) {
+        byte[] connectionIdInitiator = decodeIdentifier(cI);
+        if (connectionIdInitiator == null) {
             LOGGER.error("Invalid encoding of C_I");
             return false;
         }
 
-        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
+        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdInitiator));
         LOGGER.debug(EdhocUtil.byteArrayToString("C_I", cI.EncodeToBytes()));
 
         // EAD_1
@@ -1083,16 +1091,23 @@ public class MessageProcessorPersistent {
             }
         }
 
-        /* Create a new edhocSessionPersistent to replace current session */
+        /* Modify session -- Create a new edhocSessionPersistent to replace current session */
 
         EdhocSessionPersistent oldSession = edhocMapperState.getEdhocSessionPersistent();
         EdhocEndpointInfoPersistent endpointInfo = edhocMapperState.getEdhocEndpointInfoPersistent();
 
-        byte[] connectionIdResponder = Util.getConnectionId(endpointInfo.getUsedConnectionIds(),
-                endpointInfo.getOscoreDb(), connectionIdentifierInitiator);
+        if (oldSession.isInitiator()) {
+            // In case an Initiator calls this function,
+            // do not update its session
+            return true;
+        }
 
-        EdhocSessionPersistent newSession = new EdhocSessionPersistent(oldSession.isInitiator(),
-                oldSession.isClientInitiated(), method, connectionIdResponder, endpointInfo, endpointInfo.getOscoreDb());
+        byte[] connectionIdResponder = Util.getConnectionId(endpointInfo.getUsedConnectionIds(),
+                endpointInfo.getOscoreDb(), connectionIdInitiator);
+
+        EdhocSessionPersistent newSession = new EdhocSessionPersistent(oldSession.getSessionUri(),
+                oldSession.isInitiator(), oldSession.isClientInitiated(), method, connectionIdResponder, endpointInfo,
+                endpointInfo.getOscoreDb(), oldSession.getCoapExchangeWrapper());
 
         // Set the selected cipher suite
         newSession.setSelectedCipherSuite(selectedCipherSuite);
@@ -1101,7 +1116,7 @@ public class MessageProcessorPersistent {
         newSession.setAuthenticationCredential();
 
         // Set the Connection Identifier of the peer
-        newSession.setPeerConnectionId(connectionIdentifierInitiator);
+        newSession.setPeerConnectionId(connectionIdInitiator);
 
         // Set the ephemeral public key of the Initiator
         OneKey peerEphemeralKey = switch(selectedCipherSuite) {
@@ -1132,6 +1147,10 @@ public class MessageProcessorPersistent {
 
         // Replace old session
         edhocMapperState.setEdhocSessionPersistent(newSession);
+
+        // Update edhocSessions
+        edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent()
+                .put(CBORObject.FromObject(connectionIdResponder), newSession);
 
         LOGGER.debug("Successful processing of EDHOC Message 1");
         return true;
@@ -1315,8 +1334,8 @@ public class MessageProcessorPersistent {
         LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 2", message2));
 
 
-        /* Modify session if real message 2 is not received yet */
-        if (!session.isMessage2Received()) {
+        /* Modify session */
+        if (!session.isInitiator()) {
             session.setTH2(th2);
             session.setPRK2e(prk2e);
             session.setPRK3e2m(prk3e2m);
@@ -1605,14 +1624,16 @@ public class MessageProcessorPersistent {
         LOGGER.debug(EdhocUtil.byteArrayToString("PRK_exporter", prkExporter));
 
         /* Modify session */
-        session.setTH3(th3);
-        session.setPeerIdCred(idCredI);
-        session.setPeerLongTermPublicKey(peerLongTermKey);
-        session.setPRK4e3m(prk4e3m);
-        session.setTH4(th4);
-        session.setPRKout(prkOut);
-        session.setPRKexporter(prkExporter);
-        session.setEad3(ead3);
+        if (!session.isInitiator()) {
+            session.setTH3(th3);
+            session.setPeerIdCred(idCredI);
+            session.setPeerLongTermPublicKey(peerLongTermKey);
+            session.setPRK4e3m(prk4e3m);
+            session.setTH4(th4);
+            session.setPRKout(prkOut);
+            session.setPRKexporter(prkExporter);
+            session.setEad3(ead3);
+        }
 
         LOGGER.debug("Successful processing of EDHOC Message 3");
         return true;

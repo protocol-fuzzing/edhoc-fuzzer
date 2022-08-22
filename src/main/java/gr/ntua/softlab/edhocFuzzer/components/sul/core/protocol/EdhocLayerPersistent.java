@@ -3,11 +3,11 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
 import org.eclipse.californium.core.coap.EmptyMessage;
+import org.eclipse.californium.core.coap.Message;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.network.Exchange;
 import org.eclipse.californium.core.network.stack.AbstractLayer;
-import org.eclipse.californium.edhoc.MessageProcessor;
 import org.eclipse.californium.edhoc.Util;
 import org.eclipse.californium.oscore.OSCoreCtx;
 import org.eclipse.californium.oscore.OSCoreCtxDB;
@@ -160,7 +160,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
 
             // Add C_R, by encoding the 'kid' from the OSCORE option
             byte[] kid = getKid(request.getOptions().getOscore());
-            CBORObject cR = MessageProcessor.encodeIdentifier(kid);
+            CBORObject cR = messageProcessorPersistent.encodeIdentifier(kid);
             edhocObjectList.add(cR);
 
             // Add CIPHERTEXT_3, i.e. the CBOR string as is from the received CBOR sequence
@@ -184,12 +184,18 @@ public class EdhocLayerPersistent extends AbstractLayer {
             boolean ok = messageProcessorPersistent.readMessage3(edhocMessage3);
 
             if (ok) {
-                session.setMessage3CombinedReceived(true);
+                updateSessionFromOptions(request, session);
+                // setup new oscore context for upper layers to use
+                session.setupOscoreContext();
             } else {
                 // message 3 could not be read successfully,
                 // so do not propagate application data to upper layers
                 return;
             }
+        } else {
+            // edhoc message or application data or unknown message
+            updateSessionFromOptions(request,
+                    messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent());
         }
 
         super.receiveRequest(exchange, request);
@@ -198,6 +204,8 @@ public class EdhocLayerPersistent extends AbstractLayer {
     @Override
     public void receiveResponse(Exchange exchange, Response response) {
         LOGGER.debug("Receiving response through EDHOC layer");
+        updateSessionFromOptions(response,
+                messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent());
         super.receiveResponse(exchange, response);
     }
 
@@ -209,6 +217,23 @@ public class EdhocLayerPersistent extends AbstractLayer {
     @Override
     public void receiveEmptyMessage(Exchange exchange, EmptyMessage message) {
         super.receiveEmptyMessage(exchange, message);
+    }
+
+    protected void updateSessionFromOptions(Message message, EdhocSessionPersistent edhocSessionPersistent) {
+        if (message == null || edhocSessionPersistent == null) {
+            return;
+        }
+
+        if (message.getOptions().hasOscore()) {
+            edhocSessionPersistent.getCoapExchangeWrapper().setHasApplicationData(true);
+
+            if (message.getOptions().hasEdhoc()) {
+                edhocSessionPersistent.getCoapExchangeWrapper().setHasEdhocMessage(true);
+            }
+        } else {
+            // possible edhoc message or unknown message
+            edhocSessionPersistent.getCoapExchangeWrapper().setHasEdhocMessage(true);
+        }
     }
 
     /**
