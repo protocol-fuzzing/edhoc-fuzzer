@@ -54,6 +54,7 @@ public class TestRunner {
         this.cleanupTasks = new CleanupTasks();
 
         AbstractSul abstractSul = sulBuilder.build(testRunnerEnabler.getSulConfig(), cleanupTasks);
+        this.mapper = abstractSul.getMapper();
         this.sulOracle = new SULOracle<>(sulWrapper.wrap(abstractSul).getWrappedSul());
 
         this.testSpecification = null;
