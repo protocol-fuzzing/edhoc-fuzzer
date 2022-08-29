@@ -9,11 +9,9 @@ public class Message3CombinedInput extends ApplicationDataInput {
 
     @Override
     public void preSendUpdate(ExecutionContext context) {
-        // construct Message3 in order to store it in session 'message3' field
-        // and make it available to oscore layer
+        // construct Message3 in order to store it in session 'message3' field,
+        // derive new oscore context and make Message3 available to oscore layer
         new MessageProcessorPersistent(getEdhocMapperState(context)).writeMessage3();
-        // setup oscore context
-        getEdhocSessionPersistent(context).setupOscoreContext();
     }
 
     @Override

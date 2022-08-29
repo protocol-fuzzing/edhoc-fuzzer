@@ -9,9 +9,11 @@ public class Message1Input extends EdhocInput {
 
     @Override
     public void preSendUpdate(ExecutionContext context) {
-        // message 1 starts a new key exchange session so
-        // previous session state must be cleaned
-        getEdhocSessionPersistent(context).reset();
+        if (getEdhocSessionPersistent(context).isInitiator()) {
+            // Initiator by sending message 1 starts a new key exchange session
+            // so previous session state must be cleaned
+            getEdhocSessionPersistent(context).reset();
+        }
     }
 
     @Override

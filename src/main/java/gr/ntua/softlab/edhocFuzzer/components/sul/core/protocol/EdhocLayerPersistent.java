@@ -2,6 +2,7 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
 
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchangeInfo;
 import org.eclipse.californium.core.coap.EmptyMessage;
 import org.eclipse.californium.core.coap.Message;
 import org.eclipse.californium.core.coap.Request;
@@ -184,9 +185,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
             boolean ok = messageProcessorPersistent.readMessage3(edhocMessage3);
 
             if (ok) {
-                updateSessionFromOptions(request, session);
-                // setup new oscore context for upper layers to use
-                session.setupOscoreContext();
+                updateSessionFromOptions(request, true, session);
             } else {
                 // message 3 could not be read successfully,
                 // so do not propagate application data to upper layers
@@ -194,7 +193,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
             }
         } else {
             // edhoc message or application data or unknown message
-            updateSessionFromOptions(request,
+            updateSessionFromOptions(request, true,
                     messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent());
         }
 
@@ -204,7 +203,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
     @Override
     public void receiveResponse(Exchange exchange, Response response) {
         LOGGER.debug("Receiving response through EDHOC layer");
-        updateSessionFromOptions(response,
+        updateSessionFromOptions(response, false,
                 messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent());
         super.receiveResponse(exchange, response);
     }
@@ -219,20 +218,38 @@ public class EdhocLayerPersistent extends AbstractLayer {
         super.receiveEmptyMessage(exchange, message);
     }
 
-    protected void updateSessionFromOptions(Message message, EdhocSessionPersistent edhocSessionPersistent) {
+    protected void updateSessionFromOptions(Message message, boolean isRequest,
+                                            EdhocSessionPersistent edhocSessionPersistent) {
         if (message == null || edhocSessionPersistent == null) {
             return;
         }
 
+        // prepare new coapExchangeInfo to add to session's coapExchanger queue
+        CoapExchangeInfo coapExchangeInfo = new CoapExchangeInfo();
+
         if (message.getOptions().hasOscore()) {
-            edhocSessionPersistent.getCoapExchangeWrapper().setHasApplicationData(true);
+            coapExchangeInfo.setHasApplicationData(true);
 
             if (message.getOptions().hasEdhoc()) {
-                edhocSessionPersistent.getCoapExchangeWrapper().setHasEdhocMessage(true);
+                coapExchangeInfo.setHasEdhocMessage(true);
             }
         } else {
             // possible edhoc message or unknown message
-            edhocSessionPersistent.getCoapExchangeWrapper().setHasEdhocMessage(true);
+            coapExchangeInfo.setHasEdhocMessage(true);
+        }
+
+        // add coapExhangeWrapper to appropriate queue
+        if (isRequest) {
+            // in case of request, add it to draft queue in order for server resources to
+            // edit it and add it to received queue
+            if (!edhocSessionPersistent.getCoapExchanger().getDraftQueue().offer(coapExchangeInfo)) {
+                LOGGER.warn("Full draft queue found");
+            }
+        } else {
+            // in case of response, add it to received queue immediately
+            if (!edhocSessionPersistent.getCoapExchanger().getReceivedQueue().offer(coapExchangeInfo)) {
+                LOGGER.warn("Full received queue found");
+            }
         }
     }
 

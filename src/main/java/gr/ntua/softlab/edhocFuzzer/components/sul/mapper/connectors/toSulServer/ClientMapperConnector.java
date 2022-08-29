@@ -5,7 +5,8 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.Payload
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.GenericErrorException;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.TimeoutException;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient.CoapExchangeWrapper;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchangeInfo;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.CoAP;
@@ -25,7 +26,8 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     protected boolean exceptionOccurred;
     protected boolean latestAppRequest;
 
-    protected CoapExchangeWrapper coapExchangeWrapper;
+    protected CoapExchanger coapExchanger;
+    protected CoapExchangeInfo currentCoapExchangeInfo;
 
     public ClientMapperConnector(String edhocUri, String appUri, Long originalTimeout){
         this.coapEndpoint = CoapEndpoint.builder().build();
@@ -35,9 +37,9 @@ public class ClientMapperConnector implements EdhocMapperConnector {
 
     @Override
     public void initialize(EdhocStackFactoryPersistent edhocStackFactoryPersistent,
-                           CoapExchangeWrapper coapExchangeWrapper) {
+                           CoapExchanger coapExchanger) {
 
-        this.coapExchangeWrapper = coapExchangeWrapper;
+        this.coapExchanger = coapExchanger;
 
         // create new coapEndpoint using provided stackFactory
         // at the same address as the previous one
@@ -57,7 +59,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     public void send(byte[] payload, PayloadType payloadType, int messageCode, int contentFormat) {
         latestAppRequest = false;
         exceptionOccurred = false;
-        coapExchangeWrapper.reset();
+        currentCoapExchangeInfo = null;
 
         Request request = new Request(CoAP.Code.valueOf(messageCode), CoAP.Type.CON);
         request.getOptions().setContentFormat(contentFormat);
@@ -83,6 +85,9 @@ public class ClientMapperConnector implements EdhocMapperConnector {
         } catch (ConnectorException | IOException e) {
             exceptionOccurred = true;
             response = null;
+        } finally {
+            // null on timeout or exception, but not null on successful exchange
+            currentCoapExchangeInfo = coapExchanger.getReceivedQueue().poll();
         }
     }
 
@@ -116,13 +121,13 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     public boolean receivedAppData() {
         return isResponseSuccessful()
                 && latestAppRequest
-                && coapExchangeWrapper.hasApplicationData();
+                && currentCoapExchangeInfo.hasApplicationData();
     }
 
     @Override
     public boolean receivedAppDataCombinedWithMsg3() {
         return receivedAppData()
-                && coapExchangeWrapper.hasApplicationDataAfterMessage3();
+                && currentCoapExchangeInfo.hasApplicationDataAfterMessage3();
     }
 
     public boolean receivedEmptyCoapAck() {
@@ -133,6 +138,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
 
     protected boolean isResponseSuccessful() {
         return response != null
-                && response.advanced().isSuccess();
+                && response.advanced().isSuccess()
+                && currentCoapExchangeInfo != null;
     }
 }

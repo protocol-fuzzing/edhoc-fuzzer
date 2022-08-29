@@ -2,7 +2,7 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
 
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient.CoapExchangeWrapper;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
 import org.eclipse.californium.cose.AlgorithmID;
 import org.eclipse.californium.cose.OneKey;
 import org.eclipse.californium.edhoc.*;
@@ -18,10 +18,10 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     protected String sessionUri;
 
-    // object containing info about last exchange made regarding this session
-    protected CoapExchangeWrapper coapExchangeWrapper;
+    // object containing queues that contain objects with info about exchanges
+    // (typically only last exchange) regarding this session
+    protected CoapExchanger coapExchanger;
 
-    protected boolean oscoreCtxGenerated;
     protected String oscoreUri;
     protected int oscoreReplayWindow;
     protected int oscoreMaxUnfragmentedSize;
@@ -36,7 +36,7 @@ public class EdhocSessionPersistent extends EdhocSession {
     public EdhocSessionPersistent(
             String sessionUri, boolean initiator, boolean clientInitiated, int method, byte[] connectionId,
             EdhocEndpointInfoPersistent edhocEndpointInfoPersistent, HashMapCtxDB oscoreDB,
-            CoapExchangeWrapper coapExchangeWrapper) {
+            CoapExchanger coapExchanger) {
 
         super(initiator, clientInitiated, method, connectionId,
                 edhocEndpointInfoPersistent.getKeyPairs(), edhocEndpointInfoPersistent.getIdCreds(),
@@ -48,7 +48,7 @@ public class EdhocSessionPersistent extends EdhocSession {
         this.oscoreUri = edhocEndpointInfoPersistent.getOscoreUri();
         this.oscoreReplayWindow = edhocEndpointInfoPersistent.getOscoreReplayWindow();
         this.oscoreMaxUnfragmentedSize = edhocEndpointInfoPersistent.getOscoreMaxUnfragmentedSize();
-        this.coapExchangeWrapper = coapExchangeWrapper;
+        this.coapExchanger = coapExchanger;
 
         reset();
     }
@@ -99,14 +99,11 @@ public class EdhocSessionPersistent extends EdhocSession {
         this.ead4 = null;
 
         // setup dummy oscore context
-        // and reset flag to false
-        oscoreCtxGenerated = false;
         setupOscoreContext();
-        oscoreCtxGenerated = false;
     }
 
     public void setupOscoreContext() {
-        if (!getApplicationProfile().getUsedForOSCORE() || oscoreCtxGenerated) {
+        if (!getApplicationProfile().getUsedForOSCORE()) {
             return;
         }
 
@@ -143,8 +140,6 @@ public class EdhocSessionPersistent extends EdhocSession {
             throw new RuntimeException("Error when adding the OSCORE Security Context to the context database: "
                     + e.getMessage());
         }
-
-        oscoreCtxGenerated = true;
     }
 
     @Override
@@ -174,8 +169,8 @@ public class EdhocSessionPersistent extends EdhocSession {
         return sessionUri;
     }
 
-    public CoapExchangeWrapper getCoapExchangeWrapper() {
-        return coapExchangeWrapper;
+    public CoapExchanger getCoapExchanger() {
+        return coapExchanger;
     }
 
     public CBORObject getCipherSuitesIncludeInError() {

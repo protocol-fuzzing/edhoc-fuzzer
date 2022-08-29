@@ -33,10 +33,8 @@ public class EdhocSul extends AbstractSul {
     private static final Logger LOGGER = LogManager.getLogger(EdhocSul.class);
     protected ExecutionContextStepped executionContextStepped;
     protected Long originalTimeout;
-    protected MapperComposer mapperComposer;
     protected EdhocMapperState edhocMapperState;
     protected EdhocMapperConnector edhocMapperConnector;
-
     protected boolean serverWaitForMessage1Done;
 
     public EdhocSul(SulConfig sulConfig, CleanupTasks cleanupTasks) {
@@ -80,12 +78,10 @@ public class EdhocSul extends AbstractSul {
     }
 
     protected Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
-        mapperComposer = new MapperComposer(
+        return new MapperComposer(
                 new EdhocInputMapper(mapperConfig,  new EdhocOutputChecker(), edhocMapperConnector),
                 new EdhocOutputMapper(mapperConfig, edhocMapperConnector)
         );
-
-        return mapperComposer;
     }
 
     @Override
@@ -194,6 +190,7 @@ public class EdhocSul extends AbstractSul {
             return;
         }
 
+        MapperComposer mapperComposer = (MapperComposer) mapper;
         ServerMapperConnector serverMapperConnector = (ServerMapperConnector) edhocMapperConnector;
         EdhocOutputChecker edhocOutputChecker = (EdhocOutputChecker) mapperComposer.getAbstractOutputChecker();
 

@@ -2,13 +2,13 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.PayloadType;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.GenericErrorException;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.TimeoutException;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.*;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.server.resources.CoapExchange;
+
+import java.util.concurrent.TimeUnit;
 
 public class ServerMapperConnector implements EdhocMapperConnector {
     protected String host;
@@ -23,11 +23,8 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
     protected EdhocServer edhocServer = null;
 
-    // shared wrapper that holds exchanges of requests, which await a response
-    protected CoapExchangeWrapper coapExchangeWrapper;
-
-    // current active CoAP exchange
-    protected CoapExchange currentExchange;
+    protected CoapExchanger coapExchanger;
+    protected CoapExchangeInfo currentCoapExchangeInfo;
 
     public ServerMapperConnector(String coapHost, String edhocResource, String appGetResource, Long originalTimeout) {
         this.edhocResource = edhocResource;
@@ -40,8 +37,8 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     }
 
     public void initialize(EdhocStackFactoryPersistent edhocStackFactoryPersistent,
-                           CoapExchangeWrapper coapExchangeWrapper) {
-        this.coapExchangeWrapper = coapExchangeWrapper;
+                           CoapExchanger coapExchanger) {
+        this.coapExchanger = coapExchanger;
 
         // destroy last server
         if (edhocServer != null) {
@@ -50,7 +47,7 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
         // create new server
         edhocServer = new EdhocServer(host, port, edhocResource, appGetResource, edhocStackFactoryPersistent,
-                coapExchangeWrapper);
+                coapExchanger);
 
         // start server
         edhocServer.start();
@@ -63,14 +60,9 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     }
 
     public void waitForClientMessage() {
-        currentExchange = coapExchangeWrapper.getCoapExchange();
-        if (currentExchange != null) {
-            return;
-        }
-
         try {
-            coapExchangeWrapper.wait();
-            currentExchange = coapExchangeWrapper.getCoapExchange();
+            // blocks until an element is available
+            currentCoapExchangeInfo = coapExchanger.getReceivedQueue().take();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -78,11 +70,13 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
     @Override
     public void send(byte[] payload, PayloadType payloadType, int messageCode, int contentFormat) {
-        if (currentExchange == null) {
+        exceptionOccurred = false;
+
+        if (currentCoapExchangeInfo == null || currentCoapExchangeInfo.getCoapExchange() == null) {
             return;
         }
 
-        exceptionOccurred = false;
+        CoapExchange currentExchange = currentCoapExchangeInfo.getCoapExchange();
 
         Response response = new Response(CoAP.ResponseCode.valueOf(messageCode));
         response.getOptions().setContentFormat(contentFormat);
@@ -106,31 +100,28 @@ public class ServerMapperConnector implements EdhocMapperConnector {
                     response.setPayload(new byte[0]);
                 }
             }
-            case MESSAGE_3_COMBINED -> {
-                response.getOptions().setEdhoc(true);
-                response.getOptions().setOscore(payload);
-            }
+            case MESSAGE_3_COMBINED -> throw new UnsupportedOperationException("Message_3_Combined found in alphabet. " +
+                    "ServerMapperConnector cannot use it as a response. It is used only as a request.");
         }
 
-        coapExchangeWrapper.reset();
         currentExchange.respond(response);
 
         try {
-            Thread.sleep(timeout);
-            currentExchange = coapExchangeWrapper.getCoapExchange();
+            currentCoapExchangeInfo = coapExchanger.getReceivedQueue().poll(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             exceptionOccurred = true;
-            currentExchange = null;
+            currentCoapExchangeInfo = null;
         }
     }
 
     @Override
     public byte[] receive() throws GenericErrorException, TimeoutException {
-        if (currentExchange != null) {
-            return currentExchange.advanced().getRequest().getPayload();
+        if (currentCoapExchangeInfo != null
+                && currentCoapExchangeInfo.getCoapExchange() != null) {
+            return currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getPayload();
         }
 
-        // exchange is null, something happened
+        // coapExchangeInfo or coapExchange is null, something happened
         if (exceptionOccurred) {
             throw new GenericErrorException();
         } else {
@@ -154,11 +145,13 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
     @Override
     public boolean receivedAppData() {
-        return coapExchangeWrapper.hasApplicationData();
+        return currentCoapExchangeInfo != null
+                && currentCoapExchangeInfo.hasApplicationData();
     }
 
     @Override
     public boolean receivedAppDataCombinedWithMsg3() {
-        return coapExchangeWrapper.hasApplicationDataAfterMessage3();
+        return currentCoapExchangeInfo != null
+                && currentCoapExchangeInfo.hasApplicationDataAfterMessage3();
     }
 }

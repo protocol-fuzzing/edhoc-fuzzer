@@ -711,7 +711,7 @@ public class MessageProcessorPersistent {
         byte[] message3 = EdhocUtil.buildCBORSequence(objectList);
         LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 3", message3));
 
-        /* Modify session */
+        /* Modify session and derive new oscore context */
         if (session.isInitiator()) {
             session.setTH3(th3);
             session.setPRK4e3m(prk4e3m);
@@ -719,6 +719,9 @@ public class MessageProcessorPersistent {
             session.setPRKout(prkOut);
             session.setPRKexporter(prkExporter);
             session.setMessage3(message3);
+
+            // derive new oscore context
+            session.setupOscoreContext();
         }
 
         return message3;
@@ -1107,7 +1110,7 @@ public class MessageProcessorPersistent {
 
         EdhocSessionPersistent newSession = new EdhocSessionPersistent(oldSession.getSessionUri(),
                 oldSession.isInitiator(), oldSession.isClientInitiated(), method, connectionIdResponder, endpointInfo,
-                endpointInfo.getOscoreDb(), oldSession.getCoapExchangeWrapper());
+                endpointInfo.getOscoreDb(), oldSession.getCoapExchanger());
 
         // Set the selected cipher suite
         newSession.setSelectedCipherSuite(selectedCipherSuite);
@@ -1623,7 +1626,7 @@ public class MessageProcessorPersistent {
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("PRK_exporter", prkExporter));
 
-        /* Modify session */
+        /* Modify session and derive oscore context */
         if (!session.isInitiator()) {
             session.setTH3(th3);
             session.setPeerIdCred(idCredI);
@@ -1633,6 +1636,9 @@ public class MessageProcessorPersistent {
             session.setPRKout(prkOut);
             session.setPRKexporter(prkExporter);
             session.setEad3(ead3);
+
+            // derive new oscore context
+            session.setupOscoreContext();
         }
 
         LOGGER.debug("Successful processing of EDHOC Message 3");

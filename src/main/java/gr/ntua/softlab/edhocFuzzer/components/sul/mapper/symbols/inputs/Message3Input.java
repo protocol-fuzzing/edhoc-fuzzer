@@ -13,13 +13,6 @@ public class Message3Input extends EdhocInput {
     }
 
     @Override
-    public void postSendUpdate(ExecutionContext context) {
-        // after generating message 3 and storing necessary information
-        // to session, oscore context can be derived
-        getEdhocSessionPersistent(context).setupOscoreContext();
-    }
-
-    @Override
     public Enum<EdhocInputType> getInputType() {
         return EdhocInputType.EDHOC_MESSAGE_3;
     }

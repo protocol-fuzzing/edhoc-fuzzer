@@ -1,6 +1,8 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient;
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchangeInfo;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.CoapResource;
@@ -14,15 +16,15 @@ public class EdhocServer extends CoapServer {
 
     public EdhocServer(String host, int port, String edhocResource, String appGetResource,
                        EdhocStackFactoryPersistent edhocStackFactoryPersistent,
-                       CoapExchangeWrapper coapExchangeWrapper) {
+                       CoapExchanger coapExchanger) {
 
         // add edhocResource
         addLeafResource(createInnerResourceTree(edhocResource),
-                new EdhocResource(extractLeafResourceString(edhocResource), coapExchangeWrapper));
+                new EdhocResource(extractLeafResourceString(edhocResource), coapExchanger));
 
         // add appGetResource
         addLeafResource(createInnerResourceTree(appGetResource),
-                new ApplicationGetResource(extractLeafResourceString(appGetResource), coapExchangeWrapper));
+                new ApplicationGetResource(extractLeafResourceString(appGetResource), coapExchanger));
 
         // add endpoint
         CoapEndpoint coapEndpoint = CoapEndpoint.builder()
@@ -110,16 +112,16 @@ public class EdhocServer extends CoapServer {
     // The resource for edhoc protocol requests
     protected static class EdhocResource extends CoapResource {
         private static final Logger LOGGER = LogManager.getLogger(EdhocResource.class);
-        protected CoapExchangeWrapper sharedCoapExhangeWrapper;
+        protected CoapExchanger coapExchanger;
 
-        public EdhocResource(String name, CoapExchangeWrapper coapExchangeWrapper) {
+        public EdhocResource(String name, CoapExchanger coapExchanger) {
             // set resource identifier
             super(name);
 
             // set display name
             getAttributes().setTitle(name + " - EDHOC Resource");
 
-            this.sharedCoapExhangeWrapper = coapExchangeWrapper;
+            this.coapExchanger = coapExchanger;
         }
 
         @Override
@@ -133,14 +135,27 @@ public class EdhocServer extends CoapServer {
         public void handlePOST(CoapExchange exchange) {
             LOGGER.debug("Received POST request");
 
-            if (sharedCoapExhangeWrapper == null) {
+            if (coapExchanger == null) {
                 // respond to the request
                 exchange.respond("EDHOC POST response");
             } else {
-                // save exchange to sharedCoapExchangeWrapper
-                // in order some observer of this wrapper to respond
-                sharedCoapExhangeWrapper.setCoapExchange(exchange);
-                sharedCoapExhangeWrapper.setHasEdhocMessage(true);
+                // edit exchange in draft queue
+                CoapExchangeInfo coapExchangeInfo = coapExchanger.getDraftQueue().poll();
+
+                if (coapExchangeInfo == null) {
+                    LOGGER.warn("Empty draft queue found");
+                    coapExchangeInfo = new CoapExchangeInfo();
+                }
+
+                coapExchangeInfo.setCoapExchange(exchange);
+                coapExchangeInfo.setHasEdhocMessage(true);
+
+                // save exchange to receivedQueue in order for some observer to respond
+                boolean ok = coapExchanger.getReceivedQueue().offer(coapExchangeInfo);
+
+                if (!ok) {
+                    LOGGER.warn("Full receivedQueue found");
+                }
             }
         }
     }
@@ -148,30 +163,43 @@ public class EdhocServer extends CoapServer {
     // The Resource for application data (oscore-protected) GET requests
     protected static class ApplicationGetResource extends CoapResource {
         private static final Logger LOGGER = LogManager.getLogger(ApplicationGetResource.class);
-        protected CoapExchangeWrapper sharedCoapExhangeWrapper;
+        protected CoapExchanger coapExchanger;
 
-        public ApplicationGetResource(String name, CoapExchangeWrapper coapExchangeWrapper) {
+        public ApplicationGetResource(String name, CoapExchanger coapExchanger) {
             // set resource identifier
             super(name);
 
             // set display name
             getAttributes().setTitle(name + " - Application Resource");
 
-            this.sharedCoapExhangeWrapper = coapExchangeWrapper;
+            this.coapExchanger = coapExchanger;
         }
 
         @Override
         public void handleGET(CoapExchange exchange) {
             LOGGER.debug("Received GET request");
 
-            if (sharedCoapExhangeWrapper == null) {
+            if (coapExchanger == null) {
                 // respond to the request
                 exchange.respond("Application GET response");
             } else {
-                // save exchange to sharedCoapExchangeWrapper
-                // in order some observer of this wrapper to respond
-                sharedCoapExhangeWrapper.setCoapExchange(exchange);
-                sharedCoapExhangeWrapper.setHasApplicationData(true);
+                // edit exchange in draft queue
+                CoapExchangeInfo coapExchangeInfo = coapExchanger.getDraftQueue().poll();
+
+                if (coapExchangeInfo == null) {
+                    LOGGER.warn("Empty draft queue found");
+                    coapExchangeInfo = new CoapExchangeInfo();
+                }
+
+                coapExchangeInfo.setCoapExchange(exchange);
+                coapExchangeInfo.setHasApplicationData(true);
+
+                // save exchange to receivedQueue in order for some observer to respond
+                boolean ok = coapExchanger.getReceivedQueue().offer(coapExchangeInfo);
+
+                if (!ok) {
+                    LOGGER.warn("Full receivedQueue found");
+                }
             }
         }
     }

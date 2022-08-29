@@ -7,7 +7,7 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactor
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient.CoapExchangeWrapper;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.State;
 import net.i2p.crypto.eddsa.EdDSASecurityProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -146,14 +146,14 @@ public abstract class EdhocMapperState implements State {
         boolean isClientInitiated = isInitiator == isCoapClient();
 
         edhocSessionPersistent = new EdhocSessionPersistent(edhocSessionUri, isInitiator, isClientInitiated,
-                authenticationMethod, connectionId, edhocEndpointInfoPersistent, oscoreDB, new CoapExchangeWrapper());
+                authenticationMethod, connectionId, edhocEndpointInfoPersistent, oscoreDB, new CoapExchanger());
 
         // Update edhocSessions
         edhocSessionsPersistent.put(CBORObject.FromObject(connectionId), edhocSessionPersistent);
 
         // Initialize connector
         edhocMapperConnector.initialize(new EdhocStackFactoryPersistent(edhocEndpointInfoPersistent,
-                new MessageProcessorPersistent(this)), edhocSessionPersistent.getCoapExchangeWrapper());
+                new MessageProcessorPersistent(this)), edhocSessionPersistent.getCoapExchanger());
     }
 
     public EdhocSessionPersistent getEdhocSessionPersistent() {
