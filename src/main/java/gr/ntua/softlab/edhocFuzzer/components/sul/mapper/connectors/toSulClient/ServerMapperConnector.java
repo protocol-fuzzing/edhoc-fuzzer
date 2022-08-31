@@ -100,8 +100,9 @@ public class ServerMapperConnector implements EdhocMapperConnector {
                     response.setPayload(new byte[0]);
                 }
             }
-            case MESSAGE_3_COMBINED -> throw new UnsupportedOperationException("Message_3_Combined found in alphabet. " +
-                    "ServerMapperConnector cannot use it as a response. It is used only as a request.");
+            case MESSAGE_3_COMBINED -> throw new UnsupportedOperationException(
+                    "Message_3_Combined found. ServerMapperConnector cannot use it as a response. " +
+                    "It can be used only as a request from a CoAP client as Initiator.");
         }
 
         currentExchange.respond(response);

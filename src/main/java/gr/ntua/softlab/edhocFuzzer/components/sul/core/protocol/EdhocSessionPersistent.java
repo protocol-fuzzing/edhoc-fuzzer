@@ -25,6 +25,7 @@ public class EdhocSessionPersistent extends EdhocSession {
     protected String oscoreUri;
     protected int oscoreReplayWindow;
     protected int oscoreMaxUnfragmentedSize;
+    protected boolean oscoreCtxGenerated;
 
     protected CBORObject cipherSuitesIncludeInError;
 
@@ -98,12 +99,17 @@ public class EdhocSessionPersistent extends EdhocSession {
         this.ead3 = null;
         this.ead4 = null;
 
-        // setup dummy oscore context
+        // setup dummy oscore context and reset flag
+        oscoreCtxGenerated = false;
         setupOscoreContext();
+        oscoreCtxGenerated = false;
     }
 
     public void setupOscoreContext() {
-        if (!getApplicationProfile().getUsedForOSCORE()) {
+        if (!getApplicationProfile().getUsedForOSCORE() || oscoreCtxGenerated) {
+            // oscore context is derived only when the application profile agrees,
+            // and it is not already derived in this session. In case it is already
+            // derived, then the current context is active
             return;
         }
 
@@ -140,6 +146,8 @@ public class EdhocSessionPersistent extends EdhocSession {
             throw new RuntimeException("Error when adding the OSCORE Security Context to the context database: "
                     + e.getMessage());
         }
+
+        oscoreCtxGenerated = true;
     }
 
     @Override
