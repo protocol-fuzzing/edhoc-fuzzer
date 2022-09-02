@@ -1,0 +1,9 @@
+<alphabet>
+    <Message1Input name="EDHOC_MESSAGE_1"/>
+    <Message2Input name="EDHOC_MESSAGE_2"/>
+    <Message3Input name="EDHOC_MESSAGE_3"/>
+    <Message4Input name="EDHOC_MESSAGE_4"/>
+    <ErrorMessageInput name="EDHOC_ERROR_MESSAGE"/>
+    <ApplicationDataInput name="APPLICATION_DATA"/>
+    <Message3CombinedInput name="EDHOC_MESSAGE_3_COMBINED"/>
+</alphabet>

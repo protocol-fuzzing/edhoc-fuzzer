@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+readonly SCRIPT_DIR="$(cd $(dirname ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
+readonly EXP_SCRIPTS_DIR="$SCRIPT_DIR/experiments/scripts"
+readonly REPL_FILE="$EXP_SCRIPTS_DIR/replacements.txt"
+readonly PY_DOT_BTF="$EXP_SCRIPTS_DIR/dot_beautify.py"
+
+start_edge_label=""
+
+if [ $# = 0 ]; then
+    echo "Usage: beautify_model.sh [-c|--client] dot_model"
+else
+    while [[ "$1" =~ ^- ]]; do case $1 in
+        -c | --client )
+            start_edge_label="- / M1"
+            ;;
+        * )
+            echo "Unsupported option $1"
+            return
+            ;;
+            esac
+            shift
+        done
+
+    if [[ ! $# -eq 1 ]]; then
+        echo "Expected a .dot file after options"
+        return
+    fi
+
+    if [[ ! -e $1 ]]; then
+        echo "File $1 does not exist"
+        return
+    fi
+
+    echo "Invoking ${PY_DOT_BTF}"
+    python3 ${PY_DOT_BTF} $1 -r ${REPL_FILE} --start-edge-label "${start_edge_label}"
+fi
