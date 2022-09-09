@@ -48,6 +48,10 @@ public class EdhocMapperConfig extends MapperConfig {
     @Parameter(names = "-disableContentFormat", description = "Do not add CoAP Content-Format in sending messages")
     protected boolean disableContentFormat = false;
 
+    @Parameter(names = "-disableSessionReset", description = "Do not reset old session data, when Initiator mapper " +
+            "sends a new starting message. Warning: Disabling session reset may lead to problems in learning")
+    protected boolean disableSessionReset = false;
+
     public void initializeHost(String host) {
         if (Objects.equals(this.host, "")) {
             this.host = checkAndReturnHost(host);
@@ -80,6 +84,10 @@ public class EdhocMapperConfig extends MapperConfig {
 
     public boolean useContentFormat() {
         return !disableContentFormat;
+    }
+
+    public boolean useSessionReset() {
+        return !disableSessionReset;
     }
 
     public boolean isCoapErrorAsEdhocError() {

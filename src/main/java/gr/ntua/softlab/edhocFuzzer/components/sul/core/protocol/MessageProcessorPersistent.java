@@ -1110,7 +1110,7 @@ public class MessageProcessorPersistent {
 
         EdhocSessionPersistent newSession = new EdhocSessionPersistent(oldSession.getSessionUri(),
                 oldSession.isInitiator(), oldSession.isClientInitiated(), method, connectionIdResponder, endpointInfo,
-                endpointInfo.getOscoreDb(), oldSession.getCoapExchanger());
+                endpointInfo.getOscoreDb(), oldSession.getCoapExchanger(), oldSession.isSessionResetEnabled());
 
         // Set the selected cipher suite
         newSession.setSelectedCipherSuite(selectedCipherSuite);
@@ -2433,7 +2433,7 @@ public class MessageProcessorPersistent {
         try {
             return session.edhocKDF(prk3e2m, label, context, length);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            LOGGER.error("Generating {}\n" + e.getMessage(), name);
+            LOGGER.error("Generating {}\n{}", name, e.getMessage());
             return null;
         }
     }
@@ -2580,7 +2580,7 @@ public class MessageProcessorPersistent {
         try {
             return session.edhocKDF(prk4e3m, label, context, length);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            LOGGER.error("Generating {}\n" + e.getMessage(), name);
+            LOGGER.error("Generating {}\n{}", name, e.getMessage());
             return null;
         }
     }

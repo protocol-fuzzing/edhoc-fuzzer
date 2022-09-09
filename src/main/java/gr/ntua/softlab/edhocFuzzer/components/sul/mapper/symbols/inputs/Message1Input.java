@@ -11,8 +11,8 @@ public class Message1Input extends EdhocInput {
     public void preSendUpdate(ExecutionContext context) {
         if (getEdhocSessionPersistent(context).isInitiator()) {
             // Initiator by sending message 1 starts a new key exchange session
-            // so previous session state must be cleaned
-            getEdhocSessionPersistent(context).reset();
+            // so previous session state must be cleaned unless reset is disabled
+            getEdhocSessionPersistent(context).resetIfEnabled();
         }
     }
 

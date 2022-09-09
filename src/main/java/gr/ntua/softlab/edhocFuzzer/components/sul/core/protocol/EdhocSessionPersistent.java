@@ -34,10 +34,12 @@ public class EdhocSessionPersistent extends EdhocSession {
     protected CBORObject[] ead3;
     protected CBORObject[] ead4;
 
+    protected boolean sessionResetEnabled;
+
     public EdhocSessionPersistent(
             String sessionUri, boolean initiator, boolean clientInitiated, int method, byte[] connectionId,
             EdhocEndpointInfoPersistent edhocEndpointInfoPersistent, HashMapCtxDB oscoreDB,
-            CoapExchanger coapExchanger) {
+            CoapExchanger coapExchanger, boolean sessionResetEnabled) {
 
         super(initiator, clientInitiated, method, connectionId,
                 edhocEndpointInfoPersistent.getKeyPairs(), edhocEndpointInfoPersistent.getIdCreds(),
@@ -50,8 +52,18 @@ public class EdhocSessionPersistent extends EdhocSession {
         this.oscoreReplayWindow = edhocEndpointInfoPersistent.getOscoreReplayWindow();
         this.oscoreMaxUnfragmentedSize = edhocEndpointInfoPersistent.getOscoreMaxUnfragmentedSize();
         this.coapExchanger = coapExchanger;
+        this.sessionResetEnabled = sessionResetEnabled;
 
         reset();
+    }
+
+    public void resetIfEnabled() {
+        if (sessionResetEnabled) {
+            reset();
+        } else {
+            // do not reset, but allow for new oscore context to be derived
+            oscoreCtxGenerated = false;
+        }
     }
 
     public void reset() {
@@ -219,5 +231,9 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     public void setEad4(CBORObject[] ead4) {
         this.ead4 = ead4;
+    }
+
+    public boolean isSessionResetEnabled() {
+        return sessionResetEnabled;
     }
 }

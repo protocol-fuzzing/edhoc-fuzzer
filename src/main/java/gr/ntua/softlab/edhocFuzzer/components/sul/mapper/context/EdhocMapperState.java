@@ -146,7 +146,8 @@ public abstract class EdhocMapperState implements State {
         boolean isClientInitiated = isInitiator == isCoapClient();
 
         edhocSessionPersistent = new EdhocSessionPersistent(edhocSessionUri, isInitiator, isClientInitiated,
-                authenticationMethod, connectionId, edhocEndpointInfoPersistent, oscoreDB, new CoapExchanger());
+                authenticationMethod, connectionId, edhocEndpointInfoPersistent, oscoreDB, new CoapExchanger(),
+                edhocMapperConfig.useSessionReset());
 
         // Update edhocSessions
         edhocSessionsPersistent.put(CBORObject.FromObject(connectionId), edhocSessionPersistent);
