@@ -7,8 +7,6 @@ ${results.learning.clients}/rise_client_m4_app
 
 
 ##### LearnerConfig #####
--alphabet
-${alphabets}/client_sul.xml
 -learningAlgorithm
 TTT
 -equivalenceAlgorithms

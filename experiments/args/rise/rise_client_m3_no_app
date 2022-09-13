@@ -7,8 +7,6 @@ ${results.learning.clients}/rise_client_m3_no_app
 
 
 ##### LearnerConfig #####
--alphabet
-${alphabets}/client_sul.xml
 -learningAlgorithm
 TTT
 -equivalenceAlgorithms
@@ -75,17 +73,15 @@ helloWorld
 -protocolVersion
 14
 -responseWait
-2000
+1000
 -processDir
 ${models.clients}/rise
 -cmd
 java -jar edhoc-client.jar localhost:${sul.port} 1 ${fuzzer.dir}/${authentication.sul} ${fuzzer.dir}/${authentication.mapper}
 -startWait
-2000
+1000
 
 
 ##### EdhocSulClientConfig #####
--clientWait
-1000
 -port
 ${sul.port}

@@ -7,8 +7,6 @@ ${results.learning.servers}/rise_server_m3_combined_app
 
 
 ##### LearnerConfig #####
--alphabet
-${alphabets}/server_sul.xml
 -learningAlgorithm
 TTT
 -equivalenceAlgorithms
@@ -72,13 +70,13 @@ helloWorld
 -protocolVersion
 14
 -responseWait
-3000
+2500
 -processDir
 ${models.servers}/rise
 -cmd
 java -jar edhoc-server.jar ${sul.port} 3 ${fuzzer.dir}/${authentication.sul} ${fuzzer.dir}/${authentication.mapper}
 -startWait
-3000
+2500
 
 
 ##### EdhocSulServerConfig #####

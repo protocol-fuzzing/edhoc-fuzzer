@@ -7,8 +7,6 @@ ${results.learning.servers}/rise_server_m4_app
 
 
 ##### LearnerConfig #####
--alphabet
-${alphabets}/server_sul.xml
 -learningAlgorithm
 TTT
 -equivalenceAlgorithms
