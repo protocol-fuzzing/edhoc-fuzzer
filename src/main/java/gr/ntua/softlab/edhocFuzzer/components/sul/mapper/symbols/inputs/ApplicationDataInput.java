@@ -13,7 +13,7 @@ public class ApplicationDataInput extends EdhocInput {
     }
 
     @Override
-    public Enum<EdhocInputType> getInputType() {
-        return EdhocInputType.APPLICATION_DATA;
+    public Enum<MessageInputType> getInputType() {
+        return MessageInputType.APPLICATION_DATA;
     }
 }

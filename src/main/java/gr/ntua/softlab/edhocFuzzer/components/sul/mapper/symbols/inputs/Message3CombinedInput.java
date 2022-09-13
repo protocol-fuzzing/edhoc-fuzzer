@@ -20,7 +20,7 @@ public class Message3CombinedInput extends ApplicationDataInput {
     }
 
     @Override
-    public Enum<EdhocInputType> getInputType() {
-        return EdhocInputType.EDHOC_MESSAGE_3_COMBINED;
+    public Enum<MessageInputType> getInputType() {
+        return MessageInputType.EDHOC_MESSAGE_3_COMBINED;
     }
 }

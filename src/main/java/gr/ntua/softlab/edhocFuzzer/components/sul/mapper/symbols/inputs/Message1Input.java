@@ -22,7 +22,7 @@ public class Message1Input extends EdhocInput {
     }
 
     @Override
-    public Enum<EdhocInputType> getInputType() {
-        return EdhocInputType.EDHOC_MESSAGE_1;
+    public Enum<MessageInputType> getInputType() {
+        return MessageInputType.EDHOC_MESSAGE_1;
     }
 }

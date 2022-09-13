@@ -49,7 +49,7 @@ public class EdhocMapperConfig extends MapperConfig {
     protected boolean disableContentFormat = false;
 
     @Parameter(names = "-disableSessionReset", description = "Do not reset old session data, when Initiator mapper " +
-            "sends a new starting message. Warning: Disabling session reset may lead to problems in learning")
+            "sends a new starting message. Warning: Disabling session reset may lead to inaccurate learning")
     protected boolean disableSessionReset = false;
 
     public void initializeHost(String host) {

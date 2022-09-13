@@ -18,8 +18,6 @@ public abstract class EdhocProtocolMessage implements ProtocolMessage {
     // type of payload
     protected PayloadType payloadType;
 
-    public EdhocProtocolMessage() {}
-
     public EdhocProtocolMessage(MessageProcessorPersistent messageProcessorPersistent) {
         payloadType = PayloadType.EDHOC_MESSAGE;
 

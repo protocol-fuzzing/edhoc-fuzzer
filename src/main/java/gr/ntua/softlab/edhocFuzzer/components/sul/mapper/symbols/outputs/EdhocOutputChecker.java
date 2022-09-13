@@ -7,12 +7,12 @@ import java.util.Objects;
 
 public class EdhocOutputChecker implements AbstractOutputChecker {
 
-    public boolean isMessage(AbstractOutput abstractOutput, EdhocOutputType edhocOutputType) {
-        return Objects.equals(abstractOutput.getName(), edhocOutputType.name());
+    public boolean isMessage(AbstractOutput abstractOutput, MessageOutputType messageOutputType) {
+        return Objects.equals(abstractOutput.getName(), messageOutputType.name());
     }
 
     @Override
     public boolean hasInitialClientMessage(AbstractOutput abstractOutput) {
-        return isMessage(abstractOutput, EdhocOutputType.EDHOC_MESSAGE_1);
+        return isMessage(abstractOutput, MessageOutputType.EDHOC_MESSAGE_1);
     }
 }

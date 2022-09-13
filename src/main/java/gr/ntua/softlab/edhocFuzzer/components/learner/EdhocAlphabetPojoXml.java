@@ -17,7 +17,8 @@ public class EdhocAlphabetPojoXml extends AlphabetPojoXml {
             @XmlElement(type = Message4Input.class, name = "Message4Input"),
             @XmlElement(type = ErrorMessageInput.class, name = "ErrorMessageInput"),
             @XmlElement(type = ApplicationDataInput.class, name = "ApplicationDataInput"),
-            @XmlElement(type = Message3CombinedInput.class, name = "Message3CombinedInput")
+            @XmlElement(type = Message3CombinedInput.class, name = "Message3CombinedInput"),
+            @XmlElement(type = EmptyCoapMessageInput.class, name = "EmptyCoapMessageInput")
     })
     protected List<AbstractInput> inputs;
 

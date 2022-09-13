@@ -130,7 +130,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
                 && currentCoapExchangeInfo.hasApplicationDataAfterMessage3();
     }
 
-    public boolean receivedEmptyCoapAck() {
+    public boolean receivedEmptyMessage() {
         return isResponseSuccessful()
                 && response.getPayloadSize() == 0
                 && response.advanced().getType() == CoAP.Type.ACK;

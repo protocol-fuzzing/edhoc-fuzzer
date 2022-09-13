@@ -5,7 +5,7 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs;
  *  {@link gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput#unknown() AbstractOutput.unknown()},
  *  {@link gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput#socketClosed() AbstractOutput.socketClosed()},
  *  {@link gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput#timeout() AbstractOutput.timeout()} */
-public enum EdhocOutputType {
+public enum MessageOutputType {
     EDHOC_MESSAGE_1,
     EDHOC_MESSAGE_2,
     EDHOC_MESSAGE_3,
@@ -14,5 +14,6 @@ public enum EdhocOutputType {
     EDHOC_MESSAGE_3_COMBINED,
     EDHOC_ERROR_MESSAGE,
     COAP_ERROR_MESSAGE,
-    EMPTY_COAP_ACK
+    EMPTY_COAP_MESSAGE,
+    UNSUPPORTED_MESSAGE
 }

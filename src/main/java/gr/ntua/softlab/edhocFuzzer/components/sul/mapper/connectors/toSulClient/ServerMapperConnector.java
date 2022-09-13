@@ -4,7 +4,6 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactor
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.PayloadType;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.*;
 import org.eclipse.californium.core.coap.CoAP;
-import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 
@@ -19,7 +18,9 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
     // timeout in milliseconds
     protected Long timeout;
-    protected boolean exceptionOccurred;
+    //protected boolean exceptionOccurred;
+    // Possible Codes: 0 [Generic Error], 1 [Unsupported Message]
+    protected int exceptionCodeOccurred = -1;
 
     protected EdhocServer edhocServer = null;
 
@@ -70,7 +71,8 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
     @Override
     public void send(byte[] payload, PayloadType payloadType, int messageCode, int contentFormat) {
-        exceptionOccurred = false;
+        //exceptionOccurred = false;
+        exceptionCodeOccurred = -1;
 
         if (currentCoapExchangeInfo == null || currentCoapExchangeInfo.getCoapExchange() == null) {
             return;
@@ -85,24 +87,28 @@ public class ServerMapperConnector implements EdhocMapperConnector {
             case EDHOC_MESSAGE ->
                     response.setPayload(payload);
             case APPLICATION_DATA -> {
-                boolean oscoreProtectedExchange = currentExchange.advanced().getCryptographicContextID() != null;
-                if (oscoreProtectedExchange) {
+                if (currentExchange.advanced().getCryptographicContextID() != null) {
                     // request was oscore-protected so will be the response
                     // oscore protection is handled in edhoc layers
                     response.setPayload(payload);
                 } else {
-                    // request was not oscore-protected so won't be the response.
-                    // Proceeding as the protected case would result in sending
-                    // the payload unprotected, because the oscore layer would
-                    // not have the information needed in order to protect the
-                    // response. Unprotected empty coap ack is sent instead.
-                    response.getOptions().setContentFormat(MediaTypeRegistry.UNDEFINED);
-                    response.setPayload(new byte[0]);
+                    // request was not oscore-protected so no oscore-protected app message
+                    // can be sent back, so it is deemed unsupported message
+                    // Current exchange message is NOT consumed, this allows learning to
+                    // continue and transition 'app / unsupported' to be regarded as self-loop
+                    exceptionCodeOccurred = 1;
+                    return;
                 }
             }
-            case MESSAGE_3_COMBINED -> throw new UnsupportedOperationException(
-                    "Message_3_Combined found. ServerMapperConnector cannot use it as a response. " +
-                    "It can be used only as a request from a CoAP client as Initiator.");
+            case MESSAGE_3_COMBINED -> {
+                // ServerMapperConnector cannot use message 3 combined as a response
+                // It can be used only as a request from a CoAP client as Initiator
+                // So this message is deemed unsupported
+                // Current exchange message is NOT consumed, this allows learning to
+                // continue and transition 'msg3 / unsupported' to be regarded as self-loop
+                exceptionCodeOccurred = 1;
+                return;
+            }
         }
 
         currentExchange.respond(response);
@@ -110,23 +116,28 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         try {
             currentCoapExchangeInfo = coapExchanger.getReceivedQueue().poll(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            exceptionOccurred = true;
+            //exceptionOccurred = true;
+            exceptionCodeOccurred = 0;
             currentCoapExchangeInfo = null;
         }
     }
 
     @Override
-    public byte[] receive() throws GenericErrorException, TimeoutException {
-        if (currentCoapExchangeInfo != null
-                && currentCoapExchangeInfo.getCoapExchange() != null) {
-            return currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getPayload();
-        }
+    public byte[] receive() throws GenericErrorException, TimeoutException, UnsupportedMessageException {
+        // save code and reset it to maintain neutral state
+        int code = exceptionCodeOccurred;
+        exceptionCodeOccurred = -1;
 
-        // coapExchangeInfo or coapExchange is null, something happened
-        if (exceptionOccurred) {
-            throw new GenericErrorException();
-        } else {
-            throw new TimeoutException();
+        switch (code) {
+            case 0 -> throw new GenericErrorException();
+            case 1 -> throw new UnsupportedMessageException();
+            default -> {
+                if (currentCoapExchangeInfo == null || currentCoapExchangeInfo.getCoapExchange() == null) {
+                    throw new TimeoutException();
+                } else {
+                    return currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getPayload();
+                }
+            }
         }
     }
 
@@ -154,5 +165,12 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     public boolean receivedAppDataCombinedWithMsg3() {
         return currentCoapExchangeInfo != null
                 && currentCoapExchangeInfo.hasApplicationDataAfterMessage3();
+    }
+
+    @Override
+    public boolean receivedEmptyMessage() {
+        return currentCoapExchangeInfo != null
+                && currentCoapExchangeInfo.getCoapExchange() != null
+                && currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getPayloadSize() == 0;
     }
 }
