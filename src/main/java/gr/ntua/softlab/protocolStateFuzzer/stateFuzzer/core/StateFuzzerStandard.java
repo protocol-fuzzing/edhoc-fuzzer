@@ -15,7 +15,6 @@ import gr.ntua.softlab.protocolStateFuzzer.components.learner.factory.Equivalenc
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics.Statistics;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics.StatisticsTracker;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.TimeLimitReachedException;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
 import net.automatalib.automata.transducers.MealyMachine;
@@ -211,7 +210,7 @@ public class StateFuzzerStandard implements StateFuzzer {
         try {
             dumpToFile(
                     stateFuzzerEnabler.getSulConfig().getMapperConfig().getMapperConnectionConfigInputStream(),
-                    new File(outputFolder, MapperConfig.DEFAULT_MAPPER_CONNECTION_CONFIG));
+                    new File(outputFolder, MAPPER_CONNECTION_CONFIG_FILENAME));
         } catch (IOException e) {
             LOGGER.error("Could not copy mapperToSulConfig to output folder");
         }
