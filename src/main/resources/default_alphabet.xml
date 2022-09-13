@@ -6,4 +6,5 @@
     <ErrorMessageInput name="EDHOC_ERROR_MESSAGE"/>
     <ApplicationDataInput name="APPLICATION_DATA"/>
     <Message3CombinedInput name="EDHOC_MESSAGE_3_COMBINED"/>
+    <EmptyCoapMessageInput name="EMPTY_COAP_MESSAGE" />
 </alphabet>
