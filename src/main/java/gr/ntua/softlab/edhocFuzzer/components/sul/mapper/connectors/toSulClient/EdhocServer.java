@@ -102,8 +102,13 @@ public class EdhocServer extends CoapServer {
         }
 
         @Override
-        public void handleGET(CoapExchange exchange) {
+        public void handlePOST(CoapExchange exchange) {
+            // respond to the request
+            exchange.respond(getName());
+        }
 
+        @Override
+        public void handleGET(CoapExchange exchange) {
             // respond to the request
             exchange.respond(getName());
         }
@@ -160,7 +165,7 @@ public class EdhocServer extends CoapServer {
         }
     }
 
-    // The Resource for application data (oscore-protected) GET requests
+    // The Resource for application data (oscore-protected) requests
     protected static class ApplicationGetResource extends CoapResource {
         private static final Logger LOGGER = LogManager.getLogger(ApplicationGetResource.class);
         protected CoapExchanger coapExchanger;
@@ -176,12 +181,21 @@ public class EdhocServer extends CoapServer {
         }
 
         @Override
+        public void handlePOST(CoapExchange exchange) {
+            LOGGER.debug("Received POST request");
+            handleExchange(exchange);
+        }
+
+        @Override
         public void handleGET(CoapExchange exchange) {
             LOGGER.debug("Received GET request");
+            handleExchange(exchange);
+        }
 
+        protected void handleExchange(CoapExchange exchange) {
             if (coapExchanger == null) {
                 // respond to the request
-                exchange.respond("Application GET response");
+                exchange.respond("Application response");
             } else {
                 // edit exchange in draft queue
                 CoapExchangeInfo coapExchangeInfo = coapExchanger.getDraftQueue().poll();

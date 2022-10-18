@@ -46,14 +46,9 @@ public class MessageProcessorPersistent {
             return -1;
         }
 
-        // check if it matches error message structure
-        if (hasErrorMessageStructure(elements)) {
-            return Constants.EDHOC_ERROR_MESSAGE;
-        }
-
         // A CoAP client receives responses from CoAP server without connection identifiers prepended
-        // A CoAP server receives requests from CoAP clients with C_I or C_R prepended
-        int cX_offset = edhocMapperState.isCoapClient() ? 0 : 1;
+        // A CoAP server receives requests from CoAP clients with C_I or C_R prepended if enabled
+        int cX_offset = edhocMapperState.receiveWithPrependedCX() ? 1 : 0;
         int messageElementsLength = elements.length - cX_offset;
 
         switch (messageElementsLength) {
@@ -71,8 +66,8 @@ public class MessageProcessorPersistent {
                 return Constants.EDHOC_MESSAGE_3;
             }
             default -> {
-                // unknown message structure
-                return -1;
+                // if it matches error message structure then error message else unknown message
+                return hasErrorMessageStructure(elements) ? Constants.EDHOC_ERROR_MESSAGE : -1;
             }
         }
     }
@@ -90,8 +85,8 @@ public class MessageProcessorPersistent {
         List<CBORObject> objectList = new ArrayList<>();
 
         // if EDHOC message_1 is transported in a CoAP request
-        // CBOR simple value 'true' must be prepended
-        if (edhocMapperState.isCoapClient()) {
+        // CBOR simple value 'true' must be prepended if enabled
+        if (edhocMapperState.sendWithPrependedCX()) {
             objectList.add(CBORObject.True);
         }
 
@@ -195,7 +190,7 @@ public class MessageProcessorPersistent {
 
         // Compute and store the hash of Message 1
         // In case of CoAP request the first byte 0xf5 must be skipped
-        int offset = edhocMapperState.isCoapClient() ? 1 : 0;
+        int offset = edhocMapperState.sendWithPrependedCX() ? 1 : 0;
         byte[] hashMessage1 = new byte[message1.length - offset];
         System.arraycopy(message1, offset, hashMessage1, 0, hashMessage1.length);
 
@@ -235,11 +230,7 @@ public class MessageProcessorPersistent {
 
         // C_I
         byte[] connectionIdentifierInitiator;
-        if (edhocMapperState.isCoapClient()) {
-            // CoAP Client as Initiator
-            // Message 2 is transported in a CoAP response of a previous Message 1 request
-            connectionIdentifierInitiator = edhocMapperState.getEdhocSessionPersistent().getConnectionId();
-        } else {
+        if (edhocMapperState.receiveWithPrependedCX()) {
             // CoAP Server as Initiator
             // Message 2 is transported in a CoAP request
             // C_I is present as first element of the CBOR sequence
@@ -257,6 +248,10 @@ public class MessageProcessorPersistent {
                 LOGGER.error("Invalid encoding of C_I");
                 return false;
             }
+        } else {
+            // CoAP Client as Initiator when Message 2 is a CoAP response of a previous Message 1 request
+            // or CoAP Server as Initiator with correlation with CX is disabled
+            connectionIdentifierInitiator = edhocMapperState.getEdhocSessionPersistent().getConnectionId();
         }
 
         LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
@@ -564,8 +559,8 @@ public class MessageProcessorPersistent {
 
         /* Start preparing data_3 */
 
-        // C_R, if EDHOC message_3 is transported in a CoAP request
-        if (edhocMapperState.isCoapClient()) {
+        // C_R, if EDHOC message_3 is transported in a CoAP request and it is enabled
+        if (edhocMapperState.sendWithPrependedCX()) {
             byte[] connectionIdentifierResponder = session.getPeerConnectionId();
             CBORObject cR = encodeIdentifier(connectionIdentifierResponder);
             LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder",
@@ -751,11 +746,7 @@ public class MessageProcessorPersistent {
 
         // C_I
         byte[] connectionIdentifierInitiator;
-        if (edhocMapperState.isCoapClient()) {
-            // CoAP Client as Initiator
-            // Message 4 is transported in a CoAP response of a previous Message 3 request
-            connectionIdentifierInitiator = edhocMapperState.getEdhocSessionPersistent().getConnectionId();
-        } else {
+        if (edhocMapperState.receiveWithPrependedCX()) {
             // CoAP Server as Initiator
             // Message 4 is transported in a CoAP request
             // C_I is present as first element of the CBOR sequence
@@ -771,6 +762,10 @@ public class MessageProcessorPersistent {
                 LOGGER.error("Invalid encoding of C_I");
                 return false;
             }
+        } else {
+            // CoAP Client as Initiator when Message 4 is a CoAP response of a previous Message 3 request
+            // or CoAP Server as Initiator with correlation with CX is disabled
+            connectionIdentifierInitiator = edhocMapperState.getEdhocSessionPersistent().getConnectionId();
         }
 
         CBORObject connectionIdentifierInitiatorCbor = CBORObject.FromObject(connectionIdentifierInitiator);
@@ -929,9 +924,9 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        // If the received message is a request, the first element before the actual message_1 is the
-        // CBOR simple value 'true', i.e. the byte 0xf5, and it can be skipped
-        if (!edhocMapperState.isCoapClient()) {
+        // If the received message is a request and the first element before the actual message_1 is the
+        // CBOR simple value 'true', it can be skipped
+        if (edhocMapperState.receiveWithPrependedCX()) {
             index++;
             if (!objectListRequest[index].equals(CBORObject.True)) {
                 LOGGER.error("The first element must be the CBOR simple value 'true'");
@@ -1110,7 +1105,8 @@ public class MessageProcessorPersistent {
 
         EdhocSessionPersistent newSession = new EdhocSessionPersistent(oldSession.getSessionUri(),
                 oldSession.isInitiator(), oldSession.isClientInitiated(), method, connectionIdResponder, endpointInfo,
-                endpointInfo.getOscoreDb(), oldSession.getCoapExchanger(), oldSession.isSessionResetEnabled());
+                endpointInfo.getOscoreDb(), oldSession.getCoapExchanger(), oldSession.isSessionResetEnabled(),
+                oldSession.getForceOscoreSenderId(), oldSession.getForceOscoreRecipientId());
 
         // Set the selected cipher suite
         newSession.setSelectedCipherSuite(selectedCipherSuite);
@@ -1134,8 +1130,8 @@ public class MessageProcessorPersistent {
         newSession.setPeerEphemeralPublicKey(peerEphemeralKey);
 
         // Compute and store the hash of EDHOC Message 1
-        // If the receiver is a CoAP server, the first received byte 0xf5 must be skipped
-        int offset = !edhocMapperState.isCoapClient() ? 1 : 0;
+        // If CX is prepended it must be skipped and not be in the hash
+        int offset = edhocMapperState.receiveWithPrependedCX() ? 1 : 0;
         byte[] hashMessage1 = new byte[sequence.length - offset];
         System.arraycopy(sequence, offset, hashMessage1, 0, hashMessage1.length);
         newSession.setHashMessage1(hashMessage1);
@@ -1166,8 +1162,8 @@ public class MessageProcessorPersistent {
         CBORObject[] ead2 = session.getEad2();
         List<CBORObject> objectList = new ArrayList<>();
 
-        // C_I, if EDHOC message_2 is transported in a CoAP request
-        if (edhocMapperState.isCoapClient()) {
+        // C_I, if EDHOC message_2 is transported in a CoAP request and CX correlation is enabled
+        if (edhocMapperState.sendWithPrependedCX()) {
             byte[] connectionIdentifierInitiator = session.getPeerConnectionId();
             CBORObject cI = encodeIdentifier(connectionIdentifierInitiator);
             LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
@@ -1376,11 +1372,7 @@ public class MessageProcessorPersistent {
 
         // C_R
         byte[] connectionIdentifierResponder;
-        if (edhocMapperState.isCoapClient()) {
-            // CoAP Client as Responder
-            // Message 3 is transported in a CoAP response of a previous Message 2 request
-            connectionIdentifierResponder = edhocMapperState.getEdhocSessionPersistent().getConnectionId();
-        } else {
+        if (edhocMapperState.receiveWithPrependedCX()) {
             // CoAP Server as Responder
             // Message 3 is transported in a CoAP request,
             // C_R is present as first element of the CBOR sequence
@@ -1396,6 +1388,10 @@ public class MessageProcessorPersistent {
                 LOGGER.error("Invalid encoding of C_R");
                 return false;
             }
+        } else {
+            // CoAP Client as Responder when Message 3 is a CoAP response of a previous Message 2 request
+            // or CoAP Server as Initiator with CX correlation disabled
+            connectionIdentifierResponder = edhocMapperState.getEdhocSessionPersistent().getConnectionId();
         }
 
         CBORObject connectionIdentifierResponderCbor = CBORObject.FromObject(connectionIdentifierResponder);
@@ -1654,8 +1650,8 @@ public class MessageProcessorPersistent {
 
         /* Start preparing data_4 */
 
-        // C_I, if EDHOC message_4 is transported in a CoAP request
-        if (edhocMapperState.isCoapClient()) {
+        // C_I, if EDHOC message_4 is transported in a CoAP request and CX correlation is enabled
+        if (edhocMapperState.sendWithPrependedCX()) {
             byte[] connectionIdentifierInitiator = session.getPeerConnectionId();
             CBORObject cI = encodeIdentifier(connectionIdentifierInitiator);
             objectList.add(cI);
@@ -1732,14 +1728,16 @@ public class MessageProcessorPersistent {
         if (myObjects.length < 2)
             return false;
 
-        if (edhocMapperState.isCoapClient()) {
-            // Error message is a response (received by CoAP client), this starts with ERR_CODE as a CBOR integer
-            return myObjects[0].getType() == CBORType.Integer;
-        }
-        else {
-            // Error message is a request (received by CoAP server), this starts with C_X different than 'true' (0xf5),
+        if (edhocMapperState.receiveWithPrependedCX()) {
+            // Received by CoAP server
+            // Error message is a request, this starts with C_X different than 'true' (0xf5),
             // followed by ERR_CODE as a CBOR integer
             return !myObjects[0].equals(CBORObject.True) && myObjects[1].getType() == CBORType.Integer;
+        }
+        else {
+            // Received by CoAP client or CoAP server with CX correlation disabled
+            // Error message is a response, this starts with ERR_CODE as a CBOR integer
+            return myObjects[0].getType() == CBORType.Integer;
         }
     }
 
@@ -1762,8 +1760,8 @@ public class MessageProcessorPersistent {
 
         List<CBORObject> objectList = new ArrayList<>();
 
-        // Include C_X if error message sent from CoAP Client
-        if (edhocMapperState.isCoapClient()) {
+        // Include C_X if error message sent from CoAP Client with CX correlation enabled
+        if (edhocMapperState.sendWithPrependedCX()) {
             CBORObject cX = encodeIdentifier(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
             objectList.add(cX);
         }
@@ -1817,9 +1815,7 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        if (edhocMapperState.isCoapClient()) {
-            mySession = edhocMapperState.getEdhocSessionPersistent();
-        } else {
+        if (edhocMapperState.receiveWithPrependedCX()) {
             // The connection identifier is expected as first element in the EDHOC Error Message
             if (objectList[index].getType() != CBORType.ByteString
                     && objectList[index].getType() != CBORType.Integer) {
@@ -1833,6 +1829,8 @@ public class MessageProcessorPersistent {
                 mySession = edhocSessions.get(connectionIdentifierCbor);
                 index++;
             }
+        } else {
+            mySession = edhocMapperState.getEdhocSessionPersistent();
         }
 
         // No session for this Connection Identifier

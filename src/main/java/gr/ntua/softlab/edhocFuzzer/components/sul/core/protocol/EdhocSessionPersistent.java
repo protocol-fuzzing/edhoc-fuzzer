@@ -36,10 +36,14 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     protected boolean sessionResetEnabled;
 
+    protected byte[] forceOscoreSenderId;
+    protected byte[] forceOscoreRecipientId;
+
     public EdhocSessionPersistent(
             String sessionUri, boolean initiator, boolean clientInitiated, int method, byte[] connectionId,
             EdhocEndpointInfoPersistent edhocEndpointInfoPersistent, HashMapCtxDB oscoreDB,
-            CoapExchanger coapExchanger, boolean sessionResetEnabled) {
+            CoapExchanger coapExchanger, boolean sessionResetEnabled, byte[] forceOscoreSenderId,
+            byte[] forceOscoreRecipientId) {
 
         super(initiator, clientInitiated, method, connectionId,
                 edhocEndpointInfoPersistent.getKeyPairs(), edhocEndpointInfoPersistent.getIdCreds(),
@@ -53,6 +57,8 @@ public class EdhocSessionPersistent extends EdhocSession {
         this.oscoreMaxUnfragmentedSize = edhocEndpointInfoPersistent.getOscoreMaxUnfragmentedSize();
         this.coapExchanger = coapExchanger;
         this.sessionResetEnabled = sessionResetEnabled;
+        this.forceOscoreSenderId = forceOscoreSenderId;
+        this.forceOscoreRecipientId = forceOscoreRecipientId;
 
         reset();
     }
@@ -67,8 +73,9 @@ public class EdhocSessionPersistent extends EdhocSession {
     }
 
     public void reset() {
-        // own info with cipher suite 0
-        setSelectedCipherSuite(Constants.EDHOC_CIPHER_SUITE_0);
+        // own info with first supported cipher suite
+        int selectedCipherSuite = getSupportedCipherSuites().get(0);
+        setSelectedCipherSuite(selectedCipherSuite);
         setAuthenticationCredential();
         setEphemeralKey();
 
@@ -77,9 +84,9 @@ public class EdhocSessionPersistent extends EdhocSession {
         setPeerIdCred(CBORObject.Null);
         setPeerLongTermPublicKey(new OneKey());
 
-        // dummy peerEphemeralPublicKey based on selectedCipherSuite 0
-        OneKey peerEphemeralPublicKey = SharedSecretCalculation.buildCurve25519OneKey(null, new byte[0]);
-        setPeerEphemeralPublicKey(peerEphemeralPublicKey);
+        // dummy peerEphemeralPublicKey same as own ephemeral key
+        // in order for the two keys to be of the same curve
+        setPeerEphemeralPublicKey(getEphemeralKey());
 
         // message1 hash
         setHashMessage1(new byte[]{1});
@@ -88,10 +95,9 @@ public class EdhocSessionPersistent extends EdhocSession {
         setPlaintext2(new byte[]{1});
 
         // inner key-derivation Keys
-        byte[] dummyDHSecret = SharedSecretCalculation.generateSharedSecret(getEphemeralKey(), getPeerEphemeralPublicKey());
-        setPRK2e(MessageProcessor.computePRK2e(dummyDHSecret, getEdhocHashAlg(getSelectedCipherSuite())));
-        setPRK3e2m(MessageProcessor.computePRK3e2m(this, getPRK2e()));
-        setPRK4e3m(MessageProcessor.computePRK4e3m(this));
+        setPRK2e(new byte[]{1});
+        setPRK3e2m(new byte[]{1});
+        setPRK4e3m(new byte[]{1});
 
         // transcript hashes
         setTH2(new byte[]{1});
@@ -131,10 +137,12 @@ public class EdhocSessionPersistent extends EdhocSession {
 
         /* Set up the OSCORE Security Context */
 
-        // The Sender ID of this peer is the EDHOC connection identifier of the other peer
-        byte[] senderId = getPeerConnectionId();
-        // The Recipient ID of this peer is the EDHOC connection identifier of this peer
-        byte[] recipientId = getConnectionId();
+        // The Sender ID of this peer is the EDHOC connection identifier of the other peer normally
+        // or the forced sender id from the input
+        byte[] senderId = forceOscoreSenderId != null ? forceOscoreSenderId : getPeerConnectionId();
+        // The Recipient ID of this peer is the EDHOC connection identifier of this peer normally
+        // or the forced recipient id from the input
+        byte[] recipientId = forceOscoreRecipientId != null ? forceOscoreRecipientId : getConnectionId();
 
         int selectedCipherSuite = getSelectedCipherSuite();
         AlgorithmID alg = getAppAEAD(selectedCipherSuite);
@@ -235,5 +243,13 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     public boolean isSessionResetEnabled() {
         return sessionResetEnabled;
+    }
+
+    public byte[] getForceOscoreSenderId() {
+        return forceOscoreSenderId;
+    }
+
+    public byte[] getForceOscoreRecipientId() {
+        return forceOscoreRecipientId;
     }
 }

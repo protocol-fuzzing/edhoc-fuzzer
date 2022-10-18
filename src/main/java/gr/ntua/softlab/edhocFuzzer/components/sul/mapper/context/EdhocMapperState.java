@@ -6,6 +6,9 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocSessionPers
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.ManyFilesAuthenticationConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.TestVectorAuthenticationConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.State;
@@ -82,6 +85,8 @@ public abstract class EdhocMapperState implements State {
     // The size to consider for MAX_UNFRAGMENTED SIZE
     protected int MAX_UNFRAGMENTED_SIZE = 4096;
 
+    protected EdhocMapperConfig edhocMapperConfig;
+
     protected EdhocSessionPersistent edhocSessionPersistent;
 
     protected EdhocEndpointInfoPersistent edhocEndpointInfoPersistent;
@@ -89,17 +94,29 @@ public abstract class EdhocMapperState implements State {
     public EdhocMapperState(EdhocMapperConfig edhocMapperConfig, String edhocSessionUri, String oscoreUri,
                             EdhocMapperConnector edhocMapperConnector) {
 
+        this.edhocMapperConfig = edhocMapperConfig;
+
         // Insert security providers
         Security.insertProviderAt(new EdDSASecurityProvider(), 1);
         Security.insertProviderAt(new BouncyCastleProvider(), 2);
 
         // Set authentication params
-        this.authenticationMethod = edhocMapperConfig.getAuthenticationConfig().getMapAuthenticationMethod();
-        this.credType = edhocMapperConfig.getAuthenticationConfig().getMapCredType();
-        this.idCredType = edhocMapperConfig.getAuthenticationConfig().getMapIdCredType();
+        AuthenticationConfig authenticationConfig = edhocMapperConfig.getAuthenticationConfig();
+        boolean manyFilesAuthIsUsed = authenticationConfig.getManyFilesAuthenticationConfig().isUsed();
+        if (manyFilesAuthIsUsed) {
+            ManyFilesAuthenticationConfig config = authenticationConfig.getManyFilesAuthenticationConfig();
+            this.authenticationMethod = config.getMapAuthenticationMethod();
+            // Add the supported cipher suites in decreasing order of preference
+            this.supportedCipherSuites.addAll(config.getMapSupportedCipherSuites());
+        } else {
+            TestVectorAuthenticationConfig config = authenticationConfig.getTestVectorAuthenticationConfig();
+            this.authenticationMethod = config.getTestVector().getAuthenticationMethod();
+            // Add the supported cipher suites in decreasing order of preference
+            this.supportedCipherSuites.addAll(config.getTestVector().getCipherSuites());
+        }
 
-        // Add the supported cipher suites in decreasing order of preference
-        this.supportedCipherSuites.addAll(edhocMapperConfig.getAuthenticationConfig().getMapSupportedCipherSuites());
+        this.credType = authenticationConfig.getMapCredType();
+        this.idCredType = authenticationConfig.getMapIdCredType();
 
         // Set the application profile
 
@@ -123,8 +140,12 @@ public abstract class EdhocMapperState implements State {
         );
 
         // Set up the authentication credentials
-        Authenticator authenticator = new Authenticator(authenticationMethod, credType, idCredType,
-                edhocEndpointInfoPersistent, ownIdCreds, edhocMapperConfig.getAuthenticationConfig());
+        Authenticator authenticator;
+
+        authenticator = manyFilesAuthIsUsed ?
+                new ManyFilesAuthenticator(authenticationConfig, edhocEndpointInfoPersistent, ownIdCreds) :
+                new TestVectorAuthenticator(authenticationConfig, edhocEndpointInfoPersistent, ownIdCreds,
+                        edhocMapperConfig.isInitiator());
 
         authenticator.setupOwnAuthenticationCredentials();
         authenticator.setupPeerAuthenticationCredentials();
@@ -147,7 +168,8 @@ public abstract class EdhocMapperState implements State {
 
         edhocSessionPersistent = new EdhocSessionPersistent(edhocSessionUri, isInitiator, isClientInitiated,
                 authenticationMethod, connectionId, edhocEndpointInfoPersistent, oscoreDB, new CoapExchanger(),
-                edhocMapperConfig.useSessionReset());
+                edhocMapperConfig.useSessionReset(), edhocMapperConfig.getForceOscoreSenderId(),
+                edhocMapperConfig.getForceOscoreRecipientId());
 
         // Update edhocSessions
         edhocSessionsPersistent.put(CBORObject.FromObject(connectionId), edhocSessionPersistent);
@@ -176,4 +198,15 @@ public abstract class EdhocMapperState implements State {
     /** Specifies if this peer is the CoAP client or the CoAP server */
     public abstract boolean isCoapClient();
 
+    /** Specifies if this peer should send messages with C_I or C_R prepended */
+    public boolean sendWithPrependedCX() {
+        // only coap client can send with prepended CX if it is enabled
+        return isCoapClient() && edhocMapperConfig.useCXCorrelation();
+    }
+
+    /** Specifies if this peer should receive messages with C_I or C_R prepended */
+    public boolean receiveWithPrependedCX() {
+        // only coap server can receive with prepended CX if it is enabled
+        return !isCoapClient() && edhocMapperConfig.useCXCorrelation();
+    }
 }

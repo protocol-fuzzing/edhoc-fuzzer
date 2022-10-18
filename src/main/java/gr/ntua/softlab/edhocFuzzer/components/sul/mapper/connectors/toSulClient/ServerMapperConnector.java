@@ -3,6 +3,8 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.PayloadType;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.server.resources.CoapExchange;
@@ -10,6 +12,8 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 import java.util.concurrent.TimeUnit;
 
 public class ServerMapperConnector implements EdhocMapperConnector {
+    private static final Logger LOGGER = LogManager.getLogger(ServerMapperConnector.class);
+
     protected String host;
     protected int port;
 
@@ -18,7 +22,7 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
     // timeout in milliseconds
     protected Long timeout;
-    //protected boolean exceptionOccurred;
+
     // Possible Codes: 0 [Generic Error], 1 [Unsupported Message]
     protected int exceptionCodeOccurred = -1;
 
@@ -71,10 +75,10 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
     @Override
     public void send(byte[] payload, PayloadType payloadType, int messageCode, int contentFormat) {
-        //exceptionOccurred = false;
         exceptionCodeOccurred = -1;
 
         if (currentCoapExchangeInfo == null || currentCoapExchangeInfo.getCoapExchange() == null) {
+            LOGGER.warn("Unable to reply with given message: No active CoAP exchange found");
             return;
         }
 
@@ -116,7 +120,6 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         try {
             currentCoapExchangeInfo = coapExchanger.getReceivedQueue().poll(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            //exceptionOccurred = true;
             exceptionCodeOccurred = 0;
             currentCoapExchangeInfo = null;
         }

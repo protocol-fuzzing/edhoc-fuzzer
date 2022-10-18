@@ -4,6 +4,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
+import org.eclipse.californium.elements.util.StringUtil;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,7 +14,7 @@ public class EdhocMapperConfig extends MapperConfig {
     protected String host = "";
 
     @ParametersDelegate
-    protected AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+    protected AuthenticationConfig AuthenticationConfig = new AuthenticationConfig();
 
     @Parameter(names = "-edhocRole", required = true, description = "The Role of this peer in the edhoc protocol. " +
             "Available are: Initiator, Responder")
@@ -52,6 +53,21 @@ public class EdhocMapperConfig extends MapperConfig {
             "sends a new starting message. Warning: Disabling session reset may lead to inaccurate learning")
     protected boolean disableSessionReset = false;
 
+    @Parameter(names = "-disableCXCorrelation", description = "Disable correlation with connection identifiers. " +
+            "In case of client mapper do not prepend CX to requests and in case of server mapper do not treat first " +
+            "CBOR object in a response as CX")
+    protected boolean disableCXCorrelation = false;
+
+    @Parameter(names = "-forceOscoreSenderId", description = "Use this oscore sender id, instead of the peer " +
+            "connection id that is found during EDHOC. " +
+            "Available: empty byte string: [] or single-line byte string in the format: 00 01 02 03 04 05")
+    protected String forceOscoreSenderId = null;
+
+    @Parameter(names = "-forceOscoreRecipientId", description = "Use this oscore sender id, instead of the own " +
+            "connection id that is found during EDHOC. " +
+            "Available: empty byte string: [] or single-line byte string in the format: 00 01 02 03 04 05")
+    protected String forceOscoreRecipientId = null;
+
     public void initializeHost(String host) {
         if (Objects.equals(this.host, "")) {
             this.host = checkAndReturnHost(host);
@@ -67,7 +83,7 @@ public class EdhocMapperConfig extends MapperConfig {
     }
 
     public AuthenticationConfig getAuthenticationConfig() {
-        return authenticationConfig;
+        return AuthenticationConfig;
     }
 
     public Integer getAppProfileMode() {
@@ -82,6 +98,10 @@ public class EdhocMapperConfig extends MapperConfig {
         return appGetCoapResource;
     }
 
+    public boolean isCoapErrorAsEdhocError() {
+        return coapErrorAsEdhocError;
+    }
+
     public boolean useContentFormat() {
         return !disableContentFormat;
     }
@@ -90,8 +110,16 @@ public class EdhocMapperConfig extends MapperConfig {
         return !disableSessionReset;
     }
 
-    public boolean isCoapErrorAsEdhocError() {
-        return coapErrorAsEdhocError;
+    public boolean useCXCorrelation() {
+        return !disableCXCorrelation;
+    }
+
+    public byte[] getForceOscoreSenderId() {
+        return parseForceOscoreId(forceOscoreSenderId);
+    }
+
+    public byte[] getForceOscoreRecipientId() {
+        return parseForceOscoreId(forceOscoreRecipientId);
     }
 
     public String getHostCoapUri() {
@@ -127,6 +155,14 @@ public class EdhocMapperConfig extends MapperConfig {
             return (new URI(coapUri)).toString();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected byte[] parseForceOscoreId(String idString) {
+        if (idString == null) {
+            return null;
+        } else {
+            return Objects.equals(idString, "[]") ? new byte[]{} : StringUtil.hex2ByteArray(idString);
         }
     }
 }
