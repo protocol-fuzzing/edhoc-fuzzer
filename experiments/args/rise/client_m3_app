@@ -62,10 +62,7 @@ ${authentication.sul}/sig/ed25519/x509_cert.der
 -edhocRole
 Responder
 
--appProfileMode
-2
-
--appGetCoapResource
+-appCoapResource
 helloWorld
 
 

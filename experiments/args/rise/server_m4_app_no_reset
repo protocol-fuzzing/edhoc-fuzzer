@@ -3,7 +3,7 @@ state-fuzzer-server
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.servers}/rise_server_m3_app_no_reset
+${results.learning.servers}/rise_server_m4_app_no_reset
 
 
 ##### LearnerConfig #####
@@ -12,7 +12,7 @@ TTT
 -equivalenceAlgorithms
 W_METHOD,WP_METHOD
 -queryFile
-${results.learning.servers}/rise_server_m3_app_no_reset/queryFile
+${results.learning.servers}/rise_server_m4_app_no_reset/queryFile
 -cacheTests
 -skipNonDetTests
 
@@ -62,7 +62,7 @@ ${authentication.sul}/sig/ed25519/x509_cert.der
 -edhocRole
 Initiator
 
--appGetCoapResource
+-appCoapResource
 helloWorld
 
 -disableSessionReset
@@ -75,7 +75,7 @@ helloWorld
 -processDir
 ${models.servers}/rise
 -cmd
-java -jar edhoc-server.jar ${sul.port} 2 ${fuzzer.dir}/${authentication.sul} ${fuzzer.dir}/${authentication.mapper}
+java -jar edhoc-server.jar ${sul.port} 5 ${fuzzer.dir}/${authentication.sul} ${fuzzer.dir}/${authentication.mapper}
 -startWait
 2500
 

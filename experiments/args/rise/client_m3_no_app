@@ -1,9 +1,9 @@
-state-fuzzer-server
+state-fuzzer-client
 
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.servers}/rise_server_m4_app
+${results.learning.clients}/rise_client_m3_no_app
 
 
 ##### LearnerConfig #####
@@ -12,7 +12,7 @@ TTT
 -equivalenceAlgorithms
 W_METHOD,WP_METHOD
 -queryFile
-${results.learning.servers}/rise_server_m4_app/queryFile
+${results.learning.clients}/rise_client_m3_no_app/queryFile
 -cacheTests
 -skipNonDetTests
 
@@ -60,9 +60,9 @@ ${authentication.sul}/sig/ed25519/pub.der
 ${authentication.sul}/sig/ed25519/x509_cert.der
 
 -edhocRole
-Initiator
+Responder
 
--appGetCoapResource
+-appCoapResource
 helloWorld
 
 
@@ -70,15 +70,15 @@ helloWorld
 -protocolVersion
 14
 -responseWait
-2500
+1000
 -processDir
-${models.servers}/rise
+${models.clients}/rise
 -cmd
-java -jar edhoc-server.jar ${sul.port} 5 ${fuzzer.dir}/${authentication.sul} ${fuzzer.dir}/${authentication.mapper}
+java -jar edhoc-client.jar localhost:${sul.port} 1 ${fuzzer.dir}/${authentication.sul} ${fuzzer.dir}/${authentication.mapper}
 -startWait
-2500
+1000
 
 
-##### EdhocSulServerConfig #####
--connect
-localhost:${sul.port}
+##### EdhocSulClientConfig #####
+-port
+${sul.port}

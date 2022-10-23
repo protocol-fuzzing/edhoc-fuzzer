@@ -103,7 +103,7 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
         name = nd.get_name()
         if name.startswith('s'):
             if shorten_node_names:
-                nd.set_label(nd.get_label().strip('"')[1:])
+                nd.set_label(nd.get_label().strip('"').lstrip('s'))
 
         elif name != initial_hidden_node_name:
             if graph.del_node(nd):
