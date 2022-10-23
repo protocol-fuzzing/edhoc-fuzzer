@@ -6,6 +6,11 @@ import java.util.Set;
 
 public class AppProfileBuilder {
 
+    public static AppProfile build(Set<Integer> authMethods) {
+        // enable all options, thus mode 6
+        return build(authMethods, 6);
+    }
+
     public static AppProfile build(Set<Integer> authMethods, int mode) {
         // Use of message_4 as expected to be sent by the Responder
         boolean useMessage4;
@@ -48,7 +53,7 @@ public class AppProfileBuilder {
                 supportCombinedRequest = false;
             }
             case 6 -> {
-                // all true (not in edhoc, just for fuzzing)
+                // all true (not in edhoc, just for state fuzzing)
                 useMessage4 = true;
                 usedForOSCORE = true;
                 supportCombinedRequest = true;

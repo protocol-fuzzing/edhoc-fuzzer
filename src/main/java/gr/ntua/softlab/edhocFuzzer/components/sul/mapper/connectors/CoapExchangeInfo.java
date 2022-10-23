@@ -5,13 +5,23 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 public class CoapExchangeInfo {
     protected CoapExchange coapExchange;
 
-    protected boolean hasEdhocMessage;
-    protected boolean hasApplicationData;
+    protected int MID;
 
-    public CoapExchangeInfo() {
+    protected boolean hasEdhocMessage;
+
+    protected boolean hasProtectedMessage;
+
+    protected boolean hasUnprotectedMessage;
+
+    protected boolean hasUnsuccessfulMessage;
+
+    public CoapExchangeInfo(int MID) {
+        this.MID = MID;
         coapExchange = null;
         hasEdhocMessage = false;
-        hasApplicationData = false;
+        hasProtectedMessage = false;
+        hasUnprotectedMessage = false;
+        hasUnsuccessfulMessage = false;
     }
 
     public CoapExchange getCoapExchange() {
@@ -22,6 +32,10 @@ public class CoapExchangeInfo {
         this.coapExchange = coapExchange;
     }
 
+    public int getMID() {
+        return MID;
+    }
+
     public boolean hasEdhocMessage() {
         return hasEdhocMessage;
     }
@@ -30,15 +44,31 @@ public class CoapExchangeInfo {
         this.hasEdhocMessage = hasEdhocMessage;
     }
 
-    public boolean hasApplicationData() {
-        return hasApplicationData;
+    public boolean hasMsg3CombinedWithAppMessage() {
+        return hasEdhocMessage && hasProtectedMessage;
     }
 
-    public void setHasApplicationData(boolean hasApplicationData) {
-        this.hasApplicationData = hasApplicationData;
+    public boolean hasProtectedMessage() {
+        return hasProtectedMessage;
     }
 
-    public boolean hasApplicationDataAfterMessage3() {
-        return hasEdhocMessage() && hasApplicationData();
+    public void setHasProtectedMessage(boolean hasProtectedMessage) {
+        this.hasProtectedMessage = hasProtectedMessage;
+    }
+
+    public boolean hasUnprotectedMessage() {
+        return hasUnprotectedMessage;
+    }
+
+    public void setHasUnprotectedMessage(boolean hasUnprotectedMessage) {
+        this.hasUnprotectedMessage = hasUnprotectedMessage;
+    }
+
+    public boolean hasUnsuccessfulMessage() {
+        return hasUnsuccessfulMessage;
+    }
+
+    public void setHasUnsuccessfulMessage(boolean hasUnsuccessfulMessage) {
+        this.hasUnsuccessfulMessage = hasUnsuccessfulMessage;
     }
 }

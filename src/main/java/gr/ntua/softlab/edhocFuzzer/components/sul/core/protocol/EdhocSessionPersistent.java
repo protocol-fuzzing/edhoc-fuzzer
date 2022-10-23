@@ -124,10 +124,9 @@ public class EdhocSessionPersistent extends EdhocSession {
     }
 
     public void setupOscoreContext() {
-        if (!getApplicationProfile().getUsedForOSCORE() || oscoreCtxGenerated) {
-            // oscore context is derived only when the application profile agrees,
-            // and it is not already derived in this session. In case it is already
-            // derived, then the current context is active
+        if (oscoreCtxGenerated) {
+            // oscore context is derived only it is not already derived in this session.
+            // In case it is already derived, then the current context is active
             return;
         }
 

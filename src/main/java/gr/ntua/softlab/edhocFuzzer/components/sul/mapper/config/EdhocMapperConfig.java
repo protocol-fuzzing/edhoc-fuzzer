@@ -20,29 +20,34 @@ public class EdhocMapperConfig extends MapperConfig {
             "Available are: Initiator, Responder")
     protected EdhocRole edhocRole;
 
-    @Parameter(names = "-appProfileMode", description = "The mode, under which, application profile will be set. "
-            + "Available modes are: "
-            + "1 - [m3_no_app] (msg_1, msg_2, msg_3, error_msg), "
-            + "2 - [m3_app] (msg_1, msg_2, msg_3, app, error_msg), "
-            + "3 - [m3_combined_app] (msg_1, msg_2, msg_3, app, msg_3_app, error_msg), "
-            + "4 - [m4_no_app] (msg_1, msg_2, msg_3, msg_4, error_msg), "
-            + "5 - [m4_app] (msg_1, msg_2, msg_3, msg_4, app, error_msg), "
-            + "6 - [all] (msg_1, msg_2, msg_3, msg_4, app, msg_3_app, error_msg). "
-            + "If learning alphabet contains a message not according to this mode, the correct use of this message "
-            + "is not guaranteed.")
-    protected Integer appProfileMode = 6;
-
     @Parameter(names = "-edhocCoapResource", description = "The CoAP uri for mapper to send/receive edhoc messages. "
             + "The format is without protocol and host, e.g. for 'coap://ip:port/.well-known/edhoc', "
             + "-edhocCoapResource = .well-known/edhoc")
     protected String edhocCoapResource = ".well-known/edhoc";
 
-    @Parameter(names = "-appGetCoapResource", description = "The CoAP uri for mapper to send/receive oscore-protected "
-            + "application GET messages. The format is without protocol and host, e.g. for "
-            + "'coap://ip:port/applicationGET', -appGetCoapResource = applicationGET")
-    protected String appGetCoapResource = "applicationGET";
+    @Parameter(names = "-appCoapResource", description = "The CoAP uri for mapper to send/receive application messages. "
+            + "The format is without protocol and host, e.g. for 'coap://ip:port/applicationEndpoint', "
+            + "-appCoapResource = applicationEndpoint")
+    protected String appCoapResource = "applicationEndpoint";
 
-    @Parameter(names = "-coapErrorAsEdhocError", description = "Uses 'EDHOC_ERROR_MESSAGE' instead of "
+    @Parameter(names = "-appMessageCodeToCoapServer", description = "The message CoAP Code when mapper as a "
+            + "CoAP client sends requests to a server implementation")
+    protected String appMessageCodeToCoapServer = "GET";
+
+    @Parameter(names = "-appMessagePayloadToCoapServer", description = "The message payload when mapper as a "
+            + "CoAP client sends requests to a server implementation. Be aware that GET requests should have an "
+            + "empty payload")
+    protected String appMessagePayloadToCoapServer = "";
+
+    @Parameter(names = "-appMessageCodeToCoapClient", description = "The message CoAP Code when mapper as a "
+            + "CoAP server sends responses to a client implementation")
+    protected String appMessageCodeToCoapClient = "CHANGED";
+
+    @Parameter(names = "-appMessagePayloadToCoapClient", description = "The message payload when mapper as a "
+            + "CoAP server sends responses to a client implementation")
+    protected String appMessagePayloadToCoapClient = "Server Application Data";
+
+    @Parameter(names = "-coapErrorAsEdhocError", description = "Use 'EDHOC_ERROR_MESSAGE' instead of "
             + "'COAP_ERROR_MESSAGE'")
     protected boolean coapErrorAsEdhocError = false;
 
@@ -86,16 +91,28 @@ public class EdhocMapperConfig extends MapperConfig {
         return AuthenticationConfig;
     }
 
-    public Integer getAppProfileMode() {
-        return appProfileMode;
-    }
-
     public String getEdhocCoapResource() {
         return edhocCoapResource;
     }
 
-    public String getAppGetCoapResource() {
-        return appGetCoapResource;
+    public String getAppCoapResource() {
+        return appCoapResource;
+    }
+
+    public String getAppMessageCodeToCoapServer() {
+        return appMessageCodeToCoapServer;
+    }
+
+    public String getAppMessagePayloadToCoapServer() {
+        return appMessagePayloadToCoapServer;
+    }
+
+    public String getAppMessageCodeToCoapClient() {
+        return appMessageCodeToCoapClient;
+    }
+
+    public String getAppMessagePayloadToCoapClient() {
+        return appMessagePayloadToCoapClient;
     }
 
     public boolean isCoapErrorAsEdhocError() {
@@ -130,8 +147,8 @@ public class EdhocMapperConfig extends MapperConfig {
         return getCoapUri(host, edhocCoapResource);
     }
 
-    public String getAppGetCoapUri() {
-        return getCoapUri(host, appGetCoapResource);
+    public String getAppCoapUri() {
+        return getCoapUri(host, appCoapResource);
     }
 
     protected String checkAndReturnHost(String host) {

@@ -9,8 +9,8 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfi
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.ManyFilesAuthenticationConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.TestVectorAuthenticationConfig;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.State;
 import net.i2p.crypto.eddsa.EdDSASecurityProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -126,7 +126,7 @@ public abstract class EdhocMapperState implements State {
             authMethods.add(i);
         }
 
-        AppProfile appProfile = AppProfileBuilder.build(authMethods, edhocMapperConfig.getAppProfileMode());
+        AppProfile appProfile = AppProfileBuilder.build(authMethods);
         appProfiles.put(edhocSessionUri, appProfile);
 
         // Specify the processor of External Authorization Data
@@ -158,8 +158,6 @@ public abstract class EdhocMapperState implements State {
         byte[] connectionId = new byte[]{(byte) 255, (byte) 255, (byte) 255};
         usedConnectionIds.add(CBORObject.FromObject(connectionId));
 
-        HashMapCtxDB oscoreDB = appProfile.getUsedForOSCORE() ? db : null;
-
         boolean isInitiator = edhocMapperConfig.isInitiator();
 
         // logically isClientInitiated when (isInitiator && isCoapClient()) || (!isInitiator && !isCoapClient())
@@ -167,7 +165,7 @@ public abstract class EdhocMapperState implements State {
         boolean isClientInitiated = isInitiator == isCoapClient();
 
         edhocSessionPersistent = new EdhocSessionPersistent(edhocSessionUri, isInitiator, isClientInitiated,
-                authenticationMethod, connectionId, edhocEndpointInfoPersistent, oscoreDB, new CoapExchanger(),
+                authenticationMethod, connectionId, edhocEndpointInfoPersistent, db, new CoapExchanger(),
                 edhocMapperConfig.useSessionReset(), edhocMapperConfig.getForceOscoreSenderId(),
                 edhocMapperConfig.getForceOscoreRecipientId());
 
@@ -193,6 +191,10 @@ public abstract class EdhocMapperState implements State {
 
     public Set<CBORObject> getOwnIdCreds() {
         return ownIdCreds;
+    }
+
+    public EdhocMapperConfig getEdhocMapperConfig() {
+        return edhocMapperConfig;
     }
 
     /** Specifies if this peer is the CoAP client or the CoAP server */

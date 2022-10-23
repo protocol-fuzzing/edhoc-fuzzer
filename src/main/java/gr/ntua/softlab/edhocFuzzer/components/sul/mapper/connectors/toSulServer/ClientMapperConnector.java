@@ -2,11 +2,7 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulServer
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.PayloadType;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.GenericErrorException;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.TimeoutException;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchangeInfo;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.*;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.CoAP;
@@ -23,8 +19,9 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     protected CoapEndpoint coapEndpoint;
 
     protected CoapResponse response;
-    protected boolean exceptionOccurred;
-    protected boolean latestAppRequest;
+
+    // Possible Codes: 0 [Generic Error], 1 [Unsupported Message]
+    protected int exceptionCodeOccurred = -1;
 
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
@@ -57,8 +54,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
 
     @Override
     public void send(byte[] payload, PayloadType payloadType, int messageCode, int contentFormat) {
-        latestAppRequest = false;
-        exceptionOccurred = false;
+        exceptionCodeOccurred = -1;
         currentCoapExchangeInfo = null;
 
         Request request = new Request(CoAP.Code.valueOf(messageCode), CoAP.Type.CON);
@@ -70,20 +66,22 @@ public class ClientMapperConnector implements EdhocMapperConnector {
                     request.setPayload(payload);
                     response = edhocClient.advanced(request);
                 }
-                case APPLICATION_DATA -> {
-                    latestAppRequest = true;
+                case UNPROTECTED_APP_MESSAGE -> {
+                    request.setPayload(payload);
+                    response = appClient.advanced(request);
+                }
+                case PROTECTED_APP_MESSAGE -> {
                     request.getOptions().setOscore(payload);
                     response = appClient.advanced(request);
                 }
                 case MESSAGE_3_COMBINED -> {
-                    latestAppRequest = true;
                     request.getOptions().setEdhoc(true);
                     request.getOptions().setOscore(payload);
                     response = appClient.advanced(request);
                 }
             }
         } catch (ConnectorException | IOException e) {
-            exceptionOccurred = true;
+            exceptionCodeOccurred = 0;
             response = null;
         } finally {
             // null on timeout or exception, but not null on successful exchange
@@ -92,16 +90,21 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     }
 
     @Override
-    public byte[] receive() throws GenericErrorException, TimeoutException {
-        if (response != null) {
-            return response.getPayload();
-        }
+    public byte[] receive() throws GenericErrorException, TimeoutException, UnsupportedMessageException {
+        // save code and reset it to maintain neutral state
+        int code = exceptionCodeOccurred;
+        exceptionCodeOccurred = -1;
 
-        // response is null, something happened
-        if (exceptionOccurred) {
-            throw new GenericErrorException();
-        } else {
-            throw new TimeoutException();
+        switch (code) {
+            case 0 -> throw new GenericErrorException();
+            case 1 -> throw new UnsupportedMessageException();
+            default -> {
+                if (response == null) {
+                    throw new TimeoutException();
+                }
+
+                return response.getPayload();
+            }
         }
     }
 
@@ -118,16 +121,22 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     }
 
     @Override
-    public boolean receivedAppData() {
+    public boolean receivedProtectedAppMessage() {
         return isResponseSuccessful()
-                && latestAppRequest
-                && currentCoapExchangeInfo.hasApplicationData();
+                && currentCoapExchangeInfo.hasProtectedMessage();
     }
 
     @Override
-    public boolean receivedAppDataCombinedWithMsg3() {
-        return receivedAppData()
-                && currentCoapExchangeInfo.hasApplicationDataAfterMessage3();
+    public boolean receivedUnprotectedAppMessage() {
+        return isResponseSuccessful()
+                && currentCoapExchangeInfo.hasUnprotectedMessage()
+                && !currentCoapExchangeInfo.hasEdhocMessage();
+    }
+
+    @Override
+    public boolean receivedMsg3CombinedWithAppMessage() {
+        return isResponseSuccessful()
+                && currentCoapExchangeInfo.hasMsg3CombinedWithAppMessage();
     }
 
     public boolean receivedEmptyMessage() {

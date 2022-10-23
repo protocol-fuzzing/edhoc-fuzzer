@@ -9,15 +9,18 @@ public interface EdhocMapperConnector {
 
     void send(byte[] payload, PayloadType payloadType, int messageCode, int contentFormat);
 
-    byte[] receive() throws GenericErrorException, TimeoutException, UnsupportedMessageException;
+    byte[] receive() throws GenericErrorException, TimeoutException,
+            UnsupportedMessageException, UnsuccessfulMessageException;
 
     void setTimeout(Long timeout);
 
     boolean receivedError();
 
-    boolean receivedAppData();
+    boolean receivedProtectedAppMessage();
 
-    boolean receivedAppDataCombinedWithMsg3();
+    boolean receivedUnprotectedAppMessage();
+
+    boolean receivedMsg3CombinedWithAppMessage();
 
     boolean receivedEmptyMessage();
 }

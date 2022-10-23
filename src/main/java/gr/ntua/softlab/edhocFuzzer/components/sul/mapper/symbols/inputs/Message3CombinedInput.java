@@ -5,7 +5,7 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessor
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 
-public class Message3CombinedInput extends ApplicationDataInput {
+public class Message3CombinedInput extends EdhocInput {
 
     @Override
     public void preSendUpdate(ExecutionContext context) {

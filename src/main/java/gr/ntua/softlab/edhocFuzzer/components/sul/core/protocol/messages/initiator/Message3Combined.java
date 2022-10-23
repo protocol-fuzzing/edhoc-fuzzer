@@ -2,9 +2,9 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.initia
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.PayloadType;
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.common.ApplicationDataMessage;
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.common.ApplicationMessage;
 
-public class Message3Combined extends ApplicationDataMessage {
+public class Message3Combined extends ApplicationMessage {
 
     public Message3Combined(MessageProcessorPersistent messageProcessorPersistent) {
         // initialize fields as ApplicationData

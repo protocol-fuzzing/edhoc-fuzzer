@@ -3,12 +3,14 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchangeInfo;
+import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.coap.EmptyMessage;
 import org.eclipse.californium.core.coap.Message;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.network.Exchange;
 import org.eclipse.californium.core.network.stack.AbstractLayer;
+import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.eclipse.californium.edhoc.Util;
 import org.eclipse.californium.oscore.OSCoreCtx;
 import org.eclipse.californium.oscore.OSCoreCtxDB;
@@ -114,6 +116,24 @@ public class EdhocLayerPersistent extends AbstractLayer {
     @Override
     public void sendResponse(Exchange exchange, Response response) {
         LOGGER.debug("Sending response through EDHOC layer");
+        int MID = exchange.getRequest().getMID();
+        EdhocSessionPersistent session = messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent();
+
+        if (session.getCoapExchanger().getDraftQueue().removeIf(coapExInfo -> coapExInfo.getMID() == MID)) {
+            // remove exchange from draft queue if left there and did not reach any resource
+            // but encountered an error and response came from a middle layer, so
+            // intercept that response, unset necessary exchange flags and
+            // add it to received queue with Unsuccessful flag set
+            exchange.getRequest().setAcknowledged(false);
+            CoapExchangeInfo coapExchangeInfo = new CoapExchangeInfo(MID);
+            coapExchangeInfo.setHasUnsuccessfulMessage(true);
+
+            coapExchangeInfo.setCoapExchange(new CoapExchange(exchange, new CoapResource("temporary")));
+            if (!session.getCoapExchanger().getReceivedQueue().offer(coapExchangeInfo)) {
+                LOGGER.warn("Full received queue found");
+            }
+            return;
+        }
         super.sendResponse(exchange, response);
     }
 
@@ -225,17 +245,17 @@ public class EdhocLayerPersistent extends AbstractLayer {
         }
 
         // prepare new coapExchangeInfo to add to session's coapExchanger queue
-        CoapExchangeInfo coapExchangeInfo = new CoapExchangeInfo();
+        CoapExchangeInfo coapExchangeInfo = new CoapExchangeInfo(message.getMID());
 
         if (message.getOptions().hasOscore()) {
-            coapExchangeInfo.setHasApplicationData(true);
+            coapExchangeInfo.setHasProtectedMessage(true);
 
             if (message.getOptions().hasEdhoc()) {
                 coapExchangeInfo.setHasEdhocMessage(true);
             }
         } else {
-            // possible edhoc message or unknown message
-            coapExchangeInfo.setHasEdhocMessage(true);
+            // unprotected message -- possible edhoc message or any other message
+            coapExchangeInfo.setHasUnprotectedMessage(true);
         }
 
         // add coapExhangeWrapper to appropriate queue
@@ -247,6 +267,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
             }
         } else {
             // in case of response, add it to received queue immediately
+            // for client to obtain
             if (!edhocSessionPersistent.getCoapExchanger().getReceivedQueue().offer(coapExchangeInfo)) {
                 LOGGER.warn("Full received queue found");
             }

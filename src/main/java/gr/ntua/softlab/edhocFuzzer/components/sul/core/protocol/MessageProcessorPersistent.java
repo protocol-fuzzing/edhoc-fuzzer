@@ -23,7 +23,7 @@ public class MessageProcessorPersistent {
     private static final Logger LOGGER = LogManager.getLogger(MessageProcessorPersistent.class);
     protected EdhocMapperState edhocMapperState;
 
-    public MessageProcessorPersistent (EdhocMapperState edhocMapperState) {
+    public MessageProcessorPersistent(EdhocMapperState edhocMapperState) {
         this.edhocMapperState = edhocMapperState;
     }
 
@@ -31,11 +31,19 @@ public class MessageProcessorPersistent {
         return edhocMapperState;
     }
 
+    public enum StructureCodes {
+        EDHOC_MESSAGE_1,
+        EDHOC_MESSAGE_2,
+        EDHOC_MESSAGE_3_OR_EDHOC_MESSAGE_4,
+        EDHOC_ERROR_MESSAGE,
+        UNKNOWN_MESSAGE
+    }
+
     /** Tries to match the byte sequence's structure of CBOR elements with an edhoc message */
-    public int messageTypeFromStructure(byte[] sequence) {
+    public StructureCodes messageTypeFromStructure(byte[] sequence) {
         LOGGER.debug("Start of messageTypeFromStructure");
         if (sequence == null) {
-            return -1;
+            return StructureCodes.UNKNOWN_MESSAGE;
         }
 
         CBORObject[] elements;
@@ -43,7 +51,13 @@ public class MessageProcessorPersistent {
             elements = CBORObject.DecodeSequenceFromBytes(sequence);
         } catch (CBORException e) {
             LOGGER.error(e.getMessage());
-            return -1;
+            return StructureCodes.UNKNOWN_MESSAGE;
+        }
+
+        // Error Message has 2 elements and possible prepended CX,
+        // but is distinguishable from message 2 which has the same structure
+        if (hasErrorMessageStructure(elements)) {
+            return StructureCodes.EDHOC_ERROR_MESSAGE;
         }
 
         // A CoAP client receives responses from CoAP server without connection identifiers prepended
@@ -54,20 +68,18 @@ public class MessageProcessorPersistent {
         switch (messageElementsLength) {
             case 4, 5 -> {
                 // message 1 has 4 or 5 elements with EAD_1
-                return Constants.EDHOC_MESSAGE_1;
+                return StructureCodes.EDHOC_MESSAGE_1;
             }
             case 2 -> {
                 // message 2 has 2 elements
-                return Constants.EDHOC_MESSAGE_2;
+                return StructureCodes.EDHOC_MESSAGE_2;
             }
             case 1 -> {
                 // message 3 and 4 have 1 element
-                // they cannot be structurally matched
-                return Constants.EDHOC_MESSAGE_3;
+                return StructureCodes.EDHOC_MESSAGE_3_OR_EDHOC_MESSAGE_4;
             }
             default -> {
-                // if it matches error message structure then error message else unknown message
-                return hasErrorMessageStructure(elements) ? Constants.EDHOC_ERROR_MESSAGE : -1;
+                return StructureCodes.UNKNOWN_MESSAGE;
             }
         }
     }
@@ -559,7 +571,7 @@ public class MessageProcessorPersistent {
 
         /* Start preparing data_3 */
 
-        // C_R, if EDHOC message_3 is transported in a CoAP request and it is enabled
+        // C_R, if EDHOC message_3 is transported in a CoAP request, and it is enabled
         if (edhocMapperState.sendWithPrependedCX()) {
             byte[] connectionIdentifierResponder = session.getPeerConnectionId();
             CBORObject cR = encodeIdentifier(connectionIdentifierResponder);
@@ -1724,9 +1736,11 @@ public class MessageProcessorPersistent {
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#isErrorMessage} */
     protected boolean hasErrorMessageStructure(CBORObject[] myObjects) {
-        // A CoAP message including an EDHOC error message is a CBOR sequence of at least two elements
-        if (myObjects.length < 2)
+        // A CoAP message including an EDHOC error message is a CBOR sequence of
+        // CX - not true (optional); ERR_CODE - int (mandatory); ERR_INFO - any type (mandatory)
+        if (myObjects.length != 3 && myObjects.length != 2) {
             return false;
+        }
 
         if (edhocMapperState.receiveWithPrependedCX()) {
             // Received by CoAP server
@@ -1793,7 +1807,8 @@ public class MessageProcessorPersistent {
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readErrorMessage} */
     public boolean readErrorMessage(byte[] sequence) {
         LOGGER.debug("Start of readErrorMessage");
-        HashMap<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
+        HashMap<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent()
+                .getEdhocSessionsPersistent();
 
         if (sequence == null || edhocSessions == null) {
             LOGGER.error("Null initial parameters");

@@ -14,7 +14,7 @@ import java.net.InetSocketAddress;
 
 public class EdhocServer extends CoapServer {
 
-    public EdhocServer(String host, int port, String edhocResource, String appGetResource,
+    public EdhocServer(String host, int port, String edhocResource, String appResource,
                        EdhocStackFactoryPersistent edhocStackFactoryPersistent,
                        CoapExchanger coapExchanger) {
 
@@ -22,9 +22,9 @@ public class EdhocServer extends CoapServer {
         addLeafResource(createInnerResourceTree(edhocResource),
                 new EdhocResource(extractLeafResourceString(edhocResource), coapExchanger));
 
-        // add appGetResource
-        addLeafResource(createInnerResourceTree(appGetResource),
-                new ApplicationGetResource(extractLeafResourceString(appGetResource), coapExchanger));
+        // add appResource
+        addLeafResource(createInnerResourceTree(appResource),
+                new ApplicationGetResource(extractLeafResourceString(appResource), coapExchanger));
 
         // add endpoint
         CoapEndpoint coapEndpoint = CoapEndpoint.builder()
@@ -144,23 +144,7 @@ public class EdhocServer extends CoapServer {
                 // respond to the request
                 exchange.respond("EDHOC POST response");
             } else {
-                // edit exchange in draft queue
-                CoapExchangeInfo coapExchangeInfo = coapExchanger.getDraftQueue().poll();
-
-                if (coapExchangeInfo == null) {
-                    LOGGER.warn("Empty draft queue found");
-                    coapExchangeInfo = new CoapExchangeInfo();
-                }
-
-                coapExchangeInfo.setCoapExchange(exchange);
-                coapExchangeInfo.setHasEdhocMessage(true);
-
-                // save exchange to receivedQueue in order for some observer to respond
-                boolean ok = coapExchanger.getReceivedQueue().offer(coapExchangeInfo);
-
-                if (!ok) {
-                    LOGGER.warn("Full receivedQueue found");
-                }
+                EdhocServer.handleExchange(true, exchange, coapExchanger);
             }
         }
     }
@@ -197,24 +181,46 @@ public class EdhocServer extends CoapServer {
                 // respond to the request
                 exchange.respond("Application response");
             } else {
-                // edit exchange in draft queue
-                CoapExchangeInfo coapExchangeInfo = coapExchanger.getDraftQueue().poll();
-
-                if (coapExchangeInfo == null) {
-                    LOGGER.warn("Empty draft queue found");
-                    coapExchangeInfo = new CoapExchangeInfo();
-                }
-
-                coapExchangeInfo.setCoapExchange(exchange);
-                coapExchangeInfo.setHasApplicationData(true);
-
-                // save exchange to receivedQueue in order for some observer to respond
-                boolean ok = coapExchanger.getReceivedQueue().offer(coapExchangeInfo);
-
-                if (!ok) {
-                    LOGGER.warn("Full receivedQueue found");
-                }
+                EdhocServer.handleExchange(false, exchange, coapExchanger);
             }
+        }
+    }
+
+    protected static void handleExchange(boolean forEdhoc, CoapExchange coapExchange, CoapExchanger coapExchanger) {
+        // edit coapExchange in draft queue
+        CoapExchangeInfo coapExchangeInfo;
+        int MID = coapExchange.advanced().getRequest().getMID();
+
+        do {
+            // if encountered a coapExchangeInfo not intended for the current coapExchange then
+            // drop it from draft queue and continue searching
+            coapExchangeInfo = coapExchanger.getDraftQueue().poll();
+        } while (coapExchangeInfo != null &&  coapExchangeInfo.getMID() != MID);
+
+        if (coapExchangeInfo == null) {
+            LOGGER.warn("Empty draft queue found");
+            coapExchangeInfo = new CoapExchangeInfo(MID);
+        }
+
+        coapExchangeInfo.setCoapExchange(coapExchange);
+
+        if (forEdhoc) {
+          coapExchangeInfo.setHasEdhocMessage(true);
+        } else {
+            if (coapExchange.getRequestOptions().hasOscore() &&
+                    coapExchange.advanced().getCryptographicContextID() != null) {
+                // request was oscore-protected
+                coapExchangeInfo.setHasProtectedMessage(true);
+            } else {
+                coapExchangeInfo.setHasUnprotectedMessage(true);
+            }
+        }
+
+        // save coapExchange to receivedQueue in order for some observer to respond
+        boolean ok = coapExchanger.getReceivedQueue().offer(coapExchangeInfo);
+
+        if (!ok) {
+            LOGGER.warn("Full receivedQueue found");
         }
     }
 }
