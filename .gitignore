@@ -24,3 +24,15 @@ hs_err_pid*
 
 # project structure files
 .idea/
+
+target/
+
+experiments/args/tests
+experiments/authentication/mapper
+experiments/authentication/sul
+
+experiments/models/clients/rise/*.properties
+experiments/models/servers/rise/*.properties
+
+experiments/results
+

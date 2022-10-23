@@ -18,10 +18,11 @@
         <jcommander.version>1.82</jcommander.version>
         <log4j.version>2.17.2</log4j.version>
         <jaxb-api.version>4.0.0</jaxb-api.version>
-        <jaxb-impl.version>4.0.0-M4</jaxb-impl.version>
+        <jaxb-impl.version>4.0.1</jaxb-impl.version>
 
         <!-- edhocFuzzer properties -->
         <cf-edhoc-version>0.0.0</cf-edhoc-version>
+        <gson-version>2.9.1</gson-version>
     </properties>
 
     <dependencyManagement>
@@ -75,6 +76,13 @@
                 <groupId>se.ri.org.eclipse.californium</groupId>
                 <artifactId>cf-edhoc</artifactId>
                 <version>${cf-edhoc-version}</version>
+            </dependency>
+
+            <!-- gson -->
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -130,13 +138,19 @@
 
         <!-- edhocFuzzer dependencies -->
 
-        <!-- manually built jar and locally installed cf-edhoc
+        <!-- manually modified and built jar and locally installed cf-edhoc
              link: https://github.com/rikard-sics/californium/tree/edhoc-dev/cf-edhoc
              commit: 42e0c00580e7b6a23071aaa9e2eb18734a7f8fae
         -->
         <dependency>
             <groupId>se.ri.org.eclipse.californium</groupId>
             <artifactId>cf-edhoc</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
 </project>

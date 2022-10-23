@@ -4,7 +4,8 @@
     <Message3Input name="EDHOC_MESSAGE_3"/>
     <Message4Input name="EDHOC_MESSAGE_4"/>
     <ErrorMessageInput name="EDHOC_ERROR_MESSAGE"/>
-    <ApplicationDataInput name="APPLICATION_DATA"/>
+    <ProtectedAppMessageInput name="PROTECTED_APP_MESSAGE"/>
+    <UnprotectedAppMessageInput name="UNPROTECTED_APP_MESSAGE"/>
     <Message3CombinedInput name="EDHOC_MESSAGE_3_COMBINED"/>
     <EmptyCoapMessageInput name="EMPTY_COAP_MESSAGE" />
 </alphabet>
