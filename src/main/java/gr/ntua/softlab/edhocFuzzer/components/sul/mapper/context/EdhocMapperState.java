@@ -11,6 +11,7 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.M
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.TestVectorAuthenticationConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.ProtocolVersion;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.State;
 import net.i2p.crypto.eddsa.EdDSASecurityProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -25,6 +26,9 @@ import java.util.*;
 
 /** Adapted from test files EdhocClient / EdhocServer from edhoc repo */
 public abstract class EdhocMapperState implements State {
+    // The protocol version of edhoc used for the session of this state
+    protected ProtocolVersion protocolVersion;
+
     // The authentication method to include in EDHOC message_1 (relevant only when Initiator)
     protected int authenticationMethod;
 
@@ -91,9 +95,10 @@ public abstract class EdhocMapperState implements State {
 
     protected EdhocEndpointInfoPersistent edhocEndpointInfoPersistent;
 
-    public EdhocMapperState(EdhocMapperConfig edhocMapperConfig, String edhocSessionUri, String oscoreUri,
-                            EdhocMapperConnector edhocMapperConnector) {
+    public EdhocMapperState(ProtocolVersion protocolVersion, EdhocMapperConfig edhocMapperConfig,
+                            String edhocSessionUri, String oscoreUri, EdhocMapperConnector edhocMapperConnector) {
 
+        this.protocolVersion = protocolVersion;
         this.edhocMapperConfig = edhocMapperConfig;
 
         // Insert security providers
@@ -175,6 +180,10 @@ public abstract class EdhocMapperState implements State {
         // Initialize connector
         edhocMapperConnector.initialize(new EdhocStackFactoryPersistent(edhocEndpointInfoPersistent,
                 new MessageProcessorPersistent(this)), edhocSessionPersistent.getCoapExchanger());
+    }
+
+    public ProtocolVersion getProtocolVersion() {
+        return protocolVersion;
     }
 
     public EdhocSessionPersistent getEdhocSessionPersistent() {

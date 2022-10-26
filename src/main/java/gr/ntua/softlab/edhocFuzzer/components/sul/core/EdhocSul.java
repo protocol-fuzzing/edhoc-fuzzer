@@ -14,6 +14,7 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocOutputMapp
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.AbstractSul;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.ProtocolVersion;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class EdhocSul extends AbstractSul {
     private static final Logger LOGGER = LogManager.getLogger(EdhocSul.class);
     protected ExecutionContextStepped executionContextStepped;
+    protected ProtocolVersion protocolVersion;
     protected Long originalTimeout;
     protected EdhocMapperState edhocMapperState;
     protected EdhocMapperConnector edhocMapperConnector;
@@ -39,6 +41,8 @@ public class EdhocSul extends AbstractSul {
 
     public EdhocSul(SulConfig sulConfig, CleanupTasks cleanupTasks) {
         super(sulConfig, cleanupTasks);
+
+        this.protocolVersion = sulConfig.getProtocolVersion();
 
         try {
             EdhocMapperConnectionConfig mapperConnectionConfig = new EdhocMapperConnectionConfig(
@@ -93,7 +97,7 @@ public class EdhocSul extends AbstractSul {
 
         if (sulConfig.isFuzzingClient()) {
             ServerMapperConnector serverMapperConnector = (ServerMapperConnector) edhocMapperConnector;
-            edhocMapperState = new ServerMapperState(edhocMapperConfig, serverMapperConnector);
+            edhocMapperState = new ServerMapperState(protocolVersion, edhocMapperConfig, serverMapperConnector);
 
             serverWaitForInitialMessageDone = false;
             cleanupTasks.submit(serverMapperConnector::shutdown);
@@ -108,7 +112,8 @@ public class EdhocSul extends AbstractSul {
                 }
             }
         } else {
-            edhocMapperState = new ClientMapperState(edhocMapperConfig, (ClientMapperConnector) edhocMapperConnector);
+            edhocMapperState = new ClientMapperState(protocolVersion, edhocMapperConfig,
+                    (ClientMapperConnector) edhocMapperConnector);
         }
 
         this.executionContextStepped = new ExecutionContextStepped(edhocMapperState);

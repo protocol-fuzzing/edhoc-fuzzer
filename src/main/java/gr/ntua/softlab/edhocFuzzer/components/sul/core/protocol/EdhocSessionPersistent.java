@@ -82,6 +82,7 @@ public class EdhocSessionPersistent extends EdhocSession {
         // peer dummy info
         setPeerConnectionId(new byte[]{0, 0, 0, 0});
         setPeerIdCred(CBORObject.Null);
+        setPeerCred(new byte[]{0, 0, 0, 0});
         setPeerLongTermPublicKey(new OneKey());
 
         // dummy peerEphemeralPublicKey same as own ephemeral key

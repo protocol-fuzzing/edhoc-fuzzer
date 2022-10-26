@@ -54,4 +54,8 @@ public class ProtocolVersion {
     public String toString() {
         return name;
     }
+
+    public boolean equals(String protocolVersion) {
+        return name.equals(protocolVersion);
+    }
 }

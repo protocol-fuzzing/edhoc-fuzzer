@@ -377,7 +377,15 @@ public class MessageProcessorPersistent {
         LOGGER.debug(EdhocUtil.byteArrayToString("G_XY", dhSecret));
 
         // Compute PRK_2e
-        byte[] prk2e = computePRK2e(dhSecret, hashAlgorithm);
+        byte[] prk2e = null;
+        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+            prk2e = computePRK2e(new byte[0], dhSecret, hashAlgorithm);
+        }
+
+        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+            prk2e = computePRK2e(th2, dhSecret, hashAlgorithm);
+        }
+
 
         if (prk2e == null) {
             LOGGER.error("Computing PRK_2e");
@@ -547,14 +555,15 @@ public class MessageProcessorPersistent {
 
         /* Modify session */
         if (session.isInitiator()) {
-            session.setPeerEphemeralPublicKey(peerEphemeralKey);
             session.setPeerConnectionId(connectionIdentifierResponder);
-            session.setTH2(th2);
-            session.setPRK2e(prk2e);
             session.setPeerIdCred(idCredR);
+            session.setPeerCred(peerCredential);
+            session.setPeerEphemeralPublicKey(peerEphemeralKey);
             session.setPeerLongTermPublicKey(peerLongTermKey);
-            session.setPRK3e2m(prk3e2m);
+            session.setTH2(th2);
             session.setPlaintext2(plaintext2);
+            session.setPRK2e(prk2e);
+            session.setPRK3e2m(prk3e2m);
             session.setEad2(ead2);
         }
 
@@ -590,7 +599,16 @@ public class MessageProcessorPersistent {
         byte[] th2 = session.getTH2();
         byte[] th2SerializedCBOR = CBORObject.FromObject(th2).EncodeToBytes();
         byte[] plaintext2 = session.getPlaintext2();
-        byte[] th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2);
+        byte[] th3 = null;
+
+        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+            th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2, new byte[0]);
+        }
+
+        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+            th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2, session.getPeerCred());
+        }
+
 
         if (th3 == null) {
             LOGGER.error("Computing TH_3");
@@ -691,7 +709,16 @@ public class MessageProcessorPersistent {
         /* Compute TH4 */
 
         byte[] th3SerializedCBOR = CBORObject.FromObject(th3).EncodeToBytes();
-        byte[] th4 = computeTH4(hashAlgorithm, th3SerializedCBOR, plaintext3);
+        byte[] th4 = null;
+
+        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+            th4 = computeTH4(hashAlgorithm, th3SerializedCBOR, plaintext3, new byte[0]);
+        }
+
+        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+            th4 = computeTH4(hashAlgorithm, th3SerializedCBOR, plaintext3, session.getCred());
+        }
+
         if (th4 == null) {
             LOGGER.error("Computing TH_4");
             return null;
@@ -1241,7 +1268,14 @@ public class MessageProcessorPersistent {
         LOGGER.debug(EdhocUtil.byteArrayToString("G_XY", dhSecret));
 
         // Compute PRK_2e
-        byte[] prk2e = computePRK2e(dhSecret, hashAlgorithm);
+        byte[] prk2e = null;
+        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+            prk2e = computePRK2e(new byte[0], dhSecret, hashAlgorithm);
+        }
+
+        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+            prk2e = computePRK2e(th2, dhSecret, hashAlgorithm);
+        }
 
         if (prk2e == null) {
             LOGGER.error("Computing PRK_2e");
@@ -1430,7 +1464,15 @@ public class MessageProcessorPersistent {
         byte[] th2 = session.getTH2();
         byte[] th2SerializedCBOR = CBORObject.FromObject(th2).EncodeToBytes();
         byte[] plaintext2 = session.getPlaintext2();
-        byte[] th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2);
+        byte[] th3 = null;
+
+        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+            th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2, new byte[0]);
+        }
+
+        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+            th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2, session.getCred());
+        }
 
         if (th3 == null) {
             LOGGER.error("Computing TH3");
@@ -1610,7 +1652,16 @@ public class MessageProcessorPersistent {
         /* Compute TH4 */
 
         byte[] th3SerializedCBOR = CBORObject.FromObject(th3).EncodeToBytes();
-        byte[] th4 = computeTH4(hashAlgorithm, th3SerializedCBOR, plaintext3);
+        byte[] th4 = null;
+
+        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+            th4 = computeTH4(hashAlgorithm, th3SerializedCBOR, plaintext3, new byte[0]);
+        }
+
+        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+            th4 = computeTH4(hashAlgorithm, th3SerializedCBOR, plaintext3, peerCredential);
+        }
+
         if (th4 == null) {
             LOGGER.error("Computing TH_4");
             return false;
@@ -1637,6 +1688,7 @@ public class MessageProcessorPersistent {
         /* Modify session and derive oscore context */
         if (!session.isInitiator()) {
             session.setTH3(th3);
+            session.setPeerCred(peerCredential);
             session.setPeerIdCred(idCredI);
             session.setPeerLongTermPublicKey(peerLongTermKey);
             session.setPRK4e3m(prk4e3m);
@@ -1982,10 +2034,10 @@ public class MessageProcessorPersistent {
     }
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computePRK2e} */
-    protected byte[] computePRK2e(byte[] dhSecret, String hashAlgorithm) {
+    protected byte[] computePRK2e(byte[] th2, byte[] dhSecret, String hashAlgorithm) {
         if (hashAlgorithm.equals("SHA-256") || hashAlgorithm.equals("SHA-384") || hashAlgorithm.equals("SHA-512")) {
             try {
-                return Hkdf.extract(new byte[]{}, dhSecret);
+                return Hkdf.extract(th2, dhSecret);
             } catch (InvalidKeyException | NoSuchAlgorithmException e) {
                 LOGGER.error("Generating PRK_2e\n" + e.getMessage());
                 return null;
@@ -2187,13 +2239,50 @@ public class MessageProcessorPersistent {
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeKeystream2} */
     protected byte[] computeKeystream2(EdhocSessionPersistent session, byte[] th2, byte[] prk2e, int length) {
         CBORObject context = CBORObject.FromObject(th2);
+        int selectedCipherSuite = session.getSelectedCipherSuite();
+        String hashAlg = EdhocSession.getEdhocHashAlg(selectedCipherSuite);
+        int hashLength = EdhocSession.getEdhocHashAlgOutputSize(selectedCipherSuite);
+        byte[] keystream2;
 
-        try {
-            return session.edhocKDF(prk2e, Constants.KDF_LABEL_KEYSTREAM_2, context, length);
-        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            LOGGER.error("Generating KEYSTREAM_2\n" + e.getMessage());
-            return null;
+
+        if ((!hashAlg.equals("SHA-256") && !hashAlg.equals("SHA-384") && !hashAlg.equals("SHA-512"))
+                || (length <= 255 * hashLength)) {
+            try {
+                keystream2 = session.edhocKDF(prk2e, Constants.KDF_LABEL_KEYSTREAM_2, context, length);
+            } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+                LOGGER.error("Generating KEYSTREAM_2 (whole)\n" + e.getMessage());
+                return null;
+            }
         }
+        else {
+            byte[] part;
+            int regularPartSize = 255 * hashLength;
+            int lastPartSize = regularPartSize;
+
+            int numParts = length / (regularPartSize);
+            if ((length % (regularPartSize)) != 0) {
+                lastPartSize = length % (regularPartSize);
+                numParts++;
+            }
+
+            int offset = 0;
+            keystream2 = new byte[length];
+            for (int i = 0; i < numParts; i++) {
+                int numBytes = (i == (numParts - 1)) ? lastPartSize : regularPartSize;
+
+                try {
+                    part = session.edhocKDF(prk2e, -i, context, numBytes);
+                } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+                    LOGGER.error("Generating KEYSTREAM_2 (partial)\n" + e.getMessage());
+                    return null;
+                }
+
+                System.arraycopy(part, 0, keystream2, offset, part.length);
+                offset += part.length;
+            }
+        }
+
+        return keystream2;
     }
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#verifySignatureOrMac2} */
@@ -2230,13 +2319,15 @@ public class MessageProcessorPersistent {
     }
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeTH3} */
-    protected byte[] computeTH3(String hashAlgorithm, byte[] th2, byte[] plaintext2) {
-        int inputLength = th2.length + plaintext2.length;
+    protected byte[] computeTH3(String hashAlgorithm, byte[] th2, byte[] plaintext2, byte[] credR) {
+        int inputLength = th2.length + plaintext2.length + credR.length;
         int offset = 0;
         byte[] hashInput = new byte[inputLength];
         System.arraycopy(th2, 0, hashInput, offset, th2.length);
         offset += th2.length;
         System.arraycopy(plaintext2, 0, hashInput, offset, plaintext2.length);
+        offset += plaintext2.length;
+        System.arraycopy(credR, 0, hashInput, offset, credR.length);
 
         try {
             return EdhocUtil.computeHash(hashInput, hashAlgorithm);
@@ -2468,11 +2559,16 @@ public class MessageProcessorPersistent {
     }
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeTH4} */
-    protected byte[] computeTH4(String hashAlgorithm, byte[] th3, byte[] plaintext3) {
-        int inputLength = th3.length + plaintext3.length;
+    protected byte[] computeTH4(String hashAlgorithm, byte[] th3, byte[] plaintext3, byte[] credI) {
+        int inputLength = th3.length + plaintext3.length + credI.length;
+        int offset = 0;
         byte[] hashInput = new byte[inputLength];
-        System.arraycopy(th3, 0, hashInput, 0, th3.length);
-        System.arraycopy(plaintext3, 0, hashInput, th3.length, plaintext3.length);
+        System.arraycopy(th3, 0, hashInput, offset, th3.length);
+        offset += th3.length;
+        System.arraycopy(plaintext3, 0, hashInput, offset, plaintext3.length);
+        offset += plaintext3.length;
+        System.arraycopy(credI, 0, hashInput, offset, credI.length);
+
         try {
             return EdhocUtil.computeHash(hashInput, hashAlgorithm);
         } catch (NoSuchAlgorithmException e) {
