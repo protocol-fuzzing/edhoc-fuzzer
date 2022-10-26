@@ -39,7 +39,7 @@ ${results.learning.clients}/uoscore-uedhoc_client_m4_app/queryFile
 
 # TestVector
 -testVectorJson
-${authentication.test_vectors}/test_vector_v15_p256.json
+${authentication.test_vectors}/test_vectors_v15_p256.json
 
 -testVectorJsonKey
 test_vector_1
