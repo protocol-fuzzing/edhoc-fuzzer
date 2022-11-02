@@ -1,5 +1,5 @@
 EDHOC_MESSAGE_2
-# response to msg3 -- empty coap ack
-PROTECTED_APP_MESSAGE
-# response to appGET
-PROTECTED_APP_MESSAGE
+# response to msg3
+COAP_EMPTY_MESSAGE
+# response to oscore_app
+OSCORE_APP_MESSAGE

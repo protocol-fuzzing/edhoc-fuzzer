@@ -1,5 +1,5 @@
 EDHOC_MESSAGE_2
-# response to msg3_combined_app
-PROTECTED_APP_MESSAGE
-# response to appGET
-PROTECTED_APP_MESSAGE
+# response to msg3_oscore_app
+OSCORE_APP_MESSAGE
+# response to oscore_app
+OSCORE_APP_MESSAGE

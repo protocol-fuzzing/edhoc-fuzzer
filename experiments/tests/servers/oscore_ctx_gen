@@ -1,16 +1,16 @@
 EDHOC_MESSAGE_1
 EDHOC_MESSAGE_3
 # writes message3 and derives oscore context (state: sent 0)
-PROTECTED_APP_MESSAGE
+OSCORE_APP_MESSAGE
 # oscore context states (mapper state: sent 1 | server state: received 1)
 EDHOC_MESSAGE_3
 # correct: oscore context is not derived again (mapper state: sent 1 | server state: received 1)
 # wrong: oscore context is derived again (mapper state: sent 0 | server state: received 1)
-PROTECTED_APP_MESSAGE
+OSCORE_APP_MESSAGE
 # correct: same oscore context is used (mapper state: sent 2 | server state: received 2)
 # wrong: new oscore context is used and seems as message is retransmission, so is dismissed with coap_error_message
 # (mapper's state: sent 1) -- (server's state: received 1)
-PROTECTED_APP_MESSAGE
+OSCORE_APP_MESSAGE
 # correct: same oscore context is used (mapper state: sent 3 | server state: received 3)
 # wrong: new oscore context is used, but this time two states are identical
 # (mapper's state: sent 2) -- (server's state: received 2)
