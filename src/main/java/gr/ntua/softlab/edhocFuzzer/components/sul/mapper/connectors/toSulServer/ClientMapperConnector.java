@@ -9,6 +9,7 @@ import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.elements.exception.ConnectorException;
+import org.eclipse.californium.elements.util.Bytes;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -59,24 +60,23 @@ public class ClientMapperConnector implements EdhocMapperConnector {
 
         Request request = new Request(CoAP.Code.valueOf(messageCode), CoAP.Type.CON);
         request.getOptions().setContentFormat(contentFormat);
+        request.setPayload(payload);
 
         try {
             switch (payloadType) {
                 case EDHOC_MESSAGE -> {
-                    request.setPayload(payload);
                     response = edhocClient.advanced(request);
                 }
                 case UNPROTECTED_APP_MESSAGE -> {
-                    request.setPayload(payload);
                     response = appClient.advanced(request);
                 }
                 case PROTECTED_APP_MESSAGE -> {
-                    request.getOptions().setOscore(payload);
+                    request.getOptions().setOscore(new byte[0]);
                     response = appClient.advanced(request);
                 }
                 case MESSAGE_3_COMBINED -> {
                     request.getOptions().setEdhoc(true);
-                    request.getOptions().setOscore(payload);
+                    request.getOptions().setOscore(new byte[0]);
                     response = appClient.advanced(request);
                 }
             }

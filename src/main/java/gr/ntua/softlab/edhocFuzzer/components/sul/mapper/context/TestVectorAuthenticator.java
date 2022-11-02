@@ -17,9 +17,6 @@ import java.util.Set;
 
 public class TestVectorAuthenticator implements Authenticator {
 
-    protected int authenticationMethod;
-    protected int credType;
-    protected int idCredType;
     protected HashMap<Integer, HashMap<Integer, OneKey>> keyPairs;
     protected HashMap<Integer, HashMap<Integer, CBORObject>> idCreds;
     protected HashMap<Integer, HashMap<Integer, CBORObject>> creds;
@@ -36,8 +33,6 @@ public class TestVectorAuthenticator implements Authenticator {
                                    EdhocEndpointInfoPersistent edhocEndpointInfoPersistent,
                                    Set<CBORObject> ownIdCreds, boolean isInitiator) {
         this.testVectorAuthenticationConfig = authenticationConfig.getTestVectorAuthenticationConfig();
-        this.credType = authenticationConfig.getMapCredType();
-        this.idCredType = authenticationConfig.getMapIdCredType();
         this.keyPairs = edhocEndpointInfoPersistent.getKeyPairs();
         this.idCreds = edhocEndpointInfoPersistent.getIdCreds();
         this.creds = edhocEndpointInfoPersistent.getCreds();
@@ -64,7 +59,7 @@ public class TestVectorAuthenticator implements Authenticator {
 
         if (supportedCipherSuites.contains(Constants.EDHOC_CIPHER_SUITE_0) ||
                 supportedCipherSuites.contains(Constants.EDHOC_CIPHER_SUITE_1)) {
-            switch (authenticationMethod) {
+            switch (testVector.getAuthenticationMethod()) {
                 case Constants.EDHOC_AUTH_METHOD_0, Constants.EDHOC_AUTH_METHOD_1 -> {
                     // Curve Ed25519 (SIG)
                     keyPair = SharedSecretCalculation.buildEd25519OneKey(privateKey, publicKey);
@@ -75,7 +70,8 @@ public class TestVectorAuthenticator implements Authenticator {
                     keyPair = SharedSecretCalculation.buildCurve25519OneKey(privateKey, publicKey);
                     addOwnCredentials(Constants.ECDH_KEY, Constants.CURVE_X25519, keyPair);
                 }
-                default -> throw new RuntimeException("Invalid authentication method: " + authenticationMethod);
+                default -> throw new RuntimeException("Invalid authentication method: " +
+                        testVector.getAuthenticationMethod());
             }
         }
 
@@ -86,7 +82,7 @@ public class TestVectorAuthenticator implements Authenticator {
             splitP256PublicKey(publicKey, publicKeyX, publicKeyY);
             keyPair = SharedSecretCalculation.buildEcdsa256OneKey(privateKey, publicKeyX, publicKeyY);
 
-            switch (authenticationMethod) {
+            switch (testVector.getAuthenticationMethod()) {
                 case Constants.EDHOC_AUTH_METHOD_0, Constants.EDHOC_AUTH_METHOD_1 ->
                     // P-256 (SIG)
                     addOwnCredentials(Constants.SIGNATURE_KEY, Constants.CURVE_P256, keyPair);
@@ -95,7 +91,8 @@ public class TestVectorAuthenticator implements Authenticator {
                     // P-256 (STAT)
                     addOwnCredentials(Constants.ECDH_KEY, Constants.CURVE_P256, keyPair);
 
-                default -> throw new RuntimeException("Invalid authentication method: " + authenticationMethod);
+                default -> throw new RuntimeException("Invalid authentication method: " +
+                        testVector.getAuthenticationMethod());
             }
         }
     }
@@ -107,7 +104,7 @@ public class TestVectorAuthenticator implements Authenticator {
         byte[] publicKey = StringUtil.hex2ByteArray(testVector.getPublicKey(!isInitiator));
         byte[] publicKeyX, publicKeyY;
 
-        switch (authenticationMethod) {
+        switch (testVector.getAuthenticationMethod()) {
             case Constants.EDHOC_AUTH_METHOD_0, Constants.EDHOC_AUTH_METHOD_2 -> {
                 String keyCurve = testVectorAuthenticationConfig.getTestVectorPeerKeyCurve();
                 if (Objects.equals(keyCurve, "P256")) {
@@ -124,7 +121,7 @@ public class TestVectorAuthenticator implements Authenticator {
                     addPeerCredentials(keyPair);
                 }
                 else {
-                    throw new RuntimeException("Invalid authentication method (" + authenticationMethod +
+                    throw new RuntimeException("Invalid authentication method (" + testVector.getAuthenticationMethod() +
                             ") and peerKeyCurve (" + keyCurve + ") pair");
                 }
             }
@@ -145,7 +142,7 @@ public class TestVectorAuthenticator implements Authenticator {
                     addPeerCredentials(keyPair);
                 }
                 else {
-                    throw new RuntimeException("Invalid authentication method (" + authenticationMethod +
+                    throw new RuntimeException("Invalid authentication method (" + testVector.getAuthenticationMethod() +
                             ") and peerKeyCurve (" + keyCurve + ") pair");
                 }
             }

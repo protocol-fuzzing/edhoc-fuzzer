@@ -77,7 +77,8 @@ public class EdhocLayerPersistent extends AbstractLayer {
             // Extract CIPHERTEXT_3 as the second element of EDHOC message_3
             byte[] message3 = session.getMessage3();
             CBORObject[] message3Elements = CBORObject.DecodeSequenceFromBytes(message3);
-            byte[] ciphertext3 = message3Elements[1].GetByteString();
+            int index = messageProcessorPersistent.getEdhocMapperState().sendWithPrependedCX() ? 1 : 0;
+            byte[] ciphertext3 = message3Elements[index].GetByteString();
 
             // Original OSCORE payload from the request
             byte[] oldOscorePayload = request.getPayload();
@@ -179,10 +180,14 @@ public class EdhocLayerPersistent extends AbstractLayer {
 
             List<CBORObject> edhocObjectList = new ArrayList<>();
 
-            // Add C_R, by encoding the 'kid' from the OSCORE option
+            // Find C_R, by encoding the 'kid' from the OSCORE option
             byte[] kid = getKid(request.getOptions().getOscore());
             CBORObject cR = messageProcessorPersistent.encodeIdentifier(kid);
-            edhocObjectList.add(cR);
+
+            if (messageProcessorPersistent.getEdhocMapperState().receiveWithPrependedCX()) {
+                // Prepend C_R if needed
+                edhocObjectList.add(cR);
+            }
 
             // Add CIPHERTEXT_3, i.e. the CBOR string as is from the received CBOR sequence
             edhocObjectList.add(receivedOjectList[0]);

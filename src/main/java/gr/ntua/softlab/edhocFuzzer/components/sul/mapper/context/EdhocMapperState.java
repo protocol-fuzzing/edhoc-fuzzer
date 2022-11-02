@@ -161,6 +161,11 @@ public abstract class EdhocMapperState implements State {
         // in case of mapper using oscore context (for fuzzing only), but
         // the other peer does not derive oscore context
         byte[] connectionId = new byte[]{(byte) 255, (byte) 255, (byte) 255};
+
+        if (edhocMapperConfig.getForceOscoreRecipientId() != null) {
+            connectionId = edhocMapperConfig.getForceOscoreRecipientId();
+        }
+
         usedConnectionIds.add(CBORObject.FromObject(connectionId));
 
         boolean isInitiator = edhocMapperConfig.isInitiator();

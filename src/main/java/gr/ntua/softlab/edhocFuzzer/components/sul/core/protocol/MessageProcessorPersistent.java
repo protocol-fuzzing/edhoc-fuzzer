@@ -1796,7 +1796,7 @@ public class MessageProcessorPersistent {
 
         if (edhocMapperState.receiveWithPrependedCX()) {
             // Received by CoAP server
-            // Error message is a request, this starts with C_X different than 'true' (0xf5),
+            // Error message is a request, this starts with C_X different from 'true' (0xf5),
             // followed by ERR_CODE as a CBOR integer
             return !myObjects[0].equals(CBORObject.True) && myObjects[1].getType() == CBORType.Integer;
         }
@@ -1828,7 +1828,7 @@ public class MessageProcessorPersistent {
 
         // Include C_X if error message sent from CoAP Client with CX correlation enabled
         if (edhocMapperState.sendWithPrependedCX()) {
-            CBORObject cX = encodeIdentifier(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
+            CBORObject cX = encodeIdentifier(edhocMapperState.getEdhocSessionPersistent().getPeerConnectionId());
             objectList.add(cX);
         }
 
