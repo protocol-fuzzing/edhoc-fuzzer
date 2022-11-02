@@ -24,7 +24,7 @@ public class EdhocServer extends CoapServer {
 
         // add appResource
         addLeafResource(createInnerResourceTree(appResource),
-                new ApplicationGetResource(extractLeafResourceString(appResource), coapExchanger));
+                new ApplicationResource(extractLeafResourceString(appResource), coapExchanger));
 
         // add endpoint
         CoapEndpoint coapEndpoint = CoapEndpoint.builder()
@@ -149,12 +149,12 @@ public class EdhocServer extends CoapServer {
         }
     }
 
-    // The Resource for application data (oscore-protected) requests
-    protected static class ApplicationGetResource extends CoapResource {
-        private static final Logger LOGGER = LogManager.getLogger(ApplicationGetResource.class);
+    // The Resource for application data requests
+    protected static class ApplicationResource extends CoapResource {
+        private static final Logger LOGGER = LogManager.getLogger(ApplicationResource.class);
         protected CoapExchanger coapExchanger;
 
-        public ApplicationGetResource(String name, CoapExchanger coapExchanger) {
+        public ApplicationResource(String name, CoapExchanger coapExchanger) {
             // set resource identifier
             super(name);
 
@@ -186,7 +186,8 @@ public class EdhocServer extends CoapServer {
         }
     }
 
-    protected static void handleExchange(boolean forEdhoc, CoapExchange coapExchange, CoapExchanger coapExchanger) {
+    protected static void handleExchange(boolean fromEdhocResource, CoapExchange coapExchange,
+                                         CoapExchanger coapExchanger) {
         // edit coapExchange in draft queue
         CoapExchangeInfo coapExchangeInfo;
         int MID = coapExchange.advanced().getRequest().getMID();
@@ -204,15 +205,16 @@ public class EdhocServer extends CoapServer {
 
         coapExchangeInfo.setCoapExchange(coapExchange);
 
-        if (forEdhoc) {
+        if (fromEdhocResource) {
           coapExchangeInfo.setHasEdhocMessage(true);
         } else {
             if (coapExchange.getRequestOptions().hasOscore() &&
                     coapExchange.advanced().getCryptographicContextID() != null) {
                 // request was oscore-protected
-                coapExchangeInfo.setHasProtectedMessage(true);
+                coapExchangeInfo.setHasOscoreAppMessage(true);
             } else {
-                coapExchangeInfo.setHasUnprotectedMessage(true);
+                // request was unprotected
+                coapExchangeInfo.setHasCoapAppMessage(true);
             }
         }
 

@@ -1,11 +1,11 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.inputs;
 
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.initiator.Message3Combined;
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.initiator.EdhocMessage3OscoreApp;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 
-public class Message3CombinedInput extends EdhocInput {
+public class EdhocMessage3OscoreAppInput extends EdhocInput {
 
     @Override
     public void preSendUpdate(ExecutionContext context) {
@@ -16,11 +16,11 @@ public class Message3CombinedInput extends EdhocInput {
 
     @Override
     public ProtocolMessage generateProtocolMessage(ExecutionContext context) {
-        return new Message3Combined(new MessageProcessorPersistent(getEdhocMapperState(context)));
+        return new EdhocMessage3OscoreApp(new MessageProcessorPersistent(getEdhocMapperState(context)));
     }
 
     @Override
     public Enum<MessageInputType> getInputType() {
-        return MessageInputType.EDHOC_MESSAGE_3_COMBINED;
+        return MessageInputType.EDHOC_MESSAGE_3_OSCORE_APP;
     }
 }

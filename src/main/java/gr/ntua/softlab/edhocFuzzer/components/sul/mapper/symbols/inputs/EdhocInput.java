@@ -17,18 +17,12 @@ public abstract class EdhocInput extends AbstractInputXml {
     }
 
     @Override
-    public void preSendUpdate(ExecutionContext context) {
-
-    }
+    public void preSendUpdate(ExecutionContext context) {}
 
     @Override
-    public void postSendUpdate(ExecutionContext context) {
-
-    }
+    public void postSendUpdate(ExecutionContext context) {}
 
     @Override
     public void postReceiveUpdate(AbstractOutput output, AbstractOutputChecker abstractOutputChecker,
-                                  ExecutionContext context) {
-
-    }
+                                  ExecutionContext context) {}
 }

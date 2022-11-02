@@ -14,13 +14,13 @@ public interface EdhocMapperConnector {
 
     void setTimeout(Long timeout);
 
-    boolean receivedError();
+    boolean receivedCoapErrorMessage();
 
-    boolean receivedProtectedAppMessage();
+    boolean receivedOscoreAppMessage();
 
-    boolean receivedUnprotectedAppMessage();
+    boolean receivedCoapAppMessage();
 
-    boolean receivedMsg3CombinedWithAppMessage();
+    boolean receivedMsg3WithOscoreApp();
 
-    boolean receivedEmptyMessage();
+    boolean receivedCoapEmptyMessage();
 }

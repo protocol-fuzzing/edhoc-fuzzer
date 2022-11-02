@@ -126,15 +126,10 @@ public class EdhocLayerPersistent extends AbstractLayer {
             // intercept that response, unset necessary exchange flags and
             // add it to received queue with Unsuccessful flag set
             exchange.getRequest().setAcknowledged(false);
-            CoapExchangeInfo coapExchangeInfo = new CoapExchangeInfo(MID);
-            coapExchangeInfo.setHasUnsuccessfulMessage(true);
-
-            coapExchangeInfo.setCoapExchange(new CoapExchange(exchange, new CoapResource("temporary")));
-            if (!session.getCoapExchanger().getReceivedQueue().offer(coapExchangeInfo)) {
-                LOGGER.warn("Full received queue found");
-            }
+            addUnsuccessfulCoapExchangeInfo(exchange, session);
             return;
         }
+
         super.sendResponse(exchange, response);
     }
 
@@ -210,15 +205,17 @@ public class EdhocLayerPersistent extends AbstractLayer {
             boolean ok = messageProcessorPersistent.readMessage3(edhocMessage3);
 
             if (ok) {
-                updateSessionFromOptions(request, true, session);
+                addCoapExchangeInfo(request, true, session);
             } else {
                 // message 3 could not be read successfully,
                 // so do not propagate application data to upper layers
+                // and register the received message as unsuccessful
+                addUnsuccessfulCoapExchangeInfo(exchange, session);
                 return;
             }
         } else {
             // edhoc message or application data or unknown message
-            updateSessionFromOptions(request, true,
+            addCoapExchangeInfo(request, true,
                     messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent());
         }
 
@@ -228,7 +225,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
     @Override
     public void receiveResponse(Exchange exchange, Response response) {
         LOGGER.debug("Receiving response through EDHOC layer");
-        updateSessionFromOptions(response, false,
+        addCoapExchangeInfo(response, false,
                 messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent());
         super.receiveResponse(exchange, response);
     }
@@ -243,8 +240,8 @@ public class EdhocLayerPersistent extends AbstractLayer {
         super.receiveEmptyMessage(exchange, message);
     }
 
-    protected void updateSessionFromOptions(Message message, boolean isRequest,
-                                            EdhocSessionPersistent edhocSessionPersistent) {
+    protected void addCoapExchangeInfo(Message message, boolean isRequest,
+                                       EdhocSessionPersistent edhocSessionPersistent) {
         if (message == null || edhocSessionPersistent == null) {
             return;
         }
@@ -253,17 +250,14 @@ public class EdhocLayerPersistent extends AbstractLayer {
         CoapExchangeInfo coapExchangeInfo = new CoapExchangeInfo(message.getMID());
 
         if (message.getOptions().hasOscore()) {
-            coapExchangeInfo.setHasProtectedMessage(true);
+            coapExchangeInfo.setHasOscoreAppMessage(true);
 
             if (message.getOptions().hasEdhoc()) {
                 coapExchangeInfo.setHasEdhocMessage(true);
             }
-        } else {
-            // unprotected message -- possible edhoc message or any other message
-            coapExchangeInfo.setHasUnprotectedMessage(true);
         }
 
-        // add coapExhangeWrapper to appropriate queue
+        // add coapExhangeInfo to appropriate queue
         if (isRequest) {
             // in case of request, add it to draft queue in order for server resources to
             // edit it and add it to received queue
@@ -279,6 +273,16 @@ public class EdhocLayerPersistent extends AbstractLayer {
         }
     }
 
+    protected void addUnsuccessfulCoapExchangeInfo(Exchange exchange, EdhocSessionPersistent edhocSessionPersistent) {
+        int MID = exchange.getRequest().getMID();
+        CoapExchangeInfo coapExchangeInfo = new CoapExchangeInfo(MID);
+        coapExchangeInfo.setHasUnsuccessfulMessage(true);
+
+        coapExchangeInfo.setCoapExchange(new CoapExchange(exchange, new CoapResource("temporary")));
+        if (!edhocSessionPersistent.getCoapExchanger().getReceivedQueue().offer(coapExchangeInfo)) {
+            LOGGER.warn("Full received queue found");
+        }
+    }
     /**
      * Returns the OSCORE Context that was used to protect this outgoing
      * exchange (outgoing request or response).

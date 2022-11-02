@@ -13,10 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 public class ServerMapperConnector implements EdhocMapperConnector {
     private static final Logger LOGGER = LogManager.getLogger(ServerMapperConnector.class);
-
     protected String host;
     protected int port;
-
     protected String edhocResource;
     protected String appResource;
 
@@ -27,7 +25,6 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     protected int exceptionCodeOccurred = -1;
 
     protected EdhocServer edhocServer = null;
-
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
 
@@ -86,9 +83,10 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
         Response response = new Response(CoAP.ResponseCode.valueOf(messageCode));
         response.getOptions().setContentFormat(contentFormat);
+        response.setPayload(payload);
 
         switch (payloadType) {
-            case EDHOC_MESSAGE, UNPROTECTED_APP_MESSAGE -> {
+            case EDHOC_MESSAGE, COAP_APP_MESSAGE -> {
                 if (currentExchange.advanced().getCryptographicContextID() != null) {
                     // request was oscore-protected but the response should be not
                     // so the oscore flag and the generated cryptographic context
@@ -97,29 +95,23 @@ public class ServerMapperConnector implements EdhocMapperConnector {
                     currentExchange.getRequestOptions().removeOscore();
                     currentExchange.advanced().setCryptographicContextID(null);
                 }
-
-                response.setPayload(payload);
             }
-            case PROTECTED_APP_MESSAGE -> {
-                if (currentExchange.advanced().getCryptographicContextID() != null) {
-                    // request was oscore-protected so will be the response
-                    // oscore protection is handled in oscore layers
-                    response.setPayload(payload);
-                } else {
+            case OSCORE_APP_MESSAGE -> {
+                if (currentExchange.advanced().getCryptographicContextID() == null) {
                     // request was not oscore-protected so no oscore-protected app message
                     // can be sent back, so it is deemed unsupported message
                     // Current exchange message is NOT consumed, this allows learning to
-                    // continue and transition 'prot_msg / unsupported' to be regarded as self-loop
+                    // continue and transition 'app_msg / unsupported' to be regarded as self-loop
                     exceptionCodeOccurred = 1;
                     return;
                 }
             }
-            case MESSAGE_3_COMBINED -> {
-                // ServerMapperConnector cannot use message 3 combined as a response
+            case EDHOC_MESSAGE_3_OSCORE_APP -> {
+                // Cannot use message 3 combined with oscore app as a response
                 // It can be used only as a request from a CoAP client as Initiator
                 // So this message is deemed unsupported
                 // Current exchange message is NOT consumed, this allows learning to
-                // continue and transition 'msg3 / unsupported' to be regarded as self-loop
+                // continue and transition 'msg3_app / unsupported' to be regarded as self-loop
                 exceptionCodeOccurred = 1;
                 return;
             }
@@ -164,37 +156,37 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     }
 
     @Override
-    public boolean receivedError() {
-        // response in the server's case is a possible new request from the client,
-        // therefore error response is neither an empty new exchange nor a non-empty one
-        // there is no way to tell if client's new request (or the absence of it) is
-        // an error
-        return false;
-    }
-
-    @Override
-    public boolean receivedProtectedAppMessage() {
+    public boolean receivedCoapErrorMessage() {
         return currentCoapExchangeInfo != null
-                && currentCoapExchangeInfo.hasProtectedMessage();
+                && currentCoapExchangeInfo.getCoapExchange().advanced().getResponse() != null
+                && currentCoapExchangeInfo.getCoapExchange().advanced().getResponse().isError();
     }
 
     @Override
-    public boolean receivedUnprotectedAppMessage() {
+    public boolean receivedOscoreAppMessage() {
         return currentCoapExchangeInfo != null
-                && currentCoapExchangeInfo.hasUnprotectedMessage()
-                && !currentCoapExchangeInfo.hasEdhocMessage();
+                && currentCoapExchangeInfo.hasOscoreAppMessage();
     }
 
+
     @Override
-    public boolean receivedMsg3CombinedWithAppMessage() {
+    public boolean receivedCoapAppMessage() {
         return currentCoapExchangeInfo != null
-                && currentCoapExchangeInfo.hasMsg3CombinedWithAppMessage();
+                && currentCoapExchangeInfo.hasCoapAppMessage();
     }
 
     @Override
-    public boolean receivedEmptyMessage() {
+    public boolean receivedMsg3WithOscoreApp() {
+        return currentCoapExchangeInfo != null
+                && currentCoapExchangeInfo.hasEdhocMessage()
+                && currentCoapExchangeInfo.hasOscoreAppMessage();
+    }
+
+    @Override
+    public boolean receivedCoapEmptyMessage() {
         return currentCoapExchangeInfo != null
                 && currentCoapExchangeInfo.getCoapExchange() != null
+                && currentCoapExchangeInfo.getCoapExchange().advanced().getRequest() != null
                 && currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getPayloadSize() == 0;
     }
 }

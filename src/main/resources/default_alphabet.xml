@@ -1,11 +1,11 @@
 <alphabet>
-    <Message1Input name="EDHOC_MESSAGE_1"/>
-    <Message2Input name="EDHOC_MESSAGE_2"/>
-    <Message3Input name="EDHOC_MESSAGE_3"/>
-    <Message4Input name="EDHOC_MESSAGE_4"/>
-    <ErrorMessageInput name="EDHOC_ERROR_MESSAGE"/>
-    <ProtectedAppMessageInput name="PROTECTED_APP_MESSAGE"/>
-    <UnprotectedAppMessageInput name="UNPROTECTED_APP_MESSAGE"/>
-    <Message3CombinedInput name="EDHOC_MESSAGE_3_COMBINED"/>
-    <EmptyCoapMessageInput name="EMPTY_COAP_MESSAGE" />
+    <EdhocMessage1Input name="EDHOC_MESSAGE_1"/>
+    <EdhocMessage2Input name="EDHOC_MESSAGE_2"/>
+    <EdhocMessage3Input name="EDHOC_MESSAGE_3"/>
+    <EdhocMessage4Input name="EDHOC_MESSAGE_4"/>
+    <EdhocErrorMessageInput name="EDHOC_ERROR_MESSAGE"/>
+    <EdhocMessage3OscoreAppInput name="EDHOC_MESSAGE_3_OSCORE_APP"/>
+    <OscoreAppMessageInput name="OSCORE_APP_MESSAGE"/>
+    <CoapAppMessageInput name="COAP_APP_MESSAGE"/>
+    <CoapEmptyMessageInput name="COAP_EMPTY_MESSAGE"/>
 </alphabet>

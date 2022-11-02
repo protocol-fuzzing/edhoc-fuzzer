@@ -7,9 +7,9 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocMapperStat
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
-public abstract class ApplicationMessage extends EdhocProtocolMessage {
+public abstract class AppMessage extends EdhocProtocolMessage {
 
-    public ApplicationMessage(MessageProcessorPersistent messageProcessorPersistent) {
+    public AppMessage(MessageProcessorPersistent messageProcessorPersistent) {
         super(messageProcessorPersistent);
 
         EdhocMapperState edhocMapperState = messageProcessorPersistent.getEdhocMapperState();

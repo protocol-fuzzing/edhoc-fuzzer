@@ -4,9 +4,9 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessor
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
-public class EmptyCoapMessage extends EdhocProtocolMessage {
+public class CoapEmptyMessage extends EdhocProtocolMessage {
 
-    public EmptyCoapMessage(MessageProcessorPersistent messageProcessorPersistent) {
+    public CoapEmptyMessage(MessageProcessorPersistent messageProcessorPersistent) {
         super(messageProcessorPersistent);
         payload = new byte[0];
         // no content format

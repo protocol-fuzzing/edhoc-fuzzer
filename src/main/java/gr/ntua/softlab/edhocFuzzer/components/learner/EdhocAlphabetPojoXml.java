@@ -11,15 +11,15 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class EdhocAlphabetPojoXml extends AlphabetPojoXml {
     @XmlElements(value = {
-            @XmlElement(type = Message1Input.class, name = "Message1Input"),
-            @XmlElement(type = Message2Input.class, name = "Message2Input"),
-            @XmlElement(type = Message3Input.class, name = "Message3Input"),
-            @XmlElement(type = Message4Input.class, name = "Message4Input"),
-            @XmlElement(type = ErrorMessageInput.class, name = "ErrorMessageInput"),
-            @XmlElement(type = ProtectedAppMessageInput.class, name = "ProtectedAppMessageInput"),
-            @XmlElement(type = UnprotectedAppMessageInput.class, name = "UnprotectedAppMessageInput"),
-            @XmlElement(type = Message3CombinedInput.class, name = "Message3CombinedInput"),
-            @XmlElement(type = EmptyCoapMessageInput.class, name = "EmptyCoapMessageInput")
+            @XmlElement(type = EdhocMessage1Input.class, name = "EdhocMessage1Input"),
+            @XmlElement(type = EdhocMessage2Input.class, name = "EdhocMessage2Input"),
+            @XmlElement(type = EdhocMessage3Input.class, name = "EdhocMessage3Input"),
+            @XmlElement(type = EdhocMessage4Input.class, name = "EdhocMessage4Input"),
+            @XmlElement(type = EdhocErrorMessageInput.class, name = "EdhocErrorMessageInput"),
+            @XmlElement(type = EdhocMessage3OscoreAppInput.class, name = "EdhocMessage3OscoreAppInput"),
+            @XmlElement(type = OscoreAppMessageInput.class, name = "OscoreAppMessageInput"),
+            @XmlElement(type = CoapAppMessageInput.class, name = "CoapAppMessageInput"),
+            @XmlElement(type = CoapEmptyMessageInput.class, name = "CoapEmptyMessageInput")
     })
     protected List<AbstractInput> inputs;
 

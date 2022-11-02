@@ -4,9 +4,9 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessor
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
 import org.eclipse.californium.edhoc.Constants;
 
-public class ErrorMessage extends EdhocProtocolMessage {
+public class EdhocErrorMessage extends EdhocProtocolMessage {
 
-    public ErrorMessage(MessageProcessorPersistent messageProcessorPersistent) {
+    public EdhocErrorMessage(MessageProcessorPersistent messageProcessorPersistent) {
         super(messageProcessorPersistent);
         payload = messageProcessorPersistent.writeErrorMessage(Constants.ERR_CODE_UNSPECIFIED_ERROR, "Error Message");
     }

@@ -4,23 +4,18 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 
 public class CoapExchangeInfo {
     protected CoapExchange coapExchange;
-
     protected int MID;
-
     protected boolean hasEdhocMessage;
-
-    protected boolean hasProtectedMessage;
-
-    protected boolean hasUnprotectedMessage;
-
+    protected boolean hasOscoreAppMessage;
+    protected boolean hasCoapAppMessage;
     protected boolean hasUnsuccessfulMessage;
 
     public CoapExchangeInfo(int MID) {
         this.MID = MID;
         coapExchange = null;
         hasEdhocMessage = false;
-        hasProtectedMessage = false;
-        hasUnprotectedMessage = false;
+        hasOscoreAppMessage = false;
+        hasCoapAppMessage = false;
         hasUnsuccessfulMessage = false;
     }
 
@@ -44,24 +39,20 @@ public class CoapExchangeInfo {
         this.hasEdhocMessage = hasEdhocMessage;
     }
 
-    public boolean hasMsg3CombinedWithAppMessage() {
-        return hasEdhocMessage && hasProtectedMessage;
+    public boolean hasOscoreAppMessage() {
+        return hasOscoreAppMessage;
     }
 
-    public boolean hasProtectedMessage() {
-        return hasProtectedMessage;
+    public void setHasOscoreAppMessage(boolean hasOscoreAppMessage) {
+        this.hasOscoreAppMessage = hasOscoreAppMessage;
     }
 
-    public void setHasProtectedMessage(boolean hasProtectedMessage) {
-        this.hasProtectedMessage = hasProtectedMessage;
+    public boolean hasCoapAppMessage() {
+        return hasCoapAppMessage;
     }
 
-    public boolean hasUnprotectedMessage() {
-        return hasUnprotectedMessage;
-    }
-
-    public void setHasUnprotectedMessage(boolean hasUnprotectedMessage) {
-        this.hasUnprotectedMessage = hasUnprotectedMessage;
+    public void setHasCoapAppMessage(boolean hasCoapAppMessage) {
+        this.hasCoapAppMessage = hasCoapAppMessage;
     }
 
     public boolean hasUnsuccessfulMessage() {

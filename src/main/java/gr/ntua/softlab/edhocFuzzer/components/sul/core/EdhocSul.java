@@ -192,7 +192,7 @@ public class EdhocSul extends AbstractSul {
         boolean isResponder = !edhocMapperState.getEdhocSessionPersistent().isInitiator();
         MessageOutputType expectedMessageType = isResponder ?
                 MessageOutputType.EDHOC_MESSAGE_1 :
-                MessageOutputType.EMPTY_COAP_MESSAGE;
+                MessageOutputType.COAP_EMPTY_MESSAGE;
 
         if (!isServer || serverWaitForInitialMessageDone) {
             return;

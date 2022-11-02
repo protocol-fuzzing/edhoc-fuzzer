@@ -47,11 +47,19 @@ public class EdhocOutputMapper extends OutputMapper {
         }
 
         // Check for coap error response
-        if (edhocMapperConnector.receivedError()) {
+        if (edhocMapperConnector.receivedCoapErrorMessage()) {
             return coapError();
         }
 
         AbstractOutput abstractOutput;
+
+        // Check for application related message
+        // including message 3 combined with oscore
+        abstractOutput = appOutput(edhocMapperState, responsePayload);
+
+        if (abstractOutput != null) {
+            return abstractOutput;
+        }
 
         // Check for edhoc message
         abstractOutput = edhocOutput(edhocMapperState, responsePayload);
@@ -60,14 +68,43 @@ public class EdhocOutputMapper extends OutputMapper {
             return abstractOutput;
         }
 
-        // Check for non edhoc message
-        abstractOutput = nonEdhocOutput(edhocMapperState, responsePayload);
+        // Check for coap message
+        abstractOutput = coapOutput(edhocMapperState, responsePayload);
 
         if (abstractOutput != null) {
             return abstractOutput;
         }
 
         return AbstractOutput.unknown();
+    }
+
+    protected AbstractOutput appOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
+        String messageType = edhocMapperState.isCoapClient() ? "response" : "request";
+
+        if (edhocMapperConnector.receivedMsg3WithOscoreApp()) {
+            // received Message3_OSCORE_APP, from which application data propagated and decrypted
+            LOGGER.info("EDHOC_MESSAGE_3_OSCORE_APP | OSCORE_MESSAGE ({}): {}", messageType, Arrays.toString(responsePayload));
+
+            return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_3_OSCORE_APP.name());
+        }
+
+        if (edhocMapperConnector.receivedOscoreAppMessage()) {
+            /*
+                Client Mapper:
+                    sent oscore protected app data and received oscore protected
+                    app data, handled by oscore layer, so responsePayload is the
+                    decrypted response
+
+                Server Mapper:
+                    received oscore-protected request to application data, so
+                    responsePayload is the decrypted request payload
+             */
+            LOGGER.info("OSCORE_APP_MESSAGE ({}): {}", messageType, Arrays.toString(responsePayload));
+
+            return new AbstractOutput(MessageOutputType.OSCORE_APP_MESSAGE.name());
+        }
+
+        return null;
     }
 
     protected AbstractOutput edhocOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
@@ -107,37 +144,11 @@ public class EdhocOutputMapper extends OutputMapper {
         }
     }
 
-    protected AbstractOutput nonEdhocOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
+    protected AbstractOutput coapOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         String messageType = edhocMapperState.isCoapClient() ? "response" : "request";
 
-        if (edhocMapperConnector.receivedMsg3CombinedWithAppMessage()) {
-            // received Message3Combined, from which application data propagated and decrypted
-            LOGGER.info("EDHOC_MESSAGE_3_COMBINED | APP_DATA ({}): {}", messageType,
-                    Arrays.toString(responsePayload));
-
-            return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_3_COMBINED.name());
-        }
-
-        if (edhocMapperConnector.receivedProtectedAppMessage()) {
-            /*
-                Client Mapper:
-                    sent oscore protected app data and received oscore protected
-                    app data, handled by oscore layer, so responsePayload is the
-                    decrypted response
-
-                Server Mapper:
-                    received oscore-protected request to application data, so
-                    responsePayload is the decrypted request payload
-             */
-            LOGGER.info("PROTECTED_APP_MESSAGE ({}): {}", messageType, Arrays.toString(responsePayload));
-
-            return new AbstractOutput(MessageOutputType.PROTECTED_APP_MESSAGE.name());
-        }
-
-        // Check for empty message
-        // Must be checked after checking for app data, because
-        // app data can have empty message
-        if (edhocMapperConnector.receivedEmptyMessage()) {
+        // Check for coap empty message
+        if (edhocMapperConnector.receivedCoapEmptyMessage()) {
             /*
                 Client Mapper:
                     received empty coap ack, possible when client mapper is
@@ -146,18 +157,20 @@ public class EdhocOutputMapper extends OutputMapper {
                 Server Mapper:
                     received empty coap request for some reason
              */
-            return new AbstractOutput(MessageOutputType.EMPTY_COAP_MESSAGE.name());
+            return new AbstractOutput(MessageOutputType.COAP_EMPTY_MESSAGE.name());
         }
 
-        // Check for unprotected application message
+        // Check for unprotected coap message
         // Must be checked after checking for empty message, because empty message can be unprotected
         // Application message is any non-error coap message, no distinction based on payload
-        if (edhocMapperConnector.receivedUnprotectedAppMessage()) {
-            LOGGER.info("UNPROTECTED_APP_MESSAGE ({}): {}", messageType, Arrays.toString(responsePayload));
-            return new AbstractOutput(MessageOutputType.UNPROTECTED_APP_MESSAGE.name());
+        if (edhocMapperConnector.receivedCoapAppMessage()) {
+            LOGGER.info("COAP_APP_MESSAGE ({}): {}", messageType, Arrays.toString(responsePayload));
+            return new AbstractOutput(MessageOutputType.COAP_APP_MESSAGE.name());
         }
 
-        return null;
+        // if payload was not empty then a coap message is received
+        // because no other transport protocol than coap is supported yet
+        return abstractOutputAfterCheck(responsePayload != null, MessageOutputType.COAP_MESSAGE.name());
     }
 
     protected AbstractOutput abstractOutputAfterCheck(boolean successfulCheck, String outputName) {

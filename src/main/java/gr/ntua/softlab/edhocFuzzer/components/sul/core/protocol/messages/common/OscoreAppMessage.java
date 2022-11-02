@@ -3,12 +3,12 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.common
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.PayloadType;
 
-public class ProtectedApplicationMessage extends ApplicationMessage {
+public class OscoreAppMessage extends AppMessage {
 
-    public ProtectedApplicationMessage(MessageProcessorPersistent messageProcessorPersistent) {
+    public OscoreAppMessage(MessageProcessorPersistent messageProcessorPersistent) {
         // initialize fields as ApplicationData
         super(messageProcessorPersistent);
         // oscore-protected application message
-        payloadType = PayloadType.PROTECTED_APP_MESSAGE;
+        payloadType = PayloadType.OSCORE_APP_MESSAGE;
     }
 }

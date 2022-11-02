@@ -9,7 +9,6 @@ import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.elements.exception.ConnectorException;
-import org.eclipse.californium.elements.util.Bytes;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -18,11 +17,14 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     protected CoapClient edhocClient;
     protected CoapClient appClient;
     protected CoapEndpoint coapEndpoint;
-
     protected CoapResponse response;
 
     // Possible Codes: 0 [Generic Error], 1 [Unsupported Message]
     protected int exceptionCodeOccurred = -1;
+
+    // indicate whether latest request was to application resource
+    // so an application response is expected
+    protected boolean expectedAppResponse = false;
 
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
@@ -56,6 +58,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     @Override
     public void send(byte[] payload, PayloadType payloadType, int messageCode, int contentFormat) {
         exceptionCodeOccurred = -1;
+        expectedAppResponse = false;
         currentCoapExchangeInfo = null;
 
         Request request = new Request(CoAP.Code.valueOf(messageCode), CoAP.Type.CON);
@@ -64,17 +67,19 @@ public class ClientMapperConnector implements EdhocMapperConnector {
 
         try {
             switch (payloadType) {
-                case EDHOC_MESSAGE -> {
-                    response = edhocClient.advanced(request);
-                }
-                case UNPROTECTED_APP_MESSAGE -> {
+                case EDHOC_MESSAGE ->
+                        response = edhocClient.advanced(request);
+                case COAP_APP_MESSAGE -> {
+                    expectedAppResponse = true;
                     response = appClient.advanced(request);
                 }
-                case PROTECTED_APP_MESSAGE -> {
+                case OSCORE_APP_MESSAGE -> {
+                    expectedAppResponse = true;
                     request.getOptions().setOscore(new byte[0]);
                     response = appClient.advanced(request);
                 }
-                case MESSAGE_3_COMBINED -> {
+                case EDHOC_MESSAGE_3_OSCORE_APP -> {
+                    expectedAppResponse = true;
                     request.getOptions().setEdhoc(true);
                     request.getOptions().setOscore(new byte[0]);
                     response = appClient.advanced(request);
@@ -115,31 +120,33 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     }
 
     @Override
-    public boolean receivedError() {
+    public boolean receivedCoapErrorMessage() {
         return response != null
                 && response.advanced().isError();
     }
 
     @Override
-    public boolean receivedProtectedAppMessage() {
+    public boolean receivedOscoreAppMessage() {
         return isResponseSuccessful()
-                && currentCoapExchangeInfo.hasProtectedMessage();
+                && expectedAppResponse
+                && currentCoapExchangeInfo.hasOscoreAppMessage();
     }
 
     @Override
-    public boolean receivedUnprotectedAppMessage() {
+    public boolean receivedCoapAppMessage() {
         return isResponseSuccessful()
-                && currentCoapExchangeInfo.hasUnprotectedMessage()
-                && !currentCoapExchangeInfo.hasEdhocMessage();
+                && expectedAppResponse
+                && !currentCoapExchangeInfo.hasOscoreAppMessage();
     }
 
     @Override
-    public boolean receivedMsg3CombinedWithAppMessage() {
+    public boolean receivedMsg3WithOscoreApp() {
         return isResponseSuccessful()
-                && currentCoapExchangeInfo.hasMsg3CombinedWithAppMessage();
+                && currentCoapExchangeInfo.hasEdhocMessage()
+                && currentCoapExchangeInfo.hasOscoreAppMessage();
     }
 
-    public boolean receivedEmptyMessage() {
+    public boolean receivedCoapEmptyMessage() {
         return isResponseSuccessful()
                 && response.getPayloadSize() == 0
                 && response.advanced().getType() == CoAP.Type.ACK;
@@ -148,6 +155,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     protected boolean isResponseSuccessful() {
         return response != null
                 && response.advanced().isSuccess()
-                && currentCoapExchangeInfo != null;
+                && currentCoapExchangeInfo != null
+                && currentCoapExchangeInfo.getMID() == response.advanced().getMID();
     }
 }
