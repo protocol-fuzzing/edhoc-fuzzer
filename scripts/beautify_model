@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
+readonly REPL_FILE="${SCRIPT_DIR}/replacements.txt"
+readonly PY_SCRIPT="${SCRIPT_DIR}/beautify_model.py"
+
+start_edge_label=""
+# remove all edges with transitions '_ / UNSUPPORTED_MESSAGE'
+# because they do not belong to the actual learned model
+remove_edge_pattern="o_UNSUPPORTED_MESSAGE"
+
+if [ ${#} = 0 ]; then
+    echo "Usage: beautify_model.sh [-cI|--clientInitiator] [-cR|--clientResponder] dot_model"
+else
+    while [[ "${1}" =~ ^- ]]; do case ${1} in
+        -cI | --clientInitiator )
+            start_edge_label="- / EDHOC_MESSAGE_1"
+            ;;
+        -cR | --clientResponder )
+            start_edge_label="- / COAP_EMPTY_MESSAGE"
+            ;;
+        * )
+            echo "Unsupported option ${1}"
+            return
+            ;;
+        esac
+        shift
+    done
+
+    if [[ ! ${#} -eq 1 ]]; then
+        echo "Expected a .dot file after options"
+        return
+    fi
+
+    if [[ ! -e ${1} ]]; then
+        echo "File ${1} does not exist"
+        return
+    fi
+
+    echo "Invoking ${PY_SCRIPT}"
+    python3 "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" \
+      --start-edge-label "${start_edge_label}" \
+      --remove-edge-pattern "${remove_edge_pattern}"
+fi

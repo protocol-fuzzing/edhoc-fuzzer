@@ -31,8 +31,9 @@ experiments/args/tests
 experiments/authentication/mapper
 experiments/authentication/sul
 
-experiments/models/clients/rise/*.properties
-experiments/models/servers/rise/*.properties
+experiments/models/sources/
+experiments/models/clients/
+experiments/models/servers/
 
 experiments/results
 

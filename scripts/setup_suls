@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
+readonly MODEL_DIR="${SCRIPT_DIR}/../experiments/models"
+readonly SOURCES_DIR="${MODEL_DIR}/sources"
+readonly PATCH_DIR="${MODEL_DIR}/patches"
+readonly SERVERS_DIR="${MODEL_DIR}/servers"
+readonly CLIENTS_DIR="${MODEL_DIR}/clients"
+
+mkdir -p ${SOURCES_DIR} ${SERVERS_DIR} ${CLIENTS_DIR}
+
+# sifis-home
+
+set -e
+cd ${SOURCES_DIR}
+git clone https://github.com/rikard-sics/sifis-home.git
+SF_HOME_DIR="${SOURCES_DIR}/sifis-home"
+cd ${SF_HOME_DIR}/californium-extended
+mvn -DskipTests install
+cd ${SF_HOME_DIR}/edhoc-applications
+git apply ${PATCH_DIR}/sifis-home.patch
+mvn -DskipTests compile assembly:single
+
+cd ${MODEL_DIR}
+mkdir -p ${SERVERS_DIR}/sifis-home ${CLIENTS_DIR}/sifis-home
+APP_JAR=$(ls ${SF_HOME_DIR}/edhoc-applications/target/*-jar-with-dependencies.jar)
+ln -sf ${APP_JAR} ${SERVERS_DIR}/sifis-home/edhoc-applications.jar
+ln -sf ${APP_JAR} ${CLIENTS_DIR}/sifis-home/edhoc-applications.jar
+set +e
+
+# uoscore-uedhoc
+
+set -e
+cd ${SOURCES_DIR}
+git clone --recurse-submodules https://github.com/eriptic/uoscore-uedhoc.git
+UOE_DIR="${SOURCES_DIR}/uoscore-uedhoc"
+cd ${UOE_DIR}
+git apply ${PATCH_DIR}/uoscore-uedhoc.patch
+make
+make -C samples/linux_edhoc/initiator
+make -C samples/linux_edhoc/responder
+make -C samples/linux_edhoc_oscore/initiator_client
+make -C samples/linux_edhoc_oscore/responder_server
+
+cd ${MODEL_DIR}
+mkdir -p ${SERVERS_DIR}/uoscore-uedhoc ${CLIENTS_DIR}/uoscore-uedhoc
+SAMPLES_DIR="${UOE_DIR}/samples"
+LE_DIR="${SAMPLES_DIR}/linux_edhoc"
+LEO_DIR="${SAMPLES_DIR}/linux_edhoc_oscore"
+ln -sf ${LE_DIR}/responder/build/responder ${SERVERS_DIR}/uoscore-uedhoc/linux-edhoc-responder
+ln -sf ${LE_DIR}/initiator/build/initiator ${CLIENTS_DIR}/uoscore-uedhoc/linux-edhoc-initiator
+ln -sf ${LEO_DIR}/responder_server/build/responder_server ${SERVERS_DIR}/uoscore-uedhoc/linux-edhoc-oscore-responder-server
+ln -sf ${LEO_DIR}/initiator_client/build/initiator_client ${CLIENTS_DIR}/uoscore-uedhoc/linux-edhoc-oscore-initiator-client
+set +e

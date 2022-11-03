@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
+readonly BASE_DIR="${SCRIPT_DIR}/.."
+
+set -e
+cd ${BASE_DIR}
+mvn clean package
+ln -sf ${BASE_DIR}/target/edhoc-fuzzer*-jar-with-dependencies.jar edhoc-fuzzer.jar
+set +e

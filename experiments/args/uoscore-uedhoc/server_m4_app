@@ -62,6 +62,7 @@ tv1
 -forceOscoreRecipientId
 01
 
+-disableSessionReset
 
 ##### SulConfig #####
 -protocolVersion

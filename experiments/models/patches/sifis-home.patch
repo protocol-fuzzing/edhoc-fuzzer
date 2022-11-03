@@ -1,0 +1,291 @@
+diff --git a/edhoc-applications/pom.xml b/edhoc-applications/pom.xml
+index 46e744b..93493d5 100644
+--- a/edhoc-applications/pom.xml
++++ b/edhoc-applications/pom.xml
+@@ -31,13 +31,27 @@
+ 			<version>0.2.1</version>
+ 		</dependency>
+ 		<!-- Rikard: Disabled these dependencies. They should instead be imported 
+-			from the Californium-extended code (see README). <dependency> <groupId>org.eclipse.californium</groupId> 
+-			<artifactId>californium-core</artifactId> <version>3.1.0-SNAPSHOT</version> 
+-			</dependency> <dependency> <groupId>org.eclipse.californium</groupId> <artifactId>cf-edhoc</artifactId> 
+-			<version>3.1.0-SNAPSHOT</version> </dependency> <dependency> <groupId>org.eclipse.californium</groupId> 
+-			<artifactId>cf-oscore</artifactId> <version>3.1.0-SNAPSHOT</version> </dependency> 
+-			<dependency> <groupId>org.eclipse.californium</groupId> <artifactId>element-connector</artifactId> 
+-			<version>3.1.0-SNAPSHOT</version> </dependency> -->
++		from the Californium-extended code (see README). -->
++		<dependency>
++			<groupId>org.eclipse.californium</groupId>
++			<artifactId>californium-core</artifactId>
++			<version>3.1.0-SNAPSHOT</version>
++		</dependency>
++		<dependency>
++			<groupId>org.eclipse.californium</groupId>
++			<artifactId>cf-edhoc</artifactId>
++			<version>3.1.0-SNAPSHOT</version>
++		</dependency>
++		<dependency>
++			<groupId>org.eclipse.californium</groupId>
++			<artifactId>cf-oscore</artifactId>
++			<version>3.1.0-SNAPSHOT</version>
++		</dependency>
++		<dependency>
++			<groupId>org.eclipse.californium</groupId>
++			<artifactId>element-connector</artifactId>
++			<version>3.1.0-SNAPSHOT</version>
++		</dependency>
+ 		<dependency>
+ 			<groupId>org.slf4j</groupId>
+ 			<artifactId>slf4j-log4j12</artifactId>
+@@ -60,6 +74,15 @@
+ 					<target>1.8</target>
+ 				</configuration>
+ 			</plugin>
++
++			<plugin>
++				<artifactId>maven-assembly-plugin</artifactId>
++				<configuration>
++				<descriptorRefs>
++					<descriptorRef>jar-with-dependencies</descriptorRef>
++				</descriptorRefs>
++				</configuration>
++			</plugin>
+ 		</plugins>
+ 	</build>
+ </project>
+diff --git a/edhoc-applications/src/main/java/se/sics/edhocapps/AppProfileBuilder.java b/edhoc-applications/src/main/java/se/sics/edhocapps/AppProfileBuilder.java
+new file mode 100644
+index 0000000..2e8fbd0
+--- /dev/null
++++ b/edhoc-applications/src/main/java/se/sics/edhocapps/AppProfileBuilder.java
+@@ -0,0 +1,63 @@
++package se.sics.edhocapps;
++
++import org.eclipse.californium.edhoc.AppProfile;
++
++import java.util.Set;
++
++public class AppProfileBuilder {
++
++    public static AppProfile build(Set<Integer> authMethods, int mode) {
++        // Use of message_4 as expected to be sent by the Responder
++        boolean useMessage4;
++
++        // Use of EDHOC for keying OSCORE
++        boolean usedForOSCORE;
++
++        // Supporting for the EDHOC+OSCORE request
++        boolean supportCombinedRequest;
++
++        switch (mode) {
++            case 1: {
++                // m3 no app
++                useMessage4 = false;
++                usedForOSCORE = false;
++                supportCombinedRequest = false;
++                break;
++            }
++            case 2: {
++                // m3 app
++                useMessage4 = false;
++                usedForOSCORE = true;
++                supportCombinedRequest = false;
++                break;
++            }
++            case 3: {
++                // m3 combined app
++                useMessage4 = false;
++                usedForOSCORE = true;
++                supportCombinedRequest = true;
++                break;
++            }
++            case 4: {
++                // m4 no app
++                useMessage4 = true;
++                usedForOSCORE = false;
++                supportCombinedRequest = false;
++                break;
++            }
++            case 5: {
++                // m4 app
++                useMessage4 = true;
++                usedForOSCORE = true;
++                supportCombinedRequest = false;
++                break;
++            }
++            default: throw new RuntimeException(String.format(
++                    "Invalid application profile mode: %d. Available application profile modes are 1, 2, 3, 4, 5",
++                    mode));
++        }
++
++        return new AppProfile(authMethods, useMessage4, usedForOSCORE, supportCombinedRequest);
++    }
++}
++
+diff --git a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Client.java b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Client.java
+index 5593959..362a559 100644
+--- a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Client.java
++++ b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Client.java
+@@ -181,6 +181,14 @@ public class Phase1Client {
+ 	 * 
+ 	 */
+ 	public static void main(String args[]) {
++
++		if (args.length > 1) {
++			System.out.println("Usage: <edhoc-client> [mode]");
++			System.out.println("Modes: 1 (m3 no app), 2 (m3 app), 3 (m3 combined app), 4 (m4 no app), 5 (m4 app)");
++			System.out.println("Default Mode: 3 (m3 combined app)");
++			return;
++		}
++
+ 		String defaultUri = "coap://localhost/helloWorld";
+ 				
+ 		Configuration config = Configuration.createWithFile(CONFIG_FILE, CONFIG_HEADER, DEFAULTS);
+@@ -215,11 +223,22 @@ public class Phase1Client {
+ 		Set<Integer> authMethods = new HashSet<Integer>();
+ 		for (int i = 0; i <= Constants.EDHOC_AUTH_METHOD_3; i++ )
+ 			authMethods.add(i);
++		/*
+ 		boolean useMessage4 = false;
+ 		boolean usedForOSCORE = true;
+ 		boolean supportCombinedRequest = true; // If set to true, it overrides the ID conversion method to CONVERSION_ID_CORE
+ 		AppProfile appProfile = new AppProfile(authMethods, useMessage4, usedForOSCORE, supportCombinedRequest);
+-		
++		*/
++		int mode = 3;
++		if (args.length == 1) {
++			try {
++				mode = Integer.parseInt(args[0]);
++			} catch (NumberFormatException e) {
++				System.out.println("Provided mode is not an integer: " + args[0]);
++				return;
++			}
++		}
++		AppProfile appProfile = AppProfileBuilder.build(authMethods, mode);
+ 		appProfiles.put(edhocURI, appProfile);
+ 		
+ 		URI uri = null; // URI parameter of the request
+@@ -957,12 +976,15 @@ public class Phase1Client {
+ 		int HANDLER_TIMEOUT = 1000;
+ 		// Send follow-up requests
+ 		Scanner scanner = new Scanner(System.in);
++		String commands= "10q";
+ 		String command = "";
+ 		String payload = null;
+ 		while (!command.equals("q")) {
+ 
+ 			System.out.println("Enter command: ");
+-			command = scanner.next();
++			//command = scanner.next();
++			command = String.valueOf(commands.charAt(0));
++			commands = commands.substring(1);
+ 
+ 			if (command.equals("1")) {
+ 				payload = "1";
+diff --git a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Server.java b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Server.java
+index 26321a0..e2ea306 100644
+--- a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Server.java
++++ b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Server.java
+@@ -143,7 +143,14 @@ public class Phase1Server extends CoapServer {
+ 	 * Application entry point.
+ 	 */
+ 	public static void main(String[] args) {
+-		
++
++		if (args.length > 1) {
++			System.out.println("Usage: <edhoc-server> [mode]");
++			System.out.println("Modes: 1 (m3 no app), 2 (m3 app), 3 (m3 combined app), 4 (m4 no app), 5 (m4 app)");
++			System.out.println("Default Mode: 3 (m3 combined app)");
++			return;
++		}
++
+ 		// Insert EdDSA security provider
+ 		Util.installCryptoProvider();
+ 
+@@ -170,11 +177,22 @@ public class Phase1Server extends CoapServer {
+ 		Set<Integer> authMethods = new HashSet<Integer>();
+ 		for (int i = 0; i <= Constants.EDHOC_AUTH_METHOD_3; i++ )
+ 			authMethods.add(i);
++		/*
+ 		boolean useMessage4 = false;
+ 		boolean usedForOSCORE = true;
+ 		boolean supportCombinedRequest = true; // If set to true, it overrides the ID conversion method to CONVERSION_ID_CORE
+ 		AppProfile appProfile = new AppProfile(authMethods, useMessage4, usedForOSCORE, supportCombinedRequest);
+-		
++		*/
++		int mode = 3;
++		if (args.length == 1) {
++			try {
++				mode = Integer.parseInt(args[0]);
++			} catch (NumberFormatException e) {
++				System.out.println("Provided mode is not an integer: " + args[0]);
++				return;
++			}
++		}
++		AppProfile appProfile = AppProfileBuilder.build(authMethods, mode);
+ 		appProfiles.put(uriLocal + "/.well-known/edhoc", appProfile);
+ 		
+ 		try {
+diff --git a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase2Client.java b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase2Client.java
+index 2865aba..420bcb9 100644
+--- a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase2Client.java
++++ b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase2Client.java
+@@ -960,12 +960,15 @@ public class Phase2Client {
+ 		int HANDLER_TIMEOUT = 1000;
+ 		// Send follow-up requests
+ 		Scanner scanner = new Scanner(System.in);
++		String commands= "10q";
+ 		String command = "";
+ 		String payload = null;
+ 		while (!command.equals("q")) {
+ 
+ 			System.out.println("Enter command: ");
+-			command = scanner.next();
++			//command = scanner.next();
++			command = String.valueOf(commands.charAt(0));
++			commands = commands.substring(1);
+ 
+ 			if (command.equals("1")) {
+ 				payload = "1";
+diff --git a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase3Client.java b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase3Client.java
+index 4b1937e..4e2b20f 100644
+--- a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase3Client.java
++++ b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase3Client.java
+@@ -959,12 +959,15 @@ public class Phase3Client {
+ 		int HANDLER_TIMEOUT = 1000;
+ 		// Send follow-up requests
+ 		Scanner scanner = new Scanner(System.in);
++		String commands= "10q";
+ 		String command = "";
+ 		String payload = null;
+ 		while (!command.equals("q")) {
+ 
+ 			System.out.println("Enter command: ");
+-			command = scanner.next();
++			//command = scanner.next();
++			command = String.valueOf(commands.charAt(0));
++			commands = commands.substring(1);
+ 
+ 			if (command.equals("1")) {
+ 				payload = "1";
+diff --git a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase4Client.java b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase4Client.java
+index 463a8b3..87baae3 100644
+--- a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase4Client.java
++++ b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase4Client.java
+@@ -959,12 +959,15 @@ public class Phase4Client {
+ 		int HANDLER_TIMEOUT = 1000;
+ 		// Send follow-up requests
+ 		Scanner scanner = new Scanner(System.in);
++		String commands= "10q";
+ 		String command = "";
+ 		String payload = null;
+ 		while (!command.equals("q")) {
+ 
+ 			System.out.println("Enter command: ");
+-			command = scanner.next();
++			//command = scanner.next();
++			command = String.valueOf(commands.charAt(0));
++			commands = commands.substring(1);
+ 
+ 			if (command.equals("1")) {
+ 				payload = "1";
