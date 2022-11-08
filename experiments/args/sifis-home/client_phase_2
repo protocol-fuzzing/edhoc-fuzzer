@@ -1,8 +1,9 @@
 state-fuzzer-client
 
+
 ##### StateFuzzerConfig #####
 -output
-${results.learning.clients}/uoscore-uedhoc_client_m4_app
+${results.learning.clients}/sifis-home_client_phase_2
 
 
 ##### LearnerConfig #####
@@ -11,7 +12,7 @@ TTT
 -equivalenceAlgorithms
 W_METHOD,WP_METHOD
 -queryFile
-${results.learning.clients}/uoscore-uedhoc_client_m4_app/queryFile
+${results.learning.clients}/sifis-home_client_phase_2/queryFile
 -cacheTests
 -skipNonDetTests
 
@@ -39,40 +40,32 @@ ${results.learning.clients}/uoscore-uedhoc_client_m4_app/queryFile
 
 # TestVector
 -testVectorJson
-${authentication.test_vectors}/test_vectors_v15_p256.json
+${authentication.test_vectors}/test_vectors_sifis_home.json
 
 -testVectorJsonKey
-test_vector_1
+test_vector_x25519_phases_2_4
 
 -testVectorPeerKeyCurve
-P256
+X25519
 
 -edhocRole
 Responder
 
 -appCoapResource
-tv1
-
--disableCXCorrelation
-
--forceOscoreSenderId
-01
-
--forceOscoreRecipientId
-[]
+light
 
 
 ##### SulConfig #####
 -protocolVersion
-15
+16
 -responseWait
-7500
+2000
 -processDir
-${models.clients}/uoscore-uedhoc/linux-edhoc-oscore
+${models.clients}/sifis-home
 -cmd
-./client
+java -cp edhoc-applications.jar se.sics.edhocapps.Phase2Client
 -startWait
-2500
+1000
 
 
 ##### EdhocSulClientConfig #####

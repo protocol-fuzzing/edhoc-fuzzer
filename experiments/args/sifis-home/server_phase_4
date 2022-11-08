@@ -1,0 +1,77 @@
+state-fuzzer-server
+
+
+##### StateFuzzerConfig #####
+-output
+${results.learning.servers}/sifis-home_server_phase_4
+
+
+##### LearnerConfig #####
+-learningAlgorithm
+TTT
+-equivalenceAlgorithms
+W_METHOD,WP_METHOD
+-queryFile
+${results.learning.servers}/sifis-home_server_phase_4/queryFile
+-cacheTests
+-skipNonDetTests
+
+##### EdhocMapperConfig #####
+## Mapper Auth ##
+
+# X509 cert
+-mapCredType
+2
+
+# X5T
+-mapIdCredType
+3
+
+## Sul Auth ##
+
+# X509 cert
+-sulCredType
+2
+
+# X5T
+-sulIdCredType
+3
+
+# TestVector
+-testVectorJson
+${authentication.test_vectors}/test_vectors_sifis_home.json
+
+-testVectorJsonKey
+test_vector_x25519_phases_2_4
+
+-testVectorPeerKeyCurve
+X25519
+
+-edhocRole
+Initiator
+
+-appCoapResource
+light
+
+-appMessageCodeToCoapServer
+POST
+
+-appMessagePayloadToCoapServer
+1
+
+##### SulConfig #####
+-protocolVersion
+16
+-responseWait
+2500
+-processDir
+${models.servers}/sifis-home
+-cmd
+java -cp edhoc-applications.jar se.sics.edhocapps.Phase4Server
+-startWait
+2500
+
+
+##### EdhocSulServerConfig #####
+-connect
+localhost:5683

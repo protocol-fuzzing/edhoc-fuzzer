@@ -3,7 +3,7 @@ state-fuzzer-server
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.servers}/uoscore-uedhoc_server_m4_no_app
+${results.learning.servers}/sifis-home_server_phase_3
 
 
 ##### LearnerConfig #####
@@ -12,10 +12,9 @@ TTT
 -equivalenceAlgorithms
 W_METHOD,WP_METHOD
 -queryFile
-${results.learning.servers}/uoscore-uedhoc_server_m4_no_app/queryFile
+${results.learning.servers}/sifis-home_server_phase_3/queryFile
 -cacheTests
 -skipNonDetTests
-
 
 ##### EdhocMapperConfig #####
 ## Mapper Auth ##
@@ -40,31 +39,35 @@ ${results.learning.servers}/uoscore-uedhoc_server_m4_no_app/queryFile
 
 # TestVector
 -testVectorJson
-${authentication.test_vectors}/test_vectors_v15_p256.json
+${authentication.test_vectors}/test_vectors_sifis_home.json
 
 -testVectorJsonKey
-test_vector_2
+test_vector_ed25519_phases_1_3
 
 -testVectorPeerKeyCurve
-P256
+Ed25519
 
 -edhocRole
 Initiator
 
 -appCoapResource
-tv1
+light
 
--disableCXCorrelation
+-appMessageCodeToCoapServer
+POST
+
+-appMessagePayloadToCoapServer
+1
 
 ##### SulConfig #####
 -protocolVersion
-15
+16
 -responseWait
 2500
 -processDir
-${models.servers}/uoscore-uedhoc/linux-edhoc
+${models.servers}/sifis-home
 -cmd
-./server
+java -cp edhoc-applications.jar se.sics.edhocapps.Phase3Server
 -startWait
 2500
 

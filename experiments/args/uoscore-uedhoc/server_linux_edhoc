@@ -3,7 +3,7 @@ state-fuzzer-server
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.servers}/uoscore-uedhoc_server_m4_app
+${results.learning.servers}/uoscore-uedhoc_server_linux_edhoc
 
 
 ##### LearnerConfig #####
@@ -12,7 +12,7 @@ TTT
 -equivalenceAlgorithms
 W_METHOD,WP_METHOD
 -queryFile
-${results.learning.servers}/uoscore-uedhoc_server_m4_app/queryFile
+${results.learning.servers}/uoscore-uedhoc_server_linux_edhoc/queryFile
 -cacheTests
 -skipNonDetTests
 
@@ -40,7 +40,7 @@ ${results.learning.servers}/uoscore-uedhoc_server_m4_app/queryFile
 
 # TestVector
 -testVectorJson
-${authentication.test_vectors}/test_vectors_v15_p256.json
+${authentication.test_vectors}/test_vectors_v16_p256.json
 
 -testVectorJsonKey
 test_vector_1
@@ -56,23 +56,16 @@ tv1
 
 -disableCXCorrelation
 
--forceOscoreSenderId
-[]
-
--forceOscoreRecipientId
-01
-
--disableSessionReset
 
 ##### SulConfig #####
 -protocolVersion
-15
+16
 -responseWait
 2500
 -processDir
-${models.servers}/uoscore-uedhoc/linux-edhoc-oscore
+${models.servers}/uoscore-uedhoc/
 -cmd
-./server
+./linux-edhoc-responder
 -startWait
 2500
 

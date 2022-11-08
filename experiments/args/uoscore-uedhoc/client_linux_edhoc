@@ -1,0 +1,74 @@
+state-fuzzer-client
+
+##### StateFuzzerConfig #####
+-output
+${results.learning.clients}/uoscore-uedhoc_client_linux_edhoc
+
+
+##### LearnerConfig #####
+-learningAlgorithm
+TTT
+-equivalenceAlgorithms
+W_METHOD,WP_METHOD
+-queryFile
+${results.learning.clients}/uoscore-uedhoc_client_linux_edhoc/queryFile
+-cacheTests
+-skipNonDetTests
+
+
+##### EdhocMapperConfig #####
+## Mapper Auth ##
+
+# X509 cert
+-mapCredType
+2
+
+# X5T
+-mapIdCredType
+3
+
+## Sul Auth ##
+
+# X509 cert
+-sulCredType
+2
+
+# X5T
+-sulIdCredType
+3
+
+# TestVector
+-testVectorJson
+${authentication.test_vectors}/test_vectors_v16_p256.json
+
+-testVectorJsonKey
+test_vector_1
+
+-testVectorPeerKeyCurve
+P256
+
+-edhocRole
+Responder
+
+-appCoapResource
+tv1
+
+-disableCXCorrelation
+
+
+##### SulConfig #####
+-protocolVersion
+16
+-responseWait
+2500
+-processDir
+${models.clients}/uoscore-uedhoc
+-cmd
+./linux-edhoc-initiator
+-startWait
+2500
+
+
+##### EdhocSulClientConfig #####
+-port
+5683
