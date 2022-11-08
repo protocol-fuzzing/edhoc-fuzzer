@@ -24,9 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
 public class StateFuzzerStandard implements StateFuzzer {
     private static final Logger LOGGER = LogManager.getLogger(StateFuzzerStandard.class);
@@ -187,23 +185,24 @@ public class StateFuzzerStandard implements StateFuzzer {
 
     protected void copyInputsToOutputFolder(File outputFolder) {
         try {
-            Path originalAlphabetPath = Path.of(stateFuzzerComposer.getAlphabetFileName());
-            Path outputAlphabetPath = Path.of(outputFolder.getPath(), ALPHABET_FILENAME);
-            Files.copy(originalAlphabetPath, outputAlphabetPath, StandardCopyOption.REPLACE_EXISTING);
+            dumpToFile(stateFuzzerComposer.getAlphabetFileInputStream(), new File(outputFolder, ALPHABET_FILENAME));
         } catch (IOException e) {
             LOGGER.error("Could not copy alphabet to output folder");
+            e.printStackTrace();
         }
 
         LearnerConfig learnerConfig = stateFuzzerEnabler.getLearnerConfig();
         if (learnerConfig.getEquivalenceAlgorithms().contains(EquivalenceAlgorithmName.SAMPLED_TESTS)) {
             try {
-                Path originalTestFilePath = Path.of(learnerConfig.getQueryFile());
+                String testFile = learnerConfig.getTestFile();
+                Path originalTestFilePath = Path.of(testFile);
                 int pathNameCount = originalTestFilePath.getNameCount();
                 String testFilename = originalTestFilePath.subpath(pathNameCount - 1, pathNameCount).toString();
-                Path outputTestFilePath = Path.of(outputFolder.getPath(), testFilename);
-                Files.copy(originalTestFilePath, outputTestFilePath, StandardCopyOption.REPLACE_EXISTING);
+
+                dumpToFile(new FileInputStream(testFile), new File(outputFolder, testFilename));
             } catch (IOException e) {
                 LOGGER.error("Could not copy sampled tests file to output folder");
+                e.printStackTrace();
             }
         }
 
@@ -213,6 +212,7 @@ public class StateFuzzerStandard implements StateFuzzer {
                     new File(outputFolder, MAPPER_CONNECTION_CONFIG_FILENAME));
         } catch (IOException e) {
             LOGGER.error("Could not copy mapperToSulConfig to output folder");
+            e.printStackTrace();
         }
     }
 

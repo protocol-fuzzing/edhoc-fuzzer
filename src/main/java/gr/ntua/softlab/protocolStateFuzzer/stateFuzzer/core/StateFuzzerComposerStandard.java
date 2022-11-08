@@ -25,6 +25,7 @@ import net.automatalib.words.Word;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class StateFuzzerComposerStandard implements StateFuzzerComposer {
     protected final StateFuzzerEnabler stateFuzzerEnabler;
@@ -108,8 +109,8 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
     }
 
     @Override
-    public String getAlphabetFileName() {
-        return alphabetBuilder.getAlphabetFileName(learnerConfig);
+    public InputStream getAlphabetFileInputStream() {
+        return alphabetBuilder.getAlphabetFileInputStream(learnerConfig);
     }
 
     @Override

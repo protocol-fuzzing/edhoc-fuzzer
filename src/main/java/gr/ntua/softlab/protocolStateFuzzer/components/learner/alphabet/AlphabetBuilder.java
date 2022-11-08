@@ -5,13 +5,14 @@ import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.AlphabetOpt
 import net.automatalib.words.Alphabet;
 
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public interface AlphabetBuilder {
     String DEFAULT_ALPHABET_NO_EXTENSION = "default_alphabet";
 
     Alphabet<AbstractInput> build(AlphabetOptionProvider config);
 
-    String getAlphabetFileName(AlphabetOptionProvider config);
+    InputStream getAlphabetFileInputStream(AlphabetOptionProvider config);
 
     String getAlphabetFileExtension();
 

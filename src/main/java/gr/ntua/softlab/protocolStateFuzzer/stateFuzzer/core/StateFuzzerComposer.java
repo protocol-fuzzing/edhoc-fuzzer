@@ -12,6 +12,7 @@ import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 
 import java.io.File;
+import java.io.InputStream;
 
 public interface StateFuzzerComposer {
 
@@ -26,7 +27,7 @@ public interface StateFuzzerComposer {
 
     Alphabet<AbstractInput> getAlphabet();
 
-    String getAlphabetFileName();
+    InputStream getAlphabetFileInputStream();
 
     String getAlphabetFileExtension();
 

@@ -9,9 +9,9 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class AlphabetBuilderStandard implements AlphabetBuilder {
     private static final Logger LOGGER = LogManager.getLogger(AlphabetBuilderStandard.class);
@@ -57,21 +57,26 @@ public class AlphabetBuilderStandard implements AlphabetBuilder {
             throws AlphabetSerializerException, FileNotFoundException {
         Alphabet<AbstractInput> alphabet = null;
         if (config.getAlphabet() != null) {
-            alphabet = alphabetSerializer.read(new FileInputStream(config.getAlphabet()));
+            alphabet = alphabetSerializer.read(getAlphabetFileInputStream(config));
         }
         return alphabet;
     }
 
     protected Alphabet<AbstractInput> buildDefaultAlphabet() throws AlphabetSerializerException {
-        return alphabetSerializer.read(this.getClass().getClassLoader().getResourceAsStream(DEFAULT_ALPHABET));
+        return alphabetSerializer.read(getAlphabetFileInputStream(null));
     }
 
     @Override
-    public String getAlphabetFileName(AlphabetOptionProvider config) {
-        if (config.getAlphabet() != null) {
-            return config.getAlphabet();
-        } else {
-            return Objects.requireNonNull(this.getClass().getClassLoader().getResource(DEFAULT_ALPHABET)).getPath();
+    public InputStream getAlphabetFileInputStream(AlphabetOptionProvider config) {
+        if (config == null || config.getAlphabet() == null) {
+            return this.getClass().getClassLoader().getResourceAsStream(DEFAULT_ALPHABET);
+        }
+
+        try {
+            return new FileInputStream(config.getAlphabet());
+        } catch (FileNotFoundException e) {
+            LOGGER.fatal("Failed to find provided alphabet file");
+            throw new RuntimeException(e);
         }
     }
 
