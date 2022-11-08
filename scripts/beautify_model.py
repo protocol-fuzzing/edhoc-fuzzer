@@ -84,6 +84,12 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
         i, o = label.strip('"').split(' / ')
         return (i in remove_dct['i']) or (o in remove_dct['o']) or (label in remove_dct['l'])
 
+    def find_index_of_same_edges(edge):
+        for idx, e in enumerate(graph.get_edge(edge.get_source(), edge.get_destination())):
+            if edge.get_label() == e.get_label():
+                return idx
+        return -1
+
     def replace_label(label):
         if label == "" or ' / ' not in label:
             return label
@@ -122,7 +128,8 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
 
         # in case of label to be removed, delete it from graph and continue
         if should_remove_label(e.get_label()):
-            if graph.del_edge(*source_dest_pair):
+            idx = find_index_of_same_edges(e)
+            if idx > -1 and graph.del_edge(*source_dest_pair, idx):
                 s, d = source_dest_pair
                 print(f"removed edge: {s} -> {d} with label: {e.get_label()}")
             continue
