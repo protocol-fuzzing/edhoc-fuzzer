@@ -508,7 +508,7 @@ public class MessageProcessorPersistent {
         }
 
         // Compute PRK_3e2m
-        byte[] prk3e2m = computePRK3e2m(session, prk2e, th2, peerEphemeralKey, peerLongTermKey);
+        byte[] prk3e2m = computePRK3e2m(session, prk2e, th2, peerLongTermKey, peerEphemeralKey);
         if (prk3e2m == null) {
             LOGGER.error("Computing PRK_3e2m");
             return false;

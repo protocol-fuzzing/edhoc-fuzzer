@@ -30,7 +30,7 @@ public class EdhocMapperConfig extends MapperConfig {
             + "-appCoapResource = applicationEndpoint")
     protected String appCoapResource = "applicationEndpoint";
 
-    @Parameter(names = "-appMessageCodeToCoapServer", description = "The message CoAP Code when mapper as a "
+    @Parameter(names = "-appMessageCodeToCoapServer", description = "The message CoAP request Code when mapper as a "
             + "CoAP client sends requests to a server implementation")
     protected String appMessageCodeToCoapServer = "GET";
 
@@ -39,7 +39,7 @@ public class EdhocMapperConfig extends MapperConfig {
             + "empty payload")
     protected String appMessagePayloadToCoapServer = "";
 
-    @Parameter(names = "-appMessageCodeToCoapClient", description = "The message CoAP Code when mapper as a "
+    @Parameter(names = "-appMessageCodeToCoapClient", description = "The message CoAP response Code when mapper as a "
             + "CoAP server sends responses to a client implementation")
     protected String appMessageCodeToCoapClient = "CHANGED";
 
@@ -54,9 +54,9 @@ public class EdhocMapperConfig extends MapperConfig {
     @Parameter(names = "-disableContentFormat", description = "Do not add CoAP Content-Format in sending messages")
     protected boolean disableContentFormat = false;
 
-    @Parameter(names = "-disableSessionReset", description = "Do not reset old session data, when Initiator mapper " +
-            "sends a new starting message. Warning: Disabling session reset may lead to inaccurate learning")
-    protected boolean disableSessionReset = false;
+    @Parameter(names = "-enableSessionReset", description = "Reset to default old session data, when Initiator mapper " +
+            "sends a message to start a new session. Reset does not affect a Responder mapper")
+    protected boolean enableSessionReset = false;
 
     @Parameter(names = "-disableCXCorrelation", description = "Disable correlation with connection identifiers. " +
             "In case of client mapper do not prepend CX to requests and in case of server mapper do not treat first " +
@@ -65,12 +65,12 @@ public class EdhocMapperConfig extends MapperConfig {
 
     @Parameter(names = "-forceOscoreSenderId", description = "Use this oscore sender id, instead of the peer " +
             "connection id that is found during EDHOC. " +
-            "Available: empty byte string: [] or single-line byte string in the format: 00 01 02 03 04 05")
+            "Available: empty byte string: [] or single-line byte string in the format: 0a0b0c0d0e0f")
     protected String forceOscoreSenderId = null;
 
     @Parameter(names = "-forceOscoreRecipientId", description = "Use this oscore sender id, instead of the own " +
             "connection id that is found during EDHOC. " +
-            "Available: empty byte string: [] or single-line byte string in the format: 00 01 02 03 04 05")
+            "Available: empty byte string: [] or single-line byte string in the format: 0a0b0c0d0e0f")
     protected String forceOscoreRecipientId = null;
 
     public void initializeHost(String host) {
@@ -100,7 +100,7 @@ public class EdhocMapperConfig extends MapperConfig {
     }
 
     public String getAppMessageCodeToCoapServer() {
-        return appMessageCodeToCoapServer;
+        return appMessageCodeToCoapServer.toUpperCase();
     }
 
     public String getAppMessagePayloadToCoapServer() {
@@ -108,7 +108,7 @@ public class EdhocMapperConfig extends MapperConfig {
     }
 
     public String getAppMessageCodeToCoapClient() {
-        return appMessageCodeToCoapClient;
+        return appMessageCodeToCoapClient.toUpperCase();
     }
 
     public String getAppMessagePayloadToCoapClient() {
@@ -124,7 +124,7 @@ public class EdhocMapperConfig extends MapperConfig {
     }
 
     public boolean useSessionReset() {
-        return !disableSessionReset;
+        return enableSessionReset;
     }
 
     public boolean useCXCorrelation() {

@@ -46,11 +46,6 @@ public class EdhocOutputMapper extends OutputMapper {
             return new AbstractOutput(MessageOutputType.UNSUCCESSFUL_MESSAGE.name());
         }
 
-        // Check for coap error response
-        if (edhocMapperConnector.receivedCoapErrorMessage()) {
-            return coapError();
-        }
-
         AbstractOutput abstractOutput;
 
         // Check for application related message
@@ -83,7 +78,8 @@ public class EdhocOutputMapper extends OutputMapper {
 
         if (edhocMapperConnector.receivedMsg3WithOscoreApp()) {
             // received Message3_OSCORE_APP, from which application data propagated and decrypted
-            LOGGER.info("EDHOC_MESSAGE_3_OSCORE_APP | OSCORE_MESSAGE ({}): {}", messageType, Arrays.toString(responsePayload));
+            LOGGER.info("EDHOC_MESSAGE_3_OSCORE_APP | OSCORE_APP_MESSAGE ({}): {} ~ {}",
+                    messageType, Arrays.toString(responsePayload), new String(responsePayload));
 
             return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_3_OSCORE_APP.name());
         }
@@ -99,7 +95,8 @@ public class EdhocOutputMapper extends OutputMapper {
                     received oscore-protected request to application data, so
                     responsePayload is the decrypted request payload
              */
-            LOGGER.info("OSCORE_APP_MESSAGE ({}): {}", messageType, Arrays.toString(responsePayload));
+            LOGGER.info("OSCORE_APP_MESSAGE ({}): {} ~ {}",
+                    messageType, Arrays.toString(responsePayload), new String(responsePayload));
 
             return new AbstractOutput(MessageOutputType.OSCORE_APP_MESSAGE.name());
         }
@@ -146,6 +143,11 @@ public class EdhocOutputMapper extends OutputMapper {
 
     protected AbstractOutput coapOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         String messageType = edhocMapperState.isCoapClient() ? "response" : "request";
+
+        // Check for coap error message
+        if (edhocMapperConnector.receivedCoapErrorMessage()) {
+            return coapError();
+        }
 
         // Check for coap empty message
         if (edhocMapperConnector.receivedCoapEmptyMessage()) {

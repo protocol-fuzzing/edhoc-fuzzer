@@ -75,8 +75,16 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         exceptionCodeOccurred = -1;
 
         if (currentCoapExchangeInfo == null || currentCoapExchangeInfo.getCoapExchange() == null) {
-            LOGGER.warn("Unable to reply with given message: No active CoAP exchange found");
-            return;
+            // timeout has occured on previous send so poll the queue to get a
+            // possible message that has arrived after the previous send
+            // although the learner will not be aware of it
+            currentCoapExchangeInfo = coapExchanger.getReceivedQueue().poll();
+            if (currentCoapExchangeInfo == null || currentCoapExchangeInfo.getCoapExchange() == null) {
+                // impossible to send given message so is deemed unsupported
+                LOGGER.warn("Unable to reply with given message: No active CoAP exchange found");
+                exceptionCodeOccurred = 1;
+                return;
+            }
         }
 
         CoapExchange currentExchange = currentCoapExchangeInfo.getCoapExchange();

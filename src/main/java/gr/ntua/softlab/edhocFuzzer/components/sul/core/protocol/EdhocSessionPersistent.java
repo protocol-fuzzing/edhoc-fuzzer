@@ -4,7 +4,6 @@ import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
 import org.eclipse.californium.cose.AlgorithmID;
-import org.eclipse.californium.cose.OneKey;
 import org.eclipse.californium.edhoc.*;
 import org.eclipse.californium.oscore.HashMapCtxDB;
 import org.eclipse.californium.oscore.OSCoreCtx;
@@ -81,13 +80,14 @@ public class EdhocSessionPersistent extends EdhocSession {
 
         // peer dummy info
         setPeerConnectionId(new byte[]{0, 0, 0, 0});
-        setPeerIdCred(CBORObject.Null);
         setPeerCred(new byte[]{0, 0, 0, 0});
-        setPeerLongTermPublicKey(new OneKey());
+        setPeerIdCred(Util.buildIdCredKid(getPeerCred()));
 
+        // in order for the ephemeral and long-term keys of the two peers to be of the same curve
         // dummy peerEphemeralPublicKey same as own ephemeral key
-        // in order for the two keys to be of the same curve
+        // dummy peerLongTermPublicKey same as own long-term key
         setPeerEphemeralPublicKey(getEphemeralKey());
+        setPeerLongTermPublicKey(getKeyPair());
 
         // message1 hash
         setHashMessage1(new byte[]{1});
