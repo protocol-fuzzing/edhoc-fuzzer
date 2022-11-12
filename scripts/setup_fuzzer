@@ -2,9 +2,34 @@
 
 readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
 readonly BASE_DIR="${SCRIPT_DIR}/.."
+readonly PATCH_FILE="${SCRIPT_DIR}/cf-edhoc.patch"
+readonly COMMIT_HASH="7d6811d0614d5338586c33c82cd11a78006ad858"
 
+# setup cf-edhoc library
+set -e
+cd ${BASE_DIR}
+git clone "https://github.com/rikard-sics/californium.git"
+cd californium
+git checkout edhoc-dev
+git checkout ${COMMIT_HASH}
+git apply ${PATCH_FILE}
+mvn clean install -DskipTests
+JAR_FILE=$(ls ./cf-edhoc/target/cf-edhoc-*-SNAPSHOT.jar)
+
+mvn install:install-file \
+    -Dfile=${JAR_FILE} \
+    -DgroupId=se.sics.org.eclipse.californium \
+    -DartifactId=cf-edhoc \
+    -Dversion=0.0.0 \
+    -Dpackaging=jar
+
+cd ${BASE_DIR}
+rm -rf ./californium/
+set +e
+
+# package project and create symlink
 set -e
 cd ${BASE_DIR}
 mvn clean package
-ln -sf ${BASE_DIR}/target/edhoc-fuzzer*-jar-with-dependencies.jar edhoc-fuzzer.jar
+ln -sf ${BASE_DIR}/target/edhoc-fuzzer-*-jar-with-dependencies.jar edhoc-fuzzer.jar
 set +e

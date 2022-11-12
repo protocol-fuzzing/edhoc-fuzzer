@@ -1,0 +1,239 @@
+diff --git a/bom/pom.xml b/bom/pom.xml
+index 9a37b944c..c98d2b4ba 100644
+--- a/bom/pom.xml
++++ b/bom/pom.xml
+@@ -123,7 +123,6 @@
+ 				<groupId>net.i2p.crypto</groupId>
+ 				<artifactId>eddsa</artifactId>
+ 				<version>${eddsa.version}</version>
+-				<scope>runtime</scope>
+ 			</dependency>
+ 
+ 			<dependency>
+diff --git a/cf-edhoc/pom.xml b/cf-edhoc/pom.xml
+index 8847ec87f..0e244d701 100644
+--- a/cf-edhoc/pom.xml
++++ b/cf-edhoc/pom.xml
+@@ -71,7 +71,7 @@
+ 				<artifactId>maven-assembly-plugin</artifactId>
+ 				<configuration>
+ 					<descriptorRefs>
+-						<descriptorRef>enhanced-jar-with-licenses</descriptorRef>
++						<descriptorRef>jar-with-dependencies</descriptorRef>
+ 					</descriptorRefs>
+ 				</configuration>
+ 			</plugin>
+diff --git a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Hkdf.java b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Hkdf.java
+index 40a137656..b4d4c5114 100644
+--- a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Hkdf.java
++++ b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Hkdf.java
+@@ -42,7 +42,7 @@ public class Hkdf {
+ 	 * @throws InvalidKeyException if the HMAC procedure fails
+ 	 * @throws NoSuchAlgorithmException if an unknown HMAC is used
+ 	 */
+-	static byte[] extractExpand(byte[] salt, byte[] ikm, byte[] info, int len)
++	public static byte[] extractExpand(byte[] salt, byte[] ikm, byte[] info, int len)
+ 			throws InvalidKeyException, NoSuchAlgorithmException {
+ 
+ 		final String digest = "SHA256"; // Hash to use
+@@ -87,7 +87,7 @@ public class Hkdf {
+ 	 * @throws InvalidKeyException if the HMAC procedure fails
+ 	 * @throws NoSuchAlgorithmException if an unknown HMAC is used
+ 	 */
+-	static byte[] extract(byte[] salt, byte[] ikm) throws InvalidKeyException, NoSuchAlgorithmException {
++	public static byte[] extract(byte[] salt, byte[] ikm) throws InvalidKeyException, NoSuchAlgorithmException {
+ 
+ 		final String digest = "SHA256"; // Hash to use
+ 
+@@ -115,7 +115,7 @@ public class Hkdf {
+ 	 * @throws InvalidKeyException if the HMAC procedure fails
+ 	 * @throws NoSuchAlgorithmException if an unknown HMAC is used
+ 	 */
+-	static byte[] expand(byte[] prk, byte[] info, int len) throws InvalidKeyException, NoSuchAlgorithmException {
++	public static byte[] expand(byte[] prk, byte[] info, int len) throws InvalidKeyException, NoSuchAlgorithmException {
+ 
+ 		final String digest = "SHA256"; // Hash to use
+ 
+diff --git a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
+index a255c4bd1..de3353efe 100644
+--- a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
++++ b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
+@@ -286,7 +286,7 @@ public class SharedSecretCalculation {
+ 	 * 
+ 	 * @return a OneKey representing the input material
+ 	 */
+-	static OneKey buildEd25519OneKey(byte[] privateKey, byte[] publicKey) {
++	public static OneKey buildEd25519OneKey(byte[] privateKey, byte[] publicKey) {
+ 		byte[] rgbX = publicKey;
+ 		byte[] rgbD = privateKey;
+ 
+@@ -321,7 +321,7 @@ public class SharedSecretCalculation {
+ 	 * 
+ 	 * @return a OneKey representing the input material
+ 	 */
+-	static OneKey buildCurve25519OneKey(byte[] privateKey, byte[] publicKey) {
++	public static OneKey buildCurve25519OneKey(byte[] privateKey, byte[] publicKey) {
+ 		byte[] rgbX = publicKey;
+ 		byte[] rgbD = privateKey;
+ 
+@@ -346,7 +346,7 @@ public class SharedSecretCalculation {
+ 	 * @param publicKey the public key bytes
+ 	 * @return a Java KeyPair representing the input material
+ 	 */
+-	static KeyPair buildEd25519JavaKey(byte[] privateKey, byte[] publicKey) {
++	public static KeyPair buildEd25519JavaKey(byte[] privateKey, byte[] publicKey) {
+ 		EdDSAPrivateKeySpec privSpec = new EdDSAPrivateKeySpec(privateKey, EdDSANamedCurveTable.getByName("Ed25519"));
+ 		EdDSAPrivateKey priv = new EdDSAPrivateKey(privSpec);
+ 		EdDSAPublicKeySpec pubSpec = new EdDSAPublicKeySpec(publicKey, EdDSANamedCurveTable.getByName("Ed25519"));
+@@ -364,7 +364,7 @@ public class SharedSecretCalculation {
+ 	 * @param privateKey the private key bytes
+ 	 * @return the public key bytes
+ 	 */
+-	static byte[] calculatePublicEd25519FromPrivate(byte[] privateKey) {
++	public static byte[] calculatePublicEd25519FromPrivate(byte[] privateKey) {
+ 		EdDSANamedCurveSpec spec = EdDSANamedCurveTable.getByName("Ed25519");
+ 		byte[] seed = privateKey;
+ 		EdDSAPrivateKeySpec privKeySpec = new EdDSAPrivateKeySpec(seed, spec);
+@@ -385,7 +385,7 @@ public class SharedSecretCalculation {
+ 	 * 
+ 	 * @return a OneKey representing the input material
+ 	 */
+-	static OneKey buildEcdsa384OneKey(byte[] privateKey, byte[] publicKeyX, boolean signY) {
++	public static OneKey buildEcdsa384OneKey(byte[] privateKey, byte[] publicKeyX, boolean signY) {
+ 		// Recalculate Y value
+ 		byte[] publicKeyY = null;
+ 		try {
+@@ -409,7 +409,7 @@ public class SharedSecretCalculation {
+ 	 * 
+ 	 * @return a OneKey representing the input material
+ 	 */
+-	static OneKey buildEcdsa384OneKey(byte[] privateKey, byte[] publicKeyX, byte[] publicKeyY) {
++	public static OneKey buildEcdsa384OneKey(byte[] privateKey, byte[] publicKeyX, byte[] publicKeyY) {
+ 
+ 		// Attempt to recalculate Y value if missing
+ 		if (publicKeyY == null) {
+@@ -452,7 +452,7 @@ public class SharedSecretCalculation {
+ 	 * 
+ 	 * @return a OneKey representing the input material
+ 	 */
+-	static OneKey buildEcdsa256OneKey(byte[] privateKey, byte[] publicKeyX, boolean signY) {
++	public static OneKey buildEcdsa256OneKey(byte[] privateKey, byte[] publicKeyX, boolean signY) {
+ 		// Recalculate Y value
+ 		byte[] publicKeyY = null;
+ 		try {
+@@ -476,7 +476,7 @@ public class SharedSecretCalculation {
+ 	 * 
+ 	 * @return a OneKey representing the input material
+ 	 */
+-	static OneKey buildEcdsa256OneKey(byte[] privateKey, byte[] publicKeyX, byte[] publicKeyY) {
++	public static OneKey buildEcdsa256OneKey(byte[] privateKey, byte[] publicKeyX, byte[] publicKeyY) {
+ 
+         // Attempt to recalculate Y value if missing
+ 		if (publicKeyY == null) {
+@@ -530,7 +530,7 @@ public class SharedSecretCalculation {
+ 	 * @return the recomputed Y value for that X
+ 	 * @throws CoseException if recomputation fails
+ 	 */
+-	static byte[] recomputeEcdsa256YFromX(byte[] publicKeyX, boolean signY) throws CoseException {
++	public static byte[] recomputeEcdsa256YFromX(byte[] publicKeyX, boolean signY) throws CoseException {
+ 
+ 		BigInteger x = new BigInteger(1, publicKeyX);
+ 
+@@ -642,7 +642,7 @@ public class SharedSecretCalculation {
+ 	 * @return the recomputed Y value for that X
+ 	 * @throws CoseException if recomputation fails
+ 	 */
+-	static byte[] recomputeEcdsa384YFromX(byte[] publicKeyX, boolean signY) throws CoseException {
++	public static byte[] recomputeEcdsa384YFromX(byte[] publicKeyX, boolean signY) throws CoseException {
+ 
+ 		BigInteger x = new BigInteger(1, publicKeyX);
+ 
+@@ -752,7 +752,7 @@ public class SharedSecretCalculation {
+      * @param val the value to square
+      * @return one of the square roots
+      */
+-	static BigInteger squareMod(BigInteger val, BigInteger prime) {
++	private static BigInteger squareMod(BigInteger val, BigInteger prime) {
+ 
+ 		BigInteger three = new BigInteger("3");
+ 		BigInteger four = new BigInteger("4");
+@@ -777,7 +777,7 @@ public class SharedSecretCalculation {
+ 	 * 
+ 	 * @return the shared secret, or null in case of error
+ 	 */
+-	static byte[] generateSharedSecret(OneKey privateKey, OneKey publicKey) {
++	public static byte[] generateSharedSecret(OneKey privateKey, OneKey publicKey) {
+ 
+ 		if (privateKey == null || publicKey == null) {
+ 			System.err.println("Public key and/or privat key not found.");
+@@ -835,7 +835,7 @@ public class SharedSecretCalculation {
+ 	 * 
+ 	 * @throws CoseException
+ 	 */
+-	static OneKey convertEd25519ToCurve25519(OneKey initialKey) throws CoseException {
++	private static OneKey convertEd25519ToCurve25519(OneKey initialKey) throws CoseException {
+ 
+ 		FieldElement y = null;
+ 		try {
+diff --git a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
+index 974fa820f..83922130b 100644
+--- a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
++++ b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
+@@ -1155,7 +1155,7 @@ public class Util {
+ 		claimSetMap.Add(Constants.CWT_CLAIMS_SUB, subjectName);
+ 		claimSetMap.Add(Constants.CWT_CLAIMS_CNF, cnfMap);
+ 
+-		System.out.println("CCS serialization: " + StringUtil.byteArray2HexString(claimSetMap.EncodeToBytes()));
++		//System.out.println("CCS serialization: " + StringUtil.byteArray2HexString(claimSetMap.EncodeToBytes()));
+ 		
+         return claimSetMap.EncodeToBytes();
+ 		
+diff --git a/cf-oscore/pom.xml b/cf-oscore/pom.xml
+index d1abd4e7d..c40cb3bff 100644
+--- a/cf-oscore/pom.xml
++++ b/cf-oscore/pom.xml
+@@ -38,8 +38,7 @@
+         	<dependency> <!-- Rikard: Added this dependency -->
+ 	            <groupId>net.i2p.crypto</groupId>
+ 	            <artifactId>eddsa</artifactId>
+-	            <version>0.2.0</version>
+-	            <type>jar</type>
++				<version>${eddsa.version}</version>
+         	</dependency>
+ 		<dependency> <!-- Rikard: Added this dependency (Curve25519) -->
+ 	            <groupId>org.bouncycastle</groupId>
+diff --git a/cf-oscore/src/main/java/org/eclipse/californium/cose/EncryptCommon.java b/cf-oscore/src/main/java/org/eclipse/californium/cose/EncryptCommon.java
+index 7112a06d6..169430d76 100644
+--- a/cf-oscore/src/main/java/org/eclipse/californium/cose/EncryptCommon.java
++++ b/cf-oscore/src/main/java/org/eclipse/californium/cose/EncryptCommon.java
+@@ -196,7 +196,7 @@ public abstract class EncryptCommon extends Message {
+ 			}
+ 			throw new CoseException("Decryption failure", ex);
+ 		} catch (Exception ex) {
+-			ex.printStackTrace();
++			//ex.printStackTrace();
+ 			throw new CoseException("Decryption failure", ex);
+ 		}
+ 	}
+diff --git a/cf-oscore/src/main/java/org/eclipse/californium/cose/SignCommon.java b/cf-oscore/src/main/java/org/eclipse/californium/cose/SignCommon.java
+index 0e3edf27f..58704197a 100644
+--- a/cf-oscore/src/main/java/org/eclipse/californium/cose/SignCommon.java
++++ b/cf-oscore/src/main/java/org/eclipse/californium/cose/SignCommon.java
+@@ -96,7 +96,7 @@ public abstract class SignCommon extends Message {
+             sig.initSign(privKey);
+             sig.update(rgbToBeSigned);
+             
+-			System.out.println("COSE: To be signed: " + Utils.toHexString(rgbToBeSigned));
++			//System.out.println("COSE: To be signed: " + Utils.toHexString(rgbToBeSigned));
+             
+             result = sig.sign();
+             if (sigLen > 0) {
+@@ -200,7 +200,7 @@ public abstract class SignCommon extends Message {
+             sig.initVerify(pubKey);
+             sig.update(rgbToBeSigned);
+             
+-			System.out.println("COSE: To be signed (checked): " + Utils.toHexString(rgbToBeSigned));
++			//System.out.println("COSE: To be signed (checked): " + Utils.toHexString(rgbToBeSigned));
+ 
+             if (convert) {
+                 rgbSignature = convertConcatToDer(rgbSignature);

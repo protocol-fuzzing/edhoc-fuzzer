@@ -73,7 +73,7 @@
 
             <!-- manually installed cf-edhoc -->
             <dependency>
-                <groupId>se.ri.org.eclipse.californium</groupId>
+                <groupId>se.sics.org.eclipse.californium</groupId>
                 <artifactId>cf-edhoc</artifactId>
                 <version>${cf-edhoc-version}</version>
             </dependency>
@@ -139,11 +139,10 @@
         <!-- edhocFuzzer dependencies -->
 
         <!-- manually modified and built jar and locally installed cf-edhoc
-             link: https://github.com/rikard-sics/californium/tree/edhoc-dev/cf-edhoc
-             commit: 42e0c00580e7b6a23071aaa9e2eb18734a7f8fae
+             see ./scripts/setup_fuzzer for more details
         -->
         <dependency>
-            <groupId>se.ri.org.eclipse.californium</groupId>
+            <groupId>se.sics.org.eclipse.californium</groupId>
             <artifactId>cf-edhoc</artifactId>
         </dependency>
 

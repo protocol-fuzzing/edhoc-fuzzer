@@ -18,11 +18,13 @@ public class EdhocEndpointInfoPersistent extends EdhocEndpointInfo {
             HashMap<Integer, HashMap<Integer, CBORObject>> idCreds, HashMap<Integer, HashMap<Integer, CBORObject>> creds,
             HashMap<Integer, HashMap<Integer, OneKey>> keyPairs, HashMap<CBORObject, OneKey> peerPublicKeys,
             HashMap<CBORObject, CBORObject> peerCredentials, HashMap<CBORObject, EdhocSessionPersistent> edhocSessionsPersistent,
-            Set<CBORObject> usedConnectionIds, List<Integer> supportedCipherSuites, HashMapCtxDB db, String oscoreUri,
-            int OSCORE_REPLAY_WINDOW, int MAX_UNFRAGMENTED_SIZE, HashMap<String, AppProfile> appProfiles, EDP edp) {
+            Set<CBORObject> usedConnectionIds, List<Integer> supportedCipherSuites, Set<Integer> supportedEADs,
+            HashMapCtxDB db, String oscoreUri, int OSCORE_REPLAY_WINDOW, int MAX_UNFRAGMENTED_SIZE,
+            HashMap<String, AppProfile> appProfiles, EDP edp) {
 
         super(idCreds, creds, keyPairs, peerPublicKeys, peerCredentials, null, usedConnectionIds,
-                supportedCipherSuites, db, oscoreUri, OSCORE_REPLAY_WINDOW, MAX_UNFRAGMENTED_SIZE, appProfiles, edp);
+                supportedCipherSuites, supportedEADs, db, oscoreUri, OSCORE_REPLAY_WINDOW, MAX_UNFRAGMENTED_SIZE,
+                appProfiles, edp);
 
         this.edhocSessionsPersistent = edhocSessionsPersistent;
     }

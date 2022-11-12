@@ -31,9 +31,9 @@ experiments/args/tests
 experiments/authentication/mapper
 experiments/authentication/sul
 
-experiments/models/sources/
-experiments/models/clients/
-experiments/models/servers/
+experiments/models/sources
+experiments/models/clients
+experiments/models/servers
 
 experiments/results
 

@@ -44,11 +44,11 @@ public class EdhocSessionPersistent extends EdhocSession {
             CoapExchanger coapExchanger, boolean sessionResetEnabled, byte[] forceOscoreSenderId,
             byte[] forceOscoreRecipientId) {
 
-        super(initiator, clientInitiated, method, connectionId,
-                edhocEndpointInfoPersistent.getKeyPairs(), edhocEndpointInfoPersistent.getIdCreds(),
-                edhocEndpointInfoPersistent.getCreds(), edhocEndpointInfoPersistent.getSupportedCipherSuites(),
-                edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri),
-                edhocEndpointInfoPersistent.getEdp(), oscoreDB);
+        super(initiator, clientInitiated, method, connectionId, edhocEndpointInfoPersistent.getKeyPairs(),
+                edhocEndpointInfoPersistent.getIdCreds(), edhocEndpointInfoPersistent.getCreds(),
+                edhocEndpointInfoPersistent.getSupportedCipherSuites(), edhocEndpointInfoPersistent.getSupportedEADs(),
+                edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri), edhocEndpointInfoPersistent.getEdp(),
+                oscoreDB);
 
         this.sessionUri = sessionUri;
         this.oscoreUri = edhocEndpointInfoPersistent.getOscoreUri();

@@ -77,6 +77,9 @@ public abstract class EdhocMapperState implements State {
     // List of supported cipher suites, in decreasing order of preference.
     protected List<Integer> supportedCipherSuites = new ArrayList<>();
 
+    // Set of supported EAD items
+    protected Set<Integer> supportedEADs = new HashSet<>();
+
     // The collection of application profiles - The lookup key is the full URI of the EDHOC resource
     protected HashMap<String, AppProfile> appProfiles = new HashMap<>();
 
@@ -140,7 +143,7 @@ public abstract class EdhocMapperState implements State {
         // Prepare the set of information for this EDHOC endpoint
         edhocEndpointInfoPersistent = new EdhocEndpointInfoPersistent(
                 idCreds, creds, keyPairs, peerPublicKeys, peerCredentials, edhocSessionsPersistent,
-                usedConnectionIds, supportedCipherSuites, db, oscoreUri,
+                usedConnectionIds, supportedCipherSuites, supportedEADs, db, oscoreUri,
                 OSCORE_REPLAY_WINDOW, MAX_UNFRAGMENTED_SIZE, appProfiles, edp
         );
 

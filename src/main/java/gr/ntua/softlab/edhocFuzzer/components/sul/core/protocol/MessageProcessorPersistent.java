@@ -450,33 +450,14 @@ public class MessageProcessorPersistent {
 
         // check EAD_2
         CBORObject[] ead2 = null;
-        if (plaintextElementList.length - baseIndex > 2) {
+        int length = plaintextElementList.length - baseIndex - 2;
+        if (length > 0) {
             // EAD_2 is present
-            int length = plaintextElementList.length - baseIndex - 2;
-
-            if ((length % 2) == 1) {
-                LOGGER.error("EAD_2 should have even length");
-                return false;
-            }
-
             ead2 = new CBORObject[length];
-            int eadIndex = 0;
-
-            for (int i = baseIndex + 2; i < plaintextElementList.length; i++) {
-                if ((eadIndex % 2) == 0 && plaintextElementList[i].getType() != CBORType.Integer) {
-                    LOGGER.error("Processing EAD_2 on integer");
-                    return false;
-                }
-                if ((eadIndex % 2) == 1 && plaintextElementList[i].getType() != CBORType.ByteString) {
-                    LOGGER.error("Processing EAD_2 on byte string");
-                    return false;
-                }
-
-                // Make a hard copy
-                byte[] serializedObject = plaintextElementList[i].EncodeToBytes();
-                CBORObject element = CBORObject.DecodeFromBytes(serializedObject);
-                ead2[eadIndex] = element;
-                eadIndex++;
+            boolean ok = processEADItems(plaintextElementList, baseIndex + 2, ead2, session);
+            if (!ok) {
+                LOGGER.error("Processing EAD_2");
+                return false;
             }
         }
 
@@ -892,34 +873,14 @@ public class MessageProcessorPersistent {
                 baseIndex++;
             }
 
-            if (plaintextElementList.length - baseIndex > 0) {
+            int length = plaintextElementList.length - baseIndex;
+            if (length > 0) {
                 // EAD_4 is present
-                int length = plaintextElementList.length - baseIndex;
-
-                if ((length % 2) == 1) {
-                    LOGGER.error("EAD_4 should have even length");
-                    return false;
-                }
-
                 ead4 = new CBORObject[length];
-
-                int eadIndex = 0;
-
-                for (int i = baseIndex; i < plaintextElementList.length; i++) {
-                    if ((eadIndex % 2) == 0 && plaintextElementList[i].getType() != CBORType.Integer) {
-                        LOGGER.error("Processing EAD_4 on integer");
-                        return false;
-                    }
-                    if ((eadIndex % 2) == 1 && plaintextElementList[i].getType() != CBORType.ByteString) {
-                        LOGGER.error("Processing EAD_3 on byte string");
-                        return false;
-                    }
-
-                    // Make a hard copy
-                    byte[] serializedObject = plaintextElementList[i].EncodeToBytes();
-                    CBORObject element = CBORObject.DecodeFromBytes(serializedObject);
-                    ead4[eadIndex] = element;
-                    eadIndex++;
+                boolean ok = processEADItems(plaintextElementList, baseIndex, ead4, session);
+                if (!ok) {
+                    LOGGER.error("Processing EAD_4");
+                    return false;
                 }
             }
         }
@@ -1097,34 +1058,14 @@ public class MessageProcessorPersistent {
         // EAD_1
         index++;
         CBORObject[] ead1 = null;
-        if (objectListRequest.length > index) {
+        int length = objectListRequest.length - index;
+        if (length > 0) {
             // EAD_1 is present
-            int length = objectListRequest.length - index;
-
-            if ((length % 2) == 1) {
-                LOGGER.error("EAD_1 should have even length");
+            ead1 = new CBORObject[length];
+            boolean ok = processEADItems(objectListRequest, index, ead1, edhocMapperState.getEdhocSessionPersistent());
+            if (!ok) {
+                LOGGER.error("Processing EAD_1");
                 return false;
-            } else {
-                ead1 = new CBORObject[length];
-                int eadIndex = 0;
-
-                for (int i = index; i < objectListRequest.length; i++) {
-                    if ((eadIndex % 2) == 0 && objectListRequest[i].getType() != CBORType.Integer) {
-                        LOGGER.error("Processing EAD_1 on integer");
-                        return false;
-                    }
-
-                    if ((eadIndex % 2) == 1 && objectListRequest[i].getType() != CBORType.ByteString) {
-                        LOGGER.error("Processing EAD_1 on byte string");
-                        return false;
-                    }
-
-                    // Make a hard copy
-                    byte[] serializedObject = objectListRequest[i].EncodeToBytes();
-                    CBORObject element = CBORObject.DecodeFromBytes(serializedObject);
-                    ead1[eadIndex] = element;
-                    eadIndex++;
-                }
             }
         }
 
@@ -1550,34 +1491,14 @@ public class MessageProcessorPersistent {
 
         // check EAD_3
         CBORObject[] ead3 = null;
-        if (plaintextElementList.length - baseIndex > 2) {
+        int length = plaintextElementList.length - baseIndex - 2;
+        if (length > 0) {
             // EAD_3 is present
-            int length = plaintextElementList.length - baseIndex - 2;
-
-            if ((length % 2) == 1) {
-                LOGGER.error("EAD_3 should have even length");
-                return false;
-            }
-
             ead3 = new CBORObject[length];
-
-            int eadIndex = 0;
-
-            for (int i = baseIndex + 2; i < plaintextElementList.length; i++) {
-                if ((eadIndex % 2) == 0 && plaintextElementList[i].getType() != CBORType.Integer) {
-                    LOGGER.error("Processing EAD_3 on integer");
-                    return false;
-                }
-                if ((eadIndex % 2) == 1 && plaintextElementList[i].getType() != CBORType.ByteString) {
-                    LOGGER.error("Processing EAD_2 on byte string");
-                    return false;
-                }
-
-                // Make a hard copy
-                byte[] serializedObject = plaintextElementList[i].EncodeToBytes();
-                CBORObject element = CBORObject.DecodeFromBytes(serializedObject);
-                ead3[eadIndex] = element;
-                eadIndex++;
+            boolean ok = processEADItems(plaintextElementList, baseIndex + 2, ead3, session);
+            if (!ok) {
+                LOGGER.error("Processing EAD_3");
+                return false;
             }
         }
 
@@ -2726,4 +2647,75 @@ public class MessageProcessorPersistent {
         }
     }
 
+    protected boolean processEADItems(CBORObject[] itemsList, int startIndex, CBORObject[] ead,
+                                      EdhocSessionPersistent session) {
+        int length = itemsList.length - startIndex;
+
+        if (length > 0) {
+            // EAD is present
+            if ((length % 2) == 1) {
+                LOGGER.error("EAD items should have even length");
+                return false;
+            }
+
+            if (ead.length < length) {
+                LOGGER.error("Provided ead array has insufficient length (Internal error)");
+                return false;
+            }
+        }
+
+        int eadIndex = 0;
+
+        for (int i = startIndex; i < itemsList.length; i++) {
+
+            // The first element of each pair is an ead_label, and must be a non-zero CBOR integer
+            if ((eadIndex % 2) == 0) {
+                if (itemsList[i].getType() != CBORType.Integer || itemsList[i].AsInt32() == 0) {
+                    LOGGER.error("Malformed or Invalid EAD label");
+                    return false;
+                }
+
+                int eadLabel = itemsList[i].AsInt32();
+                if (eadLabel < 0 && !session.getSupportedEADs().contains(eadLabel)) {
+                    // The EAD item is critical and is not supported
+                    LOGGER.warn("Unsupported EAD critical item with ead_label " + eadLabel);
+                    return false;
+                }
+
+                // Move on to the ead_value
+                eadIndex++;
+                continue;
+            }
+
+            // The second element of each pair is an ead_value, and must be a CBOR byte string
+            if ((eadIndex % 2) == 1) {
+                if (itemsList[i].getType() != CBORType.ByteString) {
+                    LOGGER.error("Malformed or invalid EAD value");
+                    return false;
+                }
+
+                // Skip this EAD item as not supported and not critical
+                if (!session.getSupportedEADs().contains(eadIndex - 1)) {
+                    eadIndex++;
+                    continue;
+                }
+
+                // This EAD item is supported, so it is kept for further processing
+
+                // Make a hard copy of ead_label
+                byte[] serializedObjectLabel = itemsList[i - 1].EncodeToBytes();
+                CBORObject elementLabel = CBORObject.DecodeFromBytes(serializedObjectLabel);
+                ead[eadIndex - 1] = elementLabel;
+
+                // Make a hard copy of ead_value
+                byte[] serializedObjectValue = itemsList[i].EncodeToBytes();
+                CBORObject elementValue = CBORObject.DecodeFromBytes(serializedObjectValue);
+                ead[eadIndex] = elementValue;
+
+                eadIndex++;
+            }
+        }
+
+        return true;
+    }
 }
