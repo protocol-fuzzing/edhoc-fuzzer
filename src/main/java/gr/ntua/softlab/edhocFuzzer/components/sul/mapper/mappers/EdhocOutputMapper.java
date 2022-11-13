@@ -166,7 +166,8 @@ public class EdhocOutputMapper extends OutputMapper {
         // Must be checked after checking for empty message, because empty message can be unprotected
         // Application message is any non-error coap message, no distinction based on payload
         if (edhocMapperConnector.receivedCoapAppMessage()) {
-            LOGGER.info("COAP_APP_MESSAGE ({}): {}", messageType, Arrays.toString(responsePayload));
+            LOGGER.info("COAP_APP_MESSAGE ({}): {} ~ {}",
+                messageType, Arrays.toString(responsePayload), new String(responsePayload));
             return new AbstractOutput(MessageOutputType.COAP_APP_MESSAGE.name());
         }
 
