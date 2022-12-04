@@ -2,7 +2,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  install:
+  SIFIS-HOME:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     runs-on: ubuntu-latest
     strategy:
@@ -17,6 +17,27 @@ jobs:
           sudo apt-get install -y openjdk-17-jdk maven
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
-          java -version
-          mvn -version
           ./scripts/setup_fuzzer -l
+
+      - name: Setup sifis-home
+        run: ./scripts/setup_sul sifis-home
+
+  UOESCORE-UEDHOC:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install packages and edhoc-fuzzer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk maven
+          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
+          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
+          ./scripts/setup_fuzzer -l
+
+      - name: Setup uoscore-uedhoc
+        run: ./scripts/setup_sul uoscore-uedhoc
