@@ -20,5 +20,5 @@ jobs:
           java -version
           mvn -version
 
-#      - name: Install edhoc-fuzzer
-#        run: ./scripts/setup_fuzzer -l
+      - name: Install edhoc-fuzzer
+        run: ./scripts/setup_fuzzer -l
