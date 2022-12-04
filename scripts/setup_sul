@@ -11,6 +11,7 @@ mkdir -p ${SOURCES_DIR} ${SERVERS_DIR} ${CLIENTS_DIR}
 
 function setup_sifis_home() {
   # sifis-home
+  readonly COMMIT_HASH="0f2debc9556cc1cecaa8a2807724cf814c17d799"
 
   set -e
   echo "Setting up sifis-home"
@@ -18,6 +19,7 @@ function setup_sifis_home() {
   git clone https://github.com/sifis-home/wp3-solutions.git
   SF_HOME_DIR="${SOURCES_DIR}/wp3-solutions"
   cd ${SF_HOME_DIR}/californium-extended
+  git checkout ${COMMIT_HASH}
   mvn -DskipTests install
   cd ${SF_HOME_DIR}/edhoc-applications
   git apply ${PATCH_DIR}/sifis-home.patch
@@ -33,6 +35,7 @@ function setup_sifis_home() {
 
 function setup_uoscore_uedhoc() {
   # uoscore-uedhoc
+  readonly COMMIT_HASH="57452e3df994136ca63fb0d26df9d44ada35c8ae"
 
   set -e
   echo "Setting up uoscore-uedhoc"
@@ -40,6 +43,7 @@ function setup_uoscore_uedhoc() {
   git clone --recurse-submodules https://github.com/eriptic/uoscore-uedhoc.git
   UOE_DIR="${SOURCES_DIR}/uoscore-uedhoc"
   cd ${UOE_DIR}
+  git checkout ${COMMIT_HASH}
   git apply ${PATCH_DIR}/uoscore-uedhoc.patch
   make
   make -C samples/linux_edhoc/initiator
@@ -72,7 +76,7 @@ usage() {
     -a, --all : Try to setup all suls
   Sul:
     sifis-home
-    uoscore_uedhoc
+    uoscore-uedhoc
 END
   exit 0
 }
