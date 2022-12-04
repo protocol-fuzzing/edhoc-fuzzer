@@ -20,4 +20,4 @@ jobs:
           mvn -version
 
       - name: Install edhoc-fuzzer
-          run: ./scripts/setup_fuzzer -l
+        run: ./scripts/setup_fuzzer -l
