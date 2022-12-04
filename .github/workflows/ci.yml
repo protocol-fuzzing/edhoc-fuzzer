@@ -11,7 +11,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install packages
+      - name: Install packages and edhoc-fuzzer
         run: |
           sudo apt-get update
           sudo apt-get install -y openjdk-17-jdk maven
@@ -19,6 +19,4 @@ jobs:
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
           java -version
           mvn -version
-
-      - name: Install edhoc-fuzzer
-        run: ./scripts/setup_fuzzer -l
+          ./scripts/setup_fuzzer -l
