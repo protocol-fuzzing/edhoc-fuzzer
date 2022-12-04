@@ -18,3 +18,6 @@ jobs:
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
           java -version
           mvn -version
+
+      - name: Install edhoc-fuzzer
+          run: ./scripts/setup_fuzzer -l
