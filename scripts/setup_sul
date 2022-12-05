@@ -73,7 +73,8 @@ usage() {
   cat << END
   Usage: ${0} [option] sul
   Options:
-    -a, --all : Try to setup all suls
+    -a, --all  : Try to setup all suls
+    -h, --help : Show usage
   Sul:
     sifis-home
     uoscore-uedhoc
