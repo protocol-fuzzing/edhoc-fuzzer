@@ -13,7 +13,8 @@
 
 ## Description
 
-edhoc-fuzzer is a Java tool that performs protocol state fuzzing of EDHOC servers and clients. 
+edhoc-fuzzer is a Java tool that performs protocol state fuzzing of EDHOC clients and servers.
+It is derived from the [dtls-fuzzer tool](https://github.com/assist-project/dtls-fuzzer).
 The following functionality is supported:
 
 1. A state machine model of an EDHOC client/server implementation can be learned
@@ -24,9 +25,9 @@ The following functionality is supported:
 * java 17 JDK
 * maven correctly setup to point to java 17 JDK
 * graphviz library, containing the dot utility, which should be located in the systems PATH
-* (suggested) python >=3.6 and installed pydot package, in order to use the *beautify_model* script
+* (suggested) python >=3.6 and installed pydot package, in order to use ./scripts/beautify_model
 * (suggested) make utility, required by the setup of some suls
-* (optional) openssl utility, required by the ./scripts/gen_auth_hierarchy
+* (optional) openssl utility, required by ./scripts/gen_auth_hierarchy
 
 ## Initial Setup
 
@@ -44,8 +45,9 @@ dot -V
 ./scripts/setup_fuzzer -l
 ```
 The `-l` flag is used to fetch the remote project used as library, compile and install it in the local maven repository.
-After the first installation of the library, omit the `-l` flag to skip the library step, rebuild the project and
-create a softlink `edhoc_fuzzer.jar` in the root directory. The fetched source files are deleted after the installation
+The fetched source files are deleted after the installation. After the first installation of the library, the script can
+be used without the `-l` flag, in order to rebuild the project. After a successful build, the softlink `edhoc_fuzzer.jar`
+should have been created in the root directory.
 
 3. Set up an SUL
 ```bash
@@ -59,15 +61,17 @@ This process will fetch, patch and build the corresponding remote project and th
 
 
 ## How to Test
-After having set up the fuzzer and the corresponding sul we can use an argument file inside the **./experiments/args/** subdirectories, 
-or create a similar one. The same applies to the test sequences inside the **./experiments/tests/** subdirectories.
-Notice the use of `@` before the argument file. The simplest high-level test command is:
+After having set up the edhoc-fuzzer and the corresponding sul an argument file inside the **./experiments/args/**
+subdirectories can be used or a similar one can be created. The same applies to the test sequences inside the
+**./experiments/tests/** subdirectories. Notice the use of `@` before the argument file.
+The simplest high-level test command is:
 ```bash
 java -jar edhoc-fuzzer.jar @path/to/arg/file -test path/to/test/inputs/file
 ```
 
 ## How to Learn
-After having set up the corresponding sul, the command is similar to the testing command, just omit the test options.
+After having set up the edhoc-fuzzer and the corresponding sul, the command is similar to the testing command,
+without the test options.
 ```bash
 java -jar edhoc-fuzzer.jar @path/to/arg/file
 ```
@@ -128,9 +132,9 @@ currently supported message inputs and is used implicitly by the argument files 
 
 * **default_fuzzer.properties** contains the symbolic properties that are used in the argument files in the 
 *./experiments/args* (can be used also in command line arguments) and are in the format `${property_name}`.
-These are substituted in runtime. One implicit property name is `sul.port`, which is replaced with a randomly generated 
-available port and used when the sul accepts a port number as argument.   
+These are substituted in runtime. One implicit property name is `sul.port`, which is replaced with a randomly generated
+port and used when the sul accepts a port number as argument
 
 
-* **default_mapper_connection.config** is the CoAP Properties file containing the default values used by
+* **default_mapper_connection.config** is the CoAP properties file containing the default values used by
 the fetched and installed project used as library during the initial setup
