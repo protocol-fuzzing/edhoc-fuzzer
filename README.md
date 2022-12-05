@@ -26,7 +26,7 @@ The following functionality is supported:
 * java 17 JDK
 * maven correctly setup to point to java 17 JDK
 * graphviz library, containing the dot utility, which should be located in the systems PATH
-* (suggested) python >=3.6 and installed pydot package, in order to use ./scripts/beautify_model
+* (suggested) python >=3.6 and pydot interface >=1.4.2, in order to use ./scripts/beautify_model
 * (suggested) make utility, required by the setup of some suls
 * (optional) openssl utility, required by ./scripts/gen_auth_hierarchy
 
