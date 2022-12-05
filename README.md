@@ -5,8 +5,9 @@
 * [Description](#description)
 * [Prerequisites](#prerequisites)
 * [Initial Setup](#initial-setup)
-* [How to Test](#how-to-test)
 * [How to Learn](#how-to-learn)
+* [How to Test](#how-to-test)
+* [How to Visualize](#how-to-visualize)
 * [File Structure](#file-structure)
 
 --------
@@ -49,7 +50,7 @@ The fetched source files are deleted after the installation. After the first ins
 be used without the `-l` flag, in order to rebuild the project. After a successful build, the softlink `edhoc_fuzzer.jar`
 should have been created in the root directory.
 
-3. Set up an SUL
+3. Set up a System Under Learning (SUL)
 ```bash
 ./scripts/setup_sul 
 ```
@@ -60,22 +61,58 @@ This process will fetch, patch and build the corresponding remote project and th
 * **experiments/models/servers**, containing a directory structure with softlinks to the server executables
 
 
+## How to Learn
+After having set up the edhoc-fuzzer and the corresponding sul an argument file inside the **./experiments/args/**
+subdirectories can be used or a similar one can be created. Command-line arguments can be also provided, in order to
+overwrite those in the argument file. Notice the use of `@` before the argument file. The simplest high-level command is:
+```bash
+java -jar edhoc-fuzzer.jar @path/to/argfile
+```
+
+
 ## How to Test
 After having set up the edhoc-fuzzer and the corresponding sul an argument file inside the **./experiments/args/**
 subdirectories can be used or a similar one can be created. The same applies to the test sequences inside the
-**./experiments/tests/** subdirectories. Notice the use of `@` before the argument file.
-The simplest high-level test command is:
-```bash
-java -jar edhoc-fuzzer.jar @path/to/arg/file -test path/to/test/inputs/file
+**./experiments/tests/** subdirectories. Testing can be used prior to learning, in order to check that everything
+runs as expected. The test command is:
+```
+java -jar edhoc-fuzzer.jar @path/to/arg/file -test path/to/test/file [-additional_param]
+
+Additional Testing Parameters:
+
+-times N
+  Run each test sequence N number of times, defaults to 1
+
+-testSpecification path/to/dot/model
+  If a .dot model is provided as a specification, the resulting outputs are 
+  compared against it. The test file will be run both on the implementation
+  and on the specification model
+  
+-showTransitionSequence
+  Shows the sequence of transitions at the end in a nicer format
 ```
 
-## How to Learn
-After having set up the edhoc-fuzzer and the corresponding sul, the command is similar to the testing command,
-without the test options.
+
+## How to Visualize
+The edhoc-fuzzer, after the learning process generated the **learnedModel.dot** file, tries to create the 
+**learnedModel.pdf** file. In case the conversion to .pdf fails, the following command can be used:
 ```bash
-java -jar edhoc-fuzzer.jar @path/to/arg/file
+dot -Tpdf path/to/in_model.dot > path/to/out_model.pdf
 ```
-This way the command-line options are provided through the argument file.
+
+After a .dot model has been generated, it can be visually enhanced, in the form of merging same transitions and
+replacing each label with a shorter one, using the following wrapper script:
+```bash
+./scripts/beautify_model
+```
+The label replacements can be found in the **./scripts/replacements.txt**. The optional arguments shown in the usage
+message can be used when the model provided corresponds to a client implementation. This way the initial message, which a
+client sends to start the EDHOC protocol, is added to the model. 
+
+The above script is just a convenient wrapper of the following more customizable script:
+```bash
+python ./scripts/beautify_model.py -h
+```
 
 
 ## File Structure
