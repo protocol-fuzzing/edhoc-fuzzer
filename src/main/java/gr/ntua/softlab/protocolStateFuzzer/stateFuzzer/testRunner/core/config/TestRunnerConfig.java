@@ -4,19 +4,16 @@ import com.beust.jcommander.Parameter;
 
 public class TestRunnerConfig {
 	@Parameter(names = "-test", description = "Debug option, instead of learning, executes a test in the given file "
-			+ "and exits. For example of test files, see './examples/tests/'. If the file doesn't exist, it assumes "
-			+ "the string supplied is a space-separated sequence of inputs. It parses and executed these inputs on "
-			+ "the system.")
+			+ "and exits. If the file doesn't exist, it assumes the string supplied is a space-separated sequence of "
+			+ "inputs. It parses and executed these inputs on the system.")
 	protected String test = null;
 
 	@Parameter(names = "-times", description = "The number of times the tests should be run")
 	protected Integer times = 1;
 	
-	@Parameter(names = "-testSpecification", description = "A model against which the resulting outputs are compared. "
-			+ "For examples, look at './examples/models/'. If provided, the test will be run both on the system and "
-			+ "on the model.")
+	@Parameter(names = "-testSpecification", description = "A .dot model against which the resulting outputs are "
+			+ "compared. If provided, the test will be run both on the system and on the model.")
 	protected String testSpecification = null;
-	
 	
 	@Parameter(names = "-showTransitionSequence", description = "Show the sequence of transitions at the end in a "
 			+ "nicer form.")
