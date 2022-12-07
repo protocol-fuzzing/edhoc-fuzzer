@@ -72,6 +72,11 @@ jobs:
       - name: Setup uOSCORE-uEDHOC
         run: ./scripts/setup_sul uoscore-uedhoc
 
+      - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore)
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -roundLimit 3
+          ./scripts/diff_hyps experiments/saved_results/clients/uoscore-uedhoc/linux_edhoc_oscore experiments/results/clients/uoscore-uedhoc_client_linux_edhoc_oscore 3
+
   uOSCORE-uEDHOC-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     runs-on: ubuntu-latest
@@ -91,3 +96,8 @@ jobs:
 
       - name: Setup uOSCORE-uEDHOC
         run: ./scripts/setup_sul uoscore-uedhoc
+
+      - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore)
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -roundLimit 2
+          ./scripts/diff_hyps experiments/saved_results/servers/uoscore-uedhoc/linux_edhoc_oscore experiments/results/servers/uoscore-uedhoc_server_linux_edhoc_oscore 2
