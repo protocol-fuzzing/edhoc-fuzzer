@@ -1,4 +1,4 @@
-# edhoc-fuzzer
+# EDHOC-Fuzzer
 
 ## Contents
 
@@ -14,8 +14,8 @@
 
 ## Description
 
-edhoc-fuzzer is a Java tool that performs protocol state fuzzing of EDHOC clients and servers.
-It is derived from the [dtls-fuzzer tool](https://github.com/assist-project/dtls-fuzzer).
+EDHOC-Fuzzer is a Java tool that performs protocol state fuzzing of EDHOC clients and servers.
+It is derived from the [DTLS-Fuzzer](https://github.com/assist-project/dtls-fuzzer).
 The following functionality is supported:
 
 1. A state machine model of an EDHOC client/server implementation can be learned
@@ -41,13 +41,13 @@ mvn --version
 dot -V
 ``` 
 
-2. Set up edhoc-fuzzer
+2. Set up EDHOC-Fuzzer
 ```bash
 ./scripts/setup_fuzzer -l
 ```
 The `-l` flag is used to fetch the remote project used as library, compile and install it in the local maven repository.
 The fetched source files are deleted after the installation. After the first installation of the library, the script can
-be used without the `-l` flag, in order to rebuild the project. After a successful build, the softlink `edhoc_fuzzer.jar`
+be used without the `-l` flag, in order to rebuild the project. After a successful build, the softlink `edhoc-fuzzer.jar`
 should have been created in the root directory.
 
 3. Set up a System Under Learning (SUL)
@@ -62,7 +62,7 @@ This process will fetch, patch and build the corresponding remote project and th
 
 
 ## How to Learn
-After having set up the edhoc-fuzzer and the corresponding sul an argument file inside the **./experiments/args/**
+After having set up the EDHOC-Fuzzer and the corresponding sul, an argument file inside the **./experiments/args/**
 subdirectories can be used or a similar one can be created. Command-line arguments can be also provided, in order to
 overwrite those in the argument file. Notice the use of `@` before the argument file. The simplest high-level command is:
 ```bash
@@ -71,7 +71,7 @@ java -jar edhoc-fuzzer.jar @path/to/argfile
 
 
 ## How to Test
-After having set up the edhoc-fuzzer and the corresponding sul an argument file inside the **./experiments/args/**
+After having set up the EDHOC-Fuzzer and the corresponding sul, an argument file inside the **./experiments/args/**
 subdirectories can be used or a similar one can be created. The same applies to the test sequences inside the
 **./experiments/tests/** subdirectories. Testing can be used prior to learning, in order to check that everything
 runs as expected. The test command is:
@@ -94,7 +94,7 @@ Additional Testing Parameters:
 
 
 ## How to Visualize
-The edhoc-fuzzer, after the learning process generated the **learnedModel.dot** file, tries to create the 
+The EDHOC-Fuzzer, after the learning process generated the **learnedModel.dot** file, tries to create the
 **learnedModel.pdf** file. In case the conversion to .pdf fails, the following command can be used:
 ```bash
 dot -Tpdf path/to/in_model.dot > path/to/out_model.pdf
@@ -133,7 +133,7 @@ the learning process utilizing the **replacements.txt**
 
 * **gen_auth_hierarchy**, script used optionally for generating dummy authentication files in .pem, .der format in triples of 
 <private key, public key, x509 certificates>; corresponding to one for each EDHOC authentication method. 
-The files in the .der format can be provided as input to the edhoc-fuzzer. The resulting directories are: 
+The files in the .der format can be provided as input to the EDHOC-Fuzzer. The resulting directories are:
   * **./experiments/authentication/mapper**
     * **/sig**, containing an ed25519 triple and a p256 triple
     * **/stat**, containing a p256 triple and a x25519 triple
@@ -142,7 +142,7 @@ The files in the .der format can be provided as input to the edhoc-fuzzer. The r
 
 ### Inside ./experiments/ directory
 
-* **args/** contains the argument files for each sul provided to the edhoc-fuzzer
+* **args/** contains the argument files for each sul provided to the EDHOC-Fuzzer
 
 
 * **authentication/** initially contains the **test_vectors** directory with files in the test-vector json format.
@@ -157,13 +157,13 @@ The subdirectories *mapper/*, *sul/* can be generated using the *./scripts/gen_a
 subdirectories during a learning process. Initially it does not exist
 
 
-* **tests/** contains a set of input test sequences used as input to the edhoc-fuzzer for testing them against
+* **tests/** contains a set of input test sequences used as input to the EDHOC-Fuzzer for testing them against
 a client/server implementation   
 
 
 ### Inside ./src/main/resources/ directory
 
-* **default_alphabet.xml** is the default alphabet in .xml format provided to the edhoc-fuzzer, which contains all the
+* **default_alphabet.xml** is the default alphabet in .xml format provided to the EDHOC-Fuzzer, which contains all the
 currently supported message inputs and is used implicitly by the argument files in *./experiments/args* 
 
 
