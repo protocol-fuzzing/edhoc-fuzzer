@@ -4,10 +4,10 @@
 
 * [Description](#description)
 * [Prerequisites](#prerequisites)
-* [Initial Setup](#initial-setup)
-* [How to Learn](#how-to-learn)
-* [How to Test](#how-to-test)
-* [How to Visualize](#how-to-visualize)
+* [Setup](#setup)
+* [Learning](#learning)
+* [Testing](#testing)
+* [Visualizing](#visualizing)
 * [File Structure](#file-structure)
 
 --------
@@ -15,12 +15,13 @@
 ## Description
 
 EDHOC-Fuzzer is a protocol state fuzzer of EDHOC clients and servers.
-It draws inspiration from a similar tool, called [DTLS-Fuzzer](https://github.com/assist-project/dtls-fuzzer), for the DTLS network protocol.
+It draws inspiration from a similar tool, called [DTLS-Fuzzer](https://github.com/assist-project/dtls-fuzzer),
+for the DTLS network protocol.
 
 EDHOC-Fuzzer supports the following functionality:
 
 1. Learning a state machine model of an EDHOC client or server implementation.
-2. Executing tests (sequences of inputs) on an EDHOC client or server implementation.
+2. Testing (executing sequences of inputs) of an EDHOC client or server implementation.
 
 ## Prerequisites
 
@@ -31,7 +32,7 @@ EDHOC-Fuzzer supports the following functionality:
 * (suggested) python >=3.6 and pydot interface >=1.4.2, in order to use the [beautify_model](scripts/beautify_model) script.
 * (optional) openssl utility, required by the [gen_auth_hierarchy](scripts/gen_auth_hierarchy) script.
 
-## Initial Setup
+## Setup
 
 Assuming the commands are executed from the root directory:
 
@@ -62,17 +63,21 @@ This process will fetch, patch and build the corresponding remote project and th
 * `experiments/models/servers`, containing a directory structure with soft links to the server executables.
 
 
-## Model Learning
-After having set up the EDHOC-Fuzzer and the corresponding SUL, an argument file inside the **./experiments/args/**
-subdirectories can be used or a similar one can be created. Command-line arguments can be also provided, in order to
-overwrite those in the argument file. Notice the use of `@` before the argument file. The simplest high-level command is:
+## Learning
+After setting up the EDHOC-Fuzzer and the SUL of interest, one can learn the model of that SUL
+using one of the argument files in the [experiments/args](experiments/args) subdirectories
+(or using a file similar to them).
+Command-line arguments can be also provided, in order to overwrite those in the argument file.
+Notice the use of `@` before the argument file.
+The simplest high-level command is:
 ```bash
 java -jar edhoc-fuzzer.jar @path/to/argfile
 ```
+The above command without the last part (the argument file) lists the command line options that EDHOC-Fuzzer accepts.
 
 
-## How to Test
-After having set up the EDHOC-Fuzzer and the corresponding SUL, an argument file inside the **./experiments/args/**
+## Testing
+After setting up the EDHOC-Fuzzer and the SUL of interest, an argument file inside the **./experiments/args/**
 subdirectories can be used or a similar one can be created. The same applies to the test sequences inside the
 **./experiments/tests/** subdirectories. Testing can be used prior to learning, in order to check that everything
 runs as expected. The test command is:
@@ -94,9 +99,10 @@ Additional Testing Parameters:
 ```
 
 
-## How to Visualize
+## Visualizing
 The EDHOC-Fuzzer, after the learning process generated the **learnedModel.dot** file, tries to create the
-**learnedModel.pdf** file. In case the conversion to .pdf fails, the following command can be used:
+**learnedModel.pdf** file.
+In case the conversion to .pdf fails, the following command can be used:
 ```bash
 dot -Tpdf path/to/in_model.dot > path/to/out_model.pdf
 ```
