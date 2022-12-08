@@ -71,11 +71,11 @@ function setup_all_suls() {
 
 usage() {
   cat << END
-  Usage: ${0} [option] sul
+  Usage: ${0} [option] SUL
   Options:
-    -a, --all  : Try to setup all suls
+    -a, --all  : Try to setup all SULs
     -h, --help : Show usage
-  Sul:
+  SULs:
     sifis-home
     uoscore-uedhoc
 END
@@ -95,6 +95,6 @@ else
   for sul in "${@}"; do case ${sul} in
     sifis-home ) setup_sifis_home ;;
     uoscore-uedhoc ) setup_uoscore_uedhoc ;;
-    * ) echo "Sul not recognized: ${sul}" ;;
+    * ) echo "SUL not recognized: ${sul}" ;;
   esac done
 fi
