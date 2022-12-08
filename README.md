@@ -14,55 +14,56 @@
 
 ## Description
 
-EDHOC-Fuzzer is a Java tool that performs protocol state fuzzing of EDHOC clients and servers.
-It is derived from the [DTLS-Fuzzer](https://github.com/assist-project/dtls-fuzzer).
-The following functionality is supported:
+EDHOC-Fuzzer is a protocol state fuzzer of EDHOC clients and servers.
+It draws inspiration from a similar tool, called [DTLS-Fuzzer](https://github.com/assist-project/dtls-fuzzer), for the DTLS network protocol.
 
-1. A state machine model of an EDHOC client/server implementation can be learned
-2. Tests (sequences of inputs) can be executed on an EDHOC client/server implementation
+EDHOC-Fuzzer supports the following functionality:
+
+1. Learning a state machine model of an EDHOC client or server implementation.
+2. Executing tests (sequences of inputs) on an EDHOC client or server implementation.
 
 ## Prerequisites
 
-* java 17 JDK
-* maven correctly setup to point to java 17 JDK
-* graphviz library, containing the dot utility, which should be located in the systems PATH
-* (suggested) python >=3.6 and pydot interface >=1.4.2, in order to use ./scripts/beautify_model
-* (suggested) make utility, required by the setup of some suls
-* (optional) openssl utility, required by ./scripts/gen_auth_hierarchy
+* Java 17 JDK.
+* maven correctly setup to point to Java 17 JDK.
+* graphviz library, containing the dot utility, which should be located in the system's PATH.
+* (suggested) make utility, required by the setup of some systems.
+* (suggested) python >=3.6 and pydot interface >=1.4.2, in order to use the [beautify_model](scripts/beautify_model) script.
+* (optional) openssl utility, required by the [gen_auth_hierarchy](scripts/gen_auth_hierarchy) script.
 
 ## Initial Setup
 
 Assuming the commands are executed from the root directory:
 
-1. Check prerequisites
+1. To check the prerequisites use:
 ```bash
-java --version
-mvn --version
+java -version
+mvn -version
 dot -V
 ``` 
 
-2. Set up EDHOC-Fuzzer
+2. To set up EDHOC-Fuzzer use:
 ```bash
 ./scripts/setup_fuzzer -l
 ```
 The `-l` flag is used to fetch the remote project used as library, compile and install it in the local maven repository.
 The fetched source files are deleted after the installation. After the first installation of the library, the script can
 be used without the `-l` flag, in order to rebuild the project. After a successful build, the softlink `edhoc-fuzzer.jar`
-should have been created in the root directory.
+is created in the root directory.
 
-3. Set up a System Under Learning (SUL)
+3. To set up a System Under Learning (SUL) use:
 ```bash
 ./scripts/setup_sul 
 ```
-This will show the usage message of the script, in order to provide a sul name as argument.
+This will show the usage message of the script, in order to provide a SUL name as argument.
 This process will fetch, patch and build the corresponding remote project and the following directories should be created:  
-* **experiments/models/sources**, containing the remote project and the executables 
-* **experiments/models/clients**, containing a directory structure with softlinks to the client executables
-* **experiments/models/servers**, containing a directory structure with softlinks to the server executables
+* `experiments/models/sources`, containing the remote project and the executables;
+* `experiments/models/clients`, containing a directory structure with softlinks to the client executables;
+* `experiments/models/servers`, containing a directory structure with soft links to the server executables.
 
 
-## How to Learn
-After having set up the EDHOC-Fuzzer and the corresponding sul, an argument file inside the **./experiments/args/**
+## Model Learning
+After having set up the EDHOC-Fuzzer and the corresponding SUL, an argument file inside the **./experiments/args/**
 subdirectories can be used or a similar one can be created. Command-line arguments can be also provided, in order to
 overwrite those in the argument file. Notice the use of `@` before the argument file. The simplest high-level command is:
 ```bash
@@ -71,7 +72,7 @@ java -jar edhoc-fuzzer.jar @path/to/argfile
 
 
 ## How to Test
-After having set up the EDHOC-Fuzzer and the corresponding sul, an argument file inside the **./experiments/args/**
+After having set up the EDHOC-Fuzzer and the corresponding SUL, an argument file inside the **./experiments/args/**
 subdirectories can be used or a similar one can be created. The same applies to the test sequences inside the
 **./experiments/tests/** subdirectories. Testing can be used prior to learning, in order to check that everything
 runs as expected. The test command is:
