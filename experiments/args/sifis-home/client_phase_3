@@ -11,8 +11,7 @@ ${results.learning.clients}/sifis-home_client_phase_3
 TTT
 -equivalenceAlgorithms
 W_METHOD,WP_METHOD
--queryFile
-${results.learning.clients}/sifis-home_client_phase_3/queryFile
+-logQueries
 -cacheTests
 -skipNonDetTests
 

@@ -36,4 +36,5 @@ experiments/models/clients
 experiments/models/servers
 
 experiments/results
+output/
 

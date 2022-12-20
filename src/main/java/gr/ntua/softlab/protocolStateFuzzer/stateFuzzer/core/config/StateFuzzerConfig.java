@@ -8,11 +8,16 @@ import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.config.Te
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeConfig;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.timingProbe.config.TimingProbeEnabler;
 
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public abstract class StateFuzzerConfig extends ToolConfig implements
 		StateFuzzerEnabler, TestRunnerEnabler, TimingProbeEnabler {
 
-	@Parameter(names = "-output", description = "The directory in which results should be saved")
-	protected String output = "output";
+	@Parameter(names = "-output", description = "The directory in which results should be saved. The default is "
+			+ "output/o_<timestamp>")
+	protected String outputDir = null;
 	
 	@ParametersDelegate
 	protected LearnerConfig learnerConfig;
@@ -36,8 +41,13 @@ public abstract class StateFuzzerConfig extends ToolConfig implements
 		this.timingProbeConfig = timingProbeConfig == null ? new TimingProbeConfig() : timingProbeConfig;
 	}
 
-	public String getOutput() {
-		return output;
+	public String getOutputDir() {
+		if (outputDir == null) {
+			// initialize to default: output/o_<timestamp>
+			String uniqueSubDir = "o_" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+			outputDir = Path.of("output", uniqueSubDir).toString();
+		}
+		return outputDir;
 	}
 
 	public LearnerConfig getLearnerConfig() {

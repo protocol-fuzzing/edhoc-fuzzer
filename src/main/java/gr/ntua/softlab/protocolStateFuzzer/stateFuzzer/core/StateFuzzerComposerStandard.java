@@ -34,7 +34,7 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
     protected final Alphabet<AbstractInput> alphabet;
     protected final SUL<AbstractInput, AbstractOutput> sul;
     protected final ObservationTree<AbstractInput, AbstractOutput> cache;
-    protected final File outputFolder;
+    protected final File outputDir;
     protected final FileWriter nonDetWriter;
     protected final CleanupTasks cleanupTasks;
     protected StatisticsTracker statisticsTracker;
@@ -52,8 +52,13 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
         this.alphabet = alphabetBuilder.build(stateFuzzerEnabler.getLearnerConfig());
 
         // set up output directory
-        this.outputFolder = new File(stateFuzzerEnabler.getOutput());
-        this.outputFolder.mkdirs();
+        this.outputDir = new File(stateFuzzerEnabler.getOutputDir());
+        if (!this.outputDir.exists()) {
+            boolean ok = this.outputDir.mkdirs();
+            if (!ok) {
+                throw new RuntimeException("Could not create output directory: " + outputDir);
+            }
+        }
 
         // initialize cleanup tasks
         this.cleanupTasks = new CleanupTasks();
@@ -68,7 +73,7 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
 
         // TODO the LOGGER instances should handle this, instead of us passing non det writers as arguments.
         try {
-            this.nonDetWriter = new FileWriter(new File(outputFolder, NON_DET_FILENAME));
+            this.nonDetWriter = new FileWriter(new File(outputDir, NON_DET_FILENAME));
         } catch (IOException e) {
             throw new RuntimeException("Could not create non-determinism file writer");
         }
@@ -124,8 +129,8 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
     }
 
     @Override
-    public File getOutputFolder() {
-        return outputFolder;
+    public File getOutputDir() {
+        return outputDir;
     }
 
     @Override
@@ -157,10 +162,10 @@ public class StateFuzzerComposerStandard implements StateFuzzerComposer {
             learningSulOracle = new CachingSULOracle<>(learningSulOracle, cache, false, terminatingOutputs);
         }
 
-        if (learnerConfig.getQueryFile() != null) {
+        if (learnerConfig.isLogQueries()) {
             FileWriter queryWriter;
             try {
-                queryWriter = new FileWriter(learnerConfig.getQueryFile());
+                queryWriter = new FileWriter(new File(outputDir, QUERY_FILENAME));
             } catch (IOException e1) {
                 throw new RuntimeException("Could not create queryfile writer");
             }

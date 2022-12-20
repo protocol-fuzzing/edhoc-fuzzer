@@ -10,7 +10,7 @@ public interface StateFuzzerEnabler extends LearnerConfigProvider, SulConfigProv
     boolean isFuzzingClient();
 
     /**
-     * @return the output directory in which results should be saved
+     * @return the output directory specified as argument in which results should be saved
      */
-    String getOutput();
+    String getOutputDir();
 }

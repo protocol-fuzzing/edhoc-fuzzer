@@ -17,6 +17,7 @@ import java.io.InputStream;
 public interface StateFuzzerComposer {
 
     String NON_DET_FILENAME = "nondet.log";
+    String QUERY_FILENAME = "query.log";
 
     StatisticsTracker getStatisticsTracker();
 
@@ -33,7 +34,7 @@ public interface StateFuzzerComposer {
 
     StateFuzzerEnabler getStateFuzzerEnabler();
 
-    File getOutputFolder();
+    File getOutputDir();
 
     CleanupTasks getCleanupTasks();
 }

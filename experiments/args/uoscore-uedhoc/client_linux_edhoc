@@ -10,8 +10,7 @@ ${results.learning.clients}/uoscore-uedhoc_client_linux_edhoc
 TTT
 -equivalenceAlgorithms
 W_METHOD,WP_METHOD
--queryFile
-${results.learning.clients}/uoscore-uedhoc_client_linux_edhoc/queryFile
+-logQueries
 -cacheTests
 -skipNonDetTests
 
