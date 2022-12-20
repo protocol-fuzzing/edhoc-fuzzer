@@ -152,7 +152,7 @@ public class CommandLineParser {
             LOGGER.info("State-fuzzing a {} implementation", stateFuzzerConfig.getSulConfig().getFuzzingRole());
 
             // this is an extra step done to store the running arguments
-            prepareOutputDir(args, stateFuzzerConfig.getOutput());
+            prepareOutputDir(args, stateFuzzerConfig.getOutputDir());
 
             stateFuzzerBuilder.build(stateFuzzerConfig).startFuzzing();
         }
@@ -168,22 +168,17 @@ public class CommandLineParser {
     /*
      * Creates the output directory in advance in order to store in it the arguments file before the tool is executed.
      */
-    protected void prepareOutputDir(String[] args, String dirPath) {
-        File outputFolder = new File(dirPath);
-        if (outputFolder.exists()) {
-            // output folder exists from previous run, so delete contents
-            File[] fileList = outputFolder.listFiles();
-            if (fileList != null) {
-                for (File f : fileList) {
-                    f.delete();
-                }
+    protected void prepareOutputDir(String[] args, String outDir) {
+        File dirFile = new File(outDir);
+        if (!dirFile.exists()) {
+            boolean ok = dirFile.mkdirs();
+            if (!ok) {
+                throw new RuntimeException("Could not create output directory: " + outDir);
             }
-        } else {
-            outputFolder.mkdirs();
         }
 
         try {
-            copyArgsToOutDir(args, dirPath);
+            copyArgsToOutDir(args, outDir);
         } catch (IOException e) {
             LOGGER.error("Failed to copy arguments");
             e.printStackTrace();

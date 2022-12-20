@@ -31,7 +31,7 @@ public class StateFuzzerStandard implements StateFuzzer {
     protected final String ALPHABET_FILENAME;
     protected StateFuzzerComposer stateFuzzerComposer;
     protected Alphabet<AbstractInput> alphabet;
-    protected File outputFolder;
+    protected File outputDir;
     protected CleanupTasks cleanupTasks;
     protected StateFuzzerEnabler stateFuzzerEnabler;
 
@@ -39,7 +39,7 @@ public class StateFuzzerStandard implements StateFuzzer {
         this.stateFuzzerComposer = stateFuzzerComposer;
         this.stateFuzzerEnabler = stateFuzzerComposer.getStateFuzzerEnabler();
         this.alphabet = stateFuzzerComposer.getAlphabet();
-        this.outputFolder = stateFuzzerComposer.getOutputFolder();
+        this.outputDir = stateFuzzerComposer.getOutputDir();
         this.cleanupTasks = stateFuzzerComposer.getCleanupTasks();
         this.ALPHABET_FILENAME = ALPHABET_FILENAME_NO_EXTENSION + stateFuzzerComposer.getAlphabetFileExtension();
     }
@@ -59,8 +59,8 @@ public class StateFuzzerStandard implements StateFuzzer {
 
     protected void inferStateMachine() {
         // for convenience, we copy all the input files/streams
-        // to the output folder before starting the arduous learning process
-        copyInputsToOutputFolder(outputFolder);
+        // to the output directory before starting the arduous learning process
+        copyInputsToOutputDir(outputDir);
 
         // setting up statistics tracker, learner and equivalence oracle
         StatisticsTracker statisticsTracker = stateFuzzerComposer.getStatisticsTracker();
@@ -82,7 +82,7 @@ public class StateFuzzerStandard implements StateFuzzer {
 
         try {
             statisticsTracker.setRuntimeStateTracking(new FileOutputStream(
-                    new File(outputFolder, LEARNING_STATE_FILENAME)));
+                    new File(outputDir, LEARNING_STATE_FILENAME)));
         } catch (FileNotFoundException e1) {
             throw new RuntimeException("Could not create runtime state tracking output stream");
         }
@@ -100,7 +100,7 @@ public class StateFuzzerStandard implements StateFuzzer {
                 learnerResult.addHypothesis(stateMachine);
                 // it is useful to print intermediate hypothesis as learning is running
                 String hypName = "hyp" + current_round + ".dot";
-                serializeHypothesis(stateMachine, outputFolder, hypName, false);
+                serializeHypothesis(stateMachine, outputDir, hypName, false);
                 statisticsTracker.newHypothesis(stateMachine);
                 LOGGER.info("Generated new hypothesis: " + hypName);
 
@@ -144,7 +144,7 @@ public class StateFuzzerStandard implements StateFuzzer {
             notFinishedReason = e.getMessage();
             LOGGER.error("Exception generated during learning\n" + e);
             // useful to log what actually went wrong
-            try (PrintWriter pw = new PrintWriter(new FileWriter(new File(outputFolder, ERROR_FILENAME)))) {
+            try (PrintWriter pw = new PrintWriter(new FileWriter(new File(outputDir, ERROR_FILENAME)))) {
                 pw.println(e.getMessage());
                 e.printStackTrace(pw);
             } catch (IOException exc) {
@@ -154,7 +154,7 @@ public class StateFuzzerStandard implements StateFuzzer {
 
         LOGGER.info("Finished Experiment");
         LOGGER.info("Number of refinement rounds: {}", current_round);
-        LOGGER.info("Results stored in {}", outputFolder.getPath());
+        LOGGER.info("Results stored in {}", outputDir.getPath());
 
         if (stateMachine == null) {
             LOGGER.info("Could not generate a first hypothesis, nothing to report on");
@@ -173,21 +173,21 @@ public class StateFuzzerStandard implements StateFuzzer {
         learnerResult.setStatistics(statistics);
 
         // exporting to output files
-        serializeHypothesis(stateMachine, outputFolder, LEARNED_MODEL_FILENAME, true);
-        learnerResult.setLearnedModelFile(new File(outputFolder, LEARNED_MODEL_FILENAME));
+        serializeHypothesis(stateMachine, outputDir, LEARNED_MODEL_FILENAME, true);
+        learnerResult.setLearnedModelFile(new File(outputDir, LEARNED_MODEL_FILENAME));
 
         try {
-            statistics.export(new FileWriter(new File(outputFolder, STATISTICS_FILENAME)));
+            statistics.export(new FileWriter(new File(outputDir, STATISTICS_FILENAME)));
         } catch (IOException e) {
-            LOGGER.error("Could not copy statistics to output folder");
+            LOGGER.error("Could not copy statistics to output directory");
         }
     }
 
-    protected void copyInputsToOutputFolder(File outputFolder) {
+    protected void copyInputsToOutputDir(File outputDir) {
         try {
-            dumpToFile(stateFuzzerComposer.getAlphabetFileInputStream(), new File(outputFolder, ALPHABET_FILENAME));
+            dumpToFile(stateFuzzerComposer.getAlphabetFileInputStream(), new File(outputDir, ALPHABET_FILENAME));
         } catch (IOException e) {
-            LOGGER.error("Could not copy alphabet to output folder");
+            LOGGER.error("Could not copy alphabet to output directory");
             e.printStackTrace();
         }
 
@@ -199,9 +199,9 @@ public class StateFuzzerStandard implements StateFuzzer {
                 int pathNameCount = originalTestFilePath.getNameCount();
                 String testFilename = originalTestFilePath.subpath(pathNameCount - 1, pathNameCount).toString();
 
-                dumpToFile(new FileInputStream(testFile), new File(outputFolder, testFilename));
+                dumpToFile(new FileInputStream(testFile), new File(outputDir, testFilename));
             } catch (IOException e) {
-                LOGGER.error("Could not copy sampled tests file to output folder");
+                LOGGER.error("Could not copy sampled tests file to output directory");
                 e.printStackTrace();
             }
         }
@@ -209,9 +209,9 @@ public class StateFuzzerStandard implements StateFuzzer {
         try {
             dumpToFile(
                     stateFuzzerEnabler.getSulConfig().getMapperConfig().getMapperConnectionConfigInputStream(),
-                    new File(outputFolder, MAPPER_CONNECTION_CONFIG_FILENAME));
+                    new File(outputDir, MAPPER_CONNECTION_CONFIG_FILENAME));
         } catch (IOException e) {
-            LOGGER.error("Could not copy mapperToSulConfig to output folder");
+            LOGGER.error("Could not copy mapperToSulConfig to output directory");
             e.printStackTrace();
         }
     }
@@ -235,9 +235,9 @@ public class StateFuzzerStandard implements StateFuzzer {
         }
     }
 
-    protected void serializeHypothesis(StateMachine hypothesis, File folder, String name, boolean genPdf) {
+    protected void serializeHypothesis(StateMachine hypothesis, File dir, String name, boolean genPdf) {
         if (hypothesis != null) {
-            File graphFile = new File(folder, name);
+            File graphFile = new File(dir, name);
             hypothesis.export(graphFile, genPdf);
         } else {
             LOGGER.info("Provided null hypothesis to be serialized");

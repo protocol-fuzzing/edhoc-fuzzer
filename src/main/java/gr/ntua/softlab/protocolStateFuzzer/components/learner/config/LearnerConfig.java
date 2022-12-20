@@ -48,8 +48,9 @@ public class LearnerConfig implements AlphabetOptionProvider {
             + "cache inconsistency is detected.")
     protected Integer membershipQueryRetries = 3;
 
-    @Parameter(names = "-queryFile", description = "If set, logs all membership queries to this file.")
-    protected String queryFile = null;
+    @Parameter(names = "-logQueries", description = "If set, logs all membership queries to a specific file in the "
+            + "output directory.")
+    protected boolean logQueries = false;
 
     @Parameter(names = "-probReset", description = "Probability of stopping execution of a test after each input")
     protected Double probReset = 0.0;
@@ -137,8 +138,8 @@ public class LearnerConfig implements AlphabetOptionProvider {
         return membershipQueryRetries;
     }
 
-    public String getQueryFile() {
-        return queryFile;
+    public boolean isLogQueries() {
+        return logQueries;
     }
 
     public double getProbReset() {
