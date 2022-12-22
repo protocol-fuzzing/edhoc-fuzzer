@@ -73,7 +73,7 @@
 
             <!-- manually installed cf-edhoc -->
             <dependency>
-                <groupId>se.sics.org.eclipse.californium</groupId>
+                <groupId>se.ri.org.eclipse.californium</groupId>
                 <artifactId>cf-edhoc</artifactId>
                 <version>${cf-edhoc-version}</version>
             </dependency>
@@ -142,7 +142,7 @@
              see ./scripts/setup_fuzzer for more details
         -->
         <dependency>
-            <groupId>se.sics.org.eclipse.californium</groupId>
+            <groupId>se.ri.org.eclipse.californium</groupId>
             <artifactId>cf-edhoc</artifactId>
         </dependency>
 

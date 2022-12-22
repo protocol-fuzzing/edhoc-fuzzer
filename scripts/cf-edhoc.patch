@@ -1,24 +1,26 @@
 diff --git a/bom/pom.xml b/bom/pom.xml
-index 9a37b944c..c98d2b4ba 100644
+index 9a37b944c..a73e3406e 100644
 --- a/bom/pom.xml
 +++ b/bom/pom.xml
-@@ -123,7 +123,6 @@
+@@ -123,7 +123,7 @@
  				<groupId>net.i2p.crypto</groupId>
  				<artifactId>eddsa</artifactId>
  				<version>${eddsa.version}</version>
 -				<scope>runtime</scope>
++				<!-- <scope>runtime</scope> -->
  			</dependency>
  
  			<dependency>
 diff --git a/cf-edhoc/pom.xml b/cf-edhoc/pom.xml
-index 8847ec87f..0e244d701 100644
+index 8847ec87f..cc45e3998 100644
 --- a/cf-edhoc/pom.xml
 +++ b/cf-edhoc/pom.xml
-@@ -71,7 +71,7 @@
+@@ -71,7 +71,8 @@
  				<artifactId>maven-assembly-plugin</artifactId>
  				<configuration>
  					<descriptorRefs>
 -						<descriptorRef>enhanced-jar-with-licenses</descriptorRef>
++						<!-- <descriptorRef>enhanced-jar-with-licenses</descriptorRef> -->
 +						<descriptorRef>jar-with-dependencies</descriptorRef>
  					</descriptorRefs>
  				</configuration>
@@ -189,19 +191,19 @@ index 974fa820f..83922130b 100644
          return claimSetMap.EncodeToBytes();
  		
 diff --git a/cf-oscore/pom.xml b/cf-oscore/pom.xml
-index d1abd4e7d..c40cb3bff 100644
+index d1abd4e7d..18921706a 100644
 --- a/cf-oscore/pom.xml
 +++ b/cf-oscore/pom.xml
-@@ -38,8 +38,7 @@
+@@ -38,7 +38,8 @@
          	<dependency> <!-- Rikard: Added this dependency -->
  	            <groupId>net.i2p.crypto</groupId>
  	            <artifactId>eddsa</artifactId>
 -	            <version>0.2.0</version>
--	            <type>jar</type>
-+				<version>${eddsa.version}</version>
++	            <!-- <version>0.2.0</version> -->
++	            <version>${eddsa.version}</version>
+ 	            <type>jar</type>
          	</dependency>
  		<dependency> <!-- Rikard: Added this dependency (Curve25519) -->
- 	            <groupId>org.bouncycastle</groupId>
 diff --git a/cf-oscore/src/main/java/org/eclipse/californium/cose/EncryptCommon.java b/cf-oscore/src/main/java/org/eclipse/californium/cose/EncryptCommon.java
 index 7112a06d6..169430d76 100644
 --- a/cf-oscore/src/main/java/org/eclipse/californium/cose/EncryptCommon.java
