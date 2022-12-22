@@ -9,12 +9,43 @@ readonly CLIENTS_DIR="${MODEL_DIR}/clients"
 
 mkdir -p ${SOURCES_DIR} ${SERVERS_DIR} ${CLIENTS_DIR}
 
+function setup_rise() {
+  # rise
+  readonly COMMIT_HASH="cddca9b5fa6ff041e58b35332953af7faebc453c"
+  readonly PREFIX="${SOURCES_DIR}/californium/cf-edhoc/src"
+  readonly POSTFIX="java/org/eclipse/californium/edhoc"
+  readonly CF_EDHOC_MAIN_DIR="${PREFIX}/main/${POSTFIX}"
+  readonly CF_EDHOC_TEST_DIR="${PREFIX}/test/${POSTFIX}"
+  readonly APP_PROFILE_BUILDER="${CF_EDHOC_TEST_DIR}/AppProfileBuilder.java"
+  readonly EDHOC_CLIENT="${CF_EDHOC_TEST_DIR}/EdhocClient.java"
+  readonly EDHOC_SERVER="${CF_EDHOC_TEST_DIR}/EdhocServer.java"
+
+  set -e
+  echo "Setting up RISE"
+  cd ${SOURCES_DIR}
+  git clone https://github.com/rikard-sics/californium.git
+  cd californium
+  git checkout edhoc
+  git checkout ${COMMIT_HASH}
+  git apply ${PATCH_DIR}/rise.patch
+  cp ${APP_PROFILE_BUILDER} ${EDHOC_CLIENT} ${EDHOC_SERVER} ${CF_EDHOC_MAIN_DIR}
+  mvn -DskipTests install
+
+  cd ${MODEL_DIR}
+  mkdir -p ${SERVERS_DIR}/rise ${CLIENTS_DIR}/rise
+  APP_JAR=$(ls ${SOURCES_DIR}/californium/cf-edhoc/target/cf-edhoc-*-SNAPSHOT.jar)
+  ln -sf ${APP_JAR} ${SERVERS_DIR}/rise/cf-edhoc.jar
+  ln -sf ${APP_JAR} ${CLIENTS_DIR}/rise/cf-edhoc.jar
+  echo "Successfully set up RISE"
+  set +e
+}
+
 function setup_sifis_home() {
   # sifis-home
   readonly COMMIT_HASH="0f2debc9556cc1cecaa8a2807724cf814c17d799"
 
   set -e
-  echo "Setting up sifis-home"
+  echo "Setting up SIFIS-HOME"
   cd ${SOURCES_DIR}
   git clone https://github.com/sifis-home/wp3-solutions.git
   SF_HOME_DIR="${SOURCES_DIR}/wp3-solutions"
@@ -30,6 +61,7 @@ function setup_sifis_home() {
   APP_JAR=$(ls ${SF_HOME_DIR}/edhoc-applications/target/*-jar-with-dependencies.jar)
   ln -sf ${APP_JAR} ${SERVERS_DIR}/sifis-home/edhoc-applications.jar
   ln -sf ${APP_JAR} ${CLIENTS_DIR}/sifis-home/edhoc-applications.jar
+  echo "Successfully set up SIFIS-HOME"
   set +e
 }
 
@@ -38,7 +70,7 @@ function setup_uoscore_uedhoc() {
   readonly COMMIT_HASH="57452e3df994136ca63fb0d26df9d44ada35c8ae"
 
   set -e
-  echo "Setting up uoscore-uedhoc"
+  echo "Setting up uOSCORE-uEDHOC"
   cd ${SOURCES_DIR}
   git clone --recurse-submodules https://github.com/eriptic/uoscore-uedhoc.git
   UOE_DIR="${SOURCES_DIR}/uoscore-uedhoc"
@@ -60,10 +92,12 @@ function setup_uoscore_uedhoc() {
   ln -sf ${LE_DIR}/initiator/build/initiator ${CLIENTS_DIR}/uoscore-uedhoc/linux-edhoc-initiator
   ln -sf ${LEO_DIR}/responder_server/build/responder_server ${SERVERS_DIR}/uoscore-uedhoc/linux-edhoc-oscore-responder-server
   ln -sf ${LEO_DIR}/initiator_client/build/initiator_client ${CLIENTS_DIR}/uoscore-uedhoc/linux-edhoc-oscore-initiator-client
+  echo "Successfully set up uOSCORE-uEDHOC"
   set +e
 }
 
 function setup_all_suls() {
+  setup_rise
   setup_sifis_home
   setup_uoscore_uedhoc
   exit 0
@@ -76,6 +110,7 @@ usage() {
     -a, --all  : Try to setup all SULs
     -h, --help : Show usage
   SULs:
+    rise
     sifis-home
     uoscore-uedhoc
 END
@@ -93,6 +128,7 @@ else
   esac; shift; done
 
   for sul in "${@}"; do case ${sul} in
+    rise ) setup_rise ;;
     sifis-home ) setup_sifis_home ;;
     uoscore-uedhoc ) setup_uoscore_uedhoc ;;
     * ) echo "SUL not recognized: ${sul}" ;;
