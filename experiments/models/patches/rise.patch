@@ -1,0 +1,205 @@
+diff --git a/bom/pom.xml b/bom/pom.xml
+index 9a37b944c..a73e3406e 100644
+--- a/bom/pom.xml
++++ b/bom/pom.xml
+@@ -123,7 +123,7 @@
+ 				<groupId>net.i2p.crypto</groupId>
+ 				<artifactId>eddsa</artifactId>
+ 				<version>${eddsa.version}</version>
+-				<scope>runtime</scope>
++				<!-- <scope>runtime</scope> -->
+ 			</dependency>
+ 
+ 			<dependency>
+diff --git a/cf-edhoc/pom.xml b/cf-edhoc/pom.xml
+index 8847ec87f..cc45e3998 100644
+--- a/cf-edhoc/pom.xml
++++ b/cf-edhoc/pom.xml
+@@ -71,7 +71,8 @@
+ 				<artifactId>maven-assembly-plugin</artifactId>
+ 				<configuration>
+ 					<descriptorRefs>
+-						<descriptorRef>enhanced-jar-with-licenses</descriptorRef>
++						<!-- <descriptorRef>enhanced-jar-with-licenses</descriptorRef> -->
++						<descriptorRef>jar-with-dependencies</descriptorRef>
+ 					</descriptorRefs>
+ 				</configuration>
+ 			</plugin>
+diff --git a/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/AppProfileBuilder.java b/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/AppProfileBuilder.java
+new file mode 100644
+index 000000000..e5020c4b8
+--- /dev/null
++++ b/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/AppProfileBuilder.java
+@@ -0,0 +1,60 @@
++package org.eclipse.californium.edhoc;
++
++import java.util.Set;
++
++public class AppProfileBuilder {
++
++    public static AppProfile build(Set<Integer> authMethods, int mode) {
++        // Use of message_4 as expected to be sent by the Responder
++        boolean useMessage4;
++
++        // Use of EDHOC for keying OSCORE
++        boolean usedForOSCORE;
++
++        // Supporting for the EDHOCOSCORE request
++        boolean supportCombinedRequest;
++
++        switch (mode) {
++            case 1: {
++                // m3 no app
++                useMessage4 = false;
++                usedForOSCORE = false;
++                supportCombinedRequest = false;
++                break;
++            }
++            case 2: {
++                // m3 app
++                useMessage4 = false;
++                usedForOSCORE = true;
++                supportCombinedRequest = false;
++                break;
++            }
++            case 3: {
++                // m3 combined app
++                useMessage4 = false;
++                usedForOSCORE = true;
++                supportCombinedRequest = true;
++                break;
++            }
++            case 4: {
++                // m4 no app
++                useMessage4 = true;
++                usedForOSCORE = false;
++                supportCombinedRequest = false;
++                break;
++            }
++            case 5: {
++                // m4 app
++                useMessage4 = true;
++                usedForOSCORE = true;
++                supportCombinedRequest = false;
++                break;
++            }
++            default:
++                throw new RuntimeException(String.format("Invalid application profile mode: %d. Available application" +
++                        " profile modes are 1, 2, 3, 4, 5", mode));
++        }
++
++        return new AppProfile(authMethods, useMessage4, usedForOSCORE, supportCombinedRequest);
++    }
++}
+diff --git a/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocClient.java b/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocClient.java
+index f0bcb60b2..6d3a4352b 100644
+--- a/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocClient.java
++++ b/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocClient.java
+@@ -76,11 +76,11 @@ public class EdhocClient {
+ 	private final static boolean isInitiator = true;
+ 	
+ 	// Set to true if an OSCORE-protected exchange is performed after EDHOC completion
+-	private static final boolean POST_EDHOC_EXCHANGE = false;
++	private static boolean POST_EDHOC_EXCHANGE = false;
+ 
+ 	// Set to true if EDHOC message_3 will be combined with the first OSCORE request
+ 	// Note: the application profile pertaining the EDHOC resource must first indicate support for the combined request 
+-	private static final boolean OSCORE_EDHOC_COMBINED = false;
++	private static boolean OSCORE_EDHOC_COMBINED = false;
+ 	
+ 	// The authentication method to include in EDHOC message_1 (relevant only when Initiator)
+ 	private static int authenticationMethod = Constants.EDHOC_AUTH_METHOD_0;
+@@ -183,6 +183,12 @@ public class EdhocClient {
+ 	 * 
+ 	 */
+ 	public static void main(String args[]) {
++		if (args.length > 1) {
++			System.out.println("Usage: <edhoc-client> [mode]");
++			System.out.println("Modes: 1 (m3 no app), 2 (m3 app), 3 (m3 combined app), 4 (m4 no app), 5 (m4 app)");
++			return;
++		}
++
+ 		String defaultUri = "coap://localhost/helloWorld";
+ 				
+ 		Configuration config = Configuration.createWithFile(CONFIG_FILE, CONFIG_HEADER, DEFAULTS);
+@@ -220,11 +226,24 @@ public class EdhocClient {
+ 		Set<Integer> authMethods = new HashSet<Integer>();
+ 		for (int i = 0; i <= Constants.EDHOC_AUTH_METHOD_3; i++ )
+ 			authMethods.add(i);
++		/*
+ 		boolean useMessage4 = false;
+ 		boolean usedForOSCORE = true;
+ 		boolean supportCombinedRequest = true; // If set to true, it overrides the ID conversion method to CONVERSION_ID_CORE
+ 		AppProfile appProfile = new AppProfile(authMethods, useMessage4, usedForOSCORE, supportCombinedRequest);
+-		
++		*/
++		int mode = 3;
++		if (args.length == 1) {
++			try {
++				mode = Integer.parseInt(args[0]);
++				POST_EDHOC_EXCHANGE = true;
++				OSCORE_EDHOC_COMBINED = true;
++			} catch (NumberFormatException e) {
++				System.out.println("Provided mode is not an integer: " + args[0]);
++				return;
++			}
++		}
++		AppProfile appProfile = AppProfileBuilder.build(authMethods, mode);
+ 		appProfiles.put(edhocURI, appProfile);
+ 		
+ 		URI uri = null; // URI parameter of the request
+diff --git a/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocServer.java b/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocServer.java
+index ed2ce7257..d2f16a055 100644
+--- a/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocServer.java
++++ b/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocServer.java
+@@ -141,6 +141,12 @@ public class EdhocServer extends CoapServer {
+ 	 * Application entry point.
+ 	 */
+ 	public static void main(String[] args) {
++
++		if (args.length > 1) {
++			System.out.println("Usage: <edhoc-server> [mode]");
++			System.out.println("Modes: 1 (m3 no app), 2 (m3 app), 3 (m3 combined app), 4 (m4 no app), 5 (m4 app)");
++			return;
++		}
+ 		
+ 		// Insert EdDSA security provider
+ 		Security.insertProviderAt(EdDSA, 1);
+@@ -174,11 +180,22 @@ public class EdhocServer extends CoapServer {
+ 		Set<Integer> authMethods = new HashSet<Integer>();
+ 		for (int i = 0; i <= Constants.EDHOC_AUTH_METHOD_3; i++ )
+ 			authMethods.add(i);
++		/*
+ 		boolean useMessage4 = false;
+ 		boolean usedForOSCORE = true;
+ 		boolean supportCombinedRequest = true; // If set to true, it overrides the ID conversion method to CONVERSION_ID_CORE
+ 		AppProfile appProfile = new AppProfile(authMethods, useMessage4, usedForOSCORE, supportCombinedRequest);
+-		
++		*/
++		int mode = 3;
++		if (args.length == 1) {
++			try {
++				mode = Integer.parseInt(args[0]);
++			} catch (NumberFormatException e) {
++				System.out.println("Provided mode is not an integer: " + args[0]);
++				return;
++			}
++		}
++		AppProfile appProfile = AppProfileBuilder.build(authMethods, mode);
+ 		appProfiles.put(uriLocal + "/.well-known/edhoc", appProfile);
+ 		
+ 		try {
+diff --git a/cf-oscore/pom.xml b/cf-oscore/pom.xml
+index d1abd4e7d..c23b216b9 100644
+--- a/cf-oscore/pom.xml
++++ b/cf-oscore/pom.xml
+@@ -38,7 +38,8 @@
+         	<dependency> <!-- Rikard: Added this dependency -->
+ 	            <groupId>net.i2p.crypto</groupId>
+ 	            <artifactId>eddsa</artifactId>
+-	            <version>0.2.0</version>
++	            <!-- <version>0.2.0</version> -->
++	            <version>${eddsa.version}</version>
+ 	            <type>jar</type>
+         	</dependency>
+ 		<dependency> <!-- Rikard: Added this dependency (Curve25519) -->
