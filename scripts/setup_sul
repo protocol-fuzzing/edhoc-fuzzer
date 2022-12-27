@@ -11,7 +11,7 @@ mkdir -p ${SOURCES_DIR} ${SERVERS_DIR} ${CLIENTS_DIR}
 
 function setup_rise() {
   # rise
-  readonly COMMIT_HASH="cddca9b5fa6ff041e58b35332953af7faebc453c"
+  readonly COMMIT_HASH="ed7784d7adcff90e098fc9a6c8fee9043ba25bde"
   readonly PREFIX="${SOURCES_DIR}/californium/cf-edhoc/src"
   readonly POSTFIX="java/org/eclipse/californium/edhoc"
   readonly CF_EDHOC_MAIN_DIR="${PREFIX}/main/${POSTFIX}"

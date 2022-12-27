@@ -123,10 +123,24 @@ index 0000000..2e8fbd0
 +}
 +
 diff --git a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Client.java b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Client.java
-index 5593959..362a559 100644
+index 5593959..29fc526 100644
 --- a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Client.java
 +++ b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Client.java
-@@ -181,6 +181,14 @@ public class Phase1Client {
+@@ -80,11 +80,11 @@ public class Phase1Client {
+ 	private final static boolean isInitiator = true;
+ 	
+ 	// Set to true if an OSCORE-protected exchange is performed after EDHOC completion
+-	private static final boolean POST_EDHOC_EXCHANGE = true;
++	private static boolean POST_EDHOC_EXCHANGE = true;
+ 
+ 	// Set to true if EDHOC message_3 will be combined with the first OSCORE request
+ 	// Note: the application profile pertaining the EDHOC resource must first indicate support for the combined request 
+-	private static final boolean OSCORE_EDHOC_COMBINED = false;
++	private static boolean OSCORE_EDHOC_COMBINED = false;
+ 	
+ 	// The authentication method to include in EDHOC message_1 (relevant only when Initiator)
+ 	private static int authenticationMethod = Constants.EDHOC_AUTH_METHOD_0;
+@@ -181,6 +181,13 @@ public class Phase1Client {
  	 * 
  	 */
  	public static void main(String args[]) {
@@ -134,14 +148,13 @@ index 5593959..362a559 100644
 +		if (args.length > 1) {
 +			System.out.println("Usage: <edhoc-client> [mode]");
 +			System.out.println("Modes: 1 (m3 no app), 2 (m3 app), 3 (m3 combined app), 4 (m4 no app), 5 (m4 app)");
-+			System.out.println("Default Mode: 3 (m3 combined app)");
 +			return;
 +		}
 +
  		String defaultUri = "coap://localhost/helloWorld";
  				
  		Configuration config = Configuration.createWithFile(CONFIG_FILE, CONFIG_HEADER, DEFAULTS);
-@@ -215,11 +223,22 @@ public class Phase1Client {
+@@ -215,11 +222,24 @@ public class Phase1Client {
  		Set<Integer> authMethods = new HashSet<Integer>();
  		for (int i = 0; i <= Constants.EDHOC_AUTH_METHOD_3; i++ )
  			authMethods.add(i);
@@ -156,6 +169,8 @@ index 5593959..362a559 100644
 +		if (args.length == 1) {
 +			try {
 +				mode = Integer.parseInt(args[0]);
++				POST_EDHOC_EXCHANGE = true;
++				OSCORE_EDHOC_COMBINED = true;
 +			} catch (NumberFormatException e) {
 +				System.out.println("Provided mode is not an integer: " + args[0]);
 +				return;
@@ -165,7 +180,7 @@ index 5593959..362a559 100644
  		appProfiles.put(edhocURI, appProfile);
  		
  		URI uri = null; // URI parameter of the request
-@@ -957,12 +976,15 @@ public class Phase1Client {
+@@ -957,12 +977,15 @@ public class Phase1Client {
  		int HANDLER_TIMEOUT = 1000;
  		// Send follow-up requests
  		Scanner scanner = new Scanner(System.in);
@@ -183,10 +198,10 @@ index 5593959..362a559 100644
  			if (command.equals("1")) {
  				payload = "1";
 diff --git a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Server.java b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Server.java
-index 26321a0..e2ea306 100644
+index 26321a0..38b370c 100644
 --- a/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Server.java
 +++ b/edhoc-applications/src/main/java/se/sics/edhocapps/Phase1Server.java
-@@ -143,7 +143,14 @@ public class Phase1Server extends CoapServer {
+@@ -143,7 +143,13 @@ public class Phase1Server extends CoapServer {
  	 * Application entry point.
  	 */
  	public static void main(String[] args) {
@@ -195,14 +210,13 @@ index 26321a0..e2ea306 100644
 +		if (args.length > 1) {
 +			System.out.println("Usage: <edhoc-server> [mode]");
 +			System.out.println("Modes: 1 (m3 no app), 2 (m3 app), 3 (m3 combined app), 4 (m4 no app), 5 (m4 app)");
-+			System.out.println("Default Mode: 3 (m3 combined app)");
 +			return;
 +		}
 +
  		// Insert EdDSA security provider
  		Util.installCryptoProvider();
  
-@@ -170,11 +177,22 @@ public class Phase1Server extends CoapServer {
+@@ -170,11 +176,22 @@ public class Phase1Server extends CoapServer {
  		Set<Integer> authMethods = new HashSet<Integer>();
  		for (int i = 0; i <= Constants.EDHOC_AUTH_METHOD_3; i++ )
  			authMethods.add(i);
