@@ -12,7 +12,7 @@ def dict_of_remove_pattern(pattern_string):
     if pattern_string is None or pattern_string == "":
         return remove_dct
 
-    for patt in pattern_string.split(','):
+    for patt in pattern_string.strip('\' "').split(','):
         p = patt.strip()
         if p[0] not in ['i', 'o', 'l'] or p[1] != '_':
             raise Exception("Invalid remove pattern provided: " + p)
@@ -81,7 +81,7 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
         }
     """
     def should_remove_label(label):
-        i, o = label.strip('"').split(' / ')
+        i, o = label.strip('\' "').split(' / ')
         return (i in remove_dct['i']) or (o in remove_dct['o']) or (label in remove_dct['l'])
 
     def find_index_of_same_edges(edge):
@@ -94,7 +94,7 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
         if label == "" or ' / ' not in label:
             return label
 
-        i, o = label.strip('"').split(' / ')
+        i, o = label.strip('\' "').split(' / ')
         ri = replacement_dct[i] if i in replacement_dct else i
         ro = replacement_dct[o] if o in replacement_dct else o
         return ri + ' / ' + ro
@@ -109,7 +109,7 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
         name = nd.get_name()
         if name.startswith('s'):
             if shorten_node_names:
-                nd.set_label(nd.get_label().strip('"').lstrip('s'))
+                nd.set_label('"' + nd.get_label().strip('\' "').lstrip('s') + '"')
 
         elif name != initial_hidden_node_name:
             if graph.del_node(nd):
@@ -123,7 +123,8 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
         # initial edge is stored separately from info dict
         if source_dest_pair[0] == initial_hidden_node_name:
             initial_edge = e
-            initial_edge.set_label(replace_label(initial_edge_label))
+            if initial_edge_label is not None and initial_edge_label != '':
+                initial_edge.set_label(replace_label(initial_edge_label))
             continue
 
         # in case of label to be removed, delete it from graph and continue
@@ -147,9 +148,7 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
 
         new_edge_info_dct[source_dest_pair][out_label].append(in_label)
 
-    # return the cleaned graph if that is the case
-    cleaned_graph = graph if remove_dct != {} else None
-    return cleaned_graph, graph.get_nodes(), new_edge_info_dct, initial_edge
+    return graph.get_nodes(), new_edge_info_dct, initial_edge
 
 
 def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
@@ -197,7 +196,7 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
         labels = sorted(labels, key=lambda s: len(s))
         return label_info_dct['merge_label_sep'].join(labels)
 
-    graph = pydot.Dot(graph_type='digraph')
+    graph = pydot.Dot(graph_name='g', graph_type='digraph')
 
     # add nodes (first hidden node should be included)
     for nd in nodes:
@@ -227,9 +226,30 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
     return graph
 
 
+def format_and_write_dot_string(graph_raw_string, initial_hidden_node_name, filename):
+    prefix = '\t'
+    initial_hidden_node_lines = ""
+
+    with open(filename, 'w') as f:
+        for line in graph_raw_string.strip().splitlines():
+            line = line.strip()
+            if line == 'digraph g {':
+                # start of graph
+                f.write(line + '\n\n')
+            elif line.startswith(initial_hidden_node_name):
+                # store them to move them to the bottom
+                initial_hidden_node_lines += (line + '\n')
+            elif line == '}':
+                # end of graph
+                f.write('\n' + initial_hidden_node_lines + '\n' + '}' + '\n')
+            elif line != '':
+                # other non-empty line
+                f.write(prefix + line + '\n')
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Beautify a .dot file by merging similar edges',
+        description='Beautify a .dot file by merging similar edges and replacing labels',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('i', metavar='Input', help='Input .dot file')
@@ -267,7 +287,7 @@ if __name__ == '__main__':
     remove_dct = dict_of_remove_pattern(args.remove_edge_pattern)
     replacement_dct = read_replacement_file(args.r, args.replacement_sep)
 
-    cleaned_graph, nodes, edge_info_dct, initial_edge = get_info_from_graph(
+    nodes, edge_info_dct, initial_edge = get_info_from_graph(
         args.i, not args.disable_shorten_nodes, remove_dct, replacement_dct,
         args.start_node_name, args.start_edge_label)
 
@@ -291,12 +311,9 @@ if __name__ == '__main__':
         new_graph_pdf_name = prefix + '.pdf'
 
     print(cmd_line_sep)
-    if cleaned_graph is not None:
-        cleaned_graph_dot_name = args.i.replace('.dot', '') + 'cld.dot'
-        cleaned_graph.write(cleaned_graph_dot_name)
-        print(f"written {cleaned_graph_dot_name}")
 
-    new_graph.write(new_graph_dot_name)
+    # alternative without formatting: new_graph.write(new_graph_dot_name, format='raw')
+    format_and_write_dot_string(new_graph.to_string(), args.start_node_name, new_graph_dot_name)
     print(f"written {new_graph_dot_name}")
 
     new_graph.write(new_graph_pdf_name, format='pdf')
