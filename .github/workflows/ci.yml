@@ -25,8 +25,7 @@ jobs:
       - name: Test RISE Client (m4_app)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/rise/client_m4_app -roundLimit 3
-          relDir=clients/rise_client_m4_app
-          ./scripts/diff_hyps experiments/saved_results/${relDir} experiments/results/${relDir} 3
+          ./scripts/diff_hyps experiments/saved_results/clients/rise_client_m4_app experiments/results/clients/rise_client_m4_app 3
 
   RISE-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -51,8 +50,7 @@ jobs:
       - name: Test RISE Server (m4_app)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/rise/server_m4_app -roundLimit 3
-          relDir=servers/rise_server_m4_app
-          ./scripts/diff_hyps experiments/saved_results/${relDir} experiments/results/${relDir} 3
+          ./scripts/diff_hyps experiments/saved_results/servers/rise_server_m4_app experiments/results/servers/rise_server_m4_app 3
 
   SIFIS-HOME-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -77,8 +75,7 @@ jobs:
       - name: Test SIFIS-HOME Client (phase_1_m4_app)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/client_phase_1_m4_app -roundLimit 3
-          relDir=clients/sifis-home_client_phase_1_m4_app
-          ./scripts/diff_hyps experiments/saved_results/${relDir} experiments/results/${relDir} 3
+          ./scripts/diff_hyps experiments/saved_results/clients/sifis-home_client_phase_1_m4_app experiments/results/clients/sifis-home_client_phase_1_m4_app 3
 
   SIFIS-HOME-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -103,8 +100,7 @@ jobs:
       - name: Test SIFIS-HOME Server (phase_1_m4_app)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1_m4_app -roundLimit 3
-          relDir=servers/sifis-home_server_phase_1_m4_app
-          ./scripts/diff_hyps experiments/saved_results/${relDir} experiments/results/${relDir} 3
+          ./scripts/diff_hyps experiments/saved_results/servers/sifis-home_server_phase_1_m4_app experiments/results/servers/sifis-home_server_phase_1_m4_app 3
 
   uOSCORE-uEDHOC-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -129,8 +125,7 @@ jobs:
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -roundLimit 3
-          relDir=clients/uoscore-uedhoc_client_linux_edhoc_oscore
-          ./scripts/diff_hyps experiments/saved_results/${relDir} experiments/results/${relDir} 3
+          ./scripts/diff_hyps experiments/saved_results/clients/uoscore-uedhoc_client_linux_edhoc_oscore experiments/results/clients/uoscore-uedhoc_client_linux_edhoc_oscore 3
 
   uOSCORE-uEDHOC-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -155,5 +150,4 @@ jobs:
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -roundLimit 2
-          relDir=servers/uoscore-uedhoc_server_linux_edhoc_oscore
-          ./scripts/diff_hyps experiments/saved_results/${relDir} experiments/results/${relDir} 2
+          ./scripts/diff_hyps experiments/saved_results/servers/uoscore-uedhoc_server_linux_edhoc_oscore experiments/results/servers/uoscore-uedhoc_server_linux_edhoc_oscore 2
