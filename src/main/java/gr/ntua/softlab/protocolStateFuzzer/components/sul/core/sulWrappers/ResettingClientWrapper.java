@@ -27,7 +27,7 @@ import java.net.SocketException;
  */
 public class ResettingClientWrapper<I, O> implements SUL<I, O> {
 
-    private static final Logger LOGGER = LogManager.getLogger(ResettingClientWrapper.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     protected SUL<I, O> sul;
 

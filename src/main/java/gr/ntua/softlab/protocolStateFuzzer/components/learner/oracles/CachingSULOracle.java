@@ -21,7 +21,7 @@ import java.util.HashSet;
  */
 public class CachingSULOracle<I, O> implements MealyMembershipOracle<I, O> {
 
-	private static final Logger LOGGER = LogManager.getLogger(CachingSULOracle.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	protected ObservationTree<I, O> root;
 
@@ -47,15 +47,16 @@ public class CachingSULOracle<I, O> implements MealyMembershipOracle<I, O> {
 			Word<O> fullOutput = answerFromCache(fullInput);
 			if (fullOutput == null) {
 				fullOutput = sulOracle.answerQuery(fullInput);
-				if (!onlyLookup)
+				if (!onlyLookup) {
 					storeToCache(fullInput, fullOutput);
+				}
 			} else {
-				LOGGER.info("CACHE HIT!");
+				LOGGER.debug("CACHE HIT!");
 			}
 
 			Word<O> output = fullOutput.suffix(q.getSuffix().size());
 			q.answer(output);
-			LOGGER.info(q.toString());
+			LOGGER.debug(q.toString());
 		}
 	}
 

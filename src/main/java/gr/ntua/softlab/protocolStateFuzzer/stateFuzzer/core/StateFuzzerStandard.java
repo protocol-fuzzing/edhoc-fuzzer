@@ -27,7 +27,7 @@ import java.io.*;
 import java.nio.file.Path;
 
 public class StateFuzzerStandard implements StateFuzzer {
-    private static final Logger LOGGER = LogManager.getLogger(StateFuzzerStandard.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected final String ALPHABET_FILENAME;
     protected StateFuzzerComposer stateFuzzerComposer;
     protected Alphabet<AbstractInput> alphabet;

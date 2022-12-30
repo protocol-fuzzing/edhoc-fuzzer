@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TestRunner {
-    private static final Logger LOGGER = LogManager.getLogger(TestRunner.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected TestRunnerEnabler testRunnerEnabler;
     protected Alphabet<AbstractInput> alphabet;
     protected Mapper mapper;

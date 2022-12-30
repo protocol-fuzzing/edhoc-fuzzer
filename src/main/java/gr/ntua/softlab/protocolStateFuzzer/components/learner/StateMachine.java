@@ -17,7 +17,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class StateMachine {
-    private static final Logger LOGGER = LogManager.getLogger(StateMachine.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     protected MealyMachine<?, AbstractInput, ?, AbstractOutput> mealyMachine;
 

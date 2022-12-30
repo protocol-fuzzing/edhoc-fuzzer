@@ -27,7 +27,7 @@ import java.util.List;
  * output into its atoms.
  */
 public abstract class OutputMapper {
-    private static final Logger LOGGER = LogManager.getLogger(OutputMapper.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /*
      * The minimum number of alert/unknown messages before decryption failure is established.

@@ -27,7 +27,7 @@ import java.net.SocketException;
  */
 public class ResettingServerWrapper<I, O> implements SUL<I, O>, DynamicPortProvider {
 
-    private static final Logger LOGGER = LogManager.getLogger(ResettingServerWrapper.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     protected SUL<I, O> sul;
 

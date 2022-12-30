@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TimingProbe {
-    private static final Logger LOGGER = LogManager.getLogger(TimingProbe.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected TimingProbeConfig timingProbeConfig;
     protected AlphabetBuilder alphabetBuilder;
     protected ProbeTestRunner probeTestRunner = null;

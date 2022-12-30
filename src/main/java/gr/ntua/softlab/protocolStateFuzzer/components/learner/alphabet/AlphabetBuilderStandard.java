@@ -14,7 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class AlphabetBuilderStandard implements AlphabetBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(AlphabetBuilderStandard.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected String DEFAULT_ALPHABET;
     protected AlphabetSerializer alphabetSerializer;
 

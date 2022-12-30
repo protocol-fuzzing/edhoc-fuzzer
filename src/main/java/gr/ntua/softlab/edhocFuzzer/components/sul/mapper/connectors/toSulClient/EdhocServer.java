@@ -116,7 +116,7 @@ public class EdhocServer extends CoapServer {
 
     // The resource for edhoc protocol requests
     protected static class EdhocResource extends CoapResource {
-        private static final Logger LOGGER = LogManager.getLogger(EdhocResource.class);
+        private static final Logger LOGGER = LogManager.getLogger();
         protected CoapExchanger coapExchanger;
 
         public EdhocResource(String name, CoapExchanger coapExchanger) {
@@ -151,7 +151,7 @@ public class EdhocServer extends CoapServer {
 
     // The Resource for application data requests
     protected static class ApplicationResource extends CoapResource {
-        private static final Logger LOGGER = LogManager.getLogger(ApplicationResource.class);
+        private static final Logger LOGGER = LogManager.getLogger();
         protected CoapExchanger coapExchanger;
 
         public ApplicationResource(String name, CoapExchanger coapExchanger) {

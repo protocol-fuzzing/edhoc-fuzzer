@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class EdhocSul extends AbstractSul {
-    private static final Logger LOGGER = LogManager.getLogger(EdhocSul.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected ExecutionContextStepped executionContextStepped;
     protected ProtocolVersion protocolVersion;
     protected Long originalTimeout;

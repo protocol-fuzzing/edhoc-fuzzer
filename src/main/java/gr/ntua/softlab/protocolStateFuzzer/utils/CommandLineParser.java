@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommandLineParser {
-    private static final Logger LOGGER = LogManager.getLogger(CommandLineParser.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected static final String CMD_STATE_FUZZER_CLIENT = "state-fuzzer-client";
     protected static final String CMD_STATE_FUZZER_SERVER = "state-fuzzer-server";
     protected static final String ARGS_FILE = "command.args";

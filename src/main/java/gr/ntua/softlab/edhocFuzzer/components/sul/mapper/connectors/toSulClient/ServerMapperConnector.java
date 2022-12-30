@@ -12,7 +12,7 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 import java.util.concurrent.TimeUnit;
 
 public class ServerMapperConnector implements EdhocMapperConnector {
-    private static final Logger LOGGER = LogManager.getLogger(ServerMapperConnector.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected String host;
     protected int port;
     protected String edhocResource;
