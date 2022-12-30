@@ -78,23 +78,23 @@ public class CommandLineParser {
         }
     }
 
-    protected void processCommand(String[] args) {
-        StateFuzzerClientConfig stateFuzzerClientConfig = stateFuzzerConfigBuilder.buildClientConfig();
-        StateFuzzerServerConfig stateFuzzerServerConfig = stateFuzzerConfigBuilder.buildServerConfig();
-
-        JCommander commander = JCommander.newBuilder()
+    protected JCommander buildCommander() {
+        return JCommander.newBuilder()
                 .allowParameterOverwriting(true)
-                .programName("")
-                .addCommand(CMD_STATE_FUZZER_CLIENT, stateFuzzerClientConfig)
-                .addCommand(CMD_STATE_FUZZER_SERVER, stateFuzzerServerConfig)
+                .addCommand(CMD_STATE_FUZZER_CLIENT, stateFuzzerConfigBuilder.buildClientConfig())
+                .addCommand(CMD_STATE_FUZZER_SERVER, stateFuzzerConfigBuilder.buildServerConfig())
                 .addConverterFactory(new ToolPropertyAwareConverterFactory())
                 .build();
+    }
+
+    protected void processCommand(String[] args) {
+        JCommander commander = buildCommander();
 
         if (args.length > 0
                 && !commander.getCommands().containsKey(args[0])
                 && !args[0].startsWith("@")
                 && new File(args[0]).exists()) {
-            LOGGER.info("Noticed that the first argument is a file. Processing it as an argument file.");
+            LOGGER.info("The first argument is a file path. Processing it as an argument file.");
             args[0] = "@" + args[0];
         }
 
@@ -105,11 +105,13 @@ public class CommandLineParser {
                 return;
             }
 
-            LOGGER.info("Processing command {}", commander.getParsedCommand());
-            switch (commander.getParsedCommand()) {
-                case CMD_STATE_FUZZER_CLIENT -> executeCommand(args, commander, stateFuzzerClientConfig);
-                case CMD_STATE_FUZZER_SERVER -> executeCommand(args, commander, stateFuzzerServerConfig);
+            if (StateFuzzerConfig.checkAndPrepareForReparse()) {
+                commander = buildCommander();
+                commander.parse(args);
             }
+
+            LOGGER.info("Processing command {}", commander.getParsedCommand());
+            executeCommand(args, commander);
 
         } catch (ParameterException e) {
             LOGGER.error("Could not parse provided parameters: {}", e.getMessage());
@@ -119,9 +121,14 @@ public class CommandLineParser {
         }
     }
 
-    protected void executeCommand(String[] args, JCommander commander, StateFuzzerConfig stateFuzzerConfig)
+    protected StateFuzzerConfig fromJCommanderAfterParsing(JCommander commander) {
+        return (StateFuzzerConfig) commander.getCommands().get(commander.getParsedCommand()).getObjects().get(0);
+    }
+
+    protected void executeCommand(String[] args, JCommander commander)
             throws IOException {
 
+        StateFuzzerConfig stateFuzzerConfig = fromJCommanderAfterParsing(commander);
         if (stateFuzzerConfig.isHelp()) {
             commander.usage();
             return;
