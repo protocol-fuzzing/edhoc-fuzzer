@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class ToolConfig {
+public class ToolConfig {
 
 	@Parameter(names = { "-h", "-help" }, help = true, description = "Print usage for all existing commands")
 	protected boolean help = false;
@@ -47,7 +47,7 @@ public abstract class ToolConfig {
 	public static final String PROTOCOL_VERSIONS = "protocol.versions";
 	public static final String PROTOCOL_VERSION_DELIMITER = ",";
 
-	/* Stores default application properties as provided in the FUZZER_PROPS file*/
+	/* Stores default application properties as provided in the FUZZER_PROPS file */
 	protected static Map<String, String> defaultProps = new LinkedHashMap<>();
 
 	/* Stores application properties which include variable definitions */
@@ -56,7 +56,7 @@ public abstract class ToolConfig {
 			+ "Can be passed as either JVM properties (after java) or as application properties.")
 	protected static Map<String, String> dynamicProps = new LinkedHashMap<>();
 
-	// initialize system properties
+	// initialize default application properties
 	static {
 		Properties fuzzerProps = new Properties();
 		String fuzzerPropsLocation = System.getProperty(FUZZER_PROPS);
@@ -131,19 +131,8 @@ public abstract class ToolConfig {
 	// cache userStrings in need of resolution, so as not to parse duplicates
 	protected static Map<String, String> resolutionCache = new HashMap<>();
 
-	public static boolean checkAndPrepareForReparse() {
-		if (dynamicProps.isEmpty())	{
-			// no reparse required
-			return false;
-		}
-
-		// reparse required so clear previous resolution cache
-		resolutionCache.clear();
-		return true;
-	}
-
 	/**
-	 * Resolves are the system properties in a given user string.
+	 * Resolves are the application properties in a given user string.
 	 */
 	public static String resolve(String userString) {
 		if (userString == null) {

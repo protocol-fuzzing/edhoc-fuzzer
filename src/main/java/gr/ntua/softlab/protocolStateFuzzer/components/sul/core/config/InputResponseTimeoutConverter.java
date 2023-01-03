@@ -2,23 +2,25 @@ package gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config;
 
 import com.beust.jcommander.IStringConverter;
 import com.beust.jcommander.ParameterException;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.ToolPropertyAwareConverterFactory;
 
 public class InputResponseTimeoutConverter implements IStringConverter<InputResponseTimeoutMap> {
 
 	@Override
 	public InputResponseTimeoutMap convert(String value) {
 		InputResponseTimeoutMap inputResponseTimeout = new InputResponseTimeoutMap();
-		String[] inputValuePairs = value.split("\\,");
+		String resolvedValue = ToolPropertyAwareConverterFactory.resolve(value);
+		String[] inputValuePairs = resolvedValue.split("\\,");
 		
 		for (String inputValuePair : inputValuePairs) {
 			String[] split = inputValuePair.split("\\:");
 			if (split.length != 2) {
-				throw new ParameterException(errMessage(value));
+				throw new ParameterException(errMessage(resolvedValue));
 			} else {
 				try {
 				inputResponseTimeout.put(split[0], Long.valueOf(split[1]));
 				} catch(Exception e) {
-					throw new ParameterException(errMessage(value), e);
+					throw new ParameterException(errMessage(resolvedValue), e);
 				}
 			}
 		}

@@ -18,6 +18,10 @@ public class ToolPropertyAwareConverterFactory implements IStringConverterFactor
 		converters.put(Double.class, FromDoubleConverter.class);
 	}
 
+	public static String resolve(String value) {
+		return (new FromStringConverter()).convert(value);
+	}
+
 	@Override
 	public Class<? extends IStringConverter<?>> getConverter(Class<?> forType) {
 		return converters.get(forType);
