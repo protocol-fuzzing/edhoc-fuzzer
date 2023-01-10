@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TestRunner {
-    private static final Logger LOGGER = LogManager.getLogger(TestRunner.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected TestRunnerEnabler testRunnerEnabler;
     protected Alphabet<AbstractInput> alphabet;
     protected Mapper mapper;
@@ -80,7 +80,7 @@ public class TestRunner {
     /**
      * Executes the tests in the config file and cleans up left-over processes once it is done.
      */
-    public void run() throws IOException {
+    public void run() {
         try {
             List<TestRunnerResult<AbstractInput, AbstractOutput>> results = runTests();
 
@@ -91,7 +91,9 @@ public class TestRunner {
                             getTransitionSequenceString(result, getSulConfig().isFuzzingClient()));
                 }
             }
-
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            e.printStackTrace();
         } finally {
             terminate();
         }

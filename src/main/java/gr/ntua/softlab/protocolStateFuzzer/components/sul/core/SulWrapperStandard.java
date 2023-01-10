@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 import java.time.Duration;
 
 public class SulWrapperStandard implements SulWrapper {
-    private static final Logger LOGGER = LogManager.getLogger(SulWrapperStandard.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected SUL<AbstractInput, AbstractOutput> wrappedSul;
     protected Counter inputCounter;
     protected Counter testCounter;

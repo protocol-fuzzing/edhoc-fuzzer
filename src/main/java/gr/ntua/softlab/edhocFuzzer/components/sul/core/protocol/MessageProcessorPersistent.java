@@ -20,7 +20,7 @@ import java.util.*;
  * These functions are no longer static and take their parameters also from the class's field edhocMapperState.
  */
 public class MessageProcessorPersistent {
-    private static final Logger LOGGER = LogManager.getLogger(MessageProcessorPersistent.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected EdhocMapperState edhocMapperState;
 
     public MessageProcessorPersistent(EdhocMapperState edhocMapperState) {

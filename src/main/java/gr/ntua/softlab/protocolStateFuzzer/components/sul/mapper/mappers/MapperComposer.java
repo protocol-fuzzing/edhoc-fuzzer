@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class MapperComposer implements Mapper {
-	private static final Logger LOGGER = LogManager.getLogger(MapperComposer.class);
+	private static final Logger LOGGER = LogManager.getLogger();
 	protected InputMapper inputMapper;
 	protected OutputMapper outputMapper;
 

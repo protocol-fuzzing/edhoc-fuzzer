@@ -29,7 +29,7 @@ import java.util.Map.Entry;
  */
 public class MultipleRunsSULOracle<I, O> implements MealyMembershipOracle<I, O> {
 
-    private static final Logger LOGGER = LogManager.getLogger(MultipleRunsSULOracle.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // x times cereruns
     protected static final int PROBABILISTIC_MIN_MULTIPLIER = 2;

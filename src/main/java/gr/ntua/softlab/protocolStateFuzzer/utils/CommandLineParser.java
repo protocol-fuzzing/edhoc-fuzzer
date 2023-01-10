@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CommandLineParser {
-    private static final Logger LOGGER = LogManager.getLogger(CommandLineParser.class);
+    private static final Logger LOGGER = LogManager.getLogger();
     protected static final String CMD_STATE_FUZZER_CLIENT = "state-fuzzer-client";
     protected static final String CMD_STATE_FUZZER_SERVER = "state-fuzzer-server";
     protected static final String ARGS_FILE = "command.args";
@@ -64,7 +64,7 @@ public class CommandLineParser {
 
         if (args.length == 0) {
             // to show global usage
-            processCommand(args);
+            parseAndExecuteCommand(args);
         }
 
         while (args.length > endCmd) {
@@ -73,59 +73,66 @@ public class CommandLineParser {
                 endCmd++;
             }
             cmdArgs = Arrays.copyOfRange(args, startCmd, endCmd);
-            processCommand(cmdArgs);
+            parseAndExecuteCommand(cmdArgs);
             endCmd++;
         }
     }
 
-    protected void processCommand(String[] args) {
-        StateFuzzerClientConfig stateFuzzerClientConfig = stateFuzzerConfigBuilder.buildClientConfig();
-        StateFuzzerServerConfig stateFuzzerServerConfig = stateFuzzerConfigBuilder.buildServerConfig();
-
-        JCommander commander = JCommander.newBuilder()
-                .allowParameterOverwriting(true)
-                .programName("")
-                .addCommand(CMD_STATE_FUZZER_CLIENT, stateFuzzerClientConfig)
-                .addCommand(CMD_STATE_FUZZER_SERVER, stateFuzzerServerConfig)
-                .addConverterFactory(new ToolPropertyAwareConverterFactory())
-                .build();
-
-        if (args.length > 0
-                && !commander.getCommands().containsKey(args[0])
-                && !args[0].startsWith("@")
-                && new File(args[0]).exists()) {
-            LOGGER.info("Noticed that the first argument is a file. Processing it as an argument file.");
-            args[0] = "@" + args[0];
-        }
-
+    protected void parseAndExecuteCommand(String[] args) {
         try {
-            commander.parse(args);
-            if (commander.getParsedCommand() == null) {
-                commander.usage();
-                return;
-            }
-
-            LOGGER.info("Processing command {}", commander.getParsedCommand());
-            switch (commander.getParsedCommand()) {
-                case CMD_STATE_FUZZER_CLIENT -> executeCommand(args, commander, stateFuzzerClientConfig);
-                case CMD_STATE_FUZZER_SERVER -> executeCommand(args, commander, stateFuzzerServerConfig);
-            }
-
-        } catch (ParameterException e) {
-            LOGGER.error("Could not parse provided parameters: {}", e.getMessage());
+            executeCommand(parseCommand(args));
         } catch (Exception e) {
             LOGGER.error("Encountered an exception, see below for more info");
             e.printStackTrace();
         }
     }
 
-    protected void executeCommand(String[] args, JCommander commander, StateFuzzerConfig stateFuzzerConfig)
-            throws IOException {
+    protected ParseResult parseCommand(String[] args) {
+        JCommander commander = buildCommander(true);
 
-        if (stateFuzzerConfig.isHelp()) {
-            commander.usage();
+        if (args.length > 0
+                && !commander.getCommands().containsKey(args[0])
+                && !args[0].startsWith("@")
+                && new File(args[0]).exists()) {
+            LOGGER.info("The first argument is a file path. Processing it as an argument file.");
+            args[0] = "@" + args[0];
+        }
+
+        try {
+            // parse only ToolConfig parameters, including dynamic parameters, on first parse
+            commander.parse(args);
+
+            // parse of ToolConfig parameters succeeded, so parse the arguments normally
+            commander = buildCommander(false);
+            commander.parse(args);
+
+            return new ParseResult(args, commander);
+
+        } catch (ParameterException e) {
+            LOGGER.error("Parameter parse error: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    protected void executeCommand(ParseResult parseResult) {
+
+        if (parseResult == null || !parseResult.isValid()) {
             return;
         }
+
+        String parsedCommand = parseResult.getCommander().getParsedCommand();
+        if (parsedCommand == null) {
+            parseResult.getCommander().usage();
+            return;
+        }
+
+        StateFuzzerConfig stateFuzzerConfig = (StateFuzzerConfig) parseResult.getObjectFromParsedCommand();
+        if (stateFuzzerConfig == null || stateFuzzerConfig.isHelp()) {
+            parseResult.getCommander().usage();
+            return;
+        }
+
+        LOGGER.info("Processing command {}", parsedCommand);
 
         String ownParentLogger = getBasePackageName(this.getClass().getPackageName());
         if (stateFuzzerConfig.isDebug()) {
@@ -152,10 +159,36 @@ public class CommandLineParser {
             LOGGER.info("State-fuzzing a {} implementation", stateFuzzerConfig.getSulConfig().getFuzzingRole());
 
             // this is an extra step done to store the running arguments
-            prepareOutputDir(args, stateFuzzerConfig.getOutputDir());
+            prepareOutputDir(parseResult.getArgs(), stateFuzzerConfig.getOutputDir());
 
             stateFuzzerBuilder.build(stateFuzzerConfig).startFuzzing();
         }
+    }
+
+    protected JCommander buildCommander(boolean parseOnlyToolConfigParameters) {
+
+        if (parseOnlyToolConfigParameters) {
+            // having only ToolConfig as Object to commands, only ToolConfig parameters can be parsed
+            // this way, dynamic parameters are stored and no converter is used
+            ToolConfig toolConfig = new ToolConfig();
+
+            return JCommander.newBuilder()
+                    .allowParameterOverwriting(true)
+                    .programName("")
+                    .addCommand(CMD_STATE_FUZZER_CLIENT, toolConfig)
+                    .addCommand(CMD_STATE_FUZZER_SERVER, toolConfig)
+                    .acceptUnknownOptions(true)
+                    .build();
+        }
+
+        // normal parse with all converters active
+        return JCommander.newBuilder()
+                .allowParameterOverwriting(true)
+                .programName("")
+                .addCommand(CMD_STATE_FUZZER_CLIENT, stateFuzzerConfigBuilder.buildClientConfig())
+                .addCommand(CMD_STATE_FUZZER_SERVER, stateFuzzerConfigBuilder.buildServerConfig())
+                .addConverterFactory(new ToolPropertyAwareConverterFactory())
+                .build();
     }
 
     protected void updateLoggingLevels(String ownParentLogger, String[] externalParentLoggers, Level level) {
@@ -211,5 +244,46 @@ public class CommandLineParser {
         }
         ps.close();
         fw.close();
+    }
+
+    protected static class ParseResult {
+        protected String[] args;
+        protected JCommander commander;
+
+        public ParseResult(String[] args, JCommander commander) {
+            this.args = args;
+            this.commander = commander;
+        }
+
+        public String[] getArgs() {
+            return args;
+        }
+
+        public JCommander getCommander() {
+            return commander;
+        }
+
+        public boolean isValid() {
+            return args != null && commander != null;
+        }
+
+        public Object getObjectFromParsedCommand() {
+            return getObjectFromParsedCommand(0);
+        }
+
+        public Object getObjectFromParsedCommand(int index) {
+            if (commander == null
+                    || commander.getCommands() == null || commander.getCommands().isEmpty()
+                    || commander.getParsedCommand() == null) {
+                return null;
+            }
+
+            JCommander parsedCommander = commander.getCommands().get(commander.getParsedCommand());
+            if (parsedCommander == null) {
+                return null;
+            }
+
+            return parsedCommander.getObjects().get(index);
+        }
     }
 }

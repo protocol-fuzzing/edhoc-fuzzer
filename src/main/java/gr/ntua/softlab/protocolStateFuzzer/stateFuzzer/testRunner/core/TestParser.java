@@ -23,7 +23,7 @@ import java.util.*;
  */
 
 public class TestParser {
-    private static final Logger LOGGER = LogManager.getLogger(TestParser.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public void writeTest(Word<AbstractInput> test, String PATH) throws IOException {
         File file = new File(PATH);

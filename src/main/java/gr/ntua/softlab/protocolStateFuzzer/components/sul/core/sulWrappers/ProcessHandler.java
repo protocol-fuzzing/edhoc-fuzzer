@@ -15,7 +15,7 @@ import java.util.Scanner;
  */
 public class ProcessHandler {
 
-    private static final Logger LOGGER = LogManager.getLogger(ProcessHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     protected final ProcessBuilder pb;
     protected Process currentProcess;
@@ -46,7 +46,7 @@ public class ProcessHandler {
     protected ProcessHandler(String command, long startWait) {
         // '+' after \\s takes care of multiple consecutive spaces so that they
         // don't result in empty arguments
-        pb = new ProcessBuilder(command.split("\\s+"));
+        this.pb = new ProcessBuilder(command.split("\\s+"));
         this.startWait = startWait;
         LOGGER.info("Command to launch SUL process: {}", command);
         LOGGER.info("Wait time after launching SUL process: {} ms", startWait);

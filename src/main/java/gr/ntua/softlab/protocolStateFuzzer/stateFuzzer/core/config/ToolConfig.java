@@ -47,13 +47,16 @@ public class ToolConfig {
 	public static final String PROTOCOL_VERSIONS = "protocol.versions";
 	public static final String PROTOCOL_VERSION_DELIMITER = ",";
 
-	/* Stores system properties */
+	/* Stores default application properties as provided in the FUZZER_PROPS file */
+	protected static Map<String, String> defaultProps = new LinkedHashMap<>();
+
+	/* Stores application properties which include variable definitions */
 	@DynamicParameter(names = "-D", description = "Definitions for variables, which can be referred to in arguments by ${var}. "
 			+ "Variables are replaced with their corresponding values before the arguments are parsed."
 			+ "Can be passed as either JVM properties (after java) or as application properties.")
-	protected static Map<String, String> props = new LinkedHashMap<>();
-	
-	// initialize system properties
+	protected static Map<String, String> dynamicProps = new LinkedHashMap<>();
+
+	// initialize default application properties
 	static {
 		Properties fuzzerProps = new Properties();
 		String fuzzerPropsLocation = System.getProperty(FUZZER_PROPS);
@@ -71,23 +74,23 @@ public class ToolConfig {
 		for (String propName : fuzzerProps.stringPropertyNames()) {
 			String systemPropValue = System.getProperty(propName);
 			if (systemPropValue != null) {
-				props.put(propName, systemPropValue);
+				defaultProps.put(propName, systemPropValue);
 			} else {
-				props.put(propName, fuzzerProps.getProperty(propName));
+				defaultProps.put(propName, fuzzerProps.getProperty(propName));
 			}
 		}
-		
+
 		String fuzzerDir = System.getProperty(FUZZER_DIR);
 		if (fuzzerDir == null) {
 			fuzzerDir = System.getProperty("user.dir");
 		}
-		props.put(FUZZER_DIR, fuzzerDir);
+		defaultProps.put(FUZZER_DIR, fuzzerDir);
 		
 		String sulsDir = fuzzerProps.getProperty(SULS_DIR);
 		if (sulsDir == null) {
 			sulsDir = fuzzerDir + File.separator + "suls";
 		}
-		props.put(SULS_DIR, sulsDir);
+		defaultProps.put(SULS_DIR, sulsDir);
 		
 		/*
 		 * SUL port: between 10000 and 39999
@@ -97,7 +100,7 @@ public class ToolConfig {
 			long sulSec = (System.currentTimeMillis() / 1000 % 30000) + 10000;
 			sulPort = Long.toString(sulSec);
 		}
-		props.put(SUL_PORT, sulPort);
+		defaultProps.put(SUL_PORT, sulPort);
 		
 		/*
 		 * Fuzzer port: between 40000 and 65535 (= 0xFFFF or max port)
@@ -107,12 +110,12 @@ public class ToolConfig {
 			long fuzzSec = (System.currentTimeMillis() / 1000 % 25536) + 40000;
 			fuzzerPort = Long.toString(fuzzSec);
 		}
-		props.put(FUZZER_PORT, fuzzerPort);
+		defaultProps.put(FUZZER_PORT, fuzzerPort);
 
 		/*
 		 * Initialize static map of  ProtocolVersion class
 		 */
-		 String protocolVersionsString = props.get(PROTOCOL_VERSIONS);
+		 String protocolVersionsString = defaultProps.get(PROTOCOL_VERSIONS);
 		 if (protocolVersionsString == null) {
 			 throw new RuntimeException("Property " + PROTOCOL_VERSIONS + " is missing");
 		 }
@@ -127,9 +130,9 @@ public class ToolConfig {
 	
 	// cache userStrings in need of resolution, so as not to parse duplicates
 	protected static Map<String, String> resolutionCache = new HashMap<>();
-	
+
 	/**
-	 * Resolves are the system properties in a given user string.
+	 * Resolves are the application properties in a given user string.
 	 */
 	public static String resolve(String userString) {
 		if (userString == null) {
@@ -149,10 +152,19 @@ public class ToolConfig {
 			if (!neededResolution) {
 				neededResolution = true;
 			}
-			// replace found pattern '${prop_key}' with the prop_key's value in props
+
+			// replace found pattern '${prop_key}' with the prop_key's value
+			// first dynamic props are searched for the prop_key and then default props
 			// if the provided prop_key is unknown, the pattern is not resolved
-			if (props.containsKey(matcher.group(2))) {
-				matcher.appendReplacement(resolvedSB, props.get(matcher.group(2)));
+			String replacement = null;
+			if (!dynamicProps.isEmpty() && dynamicProps.containsKey(matcher.group(2))) {
+				replacement = dynamicProps.get(matcher.group(2));
+			} else if (defaultProps.containsKey(matcher.group(2))) {
+				replacement = defaultProps.get(matcher.group(2));
+			}
+
+			if (replacement != null) {
+				matcher.appendReplacement(resolvedSB, replacement);
 			}
 		}
 

@@ -23,6 +23,9 @@
         <!-- edhocFuzzer properties -->
         <cf-edhoc-version>0.0.0</cf-edhoc-version>
         <gson-version>2.9.1</gson-version>
+
+        <!-- unit testing -->
+        <junit-version>4.13.2</junit-version>
     </properties>
 
     <dependencyManagement>
@@ -84,6 +87,14 @@
                 <artifactId>gson</artifactId>
                 <version>${gson-version}</version>
             </dependency>
+
+            <!-- unit testing dependencies -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit-version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -132,15 +143,12 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>${jaxb-impl.version}</version>
-            <scope>runtime</scope>
         </dependency>
 
         <!-- edhocFuzzer dependencies -->
 
         <!-- manually modified and built jar and locally installed cf-edhoc
-             see ./scripts/setup_fuzzer for more details
-        -->
+             see ./scripts/setup_fuzzer for more details -->
         <dependency>
             <groupId>se.ri.org.eclipse.californium</groupId>
             <artifactId>cf-edhoc</artifactId>
@@ -150,6 +158,14 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
+        </dependency>
+
+        <!-- unit testing dependencies -->
+
+        <!-- https://mvnrepository.com/artifact/junit/junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
 

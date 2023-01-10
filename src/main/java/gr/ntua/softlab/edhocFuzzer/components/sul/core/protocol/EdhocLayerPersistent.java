@@ -1,8 +1,13 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
 
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchangeInfo;
+
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchangeInfo;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.coap.EmptyMessage;
 import org.eclipse.californium.core.coap.Message;
@@ -15,8 +20,6 @@ import org.eclipse.californium.edhoc.Util;
 import org.eclipse.californium.oscore.OSCoreCtx;
 import org.eclipse.californium.oscore.OSCoreCtxDB;
 import org.eclipse.californium.oscore.OSException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +28,7 @@ import java.util.List;
 
 /** Adapted from {@link org.eclipse.californium.edhoc.EdhocLayer} */
 public class EdhocLayerPersistent extends AbstractLayer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EdhocLayerPersistent.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // The OSCORE context database
     OSCoreCtxDB ctxDb;
