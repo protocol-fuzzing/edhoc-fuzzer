@@ -3,6 +3,8 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol;
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.cose.AlgorithmID;
 import org.eclipse.californium.edhoc.*;
 import org.eclipse.californium.oscore.HashMapCtxDB;
@@ -14,6 +16,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class EdhocSessionPersistent extends EdhocSession {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     protected String sessionUri;
 
@@ -133,16 +137,26 @@ public class EdhocSessionPersistent extends EdhocSession {
 
         /* Invoke the EDHOC-Exporter to produce OSCORE input material */
         byte[] masterSecret = getMasterSecretOSCORE(this);
+        LOGGER.debug(EdhocUtil.byteArrayToString("OSCORE Master Secret", masterSecret));
+
         byte[] masterSalt = getMasterSaltOSCORE(this);
+        LOGGER.debug(EdhocUtil.byteArrayToString("OSCORE Master Salt", masterSalt));
 
         /* Set up the OSCORE Security Context */
 
         // The Sender ID of this peer is the EDHOC connection identifier of the other peer normally
         // or the forced sender id from the input
         byte[] senderId = forceOscoreSenderId != null ? forceOscoreSenderId : getPeerConnectionId();
+        LOGGER.debug(EdhocUtil.byteArrayToString("OSCORE Sender Id", senderId));
+        LOGGER.debug(EdhocUtil.byteArrayToString("peerConnectionId", getPeerConnectionId()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("forceOscoreSenderId", forceOscoreSenderId));
+
         // The Recipient ID of this peer is the EDHOC connection identifier of this peer normally
         // or the forced recipient id from the input
         byte[] recipientId = forceOscoreRecipientId != null ? forceOscoreRecipientId : getConnectionId();
+        LOGGER.debug(EdhocUtil.byteArrayToString("OSCORE Recipient Id", recipientId));
+        LOGGER.debug(EdhocUtil.byteArrayToString("connectionId", getConnectionId()));
+        LOGGER.debug(EdhocUtil.byteArrayToString("forceOscoreRecipientId", forceOscoreRecipientId));
 
         int selectedCipherSuite = getSelectedCipherSuite();
         AlgorithmID alg = getAppAEAD(selectedCipherSuite);

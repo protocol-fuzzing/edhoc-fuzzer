@@ -54,23 +54,29 @@ public class EdhocMapperConfig extends MapperConfig {
     @Parameter(names = "-disableContentFormat", description = "Do not add CoAP Content-Format in sending messages")
     protected boolean disableContentFormat = false;
 
-    @Parameter(names = "-enableSessionReset", description = "Reset to default old session data, when Initiator mapper " +
-            "sends a message to start a new session. Reset does not affect a Responder mapper")
+    @Parameter(names = "-enableSessionReset", description = "Reset to default old session data, when Initiator mapper "
+            + "sends a message to start a new session. Reset does not affect a Responder mapper")
     protected boolean enableSessionReset = false;
 
-    @Parameter(names = "-disableCXCorrelation", description = "Disable correlation with connection identifiers. " +
-            "In case of client mapper do not prepend CX to requests and in case of server mapper do not treat first " +
-            "CBOR object in a response as CX")
+    @Parameter(names = "-disableCXCorrelation", description = "Disable correlation with connection identifiers. "
+            + "In case of client mapper do not prepend CX to requests and in case of server mapper do not treat first "
+            + "CBOR object in a response as CX")
     protected boolean disableCXCorrelation = false;
 
-    @Parameter(names = "-forceOscoreSenderId", description = "Use this oscore sender id, instead of the peer " +
-            "connection id that is found during EDHOC. " +
-            "Available: empty byte string: [] or single-line byte string in the format: 0a0b0c0d0e0f")
+    @Parameter(names = "-ownConnectionId", description = "Use this id as own connection id for the EDHOC protocol. "
+            + "Avoid an id that would coincide with a peer connection id found during EDHOC, in order for the OSCORE "
+            + "context to be derived successfully from those two ids. Available: empty byte string: [] or single-line "
+            + "hexadecimal byte string in the format: 0a0b0c0d0e0f")
+    protected String ownConnectionId = "36";
+
+    @Parameter(names = "-forceOscoreSenderId", description = "Use this OSCORE sender id, instead of the peer "
+            + "connection id that is found during EDHOC. Available: empty byte string: [] or single-line hexadecimal "
+            + "byte string in the format: 0a0b0c0d0e0f")
     protected String forceOscoreSenderId = null;
 
-    @Parameter(names = "-forceOscoreRecipientId", description = "Use this oscore sender id, instead of the own " +
-            "connection id that is found during EDHOC. " +
-            "Available: empty byte string: [] or single-line byte string in the format: 0a0b0c0d0e0f")
+    @Parameter(names = "-forceOscoreRecipientId", description = "Use this OSCORE recipient id, instead of the own "
+            + "connection id during EDHOC. Available: empty byte string: [] or single-line hexadecimal byte string in "
+            + "the format: 0a0b0c0d0e0f")
     protected String forceOscoreRecipientId = null;
 
     public void initializeHost(String host) {
@@ -131,12 +137,16 @@ public class EdhocMapperConfig extends MapperConfig {
         return !disableCXCorrelation;
     }
 
+    public byte[] getOwnConnectionId() {
+        return parseHexString(ownConnectionId);
+    }
+
     public byte[] getForceOscoreSenderId() {
-        return parseForceOscoreId(forceOscoreSenderId);
+        return parseHexString(forceOscoreSenderId);
     }
 
     public byte[] getForceOscoreRecipientId() {
-        return parseForceOscoreId(forceOscoreRecipientId);
+        return parseHexString(forceOscoreRecipientId);
     }
 
     public String getHostCoapUri() {
@@ -158,7 +168,7 @@ public class EdhocMapperConfig extends MapperConfig {
             throw new RuntimeException("Argument provided to -connect has not the correct format: ip:port");
         }
 
-        try{
+        try {
             Integer.parseInt(hostArray[1]);
             return host;
         } catch (NumberFormatException e) {
@@ -167,7 +177,7 @@ public class EdhocMapperConfig extends MapperConfig {
     }
 
     protected String getCoapUri(String host, String resource) {
-        try{
+        try {
             String coapUri = String.format("coap://%s/%s", host, resource);
             return (new URI(coapUri)).toString();
         } catch (URISyntaxException e) {
@@ -175,11 +185,15 @@ public class EdhocMapperConfig extends MapperConfig {
         }
     }
 
-    protected byte[] parseForceOscoreId(String idString) {
-        if (idString == null) {
+    protected byte[] parseHexString(String hexString) {
+        if (hexString == null) {
             return null;
-        } else {
-            return Objects.equals(idString, "[]") ? new byte[]{} : StringUtil.hex2ByteArray(idString);
         }
+
+        if (Objects.equals(hexString, "[]")) {
+            return new byte[]{};
+        }
+
+        return StringUtil.hex2ByteArray(hexString);
     }
 }

@@ -30,16 +30,17 @@ public class ProcessHandler {
 
         if (sulConfig.getProcessDir() != null) {
             setDirectory(new File(sulConfig.getProcessDir()));
+            LOGGER.info("Directory of SUL process: {}", sulConfig.getProcessDir());
         }
 
         if (sulConfig.isRedirectOutputStreams()) {
-            output = System.out;
-            error = System.err;
+            this.output = System.out;
+            this.error = System.err;
         }
 
-        terminateCommand = sulConfig.getTerminateCommand();
-        if (terminateCommand != null) {
-            LOGGER.info("Command to terminate SUL process: {}", terminateCommand);
+        this.terminateCommand = sulConfig.getTerminateCommand();
+        if (this.terminateCommand != null) {
+            LOGGER.info("Command to terminate SUL process: {}", this.terminateCommand);
         }
     }
 

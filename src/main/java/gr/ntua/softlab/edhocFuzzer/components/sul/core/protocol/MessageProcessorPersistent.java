@@ -1849,13 +1849,17 @@ public class MessageProcessorPersistent {
 
         switch(errorCode) {
             case Constants.ERR_CODE_SUCCESS ->
-                    LOGGER.error("Error code success");
+                    LOGGER.warn("Error code success");
+
             case Constants.ERR_CODE_UNSPECIFIED_ERROR -> {
                 if (objectList[index].getType() != CBORType.TextString) {
                     LOGGER.error("Invalid format of ERR_INFO");
                     return false;
                 }
+                String errorMsg = objectList[index].AsString();
+                LOGGER.info("ERR_INFO: {} ~ {}", EdhocUtil.byteArrayToString(errorMsg.getBytes()), errorMsg);
             }
+
             case Constants.ERR_CODE_WRONG_SELECTED_CIPHER_SUITE -> {
                 if (objectList[index].getType() != CBORType.Array
                         && objectList[index].getType() != CBORType.Integer) {
@@ -1872,7 +1876,8 @@ public class MessageProcessorPersistent {
                     }
                 }
             }
-            default -> LOGGER.debug("Unknown error code: " + errorCode);
+
+            default -> LOGGER.warn("Unknown error code: " + errorCode);
         }
 
         return true;

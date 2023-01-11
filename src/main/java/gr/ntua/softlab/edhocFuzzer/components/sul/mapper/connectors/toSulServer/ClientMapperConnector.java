@@ -3,6 +3,8 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulServer
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.PayloadType;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.CoAP;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class ClientMapperConnector implements EdhocMapperConnector {
+    private static final Logger LOGGER = LogManager.getLogger();
     protected CoapClient edhocClient;
     protected CoapClient appClient;
     protected CoapEndpoint coapEndpoint;
@@ -127,15 +130,25 @@ public class ClientMapperConnector implements EdhocMapperConnector {
 
     @Override
     public boolean receivedOscoreAppMessage() {
-        return isResponseSuccessful()
-                && expectedAppResponse
+        // oscore app messages should be identified regardless of expectation
+        boolean isReceived = isResponseSuccessful()
+                && !currentCoapExchangeInfo.hasEdhocMessage()
                 && currentCoapExchangeInfo.hasOscoreAppMessage();
+
+        if (isReceived && !expectedAppResponse) {
+            LOGGER.warn("Received OSCORE application message without prior request");
+        }
+
+        return isReceived;
     }
 
     @Override
     public boolean receivedCoapAppMessage() {
+        // coap app message is identified only if it is expected
+        // if it is not expected, the message is normally identified as coap message
         return isResponseSuccessful()
                 && expectedAppResponse
+                && !currentCoapExchangeInfo.hasEdhocMessage()
                 && !currentCoapExchangeInfo.hasOscoreAppMessage();
     }
 

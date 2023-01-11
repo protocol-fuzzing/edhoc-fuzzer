@@ -26,6 +26,7 @@ import java.util.*;
 
 /** Adapted from test files EdhocClient / EdhocServer from edhoc repo */
 public abstract class EdhocMapperState implements State {
+
     // The protocol version of edhoc used for the session of this state
     protected ProtocolVersion protocolVersion;
 
@@ -159,16 +160,7 @@ public abstract class EdhocMapperState implements State {
         authenticator.setupPeerAuthenticationCredentials();
 
         // Prepare new session
-
-        // large connection id, in order not to be equal with received C_I / C_R
-        // in case of mapper using oscore context (for fuzzing only), but
-        // the other peer does not derive oscore context
-        byte[] connectionId = new byte[]{(byte) 255, (byte) 255, (byte) 255};
-
-        if (edhocMapperConfig.getForceOscoreRecipientId() != null) {
-            connectionId = edhocMapperConfig.getForceOscoreRecipientId();
-        }
-
+        byte[] connectionId = edhocMapperConfig.getOwnConnectionId();
         usedConnectionIds.add(CBORObject.FromObject(connectionId));
 
         boolean isInitiator = edhocMapperConfig.isInitiator();
