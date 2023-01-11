@@ -151,3 +151,57 @@ jobs:
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -roundLimit 2
           ./scripts/diff_hyps experiments/saved_results/servers/uoscore-uedhoc_server_linux_edhoc_oscore experiments/results/servers/uoscore-uedhoc_server_linux_edhoc_oscore 2
+
+  EDHOC-Rust-Client:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install packages and EDHOC-Fuzzer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk maven
+          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
+          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
+          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+          source "${HOME}/.cargo/env"
+          ./scripts/setup_fuzzer -l
+
+      - name: Setup EDHOC-Rust
+        run: ./scripts/setup_sul edhoc-rs
+
+      - name: Test EDHOC-Rust Client
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/edhoc-rs/client -roundLimit 3
+          ./scripts/diff_hyps experiments/saved_results/clients/edhoc-rs_client experiments/results/clients/edhoc-rs_client 3
+
+  EDHOC-Rust-Server:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install packages and EDHOC-Fuzzer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk maven
+          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
+          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
+          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+          source "${HOME}/.cargo/env"
+          ./scripts/setup_fuzzer -l
+
+      - name: Setup EDHOC-Rust
+        run: ./scripts/setup_sul edhoc-rs
+
+      - name: Test EDHOC-Rust Server
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/edhoc-rs/server -roundLimit 3
+          ./scripts/diff_hyps experiments/saved_results/servers/edhoc-rs_server experiments/results/servers/edhoc-rs_server 3
