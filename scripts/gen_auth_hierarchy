@@ -3,8 +3,9 @@
 # Adapted from https://github.com/eriptic/uoscore-uedhoc/blob/dev/samples/cert_hierarchy/generate_ca_hierarchy.sh
 
 readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
+readonly BASE_DIR="$(dirname -- ${SCRIPT_DIR})"
 readonly CERT_CNF="${SCRIPT_DIR}/cert.cnf"
-readonly AUTH_DIR="${SCRIPT_DIR}/../experiments/authentication"
+readonly AUTH_DIR="${BASE_DIR}/experiments/authentication"
 
 # perform everything in AUTH_DIR
 cd "${AUTH_DIR}"
@@ -13,10 +14,10 @@ keep_root_ca_dirs=false
 
 usage() {
   cat << END
-  Usage: ${0} [-opt]
+  Usage: ${0##*/} [-opt]
   Options:
-    -a  Keep root_ca directory
-    -c  Clean all directories
+    -a  Keep generated root_ca directory
+    -c  Clean all generated directories
     -h  Show usage message
 END
   exit 0

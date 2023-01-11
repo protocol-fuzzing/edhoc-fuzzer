@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
-readonly BASE_DIR="${SCRIPT_DIR}/.."
+readonly BASE_DIR="$(dirname -- ${SCRIPT_DIR})"
 
 usage() {
   cat << END
-  Usage: ${0} [-opt]
+  Usage: ${0##*/} [-opt]
   Options:
     -l  Fetch and setup cf-edhoc library
     -h  Show usage message

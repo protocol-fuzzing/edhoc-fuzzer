@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
-readonly MODEL_DIR="${SCRIPT_DIR}/../experiments/models"
+readonly BASE_DIR="$(dirname -- ${SCRIPT_DIR})"
+readonly MODEL_DIR="${BASE_DIR}/experiments/models"
 readonly SOURCES_DIR="${MODEL_DIR}/sources"
 readonly PATCH_DIR="${MODEL_DIR}/patches"
 readonly SERVERS_DIR="${MODEL_DIR}/servers"
@@ -9,7 +10,7 @@ readonly CLIENTS_DIR="${MODEL_DIR}/clients"
 
 mkdir -p ${SOURCES_DIR} ${SERVERS_DIR} ${CLIENTS_DIR}
 
-function setup_rise() {
+setup_rise() {
   # rise
   readonly COMMIT_HASH="ed7784d7adcff90e098fc9a6c8fee9043ba25bde"
   readonly PREFIX="${SOURCES_DIR}/californium/cf-edhoc/src"
@@ -40,7 +41,7 @@ function setup_rise() {
   set +e
 }
 
-function setup_sifis_home() {
+setup_sifis_home() {
   # sifis-home
   readonly COMMIT_HASH="0f2debc9556cc1cecaa8a2807724cf814c17d799"
 
@@ -65,7 +66,7 @@ function setup_sifis_home() {
   set +e
 }
 
-function setup_uoscore_uedhoc() {
+setup_uoscore_uedhoc() {
   # uoscore-uedhoc
   readonly COMMIT_HASH="57452e3df994136ca63fb0d26df9d44ada35c8ae"
 
@@ -105,7 +106,7 @@ function setup_all_suls() {
 
 usage() {
   cat << END
-  Usage: ${0} [option] SUL
+  Usage: ${0##*/} [option] SUL
   Options:
     -a, --all  : Try to setup all SULs
     -h, --help : Show usage
