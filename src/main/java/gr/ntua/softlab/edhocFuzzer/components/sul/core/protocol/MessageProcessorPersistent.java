@@ -1249,7 +1249,7 @@ public class MessageProcessorPersistent {
         // Compute the external data for the external_aad, as a CBOR sequence
         byte[] externalData = computeExternalData(th2, session.getCred(), ead2);
         if (externalData == null) {
-            LOGGER.debug("ERROR; Computing the external data for MAC_2");
+            LOGGER.error("Computing the external data for MAC_2");
             return null;
         }
 
@@ -1954,7 +1954,7 @@ public class MessageProcessorPersistent {
         try {
             return EdhocUtil.computeHash(hashInput, hashAlgorithm);
         } catch (NoSuchAlgorithmException e) {
-            LOGGER.error("Invalid hash algorithm when computing TH2\n" + e.getMessage());
+            LOGGER.error("Invalid hash algorithm when computing TH2: " + e.getMessage());
             return null;
         }
     }
@@ -1965,7 +1965,7 @@ public class MessageProcessorPersistent {
             try {
                 return Hkdf.extract(th2, dhSecret);
             } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-                LOGGER.error("Generating PRK_2e\n" + e.getMessage());
+                LOGGER.error("Generating PRK_2e: " + e.getMessage());
                 return null;
             }
         }
@@ -2037,7 +2037,7 @@ public class MessageProcessorPersistent {
             try {
                 salt3e2m = session.edhocKDF(prk2e, Constants.KDF_LABEL_SALT_3E2M, context, length);
             } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-                System.err.println("ERROR: Generating SALT_3e2m\n" + e.getMessage());
+                LOGGER.error("Generating SALT_3e2m: " + e.getMessage());
                 return null;
             }
 
@@ -2047,7 +2047,7 @@ public class MessageProcessorPersistent {
                 try {
                     prk3e2m = Hkdf.extract(salt3e2m, dhSecret);
                 } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-                    System.err.println("ERROR: Generating PRK_3e2m\n" + e.getMessage());
+                    LOGGER.error("Generating PRK_3e2m: " + e.getMessage());
                     return null;
                 }
             }
@@ -2087,7 +2087,7 @@ public class MessageProcessorPersistent {
         try {
             return session.edhocKDF(prk3e2m, Constants.KDF_LABEL_MAC_2, context, macLength);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            LOGGER.error("Computing MAC_2\n" + e.getMessage());
+            LOGGER.error("Computing MAC_2: " + e.getMessage());
             return null;
         }
     }
@@ -2154,7 +2154,7 @@ public class MessageProcessorPersistent {
                 signatureOrMac2 = EdhocUtil.computeSignature(session.getIdCred(), externalData, mac2, identityKey);
 
             } catch (CoseException e) {
-                LOGGER.error("Signing MAC_2 to produce Signature_or_MAC_2\n" + e.getMessage());
+                LOGGER.error("Signing MAC_2 to produce Signature_or_MAC_2: " + e.getMessage());
                 return null;
             }
         }
@@ -2176,7 +2176,7 @@ public class MessageProcessorPersistent {
             try {
                 keystream2 = session.edhocKDF(prk2e, Constants.KDF_LABEL_KEYSTREAM_2, context, length);
             } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-                LOGGER.error("Generating KEYSTREAM_2 (whole)\n" + e.getMessage());
+                LOGGER.error("Generating KEYSTREAM_2 (whole): " + e.getMessage());
                 return null;
             }
         }
@@ -2199,7 +2199,7 @@ public class MessageProcessorPersistent {
                 try {
                     part = session.edhocKDF(prk2e, -i, context, numBytes);
                 } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-                    LOGGER.error("Generating KEYSTREAM_2 (partial)\n" + e.getMessage());
+                    LOGGER.error("Generating KEYSTREAM_2 (partial): " + e.getMessage());
                     return null;
                 }
 
@@ -2237,7 +2237,7 @@ public class MessageProcessorPersistent {
             try {
                 return EdhocUtil.verifySignature(signatureOrMac2, peerIdCred, externalData, mac2, peerLongTerm);
             } catch (CoseException e) {
-                LOGGER.error("Verifying the signature of Signature_or_MAC_2\n" + e.getMessage());
+                LOGGER.error("Verifying the signature of Signature_or_MAC_2: " + e.getMessage());
                 return false;
             }
         }
@@ -2258,7 +2258,7 @@ public class MessageProcessorPersistent {
         try {
             return EdhocUtil.computeHash(hashInput, hashAlgorithm);
         } catch (NoSuchAlgorithmException e) {
-            LOGGER.error("Invalid hash algorithm when computing TH3\n" + e.getMessage());
+            LOGGER.error("Invalid hash algorithm when computing TH3: " + e.getMessage());
             return null;
         }
     }
@@ -2329,7 +2329,7 @@ public class MessageProcessorPersistent {
             try {
                 salt4e3m = session.edhocKDF(prk3e2m, Constants.KDF_LABEL_SALT_4E3M, context, length);
             } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-                LOGGER.error("Generating SALT_4e3m\n" + e.getMessage());
+                LOGGER.error("Generating SALT_4e3m: " + e.getMessage());
                 return null;
             }
 
@@ -2344,7 +2344,7 @@ public class MessageProcessorPersistent {
                 try {
                     prk4e3m = Hkdf.extract(salt4e3m, dhSecret);
                 } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-                    System.err.println("ERROR: Generating PRK_4e3m\n" + e.getMessage());
+                    LOGGER.error("Generating PRK_4e3m: " + e.getMessage());
                     return null;
                 }
             }
@@ -2384,7 +2384,7 @@ public class MessageProcessorPersistent {
         try {
             return session.edhocKDF(prk4e3m, Constants.KDF_LABEL_MAC_3, context, macLength);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            LOGGER.error("Computing MAC_3\n" + e.getMessage());
+            LOGGER.error("Computing MAC_3: " + e.getMessage());
             return null;
         }
     }
@@ -2421,7 +2421,7 @@ public class MessageProcessorPersistent {
                 signatureOrMac3 = EdhocUtil.computeSignature(session.getIdCred(), externalData, mac3, identityKey);
 
             } catch (CoseException e) {
-                LOGGER.error("Signing MAC_3 to produce Signature_or_MAC_3\n" + e.getMessage());
+                LOGGER.error("Signing MAC_3 to produce Signature_or_MAC_3: " + e.getMessage());
                 return null;
             }
         }
@@ -2479,7 +2479,7 @@ public class MessageProcessorPersistent {
         try {
             return EdhocUtil.encrypt(emptyMap, externalData, plaintext, alg, iv3ae, k3ae);
         } catch (CoseException e) {
-            LOGGER.error("Computing CIPHERTEXT_3\n" + e.getMessage());
+            LOGGER.error("Computing CIPHERTEXT_3: " + e.getMessage());
             return null;
         }
     }
@@ -2498,7 +2498,7 @@ public class MessageProcessorPersistent {
         try {
             return EdhocUtil.computeHash(hashInput, hashAlgorithm);
         } catch (NoSuchAlgorithmException e) {
-            LOGGER.error("Invalid hash algorithm when computing TH4\n" + e.getMessage());
+            LOGGER.error("Invalid hash algorithm when computing TH4: " + e.getMessage());
             return null;
         }
     }
@@ -2512,7 +2512,7 @@ public class MessageProcessorPersistent {
         try {
             return session.edhocKDF(prk4e3m, Constants.KDF_LABEL_PRK_OUT, context, length);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            LOGGER.error("Generating PRK_out\n" + e.getMessage());
+            LOGGER.error("Generating PRK_out: " + e.getMessage());
             return null;
         }
     }
@@ -2526,7 +2526,7 @@ public class MessageProcessorPersistent {
         try {
             return session.edhocKDF(prkOut, Constants.KDF_LABEL_PRK_EXPORTER, context, length);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            LOGGER.error("Generating PRK_exporter\n" + e.getMessage());
+            LOGGER.error("Generating PRK_exporter: " + e.getMessage());
             return null;
         }
     }
@@ -2542,7 +2542,7 @@ public class MessageProcessorPersistent {
         try {
             return EdhocUtil.decrypt(emptyMap, externalData, ciphertext, alg, iv3ae, k3ae);
         } catch (CoseException e) {
-            LOGGER.error("Decrypting CIPHERTEXT_3\n" + e.getMessage());
+            LOGGER.error("Decrypting CIPHERTEXT_3: " + e.getMessage());
             return null;
         }
     }
@@ -2574,7 +2574,7 @@ public class MessageProcessorPersistent {
             try {
                 return EdhocUtil.verifySignature(signatureOrMac3, peerIdCred, externalData, mac3, peerLongTerm);
             } catch (CoseException e) {
-                LOGGER.error("Verifying the signature of Signature_or_MAC_3\n" + e.getMessage());
+                LOGGER.error("Verifying the signature of Signature_or_MAC_3: " + e.getMessage());
                 return false;
             }
         }
@@ -2631,7 +2631,7 @@ public class MessageProcessorPersistent {
         try {
             return EdhocUtil.encrypt(emptyMap, externalData, plaintext, alg, iv4m, k4m);
         } catch (CoseException e) {
-            LOGGER.error("Computing CIPHERTEXT_4\n" + e.getMessage());
+            LOGGER.error("Computing CIPHERTEXT_4: " + e.getMessage());
             return null;
         }
     }
@@ -2647,7 +2647,7 @@ public class MessageProcessorPersistent {
         try {
             return EdhocUtil.decrypt(emptyMap, externalData, ciphertext, alg, iv4ae, k4ae);
         } catch (CoseException e) {
-            LOGGER.error("Decrypting CIPHERTEXT_4\n" + e.getMessage());
+            LOGGER.error("Decrypting CIPHERTEXT_4: " + e.getMessage());
             return null;
         }
     }
@@ -2683,7 +2683,7 @@ public class MessageProcessorPersistent {
                 int eadLabel = itemsList[i].AsInt32();
                 if (eadLabel < 0 && !session.getSupportedEADs().contains(eadLabel)) {
                     // The EAD item is critical and is not supported
-                    LOGGER.warn("Unsupported EAD critical item with ead_label " + eadLabel);
+                    LOGGER.error("Unsupported EAD critical item with ead_label: " + eadLabel);
                     return false;
                 }
 

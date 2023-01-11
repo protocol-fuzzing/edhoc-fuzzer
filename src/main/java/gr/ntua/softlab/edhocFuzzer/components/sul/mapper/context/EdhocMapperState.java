@@ -177,6 +177,13 @@ public abstract class EdhocMapperState implements State {
         // Update edhocSessions
         edhocSessionsPersistent.put(CBORObject.FromObject(connectionId), edhocSessionPersistent);
 
+        if (edhocMapperConfig.getForceOscoreRecipientId() != null) {
+            // forceRecipientId should point to the session, in order for the session to be accessible from
+            // the OSCORE context's recipient id as well
+            edhocSessionsPersistent.put(CBORObject.FromObject(edhocMapperConfig.getForceOscoreRecipientId()),
+                    edhocSessionPersistent);
+        }
+
         // Initialize connector
         edhocMapperConnector.initialize(new EdhocStackFactoryPersistent(edhocEndpointInfoPersistent,
                 new MessageProcessorPersistent(this)), edhocSessionPersistent.getCoapExchanger());
