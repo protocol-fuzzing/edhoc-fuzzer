@@ -181,14 +181,14 @@ public class EdhocSessionPersistent extends EdhocSession {
     }
 
     public byte[] getOscoreSenderId() {
-        // the Sender ID of this peer is the EDHOC connection identifier of the other peer normally
-        // or the forced sender id from the input
+        // the sender id of this peer is the forced sender id from the input
+        // or the connection id of the other peer as expected
         return forceOscoreSenderId != null ? forceOscoreSenderId : getPeerConnectionId();
     }
 
     public byte[] getOscoreRecipientId() {
-        // the Recipient ID of this peer is the EDHOC connection identifier of this peer normally
-        // or the forced recipient id from the input
+        // the recipient id of this peer is the forced recipient id from the input
+        // or the connection id of this peer as expected
         return forceOscoreRecipientId != null ? forceOscoreRecipientId : getConnectionId();
     }
 
