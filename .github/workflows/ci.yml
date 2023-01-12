@@ -14,7 +14,7 @@ jobs:
       - name: Install packages and EDHOC-Fuzzer
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven
+          sudo apt-get install -y openjdk-17-jdk maven graphviz
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
           curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
@@ -41,7 +41,7 @@ jobs:
       - name: Install packages and EDHOC-Fuzzer
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven
+          sudo apt-get install -y openjdk-17-jdk maven graphviz
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
           curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
@@ -68,7 +68,7 @@ jobs:
       - name: Install packages and EDHOC-Fuzzer
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven
+          sudo apt-get install -y openjdk-17-jdk maven graphviz
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
           ./scripts/setup_fuzzer -l
@@ -93,7 +93,7 @@ jobs:
       - name: Install packages and EDHOC-Fuzzer
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven
+          sudo apt-get install -y openjdk-17-jdk maven graphviz
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
           ./scripts/setup_fuzzer -l
@@ -118,7 +118,7 @@ jobs:
       - name: Install packages and EDHOC-Fuzzer
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven
+          sudo apt-get install -y openjdk-17-jdk maven graphviz
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
           ./scripts/setup_fuzzer -l
@@ -143,7 +143,7 @@ jobs:
       - name: Install packages and EDHOC-Fuzzer
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven
+          sudo apt-get install -y openjdk-17-jdk maven graphviz
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
           ./scripts/setup_fuzzer -l
@@ -168,7 +168,7 @@ jobs:
       - name: Install packages and EDHOC-Fuzzer
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven
+          sudo apt-get install -y openjdk-17-jdk maven graphviz
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
           ./scripts/setup_fuzzer -l
@@ -193,7 +193,7 @@ jobs:
       - name: Install packages and EDHOC-Fuzzer
         run: |
           sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven
+          sudo apt-get install -y openjdk-17-jdk maven graphviz
           sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
           export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
           ./scripts/setup_fuzzer -l
