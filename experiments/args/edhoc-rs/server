@@ -1,0 +1,68 @@
+state-fuzzer-server
+
+
+##### StateFuzzerConfig #####
+-output
+${results.learning.servers}/edhoc-rs_server
+
+
+##### LearnerConfig #####
+-learningAlgorithm
+TTT
+-equivalenceAlgorithms
+W_METHOD,WP_METHOD
+-logQueries
+-cacheTests
+-skipNonDetTests
+
+##### EdhocMapperConfig #####
+## Mapper Auth ##
+
+# CCS
+-mapCredType
+1
+
+# KID
+-mapIdCredType
+0
+
+## Sul Auth ##
+
+# CCS
+-sulCredType
+1
+
+# KID
+-sulIdCredType
+0
+
+# TestVector
+-testVectorJson
+${authentication.test_vectors}/test_vectors_edhoc_rs.json
+
+-testVectorJsonKey
+test_vector_p256
+
+-testVectorPeerKeyCurve
+P256
+
+-edhocRole
+Initiator
+
+
+##### SulConfig #####
+-protocolVersion
+17
+-responseWait
+7000
+-processDir
+${models.servers}/edhoc-rs
+-cmd
+./coapserver
+-startWait
+1000
+
+
+##### EdhocSulServerConfig #####
+-connect
+localhost:5683

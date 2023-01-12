@@ -10,6 +10,27 @@ readonly CLIENTS_DIR="${MODEL_DIR}/clients"
 
 mkdir -p ${SOURCES_DIR} ${SERVERS_DIR} ${CLIENTS_DIR}
 
+setup_edhoc_rs() {
+  # edhoc-rs
+  readonly COMMIT_HASH="09aa2a822a9aa278146808b8498bea06f9103d59"
+
+  set -e
+  echo "Setting up EDHOC-Rust"
+  cd ${SOURCES_DIR}
+  git clone https://github.com/openwsn-berkeley/edhoc-rs.git
+  cd edhoc-rs
+  git checkout ${COMMIT_HASH}
+  cargo build
+  TGT_DBG_DIR=${SOURCES_DIR}/edhoc-rs/target/debug
+
+  cd ${MODEL_DIR}
+  mkdir -p ${SERVERS_DIR}/edhoc-rs ${CLIENTS_DIR}/edhoc-rs
+  ln -sf ${TGT_DBG_DIR}/coapserver ${SERVERS_DIR}/edhoc-rs/coapserver
+  ln -sf ${TGT_DBG_DIR}/coapclient ${CLIENTS_DIR}/edhoc-rs/coapclient
+  echo "Successfully set up EDHOC-Rust"
+  set +e
+}
+
 setup_rise() {
   # rise
   readonly COMMIT_HASH="ed7784d7adcff90e098fc9a6c8fee9043ba25bde"
@@ -97,7 +118,8 @@ setup_uoscore_uedhoc() {
   set +e
 }
 
-function setup_all_suls() {
+setup_all_suls() {
+  setup_edhoc_rs
   setup_rise
   setup_sifis_home
   setup_uoscore_uedhoc
@@ -111,6 +133,7 @@ usage() {
     -a, --all  : Try to setup all SULs
     -h, --help : Show usage
   SULs:
+    edhoc-rs
     rise
     sifis-home
     uoscore-uedhoc
@@ -129,6 +152,7 @@ else
   esac; shift; done
 
   for sul in "${@}"; do case ${sul} in
+    edhoc-rs ) setup_edhoc_rs ;;
     rise ) setup_rise ;;
     sifis-home ) setup_sifis_home ;;
     uoscore-uedhoc ) setup_uoscore_uedhoc ;;

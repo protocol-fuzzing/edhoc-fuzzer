@@ -56,7 +56,7 @@ public class CachingSULOracle<I, O> implements MealyMembershipOracle<I, O> {
 
 			Word<O> output = fullOutput.suffix(q.getSuffix().size());
 			q.answer(output);
-			LOGGER.debug(q.toString());
+			LOGGER.info(q.toString());
 		}
 	}
 

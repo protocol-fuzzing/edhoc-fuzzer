@@ -67,13 +67,12 @@ public class EdhocLayerPersistent extends AbstractLayer {
 
             // Consistency checks
             if (session == null) {
-                LOGGER.debug("ERROR: Unable to retrieve the EDHOC session");
+                LOGGER.error("Unable to retrieve the EDHOC session");
                 return;
             }
 
-            byte[] connectionIdentifierInitiator = session.getConnectionId();
-            if (!Arrays.equals(recipientId, connectionIdentifierInitiator)) {
-                LOGGER.debug("ERROR: Retrieved inconsistent EDHOC session");
+            if (!Arrays.equals(recipientId, session.getOscoreRecipientId())) {
+                LOGGER.error("Inconsistent OSCORE recipient ids between OSCORE context and retrieved EDHOC session");
                 return;
             }
 
@@ -144,7 +143,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
         if (request.getOptions().hasEdhoc()) {
 
             if (!request.getOptions().hasOscore()) {
-                LOGGER.debug("ERROR: Received a request with the EDHOC option but without the OSCORE option");
+                LOGGER.error("Received a request with the EDHOC option but without the OSCORE option");
                 return;
             }
 
@@ -157,13 +156,13 @@ public class EdhocLayerPersistent extends AbstractLayer {
             CBORObject[] receivedOjectList = CBORObject.DecodeSequenceFromBytes(oldPayload);
 
             if (receivedOjectList == null || receivedOjectList.length != 2) {
-                LOGGER.debug("ERROR: Received CBOR Object List is null or has invalid length");
+                LOGGER.error("Received CBOR Object List is null or has invalid length");
                 return;
             }
 
             if (receivedOjectList[0].getType() != CBORType.ByteString ||
                     receivedOjectList[1].getType() != CBORType.ByteString) {
-                LOGGER.debug("ERROR: Received CBOR Objects have invalid type");
+                LOGGER.error("Received CBOR Objects have invalid type");
                 return;
             }
 
@@ -200,7 +199,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
 
             // Consistency checks
             if (session == null) {
-                LOGGER.debug("ERROR: Unable to retrieve the EDHOC session");
+                LOGGER.error("Unable to retrieve the EDHOC session");
                 return;
             }
 
@@ -300,7 +299,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
         try {
             return ctxDb.getContext(uri);
         } catch (OSException exception) {
-            LOGGER.debug("ERROR: Retrieving the OSCORE Security Context " + exception.getMessage());
+            LOGGER.error("Retrieving the OSCORE Security Context " + exception.getMessage());
             return null;
         }
     }

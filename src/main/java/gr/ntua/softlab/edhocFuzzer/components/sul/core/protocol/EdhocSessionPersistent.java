@@ -144,16 +144,12 @@ public class EdhocSessionPersistent extends EdhocSession {
 
         /* Set up the OSCORE Security Context */
 
-        // The Sender ID of this peer is the EDHOC connection identifier of the other peer normally
-        // or the forced sender id from the input
-        byte[] senderId = forceOscoreSenderId != null ? forceOscoreSenderId : getPeerConnectionId();
+        byte[] senderId = getOscoreSenderId();
         LOGGER.debug(EdhocUtil.byteArrayToString("OSCORE Sender Id", senderId));
         LOGGER.debug(EdhocUtil.byteArrayToString("peerConnectionId", getPeerConnectionId()));
         LOGGER.debug(EdhocUtil.byteArrayToString("forceOscoreSenderId", forceOscoreSenderId));
 
-        // The Recipient ID of this peer is the EDHOC connection identifier of this peer normally
-        // or the forced recipient id from the input
-        byte[] recipientId = forceOscoreRecipientId != null ? forceOscoreRecipientId : getConnectionId();
+        byte[] recipientId = getOscoreRecipientId();
         LOGGER.debug(EdhocUtil.byteArrayToString("OSCORE Recipient Id", recipientId));
         LOGGER.debug(EdhocUtil.byteArrayToString("connectionId", getConnectionId()));
         LOGGER.debug(EdhocUtil.byteArrayToString("forceOscoreRecipientId", forceOscoreRecipientId));
@@ -182,6 +178,18 @@ public class EdhocSessionPersistent extends EdhocSession {
         }
 
         oscoreCtxGenerated = true;
+    }
+
+    public byte[] getOscoreSenderId() {
+        // the sender id of this peer is the forced sender id from the input
+        // or the connection id of the other peer as expected
+        return forceOscoreSenderId != null ? forceOscoreSenderId : getPeerConnectionId();
+    }
+
+    public byte[] getOscoreRecipientId() {
+        // the recipient id of this peer is the forced recipient id from the input
+        // or the connection id of this peer as expected
+        return forceOscoreRecipientId != null ? forceOscoreRecipientId : getConnectionId();
     }
 
     @Override
