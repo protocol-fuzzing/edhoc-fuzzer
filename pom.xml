@@ -16,7 +16,7 @@
         <learnlib.version>0.16.0</learnlib.version>
         <automatalib.version>0.10.0</automatalib.version>
         <jcommander.version>1.82</jcommander.version>
-        <log4j.version>2.17.2</log4j.version>
+        <log4j.version>2.19.0</log4j.version>
         <jaxb-api.version>4.0.0</jaxb-api.version>
         <jaxb-impl.version>4.0.1</jaxb-impl.version>
 
