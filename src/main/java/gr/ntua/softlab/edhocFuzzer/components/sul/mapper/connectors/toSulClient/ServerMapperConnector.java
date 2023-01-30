@@ -75,7 +75,7 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         exceptionCodeOccurred = -1;
 
         if (currentCoapExchangeInfo == null || currentCoapExchangeInfo.getCoapExchange() == null) {
-            // timeout has occured on previous send so poll the queue to get a
+            // timeout has occurred on previous send, so poll the queue to get a
             // possible message that has arrived after the previous send
             // although the learner will not be aware of it
             currentCoapExchangeInfo = coapExchanger.getReceivedQueue().poll();
