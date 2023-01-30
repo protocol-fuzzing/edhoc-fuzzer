@@ -64,6 +64,7 @@ public class SulWrapperStandard implements SulWrapper {
         return this;
     }
 
+    @Override
     public SulWrapper setTestLimit(Long testLimit) {
         if (testLimit == null || testLimit <= 0L) {
             LOGGER.info("Learning test limit NOT set (provided value: {})", testLimit);
@@ -77,6 +78,7 @@ public class SulWrapperStandard implements SulWrapper {
         return this;
     }
 
+    @Override
     public SUL<AbstractInput, AbstractOutput> getWrappedSul() {
         return wrappedSul;
     }

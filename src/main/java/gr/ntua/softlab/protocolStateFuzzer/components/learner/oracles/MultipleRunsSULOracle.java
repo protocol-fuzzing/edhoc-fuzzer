@@ -5,8 +5,6 @@ import de.learnlib.api.query.Query;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.TestRunner;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.TestRunnerResult;
 import net.automatalib.words.Word;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -28,8 +26,6 @@ import java.util.Map.Entry;
  * queries.
  */
 public class MultipleRunsSULOracle<I, O> implements MealyMembershipOracle<I, O> {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     // x times cereruns
     protected static final int PROBABILISTIC_MIN_MULTIPLIER = 2;
