@@ -64,7 +64,7 @@ setup_rise() {
 
 setup_sifis_home() {
   # sifis-home
-  readonly COMMIT_HASH="0f2debc9556cc1cecaa8a2807724cf814c17d799"
+  readonly COMMIT_HASH="9956c8cf9a6f8cb3ab09e48842ceafeb9d2a790e"
 
   set -e
   echo "Setting up SIFIS-HOME"

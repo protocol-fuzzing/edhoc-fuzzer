@@ -126,10 +126,10 @@ jobs:
       - name: Setup SIFIS-HOME
         run: ./scripts/setup_sul sifis-home
 
-      - name: Test SIFIS-HOME Client (phase_1_m4_app)
+      - name: Test SIFIS-HOME Client (phase_1)
         run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/client_phase_1_m4_app -roundLimit 3
-          ./scripts/diff_hyps experiments/saved_results/clients/sifis-home_client_phase_1_m4_app experiments/results/clients/sifis-home_client_phase_1_m4_app 3
+          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/client_phase_1 -roundLimit 3
+          ./scripts/diff_hyps experiments/saved_results/clients/sifis-home_client_phase_1 experiments/results/clients/sifis-home_client_phase_1 3
 
   SIFIS-HOME-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -151,10 +151,10 @@ jobs:
       - name: Setup SIFIS-HOME
         run: ./scripts/setup_sul sifis-home
 
-      - name: Test SIFIS-HOME Server (phase_1_m4_app)
+      - name: Test SIFIS-HOME Server (phase_1)
         run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1_m4_app -roundLimit 3
-          ./scripts/diff_hyps experiments/saved_results/servers/sifis-home_server_phase_1_m4_app experiments/results/servers/sifis-home_server_phase_1_m4_app 3
+          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1 -roundLimit 3
+          ./scripts/diff_hyps experiments/saved_results/servers/sifis-home_server_phase_1 experiments/results/servers/sifis-home_server_phase_1 3
 
   uOSCORE-uEDHOC-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
