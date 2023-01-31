@@ -105,14 +105,14 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
     graph = pydot.graph_from_dot_file(graph_name)[0]
 
     # shorten node names, if applicable and remove any falsely read nodes, most common '\\n\\n'
-    for nd in graph.get_nodes():
-        name = nd.get_name()
+    for node in graph.get_nodes():
+        name = node.get_name()
         if name.startswith('s'):
             if shorten_node_names:
-                nd.set_label('"' + nd.get_label().strip('\' "').lstrip('s') + '"')
+                node.set_label('"' + node.get_label().strip('\' "').lstrip('s') + '"')
 
         elif name != initial_hidden_node_name:
-            if graph.del_node(nd):
+            if graph.del_node(node):
                 print(f"ignored redundant parsed node with name: {name}")
 
     # read edges and prepare info dict
@@ -199,8 +199,8 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
     graph = pydot.Dot(graph_name='g', graph_type='digraph')
 
     # add nodes (first hidden node should be included)
-    for nd in nodes:
-        graph.add_node(nd)
+    for node in nodes:
+        graph.add_node(node)
 
     # add initial edge
     initial_edge_label = initial_edge.get_label()
