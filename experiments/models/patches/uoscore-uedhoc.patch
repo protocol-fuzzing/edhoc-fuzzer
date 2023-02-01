@@ -1,42 +1,14 @@
-diff --git a/makefile_config.mk b/makefile_config.mk
-index c0f41eb..08c5feb 100644
---- a/makefile_config.mk
-+++ b/makefile_config.mk
-@@ -12,7 +12,7 @@
- OPT = -O0
- 
- # Uncomment this to print intermediery results at runtime
--# DEBUG_PRINT += -DDEBUG_PRINT
-+DEBUG_PRINT += -DDEBUG_PRINT
- 
- 
- # CBOR engine
-@@ -76,4 +76,4 @@ CBOR_ENGINE += -DZCBOR
- 
- #CRYPTO_ENGINE += -DTINYCRYPT
- CRYPTO_ENGINE += -DCOMPACT25519
--CRYPTO_ENGINE += -DMBEDTLS
-\ No newline at end of file
-+CRYPTO_ENGINE += -DMBEDTLS
 diff --git a/samples/linux_edhoc_oscore/initiator_client/src/main.cpp b/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
-index 63a1174..3d527b4 100644
+index 5f37a6e..b842385 100644
 --- a/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
 +++ b/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
-@@ -275,7 +275,7 @@ int main()
+@@ -271,7 +271,8 @@ int main()
  			protected_pdu->reset();
  			protected_pdu->setVersion(1);
  			protected_pdu->setType(CoapPDU::COAP_CONFIRMABLE);
 -			protected_pdu->setCode(CoapPDU::COAP_GET);
++			//protected_pdu->setCode(CoapPDU::COAP_GET);
 +			protected_pdu->setCode(CoapPDU::COAP_POST);
  			protected_pdu->setToken((uint8_t *)&(++token),
  						sizeof(token));
  			protected_pdu->setURI((char *)"tv1", 3);
-@@ -320,7 +320,7 @@ int main()
- 			unprotected_pdu->reset();
- 			unprotected_pdu->setVersion(1);
- 			unprotected_pdu->setType(CoapPDU::COAP_CONFIRMABLE);
--			unprotected_pdu->setCode(CoapPDU::COAP_GET);
-+			unprotected_pdu->setCode(CoapPDU::COAP_POST);
- 			unprotected_pdu->setToken((uint8_t *)&(++token),
- 						  sizeof(token));
- 			unprotected_pdu->setURI((char *)"tv2", 3);

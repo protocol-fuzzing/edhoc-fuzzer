@@ -89,7 +89,7 @@ setup_sifis_home() {
 
 setup_uoscore_uedhoc() {
   # uoscore-uedhoc
-  readonly COMMIT_HASH="57452e3df994136ca63fb0d26df9d44ada35c8ae"
+  readonly COMMIT_HASH="fbaa96caa1a2028d369c70e24a173caa60a0ce15"
 
   set -e
   echo "Setting up uOSCORE-uEDHOC"
