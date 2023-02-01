@@ -6,7 +6,8 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchange
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.cose.AlgorithmID;
-import org.eclipse.californium.edhoc.*;
+import org.eclipse.californium.edhoc.EdhocSession;
+import org.eclipse.californium.edhoc.Util;
 import org.eclipse.californium.oscore.HashMapCtxDB;
 import org.eclipse.californium.oscore.OSCoreCtx;
 import org.eclipse.californium.oscore.OSException;
@@ -128,10 +129,10 @@ public class EdhocSessionPersistent extends EdhocSession {
         oscoreCtxGenerated = false;
     }
 
-    public void setupOscoreContext() {
+    public synchronized void setupOscoreContext() {
         if (oscoreCtxGenerated) {
-            // oscore context is derived only it is not already derived in this session.
-            // In case it is already derived, then the current context is active
+            // oscore context is derived only if not already derived in this session
+            // in case it is already derived, then the current context is active
             return;
         }
 
@@ -178,6 +179,20 @@ public class EdhocSessionPersistent extends EdhocSession {
         }
 
         oscoreCtxGenerated = true;
+        notifyAll();
+    }
+
+    public synchronized void waitForOscoreContext(long timeoutMillis) {
+        LOGGER.debug("Start of waitForOscoreContext");
+        if (!oscoreCtxGenerated) {
+            try {
+                wait(timeoutMillis);
+            } catch (InterruptedException e) {
+                LOGGER.warn("Wait for OSCORE context generation interrupted: {}", e.getMessage());
+            }
+        }
+        // wait finished
+        LOGGER.debug("End of waitForOscoreContext, OSCORE context generated: {}", oscoreCtxGenerated);
     }
 
     public byte[] getOscoreSenderId() {
