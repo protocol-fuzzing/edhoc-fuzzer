@@ -9,8 +9,6 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperCo
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfigException;
 
 public abstract class SulConfig implements MapperConfigProvider {
-    public static final String FUZZER_DIR = "fuzzer.dir";
-    public static final String SULS_DIR = "suls.dir";
 
     @Parameter(names = "-protocolVersion", required = true, description = "Protocol version to be analyzed",
             converter = ProtocolVersionConverter.class)

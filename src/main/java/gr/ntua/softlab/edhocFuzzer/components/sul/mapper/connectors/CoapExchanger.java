@@ -8,8 +8,8 @@ public class CoapExchanger {
     protected BlockingQueue<CoapExchangeInfo> draftQueue;
 
     public CoapExchanger() {
-        receivedQueue = new ArrayBlockingQueue<>(1);
-        draftQueue = new ArrayBlockingQueue<>(1);
+        receivedQueue = new ArrayBlockingQueue<>(10);
+        draftQueue = new ArrayBlockingQueue<>(10);
     }
 
     public BlockingQueue<CoapExchangeInfo> getReceivedQueue() {

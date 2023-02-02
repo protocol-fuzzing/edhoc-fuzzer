@@ -217,8 +217,16 @@ public class EdhocLayerPersistent extends AbstractLayer {
             }
         } else {
             // edhoc message or application data or unknown message
-            addCoapExchangeInfo(request, true,
-                    messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent());
+            EdhocSessionPersistent session = messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent();
+
+            if (request.getOptions().hasOscore()) {
+                // wait in case message 3 is received and current OSCORE context
+                // is about to be generated
+                session.waitForOscoreContext(100);
+                LOGGER.debug("Finished waiting for OSCORE context generation");
+            }
+
+            addCoapExchangeInfo(request, true, session);
         }
 
         super.receiveRequest(exchange, request);
