@@ -54,4 +54,3 @@ public abstract class AlphabetPojoXml {
         return null;
     }
 }
-

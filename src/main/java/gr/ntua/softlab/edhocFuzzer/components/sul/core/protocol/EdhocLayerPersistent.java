@@ -346,4 +346,3 @@ public class EdhocLayerPersistent extends AbstractLayer {
         return kid;
     }
 }
-
