@@ -8,7 +8,7 @@ import java.util.Map;
 
 
 public class ToolPropertyAwareConverterFactory implements IStringConverterFactory {
-	
+
 	protected Map<Class<?>, Class<? extends IStringConverter<?>>> converters = new HashMap<>();
 
 	public ToolPropertyAwareConverterFactory() {
@@ -33,14 +33,14 @@ public class ToolPropertyAwareConverterFactory implements IStringConverterFactor
 			return ToolConfig.resolve(value);
 		}
 	}
-	
+
 	protected static class FromIntegerConverter implements IStringConverter<Integer> {
 		@Override
 		public Integer convert(String value) {
 			return Integer.valueOf(ToolConfig.resolve(value.trim()));
 		}
 	}
-	
+
 	protected static class FromLongConverter implements IStringConverter<Long> {
 		@Override
 		public Long convert(String value) {

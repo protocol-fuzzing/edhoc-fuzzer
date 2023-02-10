@@ -37,7 +37,7 @@ public class ToolConfig {
 
 	public static final String FUZZER_PROPS = "fuzzer.properties";
 	public static final String DEFAULT_FUZZER_PROPS = "default_fuzzer.properties";
-	
+
 	public static final String FUZZER_DIR = "fuzzer.dir";
 	public static final String SULS_DIR = "suls.dir";
 	public static final String SUL_PORT = "sul.port";
@@ -70,7 +70,7 @@ public class ToolConfig {
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load properties");
 		}
-		
+
 		for (String propName : fuzzerProps.stringPropertyNames()) {
 			String systemPropValue = System.getProperty(propName);
 			if (systemPropValue != null) {
@@ -85,13 +85,13 @@ public class ToolConfig {
 			fuzzerDir = System.getProperty("user.dir");
 		}
 		defaultProps.put(FUZZER_DIR, fuzzerDir);
-		
+
 		String sulsDir = fuzzerProps.getProperty(SULS_DIR);
 		if (sulsDir == null) {
 			sulsDir = fuzzerDir + File.separator + "suls";
 		}
 		defaultProps.put(SULS_DIR, sulsDir);
-		
+
 		/*
 		 * SUL port: between 10000 and 39999
 		 */
@@ -101,7 +101,7 @@ public class ToolConfig {
 			sulPort = Long.toString(sulSec);
 		}
 		defaultProps.put(SUL_PORT, sulPort);
-		
+
 		/*
 		 * Fuzzer port: between 40000 and 65535 (= 0xFFFF or max port)
 		 */
@@ -127,7 +127,7 @@ public class ToolConfig {
 			 throw new RuntimeException("Property " + PROTOCOL_VERSIONS + " is empty");
 		 }
 	}
-	
+
 	// cache userStrings in need of resolution, so as not to parse duplicates
 	protected static Map<String, String> resolutionCache = new HashMap<>();
 

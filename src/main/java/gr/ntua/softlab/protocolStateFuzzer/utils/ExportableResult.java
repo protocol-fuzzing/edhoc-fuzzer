@@ -7,7 +7,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 public abstract class ExportableResult {
-	
+
 	protected static String SECTION_DELIM = Strings.repeat("-", 80);
 	protected static String TITLE_DELIM = Strings.repeat("=", 80);
 
@@ -16,15 +16,15 @@ public abstract class ExportableResult {
 		doExport(pw);
 		pw.close();
 	}
-	
+
 	protected abstract void doExport(PrintWriter pw);
-	
+
 	protected void subsection(String subsection, PrintWriter pw) {
 		pw.println();
 		pw.println("== " + subsection + " ==");
 		pw.println();
 	}
-	
+
 	protected void section(String section, PrintWriter pw) {
 		pw.println();
 		pw.println(SECTION_DELIM);
@@ -32,7 +32,7 @@ public abstract class ExportableResult {
 		pw.println(SECTION_DELIM);
 		pw.println();
 	}
-	
+
 	protected void title(String title, PrintWriter pw) {
 		pw.println();
 		pw.println(TITLE_DELIM);
@@ -40,7 +40,7 @@ public abstract class ExportableResult {
 		pw.println(TITLE_DELIM);
 		pw.println();
 	}
-	
+
 	public String exportToString() {
 		StringWriter sw = new StringWriter();
 		export(sw);

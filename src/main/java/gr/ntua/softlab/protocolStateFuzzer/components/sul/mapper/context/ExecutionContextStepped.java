@@ -11,27 +11,27 @@ public class ExecutionContextStepped implements ExecutionContext {
 	protected List<StepContext> stepContexts;
 	protected boolean enabled = true;
 	protected State state;
-	
+
 	public ExecutionContextStepped(State state) {
 		stepContexts = new ArrayList<>();
 		this.state = state;
 	}
-	
+
 	@Override
 	public State getState() {
 		return this.state;
 	}
-	
+
 	@Override
 	public void disableExecution() {
 		enabled = false;
 	}
-	
+
 	@Override
 	public void enableExecution() {
 		enabled = true;
 	}
-	
+
 	@Override
 	public boolean isExecutionEnabled() {
 		return enabled;
@@ -48,7 +48,7 @@ public class ExecutionContextStepped implements ExecutionContext {
 	public void addStepContext() {
 		stepContexts.add(new StepContext(stepContexts.size()));
 	}
-	
+
 	public StepContext getStepContext() {
 		if (!stepContexts.isEmpty())
 			return stepContexts.get(stepContexts.size() - 1);

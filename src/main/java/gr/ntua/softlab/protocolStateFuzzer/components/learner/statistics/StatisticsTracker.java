@@ -34,7 +34,7 @@ public class StatisticsTracker {
 	long lastInputs;
 	long lastTests;
 	/* Time (ms) relative to the start of the learning experiment */
-	long time; 
+	long time;
 
 	// learning inputs and results
 	protected StateFuzzerEnabler stateFuzzerEnabler;
@@ -44,40 +44,40 @@ public class StatisticsTracker {
 	protected StateMachine learnedModel;
 	protected StateMachine lastHyp;
 	protected HypothesisStatistics lastHypStats;
-	
+
 	// (optional) runtime tracking of the state of the learning process
 	enum State {
 		REFINEMENT,
 		TESTING,
 		FINISHED
 	}
-	
+
 	protected PrintWriter stateWriter;
 	protected String notFinishedReason;
 
 	/**
 	 * Creates a statistics tracker using counters which are updated during the
 	 * learning process.
-	 * 
+	 *
 	 * @param inputCounter
 	 *            counter updated on every input run on the system during both
 	 *            learning and testing.
 	 * @param testCounter
 	 *            counter updated on every test executed on the system during both
 	 *            learning and testing.
-	 * 
+	 *
 	 */
 	public StatisticsTracker(Counter inputCounter, Counter testCounter) {
 		this.inputCounter = inputCounter;
 		this.testCounter = testCounter;
 	}
-	
+
 	public void setRuntimeStateTracking(OutputStream stateOutput) {
 		stateWriter = new PrintWriter(new OutputStreamWriter(stateOutput));
 	}
-	
+
 	/*
-	 * If runtime state tracking is enabled, prints to stateWriter the new state learning has entered, 
+	 * If runtime state tracking is enabled, prints to stateWriter the new state learning has entered,
 	 * along with state-specific details. Should be called only after all data structures
 	 * (e.g. counterexamples) corresponding to the state have been updated.
 	 */
@@ -194,7 +194,7 @@ public class StatisticsTracker {
 		statistics.setHypStats(hypStats);
 		return statistics;
 	}
-	
+
 	protected StatisticsSnapshot snapshot() {
 		return new StatisticsSnapshot(testCounter.getCount(), inputCounter.getCount(), System.currentTimeMillis() - time);
 	}

@@ -10,11 +10,11 @@ public class TestRunnerConfig {
 
 	@Parameter(names = "-times", description = "The number of times the tests should be run")
 	protected Integer times = 1;
-	
+
 	@Parameter(names = "-testSpecification", description = "A .dot model against which the resulting outputs are "
 			+ "compared. If provided, the test will be run both on the system and on the model.")
 	protected String testSpecification = null;
-	
+
 	@Parameter(names = "-showTransitionSequence", description = "Show the sequence of transitions at the end in a "
 			+ "nicer form.")
 	protected boolean showTransitionSequence = false;
@@ -34,13 +34,13 @@ public class TestRunnerConfig {
 	public void setTest(String test) {
 		this.test = test;
 	}
-	
+
 	public String getTestSpecification() {
 		return testSpecification;
 	}
-	
+
 	public boolean isShowTransitionSequence() {
 		return showTransitionSequence;
 	}
-	
+
 }

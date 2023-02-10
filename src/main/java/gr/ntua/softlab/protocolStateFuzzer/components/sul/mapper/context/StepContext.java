@@ -24,7 +24,7 @@ public class StepContext {
 	public void setInput(AbstractInput input) {
 		this.input = input;
 	}
-	
+
 	public boolean isDisabled() {
 		return disabled;
 	}
@@ -32,7 +32,7 @@ public class StepContext {
 	public void disable() {
 		disabled = true;
 	}
-	
+
 	public int getIndex() {
 		return index;
 	}

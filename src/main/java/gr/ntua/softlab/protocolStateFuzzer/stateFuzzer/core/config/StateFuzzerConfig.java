@@ -18,7 +18,7 @@ public abstract class StateFuzzerConfig extends ToolConfig implements
 	@Parameter(names = "-output", description = "The directory in which results should be saved. The default is "
 			+ "output/o_<timestamp>")
 	protected String outputDir = null;
-	
+
 	@ParametersDelegate
 	protected LearnerConfig learnerConfig;
 

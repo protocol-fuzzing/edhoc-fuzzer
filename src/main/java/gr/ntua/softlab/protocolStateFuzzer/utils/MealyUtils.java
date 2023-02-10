@@ -5,8 +5,8 @@ import net.automatalib.automata.transducers.MealyMachine;
 import java.util.*;
 
 public class MealyUtils extends AutomatonUtils{
-	
-	
+
+
 	/**
 	 * Determines all the outputs the model can generate in response to the given inputs.
 	 * @param automaton
@@ -24,5 +24,5 @@ public class MealyUtils extends AutomatonUtils{
 		}
 		reachableOutputs.addAll(outputs);
 	}
-	
+
 }

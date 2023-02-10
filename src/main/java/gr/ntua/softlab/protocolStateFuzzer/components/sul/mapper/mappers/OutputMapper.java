@@ -45,11 +45,11 @@ public abstract class OutputMapper {
     public OutputMapper(MapperConfig mapperConfig) {
         this.mapperConfig = mapperConfig;
     }
-    
+
     public MapperConfig getMapperConfig(){
         return mapperConfig;
     }
-    
+
     public abstract AbstractOutput receiveOutput(ExecutionContext context);
 
     public AbstractOutput timeout() {
@@ -71,7 +71,7 @@ public abstract class OutputMapper {
             return AbstractOutput.disabled();
         }
     }
-    
+
     public AbstractOutput coalesceOutputs(AbstractOutput output1, AbstractOutput output2) {
         if (output1.isDisabled() || output2.isDisabled() || output1.isSocketClosed() || output2.isSocketClosed()) {
             throw new RuntimeException("Cannot coalesce " + AbstractOutput.DISABLED + " or "

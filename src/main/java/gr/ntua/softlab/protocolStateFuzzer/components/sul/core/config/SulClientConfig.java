@@ -39,7 +39,7 @@ public abstract class SulClientConfig extends SulConfig {
 	public final String getFuzzingRole() {
 		return "client";
 	}
-	
+
 	public final boolean isFuzzingClient() {
 		return true;
 	}

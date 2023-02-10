@@ -4,7 +4,7 @@ import net.i2p.crypto.eddsa.Utils;
 import org.eclipse.californium.edhoc.Util;
 
 public class EdhocUtil extends Util {
-    
+
     /** Adapted from {@link org.eclipse.californium.edhoc.Util#nicePrint} */
     public static String byteArrayToString(String header, byte[] content) {
         if (content == null) {
