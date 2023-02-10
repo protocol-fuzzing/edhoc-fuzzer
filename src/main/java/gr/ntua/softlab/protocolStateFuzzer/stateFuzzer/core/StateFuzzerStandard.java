@@ -1,6 +1,5 @@
 package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core;
 
-
 import de.learnlib.api.algorithm.LearningAlgorithm.MealyLearner;
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;

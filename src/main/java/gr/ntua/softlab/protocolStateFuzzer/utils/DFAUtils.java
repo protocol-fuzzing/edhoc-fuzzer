@@ -19,7 +19,8 @@ import java.util.*;
 public class DFAUtils extends AutomatonUtils {
 
 	/**
-	 * Converts a deterministic Mealy machine to an equivalent DFA. Inputs/outputs are mapped to corresponding labels given the provided input and output mappings.
+	 * Converts a deterministic Mealy machine to an equivalent DFA.
+	 * Inputs/outputs are mapped to corresponding labels given the provided input and output mappings.
 	 * An output can be mapped to zero, one or several labels (which will be chained one after the other in the model).
 	 * The end result is an input-complete DFA which is not minimized to preserve resemblance with the original model.
 	 * Minimization can be achieved via minimize methods in {@link Automata}.
@@ -89,7 +90,6 @@ public class DFAUtils extends AutomatonUtils {
 		return rejectingModel;
 	}
 
-
 	public static <S,I> boolean hasAcceptingPaths(S state, DFA<S, I> automaton, Collection<I> inputs) {
 		Set<S> reachableStates = new HashSet<>();
 		reachableStates(automaton, inputs, state, reachableStates);
@@ -119,7 +119,7 @@ public class DFAUtils extends AutomatonUtils {
 	}
 
 	public static <S,I> Word<I> findShortestNonAcceptingPrefix( DFA<S, I> automaton, Word<I> word ) {
-		int prefixLen=0;
+		int prefixLen = 0;
 		S crtState = automaton.getInitialState();
 		for (I input : word) {
 			if (crtState == null || !automaton.isAccepting(crtState)) {
