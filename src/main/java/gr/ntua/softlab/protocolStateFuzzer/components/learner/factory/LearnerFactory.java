@@ -1,5 +1,6 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.learner.factory;
 
+import com.google.common.collect.Lists;
 import de.learnlib.acex.analyzers.AcexAnalyzers;
 import de.learnlib.algorithms.kv.mealy.KearnsVaziraniMealy;
 import de.learnlib.algorithms.lstar.ce.ObservationTableCEXHandlers;
@@ -14,7 +15,6 @@ import de.learnlib.oracle.equivalence.MealyEQOracleChain;
 import de.learnlib.oracle.equivalence.MealyWMethodEQOracle;
 import de.learnlib.oracle.equivalence.MealyWpMethodEQOracle;
 import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
-
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.RandomWpMethodEQOracle;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.SampledTestsEQOracle;
@@ -22,12 +22,10 @@ import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.WpSampledT
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.TestParser;
-
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 
-import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
