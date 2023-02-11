@@ -1,7 +1,7 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.learner.alphabet;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.AlphabetOptionProvider;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import net.automatalib.words.Alphabet;
 
 import java.io.FileNotFoundException;

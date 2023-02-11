@@ -1,11 +1,11 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.core;
 
+import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulClientConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
-import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulClientConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient.ServerMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulServer.ClientMapperConnector;
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.ClientMapperState;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocMapperState;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.ServerMapperState;

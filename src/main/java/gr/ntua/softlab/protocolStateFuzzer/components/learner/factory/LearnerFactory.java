@@ -15,10 +15,10 @@ import de.learnlib.oracle.equivalence.MealyWMethodEQOracle;
 import de.learnlib.oracle.equivalence.MealyWpMethodEQOracle;
 import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
 
+import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.RandomWpMethodEQOracle;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.SampledTestsEQOracle;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.oracles.WpSampledTestsEQOracle;
-import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.testRunner.core.TestParser;
