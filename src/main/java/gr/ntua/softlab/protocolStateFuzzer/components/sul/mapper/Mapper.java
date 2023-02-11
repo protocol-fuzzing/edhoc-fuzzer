@@ -7,7 +7,7 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperCo
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 
 /**
- * The mapper component is responsible with executing an input. 
+ * The mapper component is responsible with executing an input.
  * Given an input symbol, the mapper should:
  * <ol>
  * 	<li> generate a corresponding packet </li>
@@ -15,7 +15,7 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.Executi
  * 	<li> receive the response </li>
  * 	<li> convert it into an appropriate response </li>
  * </ol>
- * 
+ *
  */
 public interface Mapper {
 	AbstractOutput execute(AbstractInput input, ExecutionContext context);

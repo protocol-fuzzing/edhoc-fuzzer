@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * Adapted from an EQ oracle implementation in LearnLib's development branch not
  * available in the version we use.
- * 
+ *
  * <pre>
  * See:
  * <a href="https://github.com/mtf90/learnlib/blob/develop/eqtests/basic-eqtests/src/main/java/de/learnlib/eqtests/basic/RandomWpMethodEQOracle.java">RandomWpMethodEQOracle</a>
@@ -32,7 +32,7 @@ import java.util.*;
  * length of the random word. (The expected length in effect is minimalSize +
  * rndLength.) In the unbounded case it will not terminate for a correct
  * hypothesis.
- * 
+ *
  * Our adaptation is randomizing access sequence generation.
  *
  * @param <I>
@@ -90,7 +90,7 @@ public class RandomWpMethodEQOracle<I,O> implements EquivalenceOracle.MealyEquiv
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * de.learnlib.api.EquivalenceOracle#findCounterExample(java.lang.Object,
 	 * java.util.Collection)
@@ -100,7 +100,7 @@ public class RandomWpMethodEQOracle<I,O> implements EquivalenceOracle.MealyEquiv
 			Collection<? extends I> inputs) {
 		return doFindCounterExample(hypothesis, inputs);
 	}
-	
+
 	public <S> @Nullable DefaultQuery<I, Word<O>> doFindCounterExample(MealyMachine<S, I, ?, O> hypothesis,
 			Collection<? extends I> inputs) {
 		WpEQSequenceGenerator<I, Word<O>, S> generator = new WpEQSequenceGenerator<>(hypothesis, inputs);

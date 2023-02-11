@@ -11,7 +11,7 @@ public class InputResponseTimeoutConverter implements IStringConverter<InputResp
 		InputResponseTimeoutMap inputResponseTimeout = new InputResponseTimeoutMap();
 		String resolvedValue = ToolPropertyAwareConverterFactory.resolve(value);
 		String[] inputValuePairs = resolvedValue.split("\\,");
-		
+
 		for (String inputValuePair : inputValuePairs) {
 			String[] split = inputValuePair.split("\\:");
 			if (split.length != 2) {
@@ -24,10 +24,10 @@ public class InputResponseTimeoutConverter implements IStringConverter<InputResp
 				}
 			}
 		}
-		
+
 		return inputResponseTimeout;
 	}
-	
+
 	protected String errMessage(String value) {
 		return String.format("Error processing InputResponseTimeoutMap from \"%s\". "
 				+ "Expected format: \"input1:value1,input2:value2...\"; e.g. \"CLIENT_HELLO:100\" ", value);

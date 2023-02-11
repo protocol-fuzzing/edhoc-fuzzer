@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 
 public class NameToAbstractSymbol<AS extends AbstractSymbol> extends LinkedHashMap<String, AS>{
-	
+
 	@Serial
 	private static final long serialVersionUID = 1L;
 

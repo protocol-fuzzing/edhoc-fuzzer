@@ -8,11 +8,11 @@ import java.io.Serial;
  * <pre>
  * Copied from <a href="https://gitlab.science.ru.nl/ramonjanssen/basic-learning/">basic-learning</a>.
  * </pre>
- * 
+ *
  * Contains the full input for which non-determinism was observed, as well as
  * the full new output and the (possibly shorter) old output with which it
  * disagrees
- * 
+ *
  * @author Ramon Janssen
  */
 public class CacheInconsistencyException extends NonDeterminismException {

@@ -16,7 +16,7 @@ import java.util.HashSet;
  * This class is adapted from {@link de.learnlib.oracle.membership.SULOracle SULOracle}.
  * Unfortunately, the implementation of LearnLib's cache oracle {@link de.learnlib.filter.cache.sul.SULCache SULCache}
  * is unstable (the version 0.12.0 at least).
- * 
+ *
  * The implementation adds terminating outputs functionality.
  */
 public class CachingSULOracle<I, O> implements MealyMembershipOracle<I, O> {
