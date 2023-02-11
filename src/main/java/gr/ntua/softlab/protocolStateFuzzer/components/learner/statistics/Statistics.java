@@ -1,9 +1,9 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics;
 
 import de.learnlib.api.query.DefaultQuery;
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.config.LearnerConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import net.automatalib.words.Alphabet;
 
 import java.io.PrintWriter;

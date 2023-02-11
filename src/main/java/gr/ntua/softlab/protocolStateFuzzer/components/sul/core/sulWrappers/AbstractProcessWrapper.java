@@ -2,9 +2,9 @@ package gr.ntua.softlab.protocolStateFuzzer.components.sul.core.sulWrappers;
 
 import de.learnlib.api.SUL;
 import de.learnlib.api.exception.SULException;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
 
 public class AbstractProcessWrapper extends SulProcessWrapper<AbstractInput, AbstractOutput> {
 
