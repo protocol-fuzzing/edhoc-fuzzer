@@ -1,7 +1,7 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.inputs;
 
-import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocMapperState;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocSessionPersistent;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocMapperState;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutputChecker;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.xml.AbstractInputXml;

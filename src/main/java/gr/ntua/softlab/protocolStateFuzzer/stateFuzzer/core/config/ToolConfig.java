@@ -1,7 +1,7 @@
 package gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config;
 
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.DynamicParameter;
+import com.beust.jcommander.Parameter;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.ProtocolVersion;
 
 import java.io.*;

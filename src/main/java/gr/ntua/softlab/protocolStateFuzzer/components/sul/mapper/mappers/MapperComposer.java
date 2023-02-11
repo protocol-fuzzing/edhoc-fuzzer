@@ -1,10 +1,10 @@
 package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers;
 
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutputChecker;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
+import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
 import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

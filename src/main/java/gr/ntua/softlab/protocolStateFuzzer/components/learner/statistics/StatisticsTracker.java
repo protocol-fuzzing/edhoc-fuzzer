@@ -2,10 +2,8 @@ package gr.ntua.softlab.protocolStateFuzzer.components.learner.statistics;
 
 import de.learnlib.api.query.DefaultQuery;
 import de.learnlib.filter.statistic.Counter;
-
-import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import gr.ntua.softlab.protocolStateFuzzer.components.learner.StateMachine;
-
+import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.StateFuzzerEnabler;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 
