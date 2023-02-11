@@ -267,8 +267,8 @@ if __name__ == '__main__':
     parser.add_argument('--merge-input-sep', default=' | ', help='Separator of merged inputs with common output')
     parser.add_argument('--merge-label-sep', default='\l ', help='Separator of merged labels of same edges')
 
-    parser.add_argument('--start-padding', default=1, help='Left padding of labels (in spaces)')
-    parser.add_argument('--end-padding', default=5, help='Right padding of labels (in spaces)')
+    parser.add_argument('--start-padding', type=int, default=1, help='Left padding of labels (in spaces)')
+    parser.add_argument('--end-padding', type=int, default=5, help='Right padding of labels (in spaces)')
 
     parser.add_argument('--remove-edge-pattern', help="Remove the edges that have labels of the provided pattern. "
                         "Format: i_<input> (match input), o_<output> (match output), l_<input / output> (match label). "
