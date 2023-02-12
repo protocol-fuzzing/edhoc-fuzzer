@@ -20,7 +20,6 @@ else
             ;;
         * )
             echo "Unsupported option ${1}"
-            return
             ;;
         esac
         shift
@@ -28,12 +27,12 @@ else
 
     if [[ ! ${#} -eq 1 ]]; then
         echo "Expected a .dot file after options"
-        return
+        exit 1
     fi
 
     if [[ ! -e ${1} ]]; then
         echo "File ${1} does not exist"
-        return
+        exit 1
     fi
 
     echo "Invoking the following command:"
