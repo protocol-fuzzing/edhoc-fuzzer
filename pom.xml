@@ -18,7 +18,7 @@
         <jcommander.version>1.82</jcommander.version>
         <log4j.version>2.19.0</log4j.version>
         <jaxb-api.version>4.0.0</jaxb-api.version>
-        <jaxb-impl.version>4.0.1</jaxb-impl.version>
+        <jaxb-impl.version>4.0.2</jaxb-impl.version>
 
         <!-- edhocFuzzer properties -->
         <cf-edhoc-version>0.0.0</cf-edhoc-version>
