@@ -172,7 +172,8 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
         'merge_input_sep': str,
         'merge_label_sep': str,
         'start_padding': str,
-        'end_padding': str
+        'end_padding': str,
+        'html_like_labels': boolean
     }
     """
     def stack_op(source_dest_pair):
@@ -196,6 +197,15 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
         labels = sorted(labels, key=lambda s: len(s))
         return label_info_dct['merge_label_sep'].join(labels)
 
+    def pad_label(label):
+        return label_info_dct['start_padding'] + label + label_info_dct['end_padding']
+
+    def html_like_wrap_label(label):
+        return f"<{label}>" if label_info_dct['html_like_labels'] else label
+
+    def finalize_label(label):
+        return html_like_wrap_label(pad_label(label))
+
     graph = pydot.Dot(graph_name='g', graph_type='digraph')
 
     # add nodes (first hidden node should be included)
@@ -205,8 +215,8 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
     # add initial edge
     initial_edge_label = initial_edge.get_label()
     if initial_edge_label:
-        initial_padded_label = label_info_dct['start_padding'] + initial_edge_label + label_info_dct['end_padding']
-        initial_edge.set_label(initial_padded_label)
+        new_initial_edge_label = finalize_label(initial_edge_label)
+        initial_edge.set_label(new_initial_edge_label)
     graph.add_edge(initial_edge)
 
     # add other edges after stacking or merging the labels of similar ones
@@ -218,10 +228,9 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
         else:
             raise Exception("Unsupported same_edges_op in label_info_dct: " + label_info_dct['same_edges_op'])
 
-        # add padding
-        padded_new_label = label_info_dct['start_padding'] + new_label + label_info_dct['end_padding']
-        # create and add the new edge
-        graph.add_edge(pydot.Edge(source_dest_pair[0], source_dest_pair[1], label=padded_new_label))
+        # finalize label and create and add the new edge
+        new_label = finalize_label(new_label)
+        graph.add_edge(pydot.Edge(source_dest_pair[0], source_dest_pair[1], label=new_label))
 
     return graph
 
@@ -256,7 +265,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', help='Replacements file with non-empty lines of the default format: old -> new')
     parser.add_argument('-o', help='Output .dot file')
 
-    parser.add_argument('--disable-shorten-nodes', default=False, help='Disable node name conversion: "sN" -> "N"')
+    parser.add_argument('--disable-shorten-nodes', default=False, action='store_true', help='Disable node name conversion: "sN" -> "N"')
     parser.add_argument('--start-node-name', default='__start0', help='Name of the hidden starting node')
     parser.add_argument('--start-edge-label', default='', help='Label of the starting visible edge')
     parser.add_argument('--replacement-sep', default=' -> ', help='Separator of names in replacements file')
@@ -274,11 +283,30 @@ if __name__ == '__main__':
                         "Format: i_<input> (match input), o_<output> (match output), l_<input / output> (match label). "
                         "So the general format is: (i|o|l)_<patt>[,(i|o|l)_<patt>]*")
 
+    parser.add_argument('--html-like-labels', default=False, action='store_true', help="Enable html-like syntax in label names. "
+                        "It defaults --stack-sep and --merge-label-sep to ' <br align=\"left\"/> '. "
+                        "It defaults --end-padding to 1.")
+
+    parser.add_argument('--overwrite-dot-input', default=False, action='store_true', help="Overwrite input dot file "
+                        "with the output dot file in case they have the same name")
+    parser.add_argument('--no-dot-output', default=False, action='store_true', help='Do not output the resulting .dot file')
+    parser.add_argument('--other-formats', nargs='*', default=['pdf'], help='Additional output formats other than .dot')
+
     args = parser.parse_args()
+
+
+    def set_if_default(var, new, default):
+        return new if var == default else var
+
     # check same edges op
     if args.same_edges_op not in ['stack', 'merge']:
         print(f"Invalid --same-edge-op value '{args.same_edges_op}'. Available: stack, merge.")
         exit(1)
+
+    if args.html_like_labels:
+        args.stack_sep = set_if_default(args.stack_sep, ' <br align="left"/> ', '\l ')
+        args.merge_label_sep = set_if_default(args.merge_label_sep, ' <br align="left"/> ', '\l ')
+        args.end_padding = set_if_default(args.end_padding, 1, 5)
 
     # print some visual separators in command line
     cmd_line_sep = 100 * '='
@@ -297,26 +325,38 @@ if __name__ == '__main__':
         'merge_input_sep': args.merge_input_sep,
         'merge_label_sep': args.merge_label_sep,
         'start_padding': args.start_padding * " ",
-        'end_padding': args.end_padding * " "
+        'end_padding': args.end_padding * " ",
+        'html_like_labels': args.html_like_labels
     }
 
     new_graph = create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct)
 
-    if args.o:
-        new_graph_dot_name = args.o
-        new_graph_pdf_name = new_graph_dot_name.replace('.dot', '') + '.pdf'
-    else:
-        prefix = args.i.replace('.dot', '') + 'btf'
-        new_graph_dot_name = prefix + '.dot'
-        new_graph_pdf_name = prefix + '.pdf'
+    prefix = args.o.replace('.dot', '') if args.o else (args.i.replace('.dot', '') + 'btf')
+    new_graph_dot_name = prefix + '.dot'
+    other_format_pairs = [ (prefix + '.' + fmt, fmt) for fmt in args.other_formats ]
 
     print(cmd_line_sep)
 
-    # alternative without formatting: new_graph.write(new_graph_dot_name, format='raw')
-    format_and_write_dot_string(new_graph.to_string(), args.start_node_name, new_graph_dot_name)
-    print(f"written {new_graph_dot_name}")
+    if not args.no_dot_output:
+        if args.i == new_graph_dot_name:
+            print("Output dot file name coincides with the input dot file name")
 
-    new_graph.write(new_graph_pdf_name, format='pdf')
-    print(f"written {new_graph_pdf_name}")
+            if not args.overwrite_dot_input:
+                new_graph_dot_name = new_graph_dot_name.replace('.dot', '') + 'btf.dot'
+                print(f"The new output dot file name will be {new_graph_dot_name}")
+                print("Add --overwrite-dot-input option to overwrite the input dot file")
+            else:
+                print("Option --overwrite-dot-input is applicable")
+                print("Input dot file will be overwritten by output dot file")
+
+            print(cmd_line_sep)
+
+        # alternative without formatting: new_graph.write(new_graph_dot_name, format='raw')
+        format_and_write_dot_string(new_graph.to_string(), args.start_node_name, new_graph_dot_name)
+        print(f"written {new_graph_dot_name}")
+
+    for graph_name, fmt in other_format_pairs:
+        new_graph.write(graph_name, format=fmt)
+        print(f"written {graph_name}")
 
     print(cmd_line_sep)
