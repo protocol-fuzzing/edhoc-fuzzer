@@ -13,10 +13,10 @@ if [ ${#} = 0 ]; then
 else
     while [[ "${1}" =~ ^- ]]; do case ${1} in
         -cI | --clientInitiator )
-            start_edge_label='"- / EDHOC_MESSAGE_1"'
+            start_edge_label='"TIMEOUT / EDHOC_MESSAGE_1"'
             ;;
         -cR | --clientResponder )
-            start_edge_label='"- / COAP_EMPTY_MESSAGE"'
+            start_edge_label='"TIMEOUT / COAP_EMPTY_MESSAGE"'
             ;;
         * )
             echo "Unsupported option ${1}"
@@ -35,7 +35,5 @@ else
         exit 1
     fi
 
-    echo "Invoking the following command:"
-    echo python3 "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" --start-edge-label "${start_edge_label}" --remove-edge-pattern "${remove_edge_pattern}"
     python3 "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" --start-edge-label "${start_edge_label}" --remove-edge-pattern "${remove_edge_pattern}"
 fi
