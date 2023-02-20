@@ -176,14 +176,20 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
         'html_like_labels': boolean
     }
     """
+    def sort_key_of_label(label):
+        # ascending sort based on the label's input
+        # first by length and then alphabetically
+        input = label.split(' / ')[0]
+        return (len(input), input)
+
     def stack_op(source_dest_pair):
         labels = []
         # gather all labels to be stacked
         for output, inputs in edge_info_dct[source_dest_pair].items():
             labels.extend([f"{i} / {output}" for i in inputs])
 
-        # sort them in ascending length order
-        labels = sorted(labels, key=lambda s: len(s))
+        # sort and then join labels
+        labels = sorted(labels, key=sort_key_of_label)
         return label_info_dct['stack_sep'].join(labels)
 
     def merge_op(source_dest_pair):
@@ -193,8 +199,8 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
             merged_inputs = label_info_dct['merge_input_sep'].join(inputs)
             labels.append(f"{merged_inputs} / {output}")
 
-        # sort them in ascending length order
-        labels = sorted(labels, key=lambda s: len(s))
+        # sort and then join labels
+        labels = sorted(labels, key=sort_key_of_label)
         return label_info_dct['merge_label_sep'].join(labels)
 
     def pad_label(label):
