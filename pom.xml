@@ -16,7 +16,7 @@
         <learnlib.version>0.16.0</learnlib.version>
         <automatalib.version>0.10.0</automatalib.version>
         <jcommander.version>1.82</jcommander.version>
-        <log4j.version>2.19.0</log4j.version>
+        <log4j.version>2.20.0</log4j.version>
         <jaxb-api.version>4.0.0</jaxb-api.version>
         <jaxb-impl.version>4.0.2</jaxb-impl.version>
 
@@ -184,7 +184,7 @@
 			    <!-- the empty string is for all imports not specified explicitly, '|' joins groups without blank line -->
 			    <order>,javax|java</order>
 			</importOrder>
-			    <!-- <removeUnusedImports /> -->
+			<removeUnusedImports />
 			<!-- <indent>
 				<spaces>true</spaces>
 				<spacesPerTab>4</spacesPerTab>
