@@ -16,6 +16,8 @@ W_METHOD,WP_METHOD
 -skipNonDetTests
 
 ##### EdhocMapperConfig #####
+-protocolVersion
+v16
 ## Mapper Auth ##
 
 -mapCredType
@@ -55,8 +57,6 @@ POST
 1
 
 ##### SulConfig #####
--protocolVersion
-16
 -responseWait
 2500
 -processDir

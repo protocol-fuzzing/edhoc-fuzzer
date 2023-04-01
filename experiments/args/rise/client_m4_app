@@ -17,6 +17,8 @@ W_METHOD,WP_METHOD
 
 
 ##### EdhocMapperConfig #####
+-protocolVersion
+v17
 ## Mapper Auth ##
 
 -mapCredType
@@ -51,8 +53,6 @@ helloWorld
 
 
 ##### SulConfig #####
--protocolVersion
-17
 -responseWait
 2000
 -processDir
