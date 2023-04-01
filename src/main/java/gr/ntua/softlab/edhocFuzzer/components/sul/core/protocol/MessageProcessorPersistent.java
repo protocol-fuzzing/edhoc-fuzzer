@@ -408,7 +408,6 @@ public class MessageProcessorPersistent {
             prk2e = computePRK2e(th2, dhSecret, hashAlgorithm);
         }
 
-
         if (prk2e == null) {
             LOGGER.error("Computing PRK_2e");
             return false;
@@ -677,7 +676,6 @@ public class MessageProcessorPersistent {
         } else {
             th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2, session.getPeerCred());
         }
-
 
         if (th3 == null) {
             LOGGER.error("Computing TH_3");
@@ -2961,15 +2959,17 @@ public class MessageProcessorPersistent {
     }
 
     protected boolean hasProtocolVersionLeqV15() {
-        return edhocMapperState.getProtocolVersion().equals("14")
-                || edhocMapperState.getProtocolVersion().equals("15");
+        return switch(edhocMapperState.getProtocolVersion()) {
+            case v14, v15 -> true;
+            default -> false;
+        };
     }
 
     protected boolean hasProtocolVersionLeqV17() {
-        return edhocMapperState.getProtocolVersion().equals("14")
-                || edhocMapperState.getProtocolVersion().equals("15")
-                || edhocMapperState.getProtocolVersion().equals("16")
-                || edhocMapperState.getProtocolVersion().equals("17");
+        return switch(edhocMapperState.getProtocolVersion()) {
+            case v14, v15, v16, v17 -> true;
+            default -> false;
+        };
     }
 
     protected CBORObject[] preParseEADleqV17(CBORObject[] objectList, int baseIndex, Set<Integer> supportedEADs) {

@@ -2,10 +2,10 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core.config;
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulClientConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConnectionConfigException;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulClientConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConnectionConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConnectionConfigException;
 import org.eclipse.californium.elements.config.Configuration;
 
 public class EdhocSulClientConfig extends SulClientConfig {

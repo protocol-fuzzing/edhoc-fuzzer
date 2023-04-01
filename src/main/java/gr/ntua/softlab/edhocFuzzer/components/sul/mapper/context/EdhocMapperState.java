@@ -7,13 +7,13 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactor
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.CombinedMessageVersion;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.ProtocolVersion;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.ManyFilesAuthenticationConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.TestVectorAuthenticationConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.CoapExchanger;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.ProtocolVersion;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.State;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.State;
 import net.i2p.crypto.eddsa.EdDSASecurityProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.californium.cose.OneKey;

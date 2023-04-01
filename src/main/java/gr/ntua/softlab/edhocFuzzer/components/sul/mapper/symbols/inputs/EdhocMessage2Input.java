@@ -2,8 +2,8 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.inputs;
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.messages.responder.EdhocMessage2;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.protocol.ProtocolMessage;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.protocol.ProtocolMessage;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.ExecutionContext;
 
 public class EdhocMessage2Input extends EdhocInput {
 

@@ -6,10 +6,10 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfi
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.*;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocMapperState;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers.OutputMapper;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.ExecutionContext;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.OutputMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

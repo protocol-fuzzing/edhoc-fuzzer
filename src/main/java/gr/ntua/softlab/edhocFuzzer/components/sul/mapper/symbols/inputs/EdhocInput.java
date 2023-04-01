@@ -2,10 +2,10 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.inputs;
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocSessionPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context.EdhocMapperState;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutputChecker;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.xml.AbstractInputXml;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContext;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutputChecker;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.xml.AbstractInputXml;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.ExecutionContext;
 
 public abstract class EdhocInput extends AbstractInputXml {
     public EdhocMapperState getEdhocMapperState(ExecutionContext context) {

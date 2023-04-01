@@ -13,67 +13,20 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <!-- protocolStateFuzzer properties -->
-        <learnlib.version>0.16.0</learnlib.version>
-        <automatalib.version>0.10.0</automatalib.version>
-        <jcommander.version>1.82</jcommander.version>
-        <log4j.version>2.20.0</log4j.version>
-        <jaxb-api.version>4.0.0</jaxb-api.version>
-        <jaxb-impl.version>4.0.2</jaxb-impl.version>
-
-        <!-- edhocFuzzer properties -->
+        <protocol-state-fuzzer-version>1.0.0</protocol-state-fuzzer-version>
         <cf-edhoc-version>0.0.0</cf-edhoc-version>
         <gson-version>2.10.1</gson-version>
-
-        <!-- unit testing -->
         <junit-version>4.13.2</junit-version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <!-- protocolStateFuzzer dependencies -->
-
-            <!-- learnlib and automatalib-->
+            <!-- protocol-state-fuzzer -->
             <dependency>
-                <groupId>de.learnlib</groupId>
-                <artifactId>learnlib-parent</artifactId>
-                <version>${learnlib.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+                <groupId>com.github.protocolfuzzing</groupId>
+                <artifactId>protocolstatefuzzer</artifactId>
+                <version>${protocol-state-fuzzer-version}</version>
             </dependency>
-
-            <!-- jcommander -->
-            <dependency>
-                <groupId>com.beust</groupId>
-                <artifactId>jcommander</artifactId>
-                <version>${jcommander.version}</version>
-            </dependency>
-
-            <!-- log4j2 -->
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-bom</artifactId>
-                <version>${log4j.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-            <!-- jaxb api -->
-            <dependency>
-                <groupId>jakarta.xml.bind</groupId>
-                <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>${jaxb-api.version}</version>
-            </dependency>
-
-            <!-- jaxb implementation -->
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>${jaxb-impl.version}</version>
-                <scope>runtime</scope>
-            </dependency>
-
-            <!-- edhocFuzzer dependencies -->
 
             <!-- manually installed cf-edhoc -->
             <dependency>
@@ -100,53 +53,11 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- protocolStateFuzzer dependencies -->
-
-        <!-- https://mvnrepository.com/artifact/de.learnlib.distribution/learnlib-distribution -->
-        <dependency>
-            <groupId>de.learnlib.distribution</groupId>
-            <artifactId>learnlib-distribution</artifactId>
-            <type>pom</type>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.beust/jcommander -->
-        <dependency>
-            <groupId>com.beust</groupId>
-            <artifactId>jcommander</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-        </dependency>
-
-        <!-- edhocFuzzer dependencies -->
+        <!-- https://github.com/protocol-fuzzing/protocol-state-fuzzer -->
+            <dependency>
+                <groupId>com.github.protocolfuzzing</groupId>
+                <artifactId>protocolstatefuzzer</artifactId>
+            </dependency>
 
         <!-- manually modified and built jar and locally installed cf-edhoc
              see ./scripts/setup_fuzzer for more details -->
@@ -160,8 +71,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
-
-        <!-- unit testing dependencies -->
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
@@ -178,18 +87,18 @@
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>2.37.0</version>
                 <configuration>
-		    <java>
-			<endWithNewline />
-			<trimTrailingWhitespace />
-			<importOrder>
-			    <!-- the empty string is for all imports not specified explicitly, '|' joins groups without blank line -->
-			    <order>,javax|java</order>
-			</importOrder>
-			<removeUnusedImports />
-			<indent>
-			    <spaces>true</spaces>
-			    <spacesPerTab>4</spacesPerTab>
-			</indent>
+                    <java>
+                        <endWithNewline />
+                        <trimTrailingWhitespace />
+                        <importOrder>
+                            <!-- the empty string is for all imports not specified explicitly, '|' joins groups without blank line -->
+                            <order>,javax|java</order>
+                        </importOrder>
+                        <removeUnusedImports />
+                        <indent>
+                            <spaces>true</spaces>
+                            <spacesPerTab>4</spacesPerTab>
+                        </indent>
                     </java>
                 </configuration>
             </plugin>

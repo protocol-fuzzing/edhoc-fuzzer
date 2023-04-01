@@ -3,7 +3,7 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import org.eclipse.californium.elements.util.StringUtil;
 
 import java.net.URI;
@@ -15,6 +15,10 @@ public class EdhocMapperConfig extends MapperConfig {
 
     @ParametersDelegate
     protected AuthenticationConfig AuthenticationConfig = new AuthenticationConfig();
+
+    @Parameter(names = "-protocolVersion", required = true, description = "Protocol version to be analyzed",
+            converter = ProtocolVersionConverter.class)
+    protected ProtocolVersion protocolVersion = null;
 
     @Parameter(names = "-combinedMessageVersion", description = "The version of the combined message (EDHOC + OSCORE) to use",
             converter = CombinedMessageVersionConverter.class)
@@ -99,6 +103,10 @@ public class EdhocMapperConfig extends MapperConfig {
 
     public AuthenticationConfig getAuthenticationConfig() {
         return AuthenticationConfig;
+    }
+
+    public ProtocolVersion getProtocolVersion() {
+        return protocolVersion;
     }
 
     public CombinedMessageVersion getCombinedMessageVersion() {

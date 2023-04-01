@@ -1,9 +1,9 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.core;
 
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.AbstractSul;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.SulBuilder;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
-import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.AbstractSul;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulBuilder;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 
 public class EdhocSulBuilder implements SulBuilder {
     @Override

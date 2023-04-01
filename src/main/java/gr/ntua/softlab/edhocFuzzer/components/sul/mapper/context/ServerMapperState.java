@@ -1,8 +1,8 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.context;
 
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.ProtocolVersion;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient.ServerMapperConnector;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.ProtocolVersion;
 
 public class ServerMapperState extends EdhocMapperState {
 

@@ -3,6 +3,7 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.core;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.config.EdhocSulClientConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.ProtocolVersion;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulClient.ServerMapperConnector;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.connectors.toSulServer.ClientMapperConnector;
@@ -13,16 +14,15 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocInputMappe
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.mappers.EdhocOutputMapper;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.AbstractSul;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.ProtocolVersion;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.SulConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.Mapper;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractInput;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.config.MapperConfig;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.ExecutionContextStepped;
-import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.mappers.MapperComposer;
-import gr.ntua.softlab.protocolStateFuzzer.utils.CleanupTasks;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.AbstractSul;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.Mapper;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractInput;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.ExecutionContextStepped;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.MapperComposer;
+import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.config.CoapConfig;
@@ -42,7 +42,7 @@ public class EdhocSul extends AbstractSul {
     public EdhocSul(SulConfig sulConfig, CleanupTasks cleanupTasks) {
         super(sulConfig, cleanupTasks);
 
-        this.protocolVersion = sulConfig.getProtocolVersion();
+        this.protocolVersion = ((EdhocMapperConfig) sulConfig.getMapperConfig()).getProtocolVersion();
 
         try {
             EdhocMapperConnectionConfig mapperConnectionConfig = new EdhocMapperConnectionConfig(

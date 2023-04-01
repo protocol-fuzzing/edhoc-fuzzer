@@ -484,7 +484,7 @@ public class ManyFilesAuthenticator implements Authenticator {
                     cred = cred_ccs;
                     idCred = buildIdCred(idCredType, kid, cred_ccs, null, null);
                 }
-                else if	(idCredType == Constants.ID_CRED_TYPE_X5T || idCredType == Constants.ID_CRED_TYPE_X5U
+                else if (idCredType == Constants.ID_CRED_TYPE_X5T || idCredType == Constants.ID_CRED_TYPE_X5U
                         || idCredType == Constants.ID_CRED_TYPE_X5CHAIN) {
                     cred = cred_x509;
                     idCred = buildIdCred(idCredType, null, cred_x509, serializedCert, x5uLink);

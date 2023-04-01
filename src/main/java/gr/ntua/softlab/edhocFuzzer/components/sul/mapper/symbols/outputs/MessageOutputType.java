@@ -2,9 +2,9 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.symbols.outputs;
 
 /** Messages that can be received.
  *  Possible additional messages not included are those generated from
- *  {@link gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput#unknown() AbstractOutput.unknown()},
- *  {@link gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput#socketClosed() AbstractOutput.socketClosed()},
- *  {@link gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbols.AbstractOutput#timeout() AbstractOutput.timeout()} */
+ *  {@link com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput#unknown() AbstractOutput.unknown()},
+ *  {@link com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput#socketClosed() AbstractOutput.socketClosed()},
+ *  {@link com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput#timeout() AbstractOutput.timeout()} */
 public enum MessageOutputType {
     EDHOC_MESSAGE_1,
     EDHOC_MESSAGE_2,
