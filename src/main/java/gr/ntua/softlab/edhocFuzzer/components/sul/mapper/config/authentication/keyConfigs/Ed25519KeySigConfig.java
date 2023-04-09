@@ -2,6 +2,7 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.
 
 import com.beust.jcommander.Parameter;
 
+import java.io.PrintWriter;
 import java.util.HexFormat;
 
 public class Ed25519KeySigConfig implements KeyConfig {
@@ -46,6 +47,7 @@ public class Ed25519KeySigConfig implements KeyConfig {
     public String getMapPublicFilename() {
         return mapPublicFilename;
     }
+
     @Override
     public byte[] getMapKid() {
         return mapKid == null ? null : HexFormat.of().withPrefix("0x").parseHex(mapKid);
@@ -79,5 +81,11 @@ public class Ed25519KeySigConfig implements KeyConfig {
     @Override
     public String getSulX5uLink() {
         return sulX5uLink;
+    }
+
+    @Override
+    public void printRunDescriptionSelf(PrintWriter printWriter) {
+        printWriter.println("Ed25519KeySigConfig Parameters");
+        KeyConfig.super.printRunDescriptionSelf(printWriter);
     }
 }

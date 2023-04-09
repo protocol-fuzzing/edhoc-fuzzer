@@ -2,6 +2,7 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.
 
 import com.beust.jcommander.Parameter;
 
+import java.io.PrintWriter;
 import java.util.HexFormat;
 
 public class X25519KeyStatConfig implements KeyConfig {
@@ -79,5 +80,11 @@ public class X25519KeyStatConfig implements KeyConfig {
     @Override
     public String getSulX5uLink() {
         return sulX5uLink;
+    }
+
+    @Override
+    public void printRunDescriptionSelf(PrintWriter printWriter) {
+        printWriter.println("X25519KeyStatConfig Parameters");
+        KeyConfig.super.printRunDescriptionSelf(printWriter);
     }
 }

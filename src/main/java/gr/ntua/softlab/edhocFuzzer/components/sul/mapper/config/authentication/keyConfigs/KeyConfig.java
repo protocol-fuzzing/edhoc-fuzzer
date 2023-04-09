@@ -1,21 +1,38 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs;
 
-public interface KeyConfig {
-    String getMapPrivateFilename();
+import java.io.PrintWriter;
 
-    String getMapPublicFilename();
+import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.RunDescriptionPrinter;
 
-    byte[] getMapKid();
+public interface KeyConfig extends RunDescriptionPrinter {
+    public String getMapPrivateFilename();
 
-    String getMapX509Filename();
+    public String getMapPublicFilename();
 
-    String getMapX5uLink();
+    public byte[] getMapKid();
 
-    String getSulPublicFilename();
+    public String getMapX509Filename();
 
-    byte[] getSulKid();
+    public String getMapX5uLink();
 
-    String getSulX509Filename();
+    public String getSulPublicFilename();
 
-    String getSulX5uLink();
+    public byte[] getSulKid();
+
+    public String getSulX509Filename();
+
+    public String getSulX5uLink();
+
+    @Override
+    default void printRunDescriptionSelf(PrintWriter printWriter) {
+        printWriter.println("Map Private Filename: " + getMapPrivateFilename());
+        printWriter.println("Map Public Filename: " + getMapPublicFilename());
+        printWriter.println("Map Kid: " + getMapKid());
+        printWriter.println("Map X509 Filename: " + getMapX509Filename());
+        printWriter.println("Map X5u Link: " + getMapX5uLink());
+        printWriter.println("Sul Public Filename: " + getSulPublicFilename());
+        printWriter.println("Sul Kid: " + getSulKid());
+        printWriter.println("Sul X509 Filename: " + getSulX509Filename());
+        printWriter.println("Sul X5u Link: " + getSulX5uLink());
+    }
 }

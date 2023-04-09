@@ -1,10 +1,13 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication;
 
+import java.io.PrintWriter;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.RunDescriptionPrinter;
 import org.eclipse.californium.edhoc.Constants;
 
-public class AuthenticationConfig {
+public class AuthenticationConfig implements RunDescriptionPrinter {
 
     @Parameter(names = "-mapCredType", required = true, description = "The credential type of the mapper.")
     protected CredType mapCredType = null;
@@ -65,6 +68,24 @@ public class AuthenticationConfig {
 
     public TestVectorAuthenticationConfig getTestVectorAuthenticationConfig() {
         return testVectorAuthenticationConfig;
+    }
+
+    @Override
+    public void printRunDescriptionSelf(PrintWriter printWriter) {
+        printWriter.println("AuthenticationConfig Parameters");
+        printWriter.println("Map Cred Type: " + getMapCredType());
+        printWriter.println("Map Id Cred Type: " + getMapIdCredType());
+        printWriter.println("Sul Cred Type: " + getSulCredType());
+        printWriter.println("Sul Id Cred Type: " + getSulIdCredType());
+    }
+
+    @Override
+    public void printRunDescriptionRec(PrintWriter printWriter) {
+        if (getManyFilesAuthenticationConfig().isUsed()) {
+            getManyFilesAuthenticationConfig().printRunDescription(printWriter);
+        } else if (getTestVectorAuthenticationConfig().isUsed()) {
+            getTestVectorAuthenticationConfig().printRunDescription(printWriter);
+        }
     }
 
     protected enum CredType {

@@ -4,8 +4,10 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
+
 import org.eclipse.californium.elements.util.StringUtil;
 
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
@@ -211,5 +213,31 @@ public class EdhocMapperConfig extends MapperConfig {
         }
 
         return StringUtil.hex2ByteArray(hexString);
+    }
+
+    @Override
+    public void printRunDescriptionSelf(PrintWriter printWriter) {
+        super.printRunDescriptionSelf(printWriter);
+        printWriter.println("EdhocMapperConfig Parameters");
+        printWriter.println("Edhoc Role: " + edhocRole);
+        printWriter.println("Protocol Version: " + getProtocolVersion());
+        printWriter.println("Edhoc Coap Resource: " + getEdhocCoapResource());
+        printWriter.println("App Coap Resource: " + getAppCoapResource());
+        printWriter.println("App Message Code To Coap Server: " + getAppMessageCodeToCoapServer());
+        printWriter.println("App Message Payload To Coap Server: " + getAppMessagePayloadToCoapServer());
+        printWriter.println("App Message Code To Coap Client: " + getAppMessageCodeToCoapClient());
+        printWriter.println("App Message Payload To Coap Client: " + getAppMessagePayloadToCoapClient());
+        printWriter.println("Coap Error As Edhoc Error: " + isCoapErrorAsEdhocError());
+        printWriter.println("use Content Format: " + useContentFormat());
+        printWriter.println("use Session Reset: " + useSessionReset());
+        printWriter.println("use CX Correlation: " + useCXCorrelation());
+        printWriter.println("Own Connection Id: " + this.ownConnectionId);
+        printWriter.println("Force Oscore Sender Id: " + this.forceOscoreSenderId);
+        printWriter.println("Force Oscore Recipient Id: " + this.forceOscoreRecipientId);
+    }
+
+    @Override
+    public void printRunDescriptionRec(PrintWriter printWriter) {
+        getAuthenticationConfig().printRunDescription(printWriter);
     }
 }

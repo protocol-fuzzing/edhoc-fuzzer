@@ -2,15 +2,19 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.RunDescriptionPrinter;
+
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs.Ed25519KeySigConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs.P256KeySigConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs.P256KeyStatConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.keyConfigs.X25519KeyStatConfig;
 import org.eclipse.californium.edhoc.Constants;
 
+import java.io.PrintWriter;
 import java.util.List;
 
-public class ManyFilesAuthenticationConfig {
+public class ManyFilesAuthenticationConfig implements RunDescriptionPrinter {
+
     @Parameter(names = "-mapAuthMethod", description = "The authentication method of the mapper.")
     protected AuthMethod mapAuthenticationMethod = null;
 
@@ -64,6 +68,21 @@ public class ManyFilesAuthenticationConfig {
 
     public boolean isUsed() {
         return mapAuthenticationMethod != null && mapSupportedCipherSuites != null;
+    }
+
+    @Override
+    public void printRunDescriptionSelf(PrintWriter printWriter) {
+        printWriter.println("ManyFilesAuthenticationConfig Parameters");
+        printWriter.println("Map Authentication Method" + getMapAuthenticationMethod());
+        printWriter.println("Map Supported Cipher Suites" + getMapSupportedCipherSuites());
+    }
+
+    @Override
+    public void printRunDescriptionRec(PrintWriter printWriter) {
+        getEd25519KeySigConfig().printRunDescription(printWriter);
+        getX25519KeyStatConfig().printRunDescription(printWriter);
+        getP256KeySigConfig().printRunDescription(printWriter);
+        getP256KeyStatConfig().printRunDescription(printWriter);
     }
 
     protected enum AuthMethod {

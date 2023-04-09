@@ -1,15 +1,17 @@
 package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication;
 
 import com.beust.jcommander.Parameter;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.RunDescriptionPrinter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-public class TestVectorAuthenticationConfig {
+public class TestVectorAuthenticationConfig implements RunDescriptionPrinter {
     private TestVector testVector;
 
     @Parameter(names = "-testVectorJson", description = "The json file containing the test vectors")
@@ -63,5 +65,13 @@ public class TestVectorAuthenticationConfig {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void printRunDescriptionSelf(PrintWriter printWriter) {
+        printWriter.println("TestVectorAuthenticationConfig Parameters");
+        printWriter.println("Test Vector File: " + getTestVectorFile());
+        printWriter.println("Test Vector Key: " + getTestVectorKey());
+        printWriter.println("Test Vector Peer Key Curve: " + getTestVectorPeerKeyCurve());
     }
 }
