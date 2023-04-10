@@ -119,7 +119,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>gr.ntua.softlab.edhocFuzzer.Main</mainClass>
+                            <mainClass>gr.ntua.softlab.edhocfuzzer.Main</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Multi-Release>true</Multi-Release>
