@@ -8,21 +8,20 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install packages and EDHOC-Fuzzer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven graphviz
-          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
-          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
-          source "${HOME}/.cargo/env"
-          ./scripts/setup_fuzzer -l
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer -l
 
       - name: Setup EDHOC-Rust
-        run: ./scripts/setup_sul edhoc-rs
+        run: |
+          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+          source "${HOME}/.cargo/env"
+          ./scripts/setup_sul edhoc-rs
 
       - name: Test EDHOC-Rust Client
         run: |
@@ -35,21 +34,20 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install packages and EDHOC-Fuzzer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven graphviz
-          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
-          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
-          source "${HOME}/.cargo/env"
-          ./scripts/setup_fuzzer -l
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer -l
 
       - name: Setup EDHOC-Rust
-        run: ./scripts/setup_sul edhoc-rs
+        run: |
+          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+          source "${HOME}/.cargo/env"
+          ./scripts/setup_sul edhoc-rs
 
       - name: Test EDHOC-Rust Server
         run: |
@@ -62,16 +60,14 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install packages and EDHOC-Fuzzer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven graphviz
-          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
-          ./scripts/setup_fuzzer -l
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer -l
 
       - name: Setup RISE
         run: ./scripts/setup_sul rise
@@ -87,16 +83,14 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install packages and EDHOC-Fuzzer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven graphviz
-          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
-          ./scripts/setup_fuzzer -l
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer -l
 
       - name: Setup RISE
         run: ./scripts/setup_sul rise
@@ -112,16 +106,14 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install packages and EDHOC-Fuzzer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven graphviz
-          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
-          ./scripts/setup_fuzzer -l
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer -l
 
       - name: Setup SIFIS-HOME
         run: ./scripts/setup_sul sifis-home
@@ -137,16 +129,14 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install packages and EDHOC-Fuzzer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven graphviz
-          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
-          ./scripts/setup_fuzzer -l
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer -l
 
       - name: Setup SIFIS-HOME
         run: ./scripts/setup_sul sifis-home
@@ -162,16 +152,14 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install packages and EDHOC-Fuzzer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven graphviz
-          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
-          ./scripts/setup_fuzzer -l
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer -l
 
       - name: Setup uOSCORE-uEDHOC
         run: ./scripts/setup_sul uoscore-uedhoc
@@ -187,16 +175,14 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install packages and EDHOC-Fuzzer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openjdk-17-jdk maven graphviz
-          sudo update-java-alternatives --set java-1.17.0-openjdk-amd64
-          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
-          ./scripts/setup_fuzzer -l
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer -l
 
       - name: Setup uOSCORE-uEDHOC
         run: ./scripts/setup_sul uoscore-uedhoc
