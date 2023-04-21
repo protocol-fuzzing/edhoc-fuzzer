@@ -19,9 +19,9 @@ jobs:
 
       - name: Setup EDHOC-Rust
         run: |
-	  curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
           source "${HOME}/.cargo/env"
-	  ./scripts/setup_sul edhoc-rs
+          ./scripts/setup_sul edhoc-rs
 
       - name: Test EDHOC-Rust Client
         run: |
@@ -45,9 +45,9 @@ jobs:
 
       - name: Setup EDHOC-Rust
         run: |
-	  curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
           source "${HOME}/.cargo/env"
-	  ./scripts/setup_sul edhoc-rs
+          ./scripts/setup_sul edhoc-rs
 
       - name: Test EDHOC-Rust Server
         run: |
