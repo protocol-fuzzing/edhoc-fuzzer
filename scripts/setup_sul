@@ -51,7 +51,7 @@ setup_rise() {
   git checkout ${COMMIT_HASH}
   git apply ${PATCH_DIR}/rise.patch
   cp ${APP_PROFILE_BUILDER} ${EDHOC_CLIENT} ${EDHOC_SERVER} ${CF_EDHOC_MAIN_DIR}
-  mvn -DskipTests install
+  mvn package -DskipTests -am -pl cf-edhoc
 
   cd ${MODEL_DIR}
   mkdir -p ${SERVERS_DIR}/rise ${CLIENTS_DIR}/rise
@@ -71,11 +71,17 @@ setup_sifis_home() {
   cd ${SOURCES_DIR}
   git clone https://github.com/sifis-home/wp3-solutions.git
   SF_HOME_DIR="${SOURCES_DIR}/wp3-solutions"
-  cd ${SF_HOME_DIR}/californium-extended
+
+  cd ${SF_HOME_DIR}
   git checkout ${COMMIT_HASH}
-  mvn -DskipTests install
-  cd ${SF_HOME_DIR}/edhoc-applications
   git apply ${PATCH_DIR}/sifis-home.patch
+
+  # install in local repository, in order for the edhoc-applications'
+  # dependencies to be found
+  cd ${SF_HOME_DIR}/californium-extended
+  mvn install -DskipTests -am -pl cf-edhoc
+
+  cd ${SF_HOME_DIR}/edhoc-applications
   mvn -DskipTests compile assembly:single
 
   cd ${MODEL_DIR}
