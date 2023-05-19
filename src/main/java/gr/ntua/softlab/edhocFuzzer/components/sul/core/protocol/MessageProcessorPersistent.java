@@ -192,7 +192,7 @@ public class MessageProcessorPersistent {
         objectList.add(cI);
 
         // EAD_1, if provided
-        if (ead1 != null) {
+        if (ead1 != null && ead1.length > 0) {
             Collections.addAll(objectList, ead1);
         }
 
@@ -422,10 +422,12 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        // Discard possible padding prepended to the plaintext
-        while (baseIndex < plaintextElementList.length
-                && plaintextElementList[baseIndex] == CBORObject.True) {
-            baseIndex++;
+        if (hasProtocolVersionLeqV17()) {
+            // Discard possible padding prepended to the plaintext
+            while (baseIndex < plaintextElementList.length
+                    && plaintextElementList[baseIndex] == CBORObject.True) {
+                baseIndex++;
+            }
         }
 
         // ID_CRED_R and Signature_or_MAC_2 should be contained
@@ -453,9 +455,13 @@ public class MessageProcessorPersistent {
         int length = plaintextElementList.length - baseIndex - 2;
         if (length > 0) {
             // EAD_2 is present
-            ead2 = new CBORObject[length];
-            boolean ok = processEADItems(plaintextElementList, baseIndex + 2, ead2, session);
-            if (!ok) {
+            if (hasProtocolVersionLeqV17()) {
+                ead2 = preParseEADleqV17(plaintextElementList, baseIndex + 2, session.getSupportedEADs());
+            } else {
+                ead2 = preParseEAD(plaintextElementList, baseIndex + 2, 2, session.getSupportedEADs());
+            }
+
+            if (ead2 == null) {
                 LOGGER.error("Processing EAD_2");
                 return false;
             }
@@ -672,7 +678,7 @@ public class MessageProcessorPersistent {
 
         plaintextElementList.add(plaintextElement);
         plaintextElementList.add(CBORObject.FromObject(signatureOrMac3));
-        if (ead3 != null) {
+        if (ead3 != null && ead3.length > 0) {
             Collections.addAll(plaintextElementList, ead3);
         }
 
@@ -867,18 +873,24 @@ public class MessageProcessorPersistent {
                 return false;
             }
 
-            // Discard possible padding prepended to the plaintext
-            while (baseIndex < plaintextElementList.length
-                    && plaintextElementList[baseIndex] == CBORObject.True) {
-                baseIndex++;
+            if (hasProtocolVersionLeqV17()) {
+                // Discard possible padding prepended to the plaintext
+                while (baseIndex < plaintextElementList.length
+                        && plaintextElementList[baseIndex] == CBORObject.True) {
+                    baseIndex++;
+                }
             }
 
             int length = plaintextElementList.length - baseIndex;
             if (length > 0) {
                 // EAD_4 is present
-                ead4 = new CBORObject[length];
-                boolean ok = processEADItems(plaintextElementList, baseIndex, ead4, session);
-                if (!ok) {
+                if (hasProtocolVersionLeqV17()) {
+                    ead4 = preParseEADleqV17(plaintextElementList, baseIndex, session.getSupportedEADs());
+                } else {
+                    ead4 = preParseEAD(plaintextElementList, baseIndex, 4, session.getSupportedEADs());
+                }
+
+                if (ead4 == null) {
                     LOGGER.error("Processing EAD_4");
                     return false;
                 }
@@ -1061,9 +1073,13 @@ public class MessageProcessorPersistent {
         int length = objectListRequest.length - index;
         if (length > 0) {
             // EAD_1 is present
-            ead1 = new CBORObject[length];
-            boolean ok = processEADItems(objectListRequest, index, ead1, edhocMapperState.getEdhocSessionPersistent());
-            if (!ok) {
+            if (hasProtocolVersionLeqV17()) {
+                ead1 = preParseEADleqV17(objectListRequest, index, edhocMapperState.getEdhocSessionPersistent().getSupportedEADs());
+            } else {
+                ead1 = preParseEAD(objectListRequest, index, 1, edhocMapperState.getEdhocSessionPersistent().getSupportedEADs());
+            }
+
+            if (ead1 == null) {
                 LOGGER.error("Processing EAD_1");
                 return false;
             }
@@ -1280,7 +1296,7 @@ public class MessageProcessorPersistent {
         plaintextElementList.add(plaintextElement);
         plaintextElementList.add(CBORObject.FromObject(signatureOrMac2));
 
-        if (ead2 != null) {
+        if (ead2 != null && ead2.length > 0) {
             Collections.addAll(plaintextElementList, ead2);
         }
 
@@ -1463,10 +1479,12 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        // Discard possible padding prepended to the plaintext
-        while (baseIndex < plaintextElementList.length
-                && plaintextElementList[baseIndex] == CBORObject.True) {
-            baseIndex++;
+        if (hasProtocolVersionLeqV17()) {
+            // Discard possible padding prepended to the plaintext
+            while (baseIndex < plaintextElementList.length
+                   && plaintextElementList[baseIndex] == CBORObject.True) {
+                baseIndex++;
+            }
         }
 
         // ID_CRED_I and Signature_or_MAC_3 should be contained
@@ -1494,9 +1512,13 @@ public class MessageProcessorPersistent {
         int length = plaintextElementList.length - baseIndex - 2;
         if (length > 0) {
             // EAD_3 is present
-            ead3 = new CBORObject[length];
-            boolean ok = processEADItems(plaintextElementList, baseIndex + 2, ead3, session);
-            if (!ok) {
+            if (hasProtocolVersionLeqV17()) {
+                ead3 = preParseEADleqV17(plaintextElementList, baseIndex + 2, session.getSupportedEADs());
+            } else {
+                ead3 = preParseEAD(plaintextElementList, baseIndex + 2, 3, session.getSupportedEADs());
+            }
+
+            if (ead3 == null) {
                 LOGGER.error("Processing EAD_3");
                 return false;
             }
@@ -1662,7 +1684,7 @@ public class MessageProcessorPersistent {
 
         // Prepare the plaintext
         byte[] plaintext4 = new byte[] {};
-        if (ead4 != null) {
+        if (ead4 != null && ead4.length > 0) {
             List<CBORObject> plaintextElementList = new ArrayList<>();
             Collections.addAll(plaintextElementList, ead4);
             plaintext4 = EdhocUtil.buildCBORSequence(plaintextElementList);
@@ -2066,13 +2088,13 @@ public class MessageProcessorPersistent {
         objectList.add(CBORObject.FromObject(th2));
         objectList.add(CBORObject.DecodeFromBytes(credR));
 
-        if (ead2 != null) {
+        if (ead2 != null && ead2.length > 0) {
             Collections.addAll(objectList, ead2);
         }
 
         byte[] contextSequence = EdhocUtil.buildCBORSequence(objectList);
         CBORObject context = CBORObject.FromObject(contextSequence);
-        LOGGER.debug(EdhocUtil.byteArrayToString( "context_2", contextSequence));
+        LOGGER.debug(EdhocUtil.byteArrayToString("context_2", contextSequence));
 
         int macLength = 0;
         int method = session.getMethod();
@@ -2364,7 +2386,7 @@ public class MessageProcessorPersistent {
         objectList.add(CBORObject.FromObject(th3));
         objectList.add(CBORObject.DecodeFromBytes(credI));
 
-        if (ead3 != null) {
+        if (ead3 != null && ead3.length > 0) {
             Collections.addAll(objectList, ead3);
         }
         byte[] contextSequence = EdhocUtil.buildCBORSequence(objectList);
@@ -2415,7 +2437,7 @@ public class MessageProcessorPersistent {
                     return null;
                 }
 
-                LOGGER.debug(EdhocUtil.byteArrayToString( "External Data for signing MAC_3 to produce Signature_or_MAC_3",
+                LOGGER.debug(EdhocUtil.byteArrayToString("External Data for signing MAC_3 to produce Signature_or_MAC_3",
                         externalData));
 
                 signatureOrMac3 = EdhocUtil.computeSignature(session.getIdCred(), externalData, mac3, identityKey);
@@ -2652,39 +2674,43 @@ public class MessageProcessorPersistent {
         }
     }
 
-    protected boolean processEADItems(CBORObject[] itemsList, int startIndex, CBORObject[] ead,
-                                      EdhocSessionPersistent session) {
-        int length = itemsList.length - startIndex;
+    protected boolean hasProtocolVersionLeqV17() {
+        return edhocMapperState.getProtocolVersion().equals("14")
+                || edhocMapperState.getProtocolVersion().equals("15")
+                || edhocMapperState.getProtocolVersion().equals("16")
+                || edhocMapperState.getProtocolVersion().equals("17");
+    }
 
-        if (length > 0) {
-            // EAD is present
-            if ((length % 2) == 1) {
-                LOGGER.error("EAD items should have even length");
-                return false;
-            }
+    protected CBORObject[] preParseEADleqV17(CBORObject[] objectList, int baseIndex, Set<Integer> supportedEADs) {
+        int length = objectList.length - baseIndex;
+        CBORObject[] eadArray = new CBORObject[length];
 
-            if (ead.length < length) {
-                LOGGER.error("Provided ead array has insufficient length (Internal error)");
-                return false;
-            }
+        if (length < 0) {
+            LOGGER.error("Provided baseIndex greater than the length of objectList");
+            return null;
+        }
+
+        if ((length % 2) == 1) {
+            LOGGER.error("EAD items should have even length");
+            return null;
         }
 
         int eadIndex = 0;
 
-        for (int i = startIndex; i < itemsList.length; i++) {
+        for (int i = baseIndex; i < objectList.length; i++) {
 
             // The first element of each pair is an ead_label, and must be a non-zero CBOR integer
             if ((eadIndex % 2) == 0) {
-                if (itemsList[i].getType() != CBORType.Integer || itemsList[i].AsInt32() == 0) {
+                if (objectList[i].getType() != CBORType.Integer || objectList[i].AsInt32() == 0) {
                     LOGGER.error("Malformed or Invalid EAD label");
-                    return false;
+                    return null;
                 }
 
-                int eadLabel = itemsList[i].AsInt32();
-                if (eadLabel < 0 && !session.getSupportedEADs().contains(eadLabel)) {
+                int eadLabel = objectList[i].AsInt32();
+                if (eadLabel < 0 && !supportedEADs.contains(eadLabel)) {
                     // The EAD item is critical and is not supported
                     LOGGER.error("Unsupported EAD critical item with ead_label: " + eadLabel);
-                    return false;
+                    return null;
                 }
 
                 // Move on to the ead_value
@@ -2694,13 +2720,13 @@ public class MessageProcessorPersistent {
 
             // The second element of each pair is an ead_value, and must be a CBOR byte string
             if ((eadIndex % 2) == 1) {
-                if (itemsList[i].getType() != CBORType.ByteString) {
+                if (objectList[i].getType() != CBORType.ByteString) {
                     LOGGER.error("Malformed or invalid EAD value");
-                    return false;
+                    return null;
                 }
 
                 // Skip this EAD item as not supported and not critical
-                if (!session.getSupportedEADs().contains(eadIndex - 1)) {
+                if (!supportedEADs.contains(eadIndex - 1)) {
                     eadIndex++;
                     continue;
                 }
@@ -2708,19 +2734,114 @@ public class MessageProcessorPersistent {
                 // This EAD item is supported, so it is kept for further processing
 
                 // Make a hard copy of ead_label
-                byte[] serializedObjectLabel = itemsList[i - 1].EncodeToBytes();
+                byte[] serializedObjectLabel = objectList[i - 1].EncodeToBytes();
                 CBORObject elementLabel = CBORObject.DecodeFromBytes(serializedObjectLabel);
-                ead[eadIndex - 1] = elementLabel;
+                eadArray[eadIndex - 1] = elementLabel;
 
                 // Make a hard copy of ead_value
-                byte[] serializedObjectValue = itemsList[i].EncodeToBytes();
+                byte[] serializedObjectValue = objectList[i].EncodeToBytes();
                 CBORObject elementValue = CBORObject.DecodeFromBytes(serializedObjectValue);
-                ead[eadIndex] = elementValue;
+                eadArray[eadIndex] = elementValue;
 
                 eadIndex++;
             }
         }
 
-        return true;
+        return eadArray;
+    }
+
+    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#preParseEAD} */
+    protected CBORObject[] preParseEAD(CBORObject[] objectList, int baseIndex, int msgNum, Set<Integer> supportedEADs) {
+        int length = objectList.length - baseIndex;
+        CBORObject[] eadArray = new CBORObject[length];
+        int eadIndex = 0;
+
+        if (length < 0) {
+            LOGGER.error("Provided baseIndex greater than the length of objectList");
+            return null;
+        }
+
+        // The actual goal of each step is to go through one EAD item
+        // At each step, the element with index 'i' must be an ead_label
+        // For EAD items that are supported or non-critical, the corresponding ead_value (if present) is
+        // handled during the same step, so that the next step will consider the next EAD item, if any
+        for (int i = baseIndex; i < objectList.length; i++) {
+            CBORObject currObject = objectList[i];
+
+            if (currObject.getType() != CBORType.Integer) {
+                 // Each EAD item must start with a CBOR integer encoding the ead_label
+                 LOGGER.error("Malformed or invalid EAD_" + msgNum);
+                 return null;
+            }
+
+            if (i+1 < objectList.length
+                && objectList[i+1].getType() != CBORType.Integer
+                && objectList[i+1].getType() != CBORType.ByteString) {
+
+                 // The immediately following item in the CBOR sequence (if any) must be a CBOR integer or a CBOR byte string
+                 LOGGER.error("Malformed or invalid EAD_" + msgNum);
+                 return null;
+            }
+
+            int eadLabel = currObject.AsInt32();
+
+            if (eadLabel == Constants.EAD_LABEL_PADDING) {
+                // This is the padding EAD item and it is not passed to the application for further processing
+                LOGGER.debug("EAD Label: {}", eadLabel);
+
+                if (i+1 < objectList.length && objectList[i+1].getType() == CBORType.ByteString) {
+                    LOGGER.debug(EdhocUtil.byteArrayToString("EAD Value", objectList[i+1].GetByteString()));
+                    // Skip the corresponding ead_value, if present
+                    i++;
+                }
+                continue;
+            }
+
+            boolean supported = supportedEADs.contains(Integer.valueOf(eadLabel));
+
+            if (!supported) {
+                if (eadLabel < 0) {
+                    // The EAD item is critical but not supported
+                    LOGGER.error("Unsupported EAD_" + msgNum + " critical item with ead_label " + eadLabel);
+                    return null;
+                }
+
+                // The EAD item is non-critical and not supported,
+                // it is not passed to the application for further processing
+                if (i+1 < objectList.length && objectList[i+1].getType() == CBORType.ByteString) {
+                    // This will result in moving to the next EAD item, if any
+                    i++;
+                }
+                continue;
+            }
+
+            // This EAD item is supported, so it is kept for further processing
+
+            // Make a hard copy of the ead_label
+            byte[] serializedObjectLabel = currObject.EncodeToBytes();
+            CBORObject elementLabel = CBORObject.DecodeFromBytes(serializedObjectLabel);
+            eadArray[eadIndex] = elementLabel;
+            eadIndex++;
+
+            LOGGER.debug("EAD Label: {}", eadLabel);
+            // Make a hard copy of the ead_value, if present
+            if (i+1 < objectList.length && objectList[i+1].getType() == CBORType.ByteString) {
+                byte[] serializedObjectValue = objectList[i+1].EncodeToBytes();
+                CBORObject elementValue = CBORObject.DecodeFromBytes(serializedObjectValue);
+                eadArray[eadIndex] = elementValue;
+                eadIndex++;
+
+                LOGGER.debug(EdhocUtil.byteArrayToString("EAD Value", objectList[i+1].GetByteString()));
+                // This will result in moving to the next EAD item, if any
+                i++;
+            }
+        }
+
+        // Prepare the subset of the EAD items to provide to the application for further processing
+        CBORObject[] ret = new CBORObject[eadIndex];
+        for (int i = 0; i < eadIndex; i++) {
+            ret[i] = eadArray[i];
+        }
+        return ret;
     }
 }
