@@ -24,6 +24,13 @@ public class AuthenticationConfig {
             + "In case of 'empty' all possible are generated.")
     protected Integer sulIdCredType = null;
 
+    @Parameter(names = "-trustModel", description = "Trust Model for veifying authentication "
+            + "credentials of other peers Available: "
+            + "0 [Trust and use only a stored and valid credential] "
+            + "1 [Trust and use a stored and valid credential or a valid credential with stored credential identifier] "
+            + "2 [Trust and use any (new) valid credential]")
+    protected Integer trustModel = 0;
+
     @ParametersDelegate
     protected ManyFilesAuthenticationConfig manyFilesAuthenticationConfig;
 
@@ -49,6 +56,10 @@ public class AuthenticationConfig {
 
     public Integer getSulIdCredType() {
         return sulIdCredType;
+    }
+
+    public Integer getTrustModel() {
+        return trustModel;
     }
 
     public ManyFilesAuthenticationConfig getManyFilesAuthenticationConfig() {

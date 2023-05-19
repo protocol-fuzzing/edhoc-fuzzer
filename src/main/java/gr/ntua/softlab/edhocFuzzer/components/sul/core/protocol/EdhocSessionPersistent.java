@@ -52,8 +52,8 @@ public class EdhocSessionPersistent extends EdhocSession {
         super(initiator, clientInitiated, method, connectionId, edhocEndpointInfoPersistent.getKeyPairs(),
                 edhocEndpointInfoPersistent.getIdCreds(), edhocEndpointInfoPersistent.getCreds(),
                 edhocEndpointInfoPersistent.getSupportedCipherSuites(), edhocEndpointInfoPersistent.getSupportedEADs(),
-                edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri), edhocEndpointInfoPersistent.getEdp(),
-                oscoreDB);
+                edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri), edhocEndpointInfoPersistent.getTrustModel(),
+                edhocEndpointInfoPersistent.getEdp(), oscoreDB);
 
         this.sessionUri = sessionUri;
         this.oscoreUri = edhocEndpointInfoPersistent.getOscoreUri();

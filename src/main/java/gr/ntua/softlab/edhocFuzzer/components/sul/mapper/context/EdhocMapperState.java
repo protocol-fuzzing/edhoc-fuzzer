@@ -87,6 +87,9 @@ public abstract class EdhocMapperState implements State {
     // The database of OSCORE Security Contexts
     protected HashMapCtxDB db = new HashMapCtxDB();
 
+    // The trust model for validating authentication credentials of other peers
+    protected int trustModel;
+
     // The size of the Replay Window to use in an OSCORE Recipient Context
     protected int OSCORE_REPLAY_WINDOW = 32;
 
@@ -126,6 +129,7 @@ public abstract class EdhocMapperState implements State {
 
         this.credType = authenticationConfig.getMapCredType();
         this.idCredType = authenticationConfig.getMapIdCredType();
+        this.trustModel = authenticationConfig.getTrustModel();
 
         // Set the application profile
 
@@ -144,7 +148,7 @@ public abstract class EdhocMapperState implements State {
         // Prepare the set of information for this EDHOC endpoint
         edhocEndpointInfoPersistent = new EdhocEndpointInfoPersistent(
                 idCreds, creds, keyPairs, peerPublicKeys, peerCredentials, edhocSessionsPersistent,
-                usedConnectionIds, supportedCipherSuites, supportedEADs, db, oscoreUri,
+                usedConnectionIds, supportedCipherSuites, supportedEADs, trustModel, db, oscoreUri,
                 OSCORE_REPLAY_WINDOW, MAX_UNFRAGMENTED_SIZE, appProfiles, edp
         );
 
