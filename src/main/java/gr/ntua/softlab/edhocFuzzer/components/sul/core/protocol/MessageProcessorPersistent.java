@@ -91,7 +91,6 @@ public class MessageProcessorPersistent {
     public byte[] writeMessage1() {
         LOGGER.debug("Start of writeMessage1");
         EdhocSessionPersistent session = edhocMapperState.getEdhocSessionPersistent();
-        CBORObject[] ead1 = session.getEad1();
 
         // Prepare the list of CBOR objects to build the CBOR sequence
         List<CBORObject> objectList = new ArrayList<>();
@@ -191,9 +190,33 @@ public class MessageProcessorPersistent {
         LOGGER.debug(EdhocUtil.byteArrayToString("C_I", cI.EncodeToBytes()));
         objectList.add(cI);
 
+        // Produce possible EAD items following early instructions from the application
+        SideProcessor sideProcessor = session.getSideProcessor();
+
+        sideProcessor.produceIndependentEADs(Constants.EDHOC_MESSAGE_1);
+
+        // An error occurred
+        if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_1, false)
+                .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
+
+            String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_1, false)
+                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                            .get(0)
+                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                            .AsString();
+
+            // No need to keep this information any longer in the side processor object
+            sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_1, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
+
+            LOGGER.error("Using side processor on message 1: {}", error);
+            return null;
+        }
+
+        List<CBORObject> ead1List = sideProcessor.getProducedEADs(Constants.EDHOC_MESSAGE_1);
+
         // EAD_1, if provided
-        if (ead1 != null && ead1.length > 0) {
-            Collections.addAll(objectList, ead1);
+        if (ead1List != null && !ead1List.isEmpty()) {
+            objectList.addAll(ead1List);
         }
 
         /* Prepare EDHOC Message 1 */
@@ -487,14 +510,61 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        OneKey peerLongTermKey = peerPublicKeys.get(idCredR);
-
         if (ownIdCreds.contains(idCredR)) {
             LOGGER.error("The identity expressed by ID_CRED_R is equal to my own identity");
             return false;
         }
 
+        // Invoke the retrieval and/or validation of CRED_R and
+        // the processing of possible EAD items in EAD_2
+        SideProcessor sideProcessor = session.getSideProcessor();
+        CBORObject[] sideProcessorInfo = new CBORObject[3];
+
+        sideProcessorInfo[0] = CBORObject.FromObject(gY);
+        sideProcessorInfo[1] = CBORObject.FromObject(connectionIdentifierResponder);
+        sideProcessorInfo[2] = CBORObject.FromObject(idCredR);
+
+        sideProcessor.sideProcessingMessage2PreVerification(sideProcessorInfo, ead2);
+
+        // An error occurred
+        if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, false)
+                .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
+
+            String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, false)
+                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                            .get(0)
+                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                            .AsString();
+
+            // No need to keep this information any longer in the side processor object
+            sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_2, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
+
+            LOGGER.error("Using side processor pre verification on message 2: {}", error);
+            return false;
+        }
+
+        // The side processor object includes the authentication credential
+        // of the other peer if a valid one was found during the side processing
+        CBORObject peerCredCBOR = null;
+        if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, false)
+                .containsKey(Constants.SIDE_PROCESSOR_OUTER_CRED)) {
+
+            peerCredCBOR = sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, false)
+                            .get(Constants.SIDE_PROCESSOR_OUTER_CRED)
+                            .get(0)
+                            .get(Constants.SIDE_PROCESSOR_INNER_CRED_VALUE);
+
+            if (peerCredCBOR == null) {
+                LOGGER.error("Unable to retrieve the peer credential from the side processing on message 2");
+                return false;
+            }
+        }
+
+        // No need to keep this information any longer in the side processor object
+        sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_2, Constants.SIDE_PROCESSOR_OUTER_CRED, false);
+
         // Compute PRK_3e2m
+        OneKey peerLongTermKey = peerPublicKeys.get(idCredR);
         byte[] prk3e2m = computePRK3e2m(session, prk2e, th2, peerLongTermKey, peerEphemeralKey);
         if (prk3e2m == null) {
             LOGGER.error("Computing PRK_3e2m");
@@ -503,15 +573,11 @@ public class MessageProcessorPersistent {
 
         LOGGER.debug(EdhocUtil.byteArrayToString("PRK_3e2m", prk3e2m));
 
-        /* Start verifying Signature_or_MAC_2 */
-
-        CBORObject peerCredentialCBOR = peerCredentials.get(idCredR);
-        if (peerCredentialCBOR == null) {
+        if (peerCredCBOR == null) {
             LOGGER.error("Unable to retrieve the peer credential");
             return false;
         }
-
-        byte[] peerCredential = peerCredentialCBOR.GetByteString();
+        byte[] peerCredential = peerCredCBOR.GetByteString();
 
         // Compute MAC_2
         byte[] mac2 = computeMAC2(session, prk3e2m, th2, idCredR, peerCredential, ead2);
@@ -540,6 +606,29 @@ public class MessageProcessorPersistent {
             return false;
         }
 
+        // Invoke the processing of possible EAD items in EAD_2
+        // that had to wait for a successful verification of Signature_or_MAC_2
+        if (ead2 != null && ead2.length > 0) {
+            sideProcessor.sideProcessingMessage2PostVerification(sideProcessorInfo, ead2);
+
+            // An error occurred
+            if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, true)
+                    .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
+
+                String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, true)
+                                .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                                .get(0)
+                                .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                                .AsString();
+
+                // No need to keep this information any longer in the side processor object
+                sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_2, Constants.SIDE_PROCESSOR_OUTER_ERROR, true);
+
+                LOGGER.error("Using side processor post verification on message 2: {}", error);
+                return false;
+            }
+        }
+
         /* Modify session */
         if (session.isInitiator()) {
             session.setPeerConnectionId(connectionIdentifierResponder);
@@ -551,7 +640,6 @@ public class MessageProcessorPersistent {
             session.setPlaintext2(plaintext2);
             session.setPRK2e(prk2e);
             session.setPRK3e2m(prk3e2m);
-            session.setEad2(ead2);
         }
 
         LOGGER.debug("Successful processing of EDHOC Message 2");
@@ -562,7 +650,6 @@ public class MessageProcessorPersistent {
     public byte[] writeMessage3() {
         LOGGER.debug("Start of writeMessage3");
         EdhocSessionPersistent session = edhocMapperState.getEdhocSessionPersistent();
-        CBORObject[] ead3 = session.getEad3();
         List<CBORObject> objectList = new ArrayList<>();
 
         /* Start preparing data_3 */
@@ -576,8 +663,6 @@ public class MessageProcessorPersistent {
             LOGGER.debug(EdhocUtil.byteArrayToString("C_R", cR.EncodeToBytes()));
             objectList.add(cR);
         }
-
-        /* End preparing data_3 */
 
         /* Start computing the inner COSE object */
 
@@ -614,6 +699,34 @@ public class MessageProcessorPersistent {
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("PRK_4e3m", prk4e3m));
 
+        // Produce possible EAD items following early instructions from the application
+        SideProcessor sideProcessor = session.getSideProcessor();
+
+        sideProcessor.produceIndependentEADs(Constants.EDHOC_MESSAGE_3);
+
+        // An error occurred
+        if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, false)
+                .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
+
+            String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, false)
+                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                            .get(0)
+                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                            .AsString();
+
+            // No need to keep this information any longer in the side processor object
+            sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_3, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
+
+            LOGGER.error("Using side processor pre verification on message 3: {}", error);
+            return null;
+        }
+
+        CBORObject[] ead3 = null;
+        List<CBORObject> ead3List = sideProcessor.getProducedEADs(Constants.EDHOC_MESSAGE_3);
+        if (ead3List != null && !ead3List.isEmpty()) {
+            ead3 = (CBORObject[]) ead3List.toArray();
+        }
+
         /* Start computing Signature_or_MAC_3 */
 
         // Compute MAC_3
@@ -640,8 +753,6 @@ public class MessageProcessorPersistent {
             return null;
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("Signature_or_MAC_3", signatureOrMac3));
-
-        /* End computing Signature_or_MAC_3 */
 
         /* Start computing CIPHERTEXT_3 */
 
@@ -690,8 +801,6 @@ public class MessageProcessorPersistent {
         byte[] ciphertext3 = computeCiphertext3(session.getSelectedCipherSuite(), externalData, plaintext3, k3, iv3);
         LOGGER.debug(EdhocUtil.byteArrayToString("CIPHERTEXT_3", ciphertext3));
         objectList.add(CBORObject.FromObject(ciphertext3));
-
-        /* End computing CIPHERTEXT_3 */
 
         /* Compute TH4 */
 
@@ -855,9 +964,6 @@ public class MessageProcessorPersistent {
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("Plaintext retrieved from CIPHERTEXT_4", plaintext4));
 
-        /* End computing the plaintext */
-
-
         // Parse the outer plaintext as a CBOR sequence. To be valid, this is either the empty plaintext
         // or just padding or padding followed by the External Authorization Data EAD_4 possibly
         CBORObject[] ead4 = null;
@@ -894,12 +1000,32 @@ public class MessageProcessorPersistent {
                     LOGGER.error("Processing EAD_4");
                     return false;
                 }
-            }
-        }
 
-        /* Modify session */
-        if (session.isInitiator()) {
-            session.setEad4(ead4);
+                SideProcessor sideProcessor = session.getSideProcessor();
+
+                // Invoke the processing of possible EAD items in EAD_4
+                if (ead4.length > 0) {
+
+                    sideProcessor.sideProcessingMessage4(ead4);
+
+                    // An error occurred
+                    if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_4, false)
+                            .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
+
+                        String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_4, false)
+                                        .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                                        .get(0)
+                                        .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                                        .AsString();
+
+                        // No need to keep this information any longer in the side processor object
+                        sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_4, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
+
+                        LOGGER.error("Using side processor on message 4: {}", error);
+                        return false;
+                    }
+                }
+            }
         }
 
         LOGGER.debug("Successful processing of EDHOC Message 4");
@@ -962,6 +1088,7 @@ public class MessageProcessorPersistent {
 
         // SUITES_I
         index++;
+        int indexSuitesI = index;
         int selectedCipherSuite;
         List<Integer> cipherSuitesToOffer = null;
 
@@ -1042,6 +1169,7 @@ public class MessageProcessorPersistent {
 
         // G_X
         index++;
+        int indexGX = index;
         if (objectListRequest[index].getType() != CBORType.ByteString) {
             LOGGER.error("G_X must be a byte string");
             return false;
@@ -1082,6 +1210,53 @@ public class MessageProcessorPersistent {
             if (ead1 == null) {
                 LOGGER.error("Processing EAD_1");
                 return false;
+            }
+
+            // Process possible EAD items using the side processor
+            if (ead1.length > 0) {
+                CBORObject[] sideProcessorInfo = new CBORObject[4];
+
+                // add Method
+                sideProcessorInfo[0] = CBORObject.FromObject(method);
+
+                // add SUITES_I
+                if (objectListRequest[indexSuitesI].getType() == CBORType.Integer) {
+                    // Single-element array is needed, with a single CBOR integer
+                    // indicating the selected cipher suite
+                    sideProcessorInfo[1] = CBORObject.NewArray();
+                    sideProcessorInfo[1].Add(objectListRequest[indexSuitesI]);
+                } else {
+                    // SUITES_I can be taken as is, with the last integer
+                    // indicating the selected cipher suite
+                    sideProcessorInfo[1] = objectListRequest[indexSuitesI];
+                }
+
+                // add G_X
+                sideProcessorInfo[2] = objectListRequest[indexGX];
+
+                // add C_I
+                sideProcessorInfo[3] = CBORObject.FromObject(connectionIdInitiator);
+
+                SideProcessor sideProcessor = edhocMapperState.getEdhocSessionPersistent().getSideProcessor();
+
+                sideProcessor.sideProcessingMessage1(sideProcessorInfo, ead1);
+
+                // An error occurred
+                if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_1, false)
+                        .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
+
+                    String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_1, false)
+                                    .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                                    .get(0)
+                                    .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                                    .AsString();
+
+                    // No need to keep this information any longer in the side processor object
+                    sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_1, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
+
+                    LOGGER.error("Using side processor on message 1: {}", error);
+                    return false;
+                }
             }
         }
 
@@ -1132,9 +1307,6 @@ public class MessageProcessorPersistent {
         System.arraycopy(sequence, offset, hashMessage1, 0, hashMessage1.length);
         newSession.setHashMessage1(hashMessage1);
 
-        // Set Ead1
-        newSession.setEad1(ead1);
-
         // Set cipherSuites to offer in next Error Message
         if (cipherSuitesToOffer != null) {
             newSession.setCipherSuitesIncludeInError(Util.buildSuitesR(cipherSuitesToOffer));
@@ -1155,7 +1327,6 @@ public class MessageProcessorPersistent {
     public byte[] writeMessage2() {
         LOGGER.debug("Start of writeMessage2");
         EdhocSessionPersistent session = edhocMapperState.getEdhocSessionPersistent();
-        CBORObject[] ead2 = session.getEad2();
         List<CBORObject> objectList = new ArrayList<>();
 
         // C_I, if EDHOC message_2 is transported in a CoAP request and CX correlation is enabled
@@ -1250,6 +1421,34 @@ public class MessageProcessorPersistent {
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("PRK_3e2m", prk3e2m));
 
+        // Produce possible EAD items following early instructions from the application
+        SideProcessor sideProcessor = session.getSideProcessor();
+
+        sideProcessor.produceIndependentEADs(Constants.EDHOC_MESSAGE_2);
+
+        // An error occurred
+        if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, false)
+                .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
+
+            String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, false)
+                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                            .get(0)
+                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                            .AsString();
+
+            // No need to keep this information any longer in the side processor object
+            sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_2, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
+
+            LOGGER.error("Using side processor pre verification on message 2: {}", error);
+            return null;
+        }
+
+        CBORObject[] ead2 = null;
+        List<CBORObject> ead2List = sideProcessor.getProducedEADs(Constants.EDHOC_MESSAGE_2);
+        if (ead2List != null && !ead2List.isEmpty()) {
+            ead2 = (CBORObject[]) ead2List.toArray();
+        }
+
         /* Start computing Signature_or_MAC_2 */
 
         // Compute MAC_2
@@ -1276,8 +1475,6 @@ public class MessageProcessorPersistent {
             return null;
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("Signature_or_MAC_2", signatureOrMac2));
-
-        /* End computing Signature_or_MAC_2 */
 
         /* Start computing CIPHERTEXT_2 */
 
@@ -1315,9 +1512,6 @@ public class MessageProcessorPersistent {
         byte[] ciphertext2 = EdhocUtil.arrayXor(plaintext2, keystream2);
 
         LOGGER.debug(EdhocUtil.byteArrayToString("CIPHERTEXT_2", ciphertext2));
-        /* End computing CIPHERTEXT_2 */
-
-        // Finish building the outer CBOR sequence
 
         // Concatenate G_Y with CIPHERTEXT_2
         byte[] gY_Ciphertext2 = new byte[gY.GetByteString().length + ciphertext2.length];
@@ -1543,17 +1737,54 @@ public class MessageProcessorPersistent {
             LOGGER.error("The identity expressed by ID_CRED_I is not recognized");
             return false;
         }
-        OneKey peerLongTermKey = peerPublicKeys.get(idCredI);
 
-        CBORObject peerCredentialCBOR = peerCredentials.get(idCredI);
-        if (peerCredentialCBOR == null) {
-            LOGGER.error("Unable to retrieve the peer credential");
+        // Invoke the retrieval and/or validation of CRED_I
+        // and the processing of possible EAD items in EAD_3
+        SideProcessor sideProcessor = session.getSideProcessor();
+        CBORObject[] sideProcessorInfo = new CBORObject[1];
+        sideProcessorInfo[0] = CBORObject.FromObject(idCredI);
+
+        sideProcessor.sideProcessingMessage3PreVerification(sideProcessorInfo, ead3);
+
+        // An error occurred
+        if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, false)
+                .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
+
+            String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, false)
+                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                            .get(0)
+                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                            .AsString();
+
+            // No need to keep this information any longer in the side processor object
+            sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_3, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
+
+            LOGGER.error("Using side processor pre verification on message 3: {}", error);
             return false;
         }
 
-        byte[] peerCredential = peerCredentialCBOR.GetByteString();
+        // If no error occurred, the side processor object includes the authentication credential
+        // of the other peer, if a valid one was found during the side processing
+        CBORObject peerCredCBOR = null;
+        if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, false)
+                .containsKey(Integer.valueOf(Constants.SIDE_PROCESSOR_OUTER_CRED))) {
+
+            peerCredCBOR = sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, false)
+                            .get(Integer.valueOf(Constants.SIDE_PROCESSOR_OUTER_CRED))
+                            .get(0)
+                            .get(Integer.valueOf(Constants.SIDE_PROCESSOR_INNER_CRED_VALUE));
+
+            if (peerCredCBOR == null) {
+                LOGGER.error("Unable to retrieve the peer credential from the side processing on message 3");
+                return false;
+            }
+        }
+
+        // No need to keep this information any longer in the side processor object
+        sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_3, Constants.SIDE_PROCESSOR_OUTER_CRED, false);
 
         // Compute the key material
+        OneKey peerLongTermKey = peerPublicKeys.get(idCredI);
         byte[] prk4e3m = computePRK4e3m(session, session.getPRK3e2m(), th3, peerLongTermKey,
                 session.getPeerEphemeralPublicKey());
         if (prk4e3m == null) {
@@ -1563,6 +1794,13 @@ public class MessageProcessorPersistent {
         LOGGER.debug(EdhocUtil.byteArrayToString("PRK_4e3m", prk4e3m));
 
         /* Start verifying Signature_or_MAC_3 */
+
+        if (peerCredCBOR == null) {
+            LOGGER.error("Unable to retrieve the peer credential");
+            return false;
+        }
+
+        byte[] peerCredential = peerCredCBOR.GetByteString();
 
         // Compute MAC_3
         byte[] mac3 = computeMAC3(session, prk4e3m, th3, idCredI, peerCredential, ead3);
@@ -1590,7 +1828,28 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        /* End verifying Signature_or_MAC_3 */
+        // Invoke the processing of possible EAD items in EAD_3
+        // that had to wait for a successful verification of Signature_or_MAC_3
+        if (ead3 != null && ead3.length > 0) {
+            sideProcessor.sideProcessingMessage3PostVerification(sideProcessorInfo, ead3);
+
+            // An error occurred
+            if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, true)
+                    .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
+
+                String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, true)
+                                .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                                .get(0)
+                                .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                                .AsString();
+
+                // No need to keep this information any longer in the side processor object
+                sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_3, Constants.SIDE_PROCESSOR_OUTER_ERROR, true);
+
+                LOGGER.error("Using side processor post verification on message 3: {}", error);
+                return false;
+            }
+        }
 
         /* Compute TH4 */
 
@@ -1638,7 +1897,6 @@ public class MessageProcessorPersistent {
             session.setTH4(th4);
             session.setPRKout(prkOut);
             session.setPRKexporter(prkExporter);
-            session.setEad3(ead3);
 
             // derive new oscore context
             session.setupOscoreContext();
@@ -1652,7 +1910,6 @@ public class MessageProcessorPersistent {
     public byte[] writeMessage4() {
         LOGGER.debug("Start of writeMessage4");
         EdhocSessionPersistent session = edhocMapperState.getEdhocSessionPersistent();
-        CBORObject[] ead4 = session.getEad4();
         List<CBORObject> objectList = new ArrayList<>();
 
         /* Start preparing data_4 */
@@ -1667,8 +1924,6 @@ public class MessageProcessorPersistent {
             LOGGER.debug(EdhocUtil.byteArrayToString("C_I", cI.EncodeToBytes()));
         }
 
-        /* End preparing data_4 */
-
         /* Start computing the COSE object */
 
         // Compute the external data for the external_aad
@@ -1681,6 +1936,34 @@ public class MessageProcessorPersistent {
             return null;
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("External Data to compute CIPHERTEXT_4", externalData));
+
+        // Produce possible EAD items following early instructions from the application
+        SideProcessor sideProcessor = session.getSideProcessor();
+
+        sideProcessor.produceIndependentEADs(Constants.EDHOC_MESSAGE_4);
+
+        // An error occurred
+        if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_4, false)
+                .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
+
+            String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_4, false)
+                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                            .get(0)
+                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                            .AsString();
+
+            // No need to keep this information any longer in the side processor object
+            sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_4, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
+
+            LOGGER.error("Using side processor on message 4: {}", error);
+            return null;
+        }
+
+        CBORObject[] ead4 = null;
+        List<CBORObject> ead4List = sideProcessor.getProducedEADs(Constants.EDHOC_MESSAGE_4);
+        if (ead4List != null && !ead4List.isEmpty()) {
+            ead4 = (CBORObject[]) ead4List.toArray();
+        }
 
         // Prepare the plaintext
         byte[] plaintext4 = new byte[] {};
@@ -1716,8 +1999,6 @@ public class MessageProcessorPersistent {
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("CIPHERTEXT_4", ciphertext4));
         objectList.add(CBORObject.FromObject(ciphertext4));
-
-        /* End computing the inner COSE object */
 
         /* Prepare EDHOC Message 4 */
         byte[] message4 = EdhocUtil.buildCBORSequence(objectList);
@@ -2797,9 +3078,7 @@ public class MessageProcessorPersistent {
                 continue;
             }
 
-            boolean supported = supportedEADs.contains(Integer.valueOf(eadLabel));
-
-            if (!supported) {
+            if (!supportedEADs.contains(eadLabel)) {
                 if (eadLabel < 0) {
                     // The EAD item is critical but not supported
                     LOGGER.error("Unsupported EAD_" + msgNum + " critical item with ead_label " + eadLabel);

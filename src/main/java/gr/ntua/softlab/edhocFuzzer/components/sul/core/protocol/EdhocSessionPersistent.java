@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.cose.AlgorithmID;
 import org.eclipse.californium.edhoc.EdhocSession;
+import org.eclipse.californium.edhoc.SideProcessor;
 import org.eclipse.californium.edhoc.Util;
 import org.eclipse.californium.oscore.HashMapCtxDB;
 import org.eclipse.californium.oscore.OSCoreCtx;
@@ -33,11 +34,6 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     protected CBORObject cipherSuitesIncludeInError;
 
-    protected CBORObject[] ead1;
-    protected CBORObject[] ead2;
-    protected CBORObject[] ead3;
-    protected CBORObject[] ead4;
-
     protected boolean sessionResetEnabled;
 
     protected byte[] forceOscoreSenderId;
@@ -50,10 +46,10 @@ public class EdhocSessionPersistent extends EdhocSession {
             byte[] forceOscoreRecipientId) {
 
         super(initiator, clientInitiated, method, connectionId, edhocEndpointInfoPersistent.getKeyPairs(),
-                edhocEndpointInfoPersistent.getIdCreds(), edhocEndpointInfoPersistent.getCreds(),
-                edhocEndpointInfoPersistent.getSupportedCipherSuites(), edhocEndpointInfoPersistent.getSupportedEADs(),
-                edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri), edhocEndpointInfoPersistent.getTrustModel(),
-                edhocEndpointInfoPersistent.getEdp(), oscoreDB);
+            edhocEndpointInfoPersistent.getIdCreds(), edhocEndpointInfoPersistent.getCreds(),
+            edhocEndpointInfoPersistent.getSupportedCipherSuites(), edhocEndpointInfoPersistent.getSupportedEADs(),
+            edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri), edhocEndpointInfoPersistent.getTrustModel(),
+            oscoreDB);
 
         this.sessionUri = sessionUri;
         this.oscoreUri = edhocEndpointInfoPersistent.getOscoreUri();
@@ -63,6 +59,14 @@ public class EdhocSessionPersistent extends EdhocSession {
         this.sessionResetEnabled = sessionResetEnabled;
         this.forceOscoreSenderId = forceOscoreSenderId;
         this.forceOscoreRecipientId = forceOscoreRecipientId;
+
+        SideProcessor sideProcessor = new SideProcessor(
+            edhocEndpointInfoPersistent.getTrustModel(),
+            edhocEndpointInfoPersistent.getPeerCredentials(),
+            edhocEndpointInfoPersistent.getEadProductionInput()
+        );
+        sideProcessor.setEdhocSession(this);
+        this.setSideProcessor(sideProcessor);
 
         reset();
     }
@@ -116,12 +120,6 @@ public class EdhocSessionPersistent extends EdhocSession {
 
         // message3, to be used for building an EDHOC+OSCORE request
         setMessage3(new byte[]{1});
-
-        // eads
-        this.ead1 = null;
-        this.ead2 = null;
-        this.ead3 = null;
-        this.ead4 = null;
 
         // setup dummy oscore context and reset flag
         oscoreCtxGenerated = false;
@@ -244,38 +242,6 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     public void setCipherSuitesIncludeInError(CBORObject cipherSuitesIncludeInError) {
         this.cipherSuitesIncludeInError = cipherSuitesIncludeInError;
-    }
-
-    public CBORObject[] getEad1() {
-        return ead1;
-    }
-
-    public void setEad1(CBORObject[] ead1) {
-        this.ead1 = ead1;
-    }
-
-    public CBORObject[] getEad2() {
-        return ead2;
-    }
-
-    public void setEad2(CBORObject[] ead2) {
-        this.ead2 = ead2;
-    }
-
-    public CBORObject[] getEad3() {
-        return ead3;
-    }
-
-    public void setEad3(CBORObject[] ead3) {
-        this.ead3 = ead3;
-    }
-
-    public CBORObject[] getEad4() {
-        return ead4;
-    }
-
-    public void setEad4(CBORObject[] ead4) {
-        this.ead4 = ead4;
     }
 
     public boolean isSessionResetEnabled() {

@@ -18,7 +18,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.californium.cose.OneKey;
 import org.eclipse.californium.edhoc.AppProfile;
 import org.eclipse.californium.edhoc.Constants;
-import org.eclipse.californium.edhoc.KissEDP;
 import org.eclipse.californium.oscore.HashMapCtxDB;
 
 import java.security.Security;
@@ -142,14 +141,11 @@ public abstract class EdhocMapperState implements State {
         AppProfile appProfile = AppProfileBuilder.build(authMethods);
         appProfiles.put(edhocSessionUri, appProfile);
 
-        // Specify the processor of External Authorization Data
-        KissEDP edp = new KissEDP();
-
         // Prepare the set of information for this EDHOC endpoint
         edhocEndpointInfoPersistent = new EdhocEndpointInfoPersistent(
                 idCreds, creds, keyPairs, peerPublicKeys, peerCredentials, edhocSessionsPersistent,
-                usedConnectionIds, supportedCipherSuites, supportedEADs, trustModel, db, oscoreUri,
-                OSCORE_REPLAY_WINDOW, MAX_UNFRAGMENTED_SIZE, appProfiles, edp
+                usedConnectionIds, supportedCipherSuites, supportedEADs, null, trustModel, db, oscoreUri,
+                OSCORE_REPLAY_WINDOW, MAX_UNFRAGMENTED_SIZE, appProfiles
         );
 
         // Set up the authentication credentials
