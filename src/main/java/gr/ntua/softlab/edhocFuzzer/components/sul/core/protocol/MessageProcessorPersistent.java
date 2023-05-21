@@ -114,7 +114,7 @@ public class MessageProcessorPersistent {
         int selectedSuite = -1;
         int preferredSuite = supportedCipherSuites.get(0);
 
-        if (peerSupportedCipherSuites == null) {
+        if (peerSupportedCipherSuites == null || peerSupportedCipherSuites.isEmpty()) {
             // No SUITES_R has been received, so it is not known what cipher suites the responder supports
             // The selected cipher suite is the most preferred by the initiator
             selectedSuite = preferredSuite;
@@ -142,8 +142,9 @@ public class MessageProcessorPersistent {
         session.setAuthenticationCredential();
 
         // Set the ephemeral keys of the Initiator to use in this session
-        if (session.getEphemeralKey() == null)
+        if (session.getEphemeralKey() == null) {
             session.setEphemeralKey();
+        }
 
         CBORObject suitesI;
         if (selectedSuite == preferredSuite) {
@@ -1276,7 +1277,8 @@ public class MessageProcessorPersistent {
 
         EdhocSessionPersistent newSession = new EdhocSessionPersistent(oldSession.getSessionUri(),
                 oldSession.isInitiator(), oldSession.isClientInitiated(), method, connectionIdResponder, endpointInfo,
-                endpointInfo.getOscoreDb(), oldSession.getCoapExchanger(), oldSession.isSessionResetEnabled(),
+                oldSession.getPeerSupportedCipherSuites(), endpointInfo.getOscoreDb(),
+                oldSession.getCoapExchanger(), oldSession.isSessionResetEnabled(),
                 oldSession.getForceOscoreSenderId(), oldSession.getForceOscoreRecipientId());
 
         // Set the selected cipher suite
@@ -2092,7 +2094,7 @@ public class MessageProcessorPersistent {
         }
 
         int index = 0;
-        EdhocSessionPersistent mySession = null;
+        EdhocSessionPersistent session = null;
         CBORObject[] objectList;
         try {
             objectList = CBORObject.DecodeSequenceFromBytes(sequence);
@@ -2117,15 +2119,15 @@ public class MessageProcessorPersistent {
             byte[] retrievedConnectionIdentifier = decodeIdentifier(objectList[index]);
             if (retrievedConnectionIdentifier != null) {
                 CBORObject connectionIdentifierCbor = CBORObject.FromObject(retrievedConnectionIdentifier);
-                mySession = edhocSessions.get(connectionIdentifierCbor);
+                session = edhocSessions.get(connectionIdentifierCbor);
                 index++;
             }
         } else {
-            mySession = edhocMapperState.getEdhocSessionPersistent();
+            session = edhocMapperState.getEdhocSessionPersistent();
         }
 
         // No session for this Connection Identifier
-        if (mySession == null) {
+        if (session == null) {
             LOGGER.error("Impossible to retrieve a session from C_X");
             return false;
         }
@@ -2151,8 +2153,9 @@ public class MessageProcessorPersistent {
         }
 
         switch(errorCode) {
-            case Constants.ERR_CODE_SUCCESS ->
-                    LOGGER.warn("Error code success");
+            case Constants.ERR_CODE_SUCCESS -> {
+                LOGGER.warn("Error code success");
+            }
 
             case Constants.ERR_CODE_UNSPECIFIED_ERROR -> {
                 if (objectList[index].getType() != CBORType.TextString) {
@@ -2164,23 +2167,37 @@ public class MessageProcessorPersistent {
             }
 
             case Constants.ERR_CODE_WRONG_SELECTED_CIPHER_SUITE -> {
-                if (objectList[index].getType() != CBORType.Array
-                        && objectList[index].getType() != CBORType.Integer) {
-                    LOGGER.error("Invalid format for SUITES_R");
-                    return false;
-                }
+                CBORObject suitesR = objectList[index];
+                List<Integer> peerSupportedCipherSuites = new ArrayList<>();
 
-                if (objectList[index].getType() == CBORType.Array) {
-                    for (int i = 0; i < objectList[index].size(); i++) {
-                        if (objectList[index].get(i).getType() != CBORType.Integer) {
-                            LOGGER.error("Invalid format for elements of SUITES_R");
-                            return false;
+                switch(suitesR.getType()) {
+                    case Integer -> {
+                        peerSupportedCipherSuites.add(suitesR.AsInt32());
+                    }
+
+                    case Array -> {
+                        for (int i = 0; i < suitesR.size(); i++) {
+                            if (suitesR.get(i).getType() != CBORType.Integer) {
+                                LOGGER.error("Invalid format for elements of SUITES_R");
+                                return false;
+                            }
+                            peerSupportedCipherSuites.add(suitesR.get(i).AsInt32());
                         }
                     }
+
+                    default -> {
+                        LOGGER.error("Invalid format for SUITES_R");
+                        return false;
+                    }
                 }
+
+                // add peer supported cipher suites to session
+                session.setPeerSupportedCipherSuites(peerSupportedCipherSuites);
             }
 
-            default -> LOGGER.warn("Unknown error code: " + errorCode);
+            default -> {
+                LOGGER.warn("Unknown error code: " + errorCode);
+            }
         }
 
         return true;

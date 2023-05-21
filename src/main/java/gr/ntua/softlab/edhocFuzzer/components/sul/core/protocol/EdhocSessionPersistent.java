@@ -16,6 +16,7 @@ import org.eclipse.californium.oscore.OSException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.List;
 
 public class EdhocSessionPersistent extends EdhocSession {
 
@@ -32,6 +33,7 @@ public class EdhocSessionPersistent extends EdhocSession {
     protected int oscoreMaxUnfragmentedSize;
     protected boolean oscoreCtxGenerated;
 
+    protected List<Integer> peerSupportedCipherSuites;
     protected CBORObject cipherSuitesIncludeInError;
 
     protected boolean sessionResetEnabled;
@@ -41,20 +43,21 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     public EdhocSessionPersistent(
             String sessionUri, boolean initiator, boolean clientInitiated, int method, byte[] connectionId,
-            EdhocEndpointInfoPersistent edhocEndpointInfoPersistent, HashMapCtxDB oscoreDB,
-            CoapExchanger coapExchanger, boolean sessionResetEnabled, byte[] forceOscoreSenderId,
-            byte[] forceOscoreRecipientId) {
+            EdhocEndpointInfoPersistent edhocEndpointInfoPersistent, List<Integer> peerSupportedCipherSuites,
+            HashMapCtxDB oscoreDB, CoapExchanger coapExchanger, boolean sessionResetEnabled,
+            byte[] forceOscoreSenderId, byte[] forceOscoreRecipientId) {
 
         super(initiator, clientInitiated, method, connectionId, edhocEndpointInfoPersistent.getKeyPairs(),
             edhocEndpointInfoPersistent.getIdCreds(), edhocEndpointInfoPersistent.getCreds(),
-            edhocEndpointInfoPersistent.getSupportedCipherSuites(), edhocEndpointInfoPersistent.getSupportedEADs(),
-            edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri), edhocEndpointInfoPersistent.getTrustModel(),
-            oscoreDB);
+            edhocEndpointInfoPersistent.getSupportedCipherSuites(), peerSupportedCipherSuites,
+            edhocEndpointInfoPersistent.getSupportedEADs(), edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri),
+            edhocEndpointInfoPersistent.getTrustModel(), oscoreDB);
 
         this.sessionUri = sessionUri;
         this.oscoreUri = edhocEndpointInfoPersistent.getOscoreUri();
         this.oscoreReplayWindow = edhocEndpointInfoPersistent.getOscoreReplayWindow();
         this.oscoreMaxUnfragmentedSize = edhocEndpointInfoPersistent.getOscoreMaxUnfragmentedSize();
+        this.peerSupportedCipherSuites = peerSupportedCipherSuites;
         this.coapExchanger = coapExchanger;
         this.sessionResetEnabled = sessionResetEnabled;
         this.forceOscoreSenderId = forceOscoreSenderId;
@@ -234,6 +237,16 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     public CoapExchanger getCoapExchanger() {
         return coapExchanger;
+    }
+
+    public List<Integer> getPeerSupportedCipherSuites() {
+        return peerSupportedCipherSuites;
+    }
+
+    // If an error message carrying the peer supported cipher suites
+    // is received, they can be stored in this session
+    public void setPeerSupportedCipherSuites(List<Integer> peerSupportedCipherSuites) {
+        this.peerSupportedCipherSuites = peerSupportedCipherSuites;
     }
 
     public CBORObject getCipherSuitesIncludeInError() {
