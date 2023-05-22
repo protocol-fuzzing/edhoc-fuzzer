@@ -5,6 +5,7 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocEndpointInf
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocSessionPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.CombinedMessageVersion;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.ManyFilesAuthenticationConfig;
@@ -28,6 +29,9 @@ public abstract class EdhocMapperState implements State {
 
     // The protocol version of edhoc used for the session of this state
     protected ProtocolVersion protocolVersion;
+
+    // The combined message (EDHOC+OSCORE) version used for the session of this state
+    protected CombinedMessageVersion combinedMessageVersion;
 
     // The authentication method to include in EDHOC message_1 (relevant only when Initiator)
     protected int authenticationMethod;
@@ -106,6 +110,7 @@ public abstract class EdhocMapperState implements State {
 
         this.protocolVersion = protocolVersion;
         this.edhocMapperConfig = edhocMapperConfig;
+        this.combinedMessageVersion = edhocMapperConfig.getCombinedMessageVersion();
 
         // Insert security providers
         Security.insertProviderAt(new EdDSASecurityProvider(), 1);
@@ -191,6 +196,10 @@ public abstract class EdhocMapperState implements State {
 
     public ProtocolVersion getProtocolVersion() {
         return protocolVersion;
+    }
+
+    public CombinedMessageVersion getCombinedMessageVersion() {
+        return combinedMessageVersion;
     }
 
     public EdhocSessionPersistent getEdhocSessionPersistent() {

@@ -16,6 +16,10 @@ public class EdhocMapperConfig extends MapperConfig {
     @ParametersDelegate
     protected AuthenticationConfig AuthenticationConfig = new AuthenticationConfig();
 
+    @Parameter(names = "-combinedMessageVersion", description = "The version of the combined message (EDHOC + OSCORE) to use",
+            converter = CombinedMessageVersionConverter.class)
+    protected CombinedMessageVersion combinedMessageVersion = CombinedMessageVersion.v06;
+
     @Parameter(names = "-edhocRole", required = true, description = "The Role of this peer in the edhoc protocol. " +
             "Available are: Initiator, Responder")
     protected EdhocRole edhocRole;
@@ -95,6 +99,10 @@ public class EdhocMapperConfig extends MapperConfig {
 
     public AuthenticationConfig getAuthenticationConfig() {
         return AuthenticationConfig;
+    }
+
+    public CombinedMessageVersion getCombinedMessageVersion() {
+        return combinedMessageVersion;
     }
 
     public String getEdhocCoapResource() {
