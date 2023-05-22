@@ -402,11 +402,9 @@ public class MessageProcessorPersistent {
 
         // Compute PRK_2e
         byte[] prk2e = null;
-        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+        if (hasProtocolVersionLeqV15()) {
             prk2e = computePRK2e(new byte[0], dhSecret, hashAlgorithm);
-        }
-
-        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+        } else {
             prk2e = computePRK2e(th2, dhSecret, hashAlgorithm);
         }
 
@@ -674,11 +672,9 @@ public class MessageProcessorPersistent {
         byte[] plaintext2 = session.getPlaintext2();
         byte[] th3 = null;
 
-        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+        if (hasProtocolVersionLeqV15()) {
             th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2, new byte[0]);
-        }
-
-        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+        } else {
             th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2, session.getPeerCred());
         }
 
@@ -808,11 +804,9 @@ public class MessageProcessorPersistent {
         byte[] th3SerializedCBOR = CBORObject.FromObject(th3).EncodeToBytes();
         byte[] th4 = null;
 
-        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+        if (hasProtocolVersionLeqV15()) {
             th4 = computeTH4(hashAlgorithm, th3SerializedCBOR, plaintext3, new byte[0]);
-        }
-
-        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+        } else {
             th4 = computeTH4(hashAlgorithm, th3SerializedCBOR, plaintext3, session.getCred());
         }
 
@@ -1399,11 +1393,9 @@ public class MessageProcessorPersistent {
 
         // Compute PRK_2e
         byte[] prk2e = null;
-        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+        if (hasProtocolVersionLeqV15()) {
             prk2e = computePRK2e(new byte[0], dhSecret, hashAlgorithm);
-        }
-
-        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+        } else {
             prk2e = computePRK2e(th2, dhSecret, hashAlgorithm);
         }
 
@@ -1619,11 +1611,9 @@ public class MessageProcessorPersistent {
         byte[] plaintext2 = session.getPlaintext2();
         byte[] th3 = null;
 
-        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+        if (hasProtocolVersionLeqV15()) {
             th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2, new byte[0]);
-        }
-
-        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+        } else {
             th3 = computeTH3(hashAlgorithm, th2SerializedCBOR, plaintext2, session.getCred());
         }
 
@@ -1858,11 +1848,9 @@ public class MessageProcessorPersistent {
         byte[] th3SerializedCBOR = CBORObject.FromObject(th3).EncodeToBytes();
         byte[] th4 = null;
 
-        if (edhocMapperState.getProtocolVersion().equals("14") || edhocMapperState.getProtocolVersion().equals("15")) {
+        if (hasProtocolVersionLeqV15()) {
             th4 = computeTH4(hashAlgorithm, th3SerializedCBOR, plaintext3, new byte[0]);
-        }
-
-        if (edhocMapperState.getProtocolVersion().equals("16") || edhocMapperState.getProtocolVersion().equals("17")) {
+        } else {
             th4 = computeTH4(hashAlgorithm, th3SerializedCBOR, plaintext3, peerCredential);
         }
 
@@ -2970,6 +2958,11 @@ public class MessageProcessorPersistent {
             LOGGER.error("Decrypting CIPHERTEXT_4: " + e.getMessage());
             return null;
         }
+    }
+
+    protected boolean hasProtocolVersionLeqV15() {
+        return edhocMapperState.getProtocolVersion().equals("14")
+                || edhocMapperState.getProtocolVersion().equals("15");
     }
 
     protected boolean hasProtocolVersionLeqV17() {
