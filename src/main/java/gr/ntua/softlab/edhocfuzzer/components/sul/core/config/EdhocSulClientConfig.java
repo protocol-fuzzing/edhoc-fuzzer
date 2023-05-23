@@ -3,14 +3,13 @@ package gr.ntua.softlab.edhocfuzzer.components.sul.core.config;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulClientConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConnectionConfig;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConnectionConfigException;
 import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
 import org.eclipse.californium.elements.config.Configuration;
 
 public class EdhocSulClientConfig extends SulClientConfig {
     public EdhocSulClientConfig(EdhocMapperConfig edhocMapperConfig) {
-        super(edhocMapperConfig);
+        super(edhocMapperConfig, null);
     }
 
     @Override
@@ -20,7 +19,7 @@ public class EdhocSulClientConfig extends SulClientConfig {
     }
 
     @Override
-    public void applyDelegate(MapperConnectionConfig config) throws MapperConnectionConfigException {
+    public void applyDelegate(MapperConnectionConfig config) {
         Configuration.setStandard(((EdhocMapperConnectionConfig) config).getConfiguration());
     }
 }

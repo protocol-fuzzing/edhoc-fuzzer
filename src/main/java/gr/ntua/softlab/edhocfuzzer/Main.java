@@ -1,6 +1,6 @@
 package gr.ntua.softlab.edhocfuzzer;
 
-import com.github.protocolfuzzing.protocolstatefuzzer.utils.CommandLineParser;
+import com.github.protocolfuzzing.protocolstatefuzzer.entrypoints.CommandLineParser;
 
 public class Main {
     public static void main(String[] args) {

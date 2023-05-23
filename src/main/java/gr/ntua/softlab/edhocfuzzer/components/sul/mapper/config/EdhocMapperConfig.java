@@ -217,9 +217,11 @@ public class EdhocMapperConfig extends MapperConfig {
     @Override
     public void printRunDescriptionSelf(PrintWriter printWriter) {
         super.printRunDescriptionSelf(printWriter);
+        printWriter.println();
         printWriter.println("EdhocMapperConfig Parameters");
-        printWriter.println("Edhoc Role: " + edhocRole);
         printWriter.println("Protocol Version: " + getProtocolVersion());
+        printWriter.println("Combined Message Version: " + getCombinedMessageVersion());
+        printWriter.println("Edhoc Role: " + edhocRole);
         printWriter.println("Edhoc Coap Resource: " + getEdhocCoapResource());
         printWriter.println("App Coap Resource: " + getAppCoapResource());
         printWriter.println("App Message Code To Coap Server: " + getAppMessageCodeToCoapServer());

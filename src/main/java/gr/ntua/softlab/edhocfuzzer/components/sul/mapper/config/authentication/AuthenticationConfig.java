@@ -77,6 +77,7 @@ public class AuthenticationConfig implements RunDescriptionPrinter {
         printWriter.println("Map Id Cred Type: " + getMapIdCredType());
         printWriter.println("Sul Cred Type: " + getSulCredType());
         printWriter.println("Sul Id Cred Type: " + getSulIdCredType());
+        printWriter.println("Trust Model: " + getTrustModel());
     }
 
     @Override
