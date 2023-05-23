@@ -5,6 +5,7 @@ import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocEndpointInf
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocSessionPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
 import gr.ntua.softlab.edhocFuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.CombinedMessageVersion;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
 import gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication.ManyFilesAuthenticationConfig;
@@ -18,7 +19,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.californium.cose.OneKey;
 import org.eclipse.californium.edhoc.AppProfile;
 import org.eclipse.californium.edhoc.Constants;
-import org.eclipse.californium.edhoc.KissEDP;
 import org.eclipse.californium.oscore.HashMapCtxDB;
 
 import java.security.Security;
@@ -29,6 +29,9 @@ public abstract class EdhocMapperState implements State {
 
     // The protocol version of edhoc used for the session of this state
     protected ProtocolVersion protocolVersion;
+
+    // The combined message (EDHOC+OSCORE) version used for the session of this state
+    protected CombinedMessageVersion combinedMessageVersion;
 
     // The authentication method to include in EDHOC message_1 (relevant only when Initiator)
     protected int authenticationMethod;
@@ -87,6 +90,9 @@ public abstract class EdhocMapperState implements State {
     // The database of OSCORE Security Contexts
     protected HashMapCtxDB db = new HashMapCtxDB();
 
+    // The trust model for validating authentication credentials of other peers
+    protected int trustModel;
+
     // The size of the Replay Window to use in an OSCORE Recipient Context
     protected int OSCORE_REPLAY_WINDOW = 32;
 
@@ -104,6 +110,7 @@ public abstract class EdhocMapperState implements State {
 
         this.protocolVersion = protocolVersion;
         this.edhocMapperConfig = edhocMapperConfig;
+        this.combinedMessageVersion = edhocMapperConfig.getCombinedMessageVersion();
 
         // Insert security providers
         Security.insertProviderAt(new EdDSASecurityProvider(), 1);
@@ -126,6 +133,7 @@ public abstract class EdhocMapperState implements State {
 
         this.credType = authenticationConfig.getMapCredType();
         this.idCredType = authenticationConfig.getMapIdCredType();
+        this.trustModel = authenticationConfig.getTrustModel();
 
         // Set the application profile
 
@@ -138,14 +146,11 @@ public abstract class EdhocMapperState implements State {
         AppProfile appProfile = AppProfileBuilder.build(authMethods);
         appProfiles.put(edhocSessionUri, appProfile);
 
-        // Specify the processor of External Authorization Data
-        KissEDP edp = new KissEDP();
-
         // Prepare the set of information for this EDHOC endpoint
         edhocEndpointInfoPersistent = new EdhocEndpointInfoPersistent(
                 idCreds, creds, keyPairs, peerPublicKeys, peerCredentials, edhocSessionsPersistent,
-                usedConnectionIds, supportedCipherSuites, supportedEADs, db, oscoreUri,
-                OSCORE_REPLAY_WINDOW, MAX_UNFRAGMENTED_SIZE, appProfiles, edp
+                usedConnectionIds, supportedCipherSuites, supportedEADs, null, trustModel, db, oscoreUri,
+                OSCORE_REPLAY_WINDOW, MAX_UNFRAGMENTED_SIZE, appProfiles
         );
 
         // Set up the authentication credentials
@@ -170,9 +175,9 @@ public abstract class EdhocMapperState implements State {
         boolean isClientInitiated = isInitiator == isCoapClient();
 
         edhocSessionPersistent = new EdhocSessionPersistent(edhocSessionUri, isInitiator, isClientInitiated,
-                authenticationMethod, connectionId, edhocEndpointInfoPersistent, db, new CoapExchanger(),
-                edhocMapperConfig.useSessionReset(), edhocMapperConfig.getForceOscoreSenderId(),
-                edhocMapperConfig.getForceOscoreRecipientId());
+                authenticationMethod, connectionId, edhocEndpointInfoPersistent, null,
+                db, new CoapExchanger(), edhocMapperConfig.useSessionReset(),
+                edhocMapperConfig.getForceOscoreSenderId(), edhocMapperConfig.getForceOscoreRecipientId());
 
         // Update edhocSessions
         edhocSessionsPersistent.put(CBORObject.FromObject(connectionId), edhocSessionPersistent);
@@ -191,6 +196,10 @@ public abstract class EdhocMapperState implements State {
 
     public ProtocolVersion getProtocolVersion() {
         return protocolVersion;
+    }
+
+    public CombinedMessageVersion getCombinedMessageVersion() {
+        return combinedMessageVersion;
     }
 
     public EdhocSessionPersistent getEdhocSessionPersistent() {
