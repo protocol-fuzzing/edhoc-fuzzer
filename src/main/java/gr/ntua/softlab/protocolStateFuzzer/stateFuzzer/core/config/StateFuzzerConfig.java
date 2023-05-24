@@ -13,52 +13,52 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public abstract class StateFuzzerConfig extends ToolConfig implements
-		StateFuzzerEnabler, TestRunnerEnabler, TimingProbeEnabler {
+        StateFuzzerEnabler, TestRunnerEnabler, TimingProbeEnabler {
 
-	@Parameter(names = "-output", description = "The directory in which results should be saved. The default is "
-			+ "output/o_<timestamp>")
-	protected String outputDir = null;
+    @Parameter(names = "-output", description = "The directory in which results should be saved. The default is "
+            + "output/o_<timestamp>")
+    protected String outputDir = null;
 
-	@ParametersDelegate
-	protected LearnerConfig learnerConfig;
+    @ParametersDelegate
+    protected LearnerConfig learnerConfig;
 
-	@ParametersDelegate
-	protected TestRunnerConfig testRunnerConfig;
+    @ParametersDelegate
+    protected TestRunnerConfig testRunnerConfig;
 
-	@ParametersDelegate
-	protected TimingProbeConfig timingProbeConfig;
+    @ParametersDelegate
+    protected TimingProbeConfig timingProbeConfig;
 
-	public StateFuzzerConfig() {
-		learnerConfig = new LearnerConfig();
-		testRunnerConfig = new TestRunnerConfig();
-		timingProbeConfig = new TimingProbeConfig();
-	}
+    public StateFuzzerConfig() {
+        learnerConfig = new LearnerConfig();
+        testRunnerConfig = new TestRunnerConfig();
+        timingProbeConfig = new TimingProbeConfig();
+    }
 
-	public StateFuzzerConfig(LearnerConfig learnerConfig, TestRunnerConfig testRunnerConfig,
-							 TimingProbeConfig timingProbeConfig) {
-		this.learnerConfig = learnerConfig == null ? new LearnerConfig() : learnerConfig;
-		this.testRunnerConfig = testRunnerConfig == null ? new TestRunnerConfig() : testRunnerConfig;
-		this.timingProbeConfig = timingProbeConfig == null ? new TimingProbeConfig() : timingProbeConfig;
-	}
+    public StateFuzzerConfig(LearnerConfig learnerConfig, TestRunnerConfig testRunnerConfig,
+                             TimingProbeConfig timingProbeConfig) {
+        this.learnerConfig = learnerConfig == null ? new LearnerConfig() : learnerConfig;
+        this.testRunnerConfig = testRunnerConfig == null ? new TestRunnerConfig() : testRunnerConfig;
+        this.timingProbeConfig = timingProbeConfig == null ? new TimingProbeConfig() : timingProbeConfig;
+    }
 
-	public String getOutputDir() {
-		if (outputDir == null) {
-			// initialize to default: output/o_<timestamp>
-			String uniqueSubDir = "o_" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-			outputDir = Path.of("output", uniqueSubDir).toString();
-		}
-		return outputDir;
-	}
+    public String getOutputDir() {
+        if (outputDir == null) {
+            // initialize to default: output/o_<timestamp>
+            String uniqueSubDir = "o_" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+            outputDir = Path.of("output", uniqueSubDir).toString();
+        }
+        return outputDir;
+    }
 
-	public LearnerConfig getLearnerConfig() {
-		return learnerConfig;
-	}
+    public LearnerConfig getLearnerConfig() {
+        return learnerConfig;
+    }
 
-	public TestRunnerConfig getTestRunnerConfig() {
-		return testRunnerConfig;
-	}
+    public TestRunnerConfig getTestRunnerConfig() {
+        return testRunnerConfig;
+    }
 
-	public TimingProbeConfig getTimingProbeConfig() {
-		return timingProbeConfig;
-	}
+    public TimingProbeConfig getTimingProbeConfig() {
+        return timingProbeConfig;
+    }
 }

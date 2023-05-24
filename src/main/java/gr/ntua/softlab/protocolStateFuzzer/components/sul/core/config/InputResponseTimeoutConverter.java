@@ -6,31 +6,31 @@ import gr.ntua.softlab.protocolStateFuzzer.stateFuzzer.core.config.ToolPropertyA
 
 public class InputResponseTimeoutConverter implements IStringConverter<InputResponseTimeoutMap> {
 
-	@Override
-	public InputResponseTimeoutMap convert(String value) {
-		InputResponseTimeoutMap inputResponseTimeout = new InputResponseTimeoutMap();
-		String resolvedValue = ToolPropertyAwareConverterFactory.resolve(value);
-		String[] inputValuePairs = resolvedValue.split("\\,");
+    @Override
+    public InputResponseTimeoutMap convert(String value) {
+        InputResponseTimeoutMap inputResponseTimeout = new InputResponseTimeoutMap();
+        String resolvedValue = ToolPropertyAwareConverterFactory.resolve(value);
+        String[] inputValuePairs = resolvedValue.split("\\,");
 
-		for (String inputValuePair : inputValuePairs) {
-			String[] split = inputValuePair.split("\\:");
-			if (split.length != 2) {
-				throw new ParameterException(errMessage(resolvedValue));
-			} else {
-				try {
-				inputResponseTimeout.put(split[0], Long.valueOf(split[1]));
-				} catch(Exception e) {
-					throw new ParameterException(errMessage(resolvedValue), e);
-				}
-			}
-		}
+        for (String inputValuePair : inputValuePairs) {
+            String[] split = inputValuePair.split("\\:");
+            if (split.length != 2) {
+                throw new ParameterException(errMessage(resolvedValue));
+            } else {
+                try {
+                inputResponseTimeout.put(split[0], Long.valueOf(split[1]));
+                } catch(Exception e) {
+                    throw new ParameterException(errMessage(resolvedValue), e);
+                }
+            }
+        }
 
-		return inputResponseTimeout;
-	}
+        return inputResponseTimeout;
+    }
 
-	protected String errMessage(String value) {
-		return String.format("Error processing InputResponseTimeoutMap from \"%s\". "
-				+ "Expected format: \"input1:value1,input2:value2...\"; e.g. \"CLIENT_HELLO:100\" ", value);
-	}
+    protected String errMessage(String value) {
+        return String.format("Error processing InputResponseTimeoutMap from \"%s\". "
+                + "Expected format: \"input1:value1,input2:value2...\"; e.g. \"CLIENT_HELLO:100\" ", value);
+    }
 
 }
