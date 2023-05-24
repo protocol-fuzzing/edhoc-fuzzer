@@ -6,10 +6,10 @@ package gr.ntua.softlab.protocolStateFuzzer.components.learner.factory;
  * inaccurate and produces more intermediate hypotheses, so test well.
  */
 public enum LearningAlgorithmName {
-	LSTAR,
-	DHC,
-	KV,
-	TTT,
-	MP,
-	RS
+    LSTAR,
+    DHC,
+    KV,
+    TTT,
+    MP,
+    RS
 }

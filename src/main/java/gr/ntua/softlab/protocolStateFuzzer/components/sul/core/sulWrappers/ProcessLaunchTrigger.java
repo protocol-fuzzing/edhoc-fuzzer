@@ -5,5 +5,5 @@ package gr.ntua.softlab.protocolStateFuzzer.components.sul.core.sulWrappers;
  * process is terminated.
  */
 public enum ProcessLaunchTrigger {
-	START, NEW_TEST
+    START, NEW_TEST
 }

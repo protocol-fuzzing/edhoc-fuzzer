@@ -6,14 +6,15 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.core.config.ProtocolVe
 
 public class ClientMapperState extends EdhocMapperState {
 
-	public ClientMapperState(ProtocolVersion protocolVersion,  EdhocMapperConfig edhocMapperConfig,
-							 ClientMapperConnector clientMapperConnector) {
-		super(protocolVersion, edhocMapperConfig, edhocMapperConfig.getEdhocCoapUri(),
-				edhocMapperConfig.getEdhocCoapUri(), clientMapperConnector);
-	}
+    public ClientMapperState(ProtocolVersion protocolVersion,
+                             EdhocMapperConfig edhocMapperConfig,
+                             ClientMapperConnector clientMapperConnector) {
+        super(protocolVersion, edhocMapperConfig, edhocMapperConfig.getEdhocCoapUri(),
+              edhocMapperConfig.getEdhocCoapUri(), clientMapperConnector);
+    }
 
-	@Override
-	public boolean isCoapClient() {
-		return true;
-	}
+    @Override
+    public boolean isCoapClient() {
+        return true;
+    }
 }

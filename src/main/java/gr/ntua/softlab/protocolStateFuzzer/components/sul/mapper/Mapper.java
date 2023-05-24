@@ -18,7 +18,7 @@ import gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.context.Executi
  *
  */
 public interface Mapper {
-	AbstractOutput execute(AbstractInput input, ExecutionContext context);
-	MapperConfig getMapperConfig();
-	AbstractOutputChecker getAbstractOutputChecker();
+    AbstractOutput execute(AbstractInput input, ExecutionContext context);
+    MapperConfig getMapperConfig();
+    AbstractOutputChecker getAbstractOutputChecker();
 }

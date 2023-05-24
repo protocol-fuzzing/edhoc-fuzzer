@@ -5,5 +5,5 @@ package gr.ntua.softlab.protocolStateFuzzer.components.sul.mapper.abstractSymbol
  * is decoupled from the checking code.
  */
 public interface AbstractOutputChecker {
-	boolean hasInitialClientMessage(AbstractOutput abstractOutput);
+    boolean hasInitialClientMessage(AbstractOutput abstractOutput);
 }
