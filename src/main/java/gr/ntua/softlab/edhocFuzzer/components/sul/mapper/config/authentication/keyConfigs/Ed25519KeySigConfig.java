@@ -4,38 +4,37 @@ import com.beust.jcommander.Parameter;
 
 import java.util.HexFormat;
 
-
 public class Ed25519KeySigConfig implements KeyConfig {
 
-    @Parameter(names = "-mapEd25519PrivKeySig", description = "The private Ed25519 key DER file for the mapper")
+    @Parameter(names = "-mapEd25519PrivKeySig", description = "The mapper's private Ed25519 key DER file")
     protected String mapPrivateFilename = null;
 
-    @Parameter(names = "-mapEd25519PubKeySig", description = "The public Ed25519 key DER file for the mapper")
+    @Parameter(names = "-mapEd25519PubKeySig", description = "The mapper's public Ed25519 key DER file")
     protected String mapPublicFilename = null;
 
-    @Parameter(names = "-mapEd25519KidSig", description = "The kid identifier of the Ed25519 authentication credential "
-           + "for the mapper (Restricted to hex numbers with prefix 0x, e.g. 0x01)")
+    @Parameter(names = "-mapEd25519KidSig", description = "The mapper's kid identifier of the Ed25519 authentication credential "
+           + "(Restricted to hex numbers with prefix 0x, e.g. 0x01)")
     protected String mapKid = null;
 
-    @Parameter(names = "-mapEd25519X509CertSig", description = "The x509 certificate DER file containing the "
-            + "Ed25519 public key of the mapper")
+    @Parameter(names = "-mapEd25519X509CertSig", description = "The mapper's x509 certificate DER file containing the "
+            + "Ed25519 public key")
     protected String mapX509Filename = null;
 
-    @Parameter(names = "-mapEd25519X5uLinkSig", description = "The x5u link for the mapper of Ed25519 x509 certificate")
+    @Parameter(names = "-mapEd25519X5uLinkSig", description = "The mapper's x5u link of Ed25519 x509 certificate")
     protected String mapX5uLink = null;
 
-    @Parameter(names = "-sulEd25519PubKeySig", description = "The public Ed25519 key DER file for the sul")
+    @Parameter(names = "-sulEd25519PubKeySig", description = "The SUL's public Ed25519 key DER file")
     protected String sulPublicFilename = null;
 
-    @Parameter(names = "-sulEd25519KidSig", description = "The kid identifier of the Ed25519 authentication credential "
-            + "for the sul (Restricted to hex numbers with prefix 0x, e.g. 0x01)")
+    @Parameter(names = "-sulEd25519KidSig", description = "The SUL's kid identifier of the Ed25519 authentication credential "
+            + "(Restricted to hex numbers with prefix 0x, e.g. 0x01)")
     protected String sulKid = null;
 
-    @Parameter(names = "-sulEd25519X509CertSig", description = "The x509 certificate DER file containing the "
-            + "Ed25519 public key of the sul")
+    @Parameter(names = "-sulEd25519X509CertSig", description = "The SUL's x509 certificate DER file containing the "
+            + "Ed25519 public key")
     protected String sulX509Filename = null;
 
-    @Parameter(names = "-sulEd25519X5uLinkSig", description = "The x5u link for the sul of Ed25519 x509 certificate")
+    @Parameter(names = "-sulEd25519X5uLinkSig", description = "The SUL's x5u link of Ed25519 x509 certificate")
     protected String sulX5uLink = null;
 
     @Override

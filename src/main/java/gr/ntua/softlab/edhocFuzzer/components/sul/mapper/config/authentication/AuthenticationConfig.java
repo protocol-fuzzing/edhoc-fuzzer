@@ -2,34 +2,31 @@ package gr.ntua.softlab.edhocFuzzer.components.sul.mapper.config.authentication;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
+import org.eclipse.californium.edhoc.Constants;
 
 public class AuthenticationConfig {
 
-    @Parameter(names = "-mapCredType", required = true, description = "The credential type as an int for the mapper. "
-            + "Available: 0 [CWT], 1 [CCS], 2 [x509 cert]")
-    protected Integer mapCredType = null;
+    @Parameter(names = "-mapCredType", required = true, description = "The credential type of the mapper.")
+    protected CredType mapCredType = null;
 
-    @Parameter(names = "-mapIdCredType", required = true, description = "The credential identifier type as an int for "
-            + "the mapper. Available: 0 [KID], 1 [CWT], 2 [CCS], 3 [X5T (x509 cert by hash reference)], "
-            + "4 [X5U (x509 cert by retrieval link)], 5 [X5CHAIN (x509 cert by value)]")
-    protected Integer mapIdCredType = null;
+    @Parameter(names = "-mapIdCredType", required = true, description = "The credential identifier type of the mapper. "
+            + "Notes: X5T is x509 cert by hash reference, X5U is x509 cert by retrieval link and X5CHAIN is x509 cert by value")
+    protected IdCredType mapIdCredType = null;
 
-    @Parameter(names = "-sulCredType", description = "The credential type as an int for the sul. "
-            + "Available: 0 [CWT], 1 [CCS], 2 [x509 cert]. In case of 'empty' all possible are generated.")
-    protected Integer sulCredType = null;
+    @Parameter(names = "-sulCredType", description = "The credential type of the SUL. "
+            + "If it is not provided, then all possible types are generated.")
+    protected CredType sulCredType = null;
 
-    @Parameter(names = "-sulIdCredType", description = "The credential identifier type as an int for the "
-            + "sul. Available: 0 [KID], 1 [CWT], 2 [CCS], 3 [X5T (x509 cert by hash reference)], "
-            + "4 [X5U (x509 cert by retrieval link)], 5 [X5CHAIN (x509 cert by value)]. "
-            + "In case of 'empty' all possible are generated.")
-    protected Integer sulIdCredType = null;
+    @Parameter(names = "-sulIdCredType", description = "The credential identifier type of the SUL. "
+            + "Notes: X5T is x509 cert by hash reference, X5U is x509 cert by retrieval link and X5CHAIN is x509 cert by value. "
+            + "If it is not provided, then all possible types are generated.")
+    protected IdCredType sulIdCredType = null;
 
-    @Parameter(names = "-trustModel", description = "Trust Model for veifying authentication "
-            + "credentials of other peers Available: "
-            + "0 [Trust and use only a stored and valid credential] "
-            + "1 [Trust and use a stored and valid credential or a valid credential with stored credential identifier] "
-            + "2 [Trust and use any (new) valid credential]")
-    protected Integer trustModel = 0;
+    @Parameter(names = "-trustModel", description = "Trust Model for verifying authentication credentials of the SUL. "
+            + "Notes: STRICT means 'Trust and use only a stored and valid credential', "
+            + "LOFU means 'Trust and use a stored and valid credential or a valid credential with stored credential identifier', "
+            + "TOFU means 'Trust and use any (new) valid credential'.")
+    protected TrustModel trustModel = TrustModel.STRICT;
 
     @ParametersDelegate
     protected ManyFilesAuthenticationConfig manyFilesAuthenticationConfig;
@@ -42,24 +39,24 @@ public class AuthenticationConfig {
         this.testVectorAuthenticationConfig = new TestVectorAuthenticationConfig();
     }
 
-    public int getMapCredType() {
-        return mapCredType;
+    public Integer getMapCredType() {
+        return mapCredType.toInteger();
     }
 
-    public int getMapIdCredType() {
-        return mapIdCredType;
+    public Integer getMapIdCredType() {
+        return mapIdCredType.toInteger();
     }
 
     public Integer getSulCredType() {
-        return sulCredType;
+        return sulCredType.toInteger();
     }
 
     public Integer getSulIdCredType() {
-        return sulIdCredType;
+        return sulIdCredType.toInteger();
     }
 
     public Integer getTrustModel() {
-        return trustModel;
+        return trustModel.toInteger();
     }
 
     public ManyFilesAuthenticationConfig getManyFilesAuthenticationConfig() {
@@ -68,5 +65,56 @@ public class AuthenticationConfig {
 
     public TestVectorAuthenticationConfig getTestVectorAuthenticationConfig() {
         return testVectorAuthenticationConfig;
+    }
+
+    protected enum CredType {
+        CWT(Constants.CRED_TYPE_CWT),
+        CCS(Constants.CRED_TYPE_CCS),
+        X509(Constants.CRED_TYPE_X509);
+
+        private final Integer integer;
+
+        private CredType(final Integer integer) {
+            this.integer = integer;
+        }
+
+        public Integer toInteger() {
+            return this.integer;
+        }
+    }
+
+    protected enum IdCredType {
+        KID(Constants.ID_CRED_TYPE_KID),
+        CWT(Constants.ID_CRED_TYPE_CWT),
+        CCS(Constants.ID_CRED_TYPE_CCS),
+        X5T(Constants.ID_CRED_TYPE_X5T),
+        X5U(Constants.ID_CRED_TYPE_X5U),
+        X5CHAIN(Constants.ID_CRED_TYPE_X5CHAIN);
+
+        private final Integer integer;
+
+        private IdCredType(final Integer integer) {
+            this.integer = integer;
+        }
+
+        public Integer toInteger() {
+            return this.integer;
+        }
+    }
+
+    protected enum TrustModel {
+        STRICT(Constants.TRUST_MODEL_STRICT),
+        LOFU(Constants.TRUST_MODEL_LOFU),
+        TOFU(Constants.TRUST_MODEL_TOFU);
+
+        private final Integer integer;
+
+        private TrustModel(final Integer integer) {
+            this.integer = integer;
+        }
+
+        public Integer toInteger() {
+            return this.integer;
+        }
     }
 }
