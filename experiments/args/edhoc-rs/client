@@ -19,23 +19,19 @@ W_METHOD,WP_METHOD
 ##### EdhocMapperConfig #####
 ## Mapper Auth ##
 
-# CCS
 -mapCredType
-1
+CCS
 
-# KID
 -mapIdCredType
-0
+KID
 
 ## Sul Auth ##
 
-# CCS
 -sulCredType
-1
+CCS
 
-# KID
 -sulIdCredType
-0
+KID
 
 # TestVector
 -testVectorJson
