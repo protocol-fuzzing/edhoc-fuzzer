@@ -1,5 +1,3 @@
 EDHOC_MESSAGE_2
-# response to msg3
 COAP_EMPTY_MESSAGE
-# response to oscore_app
 OSCORE_APP_MESSAGE
