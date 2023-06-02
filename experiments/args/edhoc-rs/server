@@ -50,7 +50,7 @@ Initiator
 -protocolVersion
 17
 -responseWait
-7000
+15000
 -processDir
 ${models.servers}/edhoc-rs
 -cmd
