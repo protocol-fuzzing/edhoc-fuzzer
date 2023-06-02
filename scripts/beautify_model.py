@@ -2,28 +2,48 @@ import argparse
 import pydot
 
 
-def dict_of_remove_pattern(pattern_string):
-    remove_dct = {
+def create_pattern_dct(pattern_string):
+    pattern_dct = {
         'i': set(),
         'o': set(),
         'l': set()
     }
 
     if pattern_string is None or pattern_string == "":
-        return remove_dct
+        return pattern_dct
 
     for patt in pattern_string.strip('\' "').split(','):
         p = patt.strip()
         if p[0] not in ['i', 'o', 'l'] or p[1] != '_':
-            raise Exception("Invalid remove pattern provided: " + p)
+            raise Exception("Invalid pattern provided: " + p)
 
         if p[0] == 'l':
             i, o = map(lambda s: s.strip(), p[2:].split('/'))
-            remove_dct[p[0]].add(i + " / " + o)
+            pattern_dct[p[0]].add(f"{i} / {o}")
         else:
-            remove_dct[p[0]].add(p[2:])
+            pattern_dct[p[0]].add(p[2:])
 
-    return remove_dct
+    return pattern_dct
+
+
+def create_pattern_dct_with_label_symbol(label_symbol_pattern_string_list):
+    label_pattern_dct = {
+        'label_symbol': '/',
+        'i': set(),
+        'o': set(),
+        'l': set()
+    }
+
+    if label_symbol_pattern_string_list is None or len(label_symbol_pattern_string_list) != 2:
+        return label_pattern_dct
+
+    label_symbol, pattern_string = label_symbol_pattern_string_list
+    pattern_dct = create_pattern_dct(pattern_string)
+
+    return {
+        'label_symbol': label_symbol,
+        **pattern_dct
+    }
 
 
 def read_replacement_file(filename, sep):
@@ -57,10 +77,16 @@ def read_replacement_file(filename, sep):
     return replacement_dct
 
 
-def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_dct,
+def get_info_from_graph(graph_name, shorten_node_names, remove_dct, label_symbol_dct, replacement_dct,
                         initial_hidden_node_name, initial_edge_label):
     """
         remove_dct = {
+            'i': {i1, i2, ...},
+            'o': {o1, o2, ...},
+            'l': {i1 / o1, i2 / o2, ...}
+        }
+
+        label_symbol_dct = {
             'i': {i1, i2, ...},
             'o': {o1, o2, ...},
             'l': {i1 / o1, i2 / o2, ...}
@@ -71,13 +97,21 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
             ...
         }
 
+        prefix 'r' means new replaced symbol name
+
         (returned) new_edge_info_dct = {
             (source, dest): {
-                output1: [input1, input2, ...],
-                output2: [input1, input2, ...],
+                r_o1: [r_i1, r_i2, ...],
+                r_o2: [r_i1, r_i2, ...],
                 ...
             },
             ...
+        }
+
+        (returned) new_label_symbol_dct = {
+            'i': {r_i1, r_i2, ...},
+            'o': {r_o1, r_o2, ...},
+            'l': {r_i1 / r_o1, r_i2 / r_o2, ...}
         }
     """
     def should_remove_label(label):
@@ -90,14 +124,17 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
                 return idx
         return -1
 
+    def replace_symbol(s):
+        return replacement_dct[s] if s in replacement_dct else s
+
     def replace_label(label):
         if label == "" or ' / ' not in label:
             return label
 
         i, o = label.strip('\' "').split(' / ')
-        ri = replacement_dct[i] if i in replacement_dct else i
-        ro = replacement_dct[o] if o in replacement_dct else o
-        return ri + ' / ' + ro
+        ri = replace_symbol(i)
+        ro = replace_symbol(o)
+        return f"{ri} / {ro}"
 
     initial_edge = None
 
@@ -113,7 +150,7 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
 
         elif name != initial_hidden_node_name:
             if graph.del_node(node):
-                print(f"ignored redundant parsed node with name: {name}")
+                print(f"Ignored redundant parsed node with name: {name}")
 
     # read edges and prepare info dict
     new_edge_info_dct = {}
@@ -132,7 +169,7 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
             idx = find_index_of_same_edges(e)
             if idx > -1 and graph.del_edge(*source_dest_pair, idx):
                 s, d = source_dest_pair
-                print(f"removed edge: {s} -> {d} with label: {e.get_label()}")
+                print(f"Removed edge: {s} -> {d} with label: {e.get_label()}")
             continue
 
         # create or retrieve sub-dict of source_dest pair
@@ -148,17 +185,25 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, replacement_
 
         new_edge_info_dct[source_dest_pair][out_label].append(in_label)
 
-    return graph.get_nodes(), new_edge_info_dct, initial_edge
+    # create new label_symbol_dct with replaced symbols
+    new_label_symbol_dct = {
+        'label_symbol': label_symbol_dct['label_symbol'],
+        'i': set(map(replace_symbol, label_symbol_dct['i'])),
+        'o': set(map(replace_symbol, label_symbol_dct['o'])),
+        'l': set(map(replace_symbol, label_symbol_dct['l'])),
+    }
+
+    return graph.get_nodes(), new_edge_info_dct, initial_edge, new_label_symbol_dct
 
 
-def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
+def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct, label_symbol_dct):
     """
     nodes: node object list that should contain the initial_hidden_node
 
     edge_info_dct = {
         (source, dest): {
-            output1: [input1, input2, ...],
-            output2: [input1, input2, ...],
+            r_o1: [r_i1, r_i2, ...],
+            r_o2: [r_i1, r_i2, ...],
             ...
         },
         ...
@@ -175,6 +220,13 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
         'end_padding': str,
         'html_like_labels': boolean
     }
+
+    label_symbol_dct:  {
+        'label_symbol': string
+        'i': {r_i1, r_i2, ...},
+        'o': {r_o1, r_o2, ...},
+        'l': {r_i1 / r_o1, r_i2 / r_o2, ...}
+    }
     """
     def sort_key_of_label(label):
         # ascending sort based on the label's input
@@ -182,11 +234,18 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
         input = label.split(' / ')[0]
         return (len(input), input)
 
+    def create_label(i, o):
+        label = f"{i} / {o}"
+        if (i in label_symbol_dct['i']) or (o in label_symbol_dct['o']) or (label in label_symbol_dct['l']):
+            label_symbol = label_symbol_dct['label_symbol']
+            label = f"{i} {label_symbol} {o}"
+        return label
+
     def stack_op(source_dest_pair):
         labels = []
         # gather all labels to be stacked
         for output, inputs in edge_info_dct[source_dest_pair].items():
-            labels.extend([f"{i} / {output}" for i in inputs])
+            labels.extend([create_label(i, output) for i in inputs])
 
         # sort and then join labels
         labels = sorted(labels, key=sort_key_of_label)
@@ -197,7 +256,7 @@ def create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct):
         # gather all labels to be stacked
         for output, inputs in edge_info_dct[source_dest_pair].items():
             merged_inputs = label_info_dct['merge_input_sep'].join(inputs)
-            labels.append(f"{merged_inputs} / {output}")
+            labels.append(create_label(merged_inputs, output))
 
         # sort and then join labels
         labels = sorted(labels, key=sort_key_of_label)
@@ -276,8 +335,7 @@ if __name__ == '__main__':
     parser.add_argument('--start-edge-label', default='', help='Label of the starting visible edge')
     parser.add_argument('--replacement-sep', default=' -> ', help='Separator of names in replacements file')
 
-    parser.add_argument('--same-edges-op', default='stack', help='Operation to be performed on same edges, available: '
-                                                                 'stack, merge')
+    parser.add_argument('--same-edges-op', default='stack', help='Operation to be performed on same edges, available: stack, merge')
     parser.add_argument('--stack-sep', default='\l ', help='Separator of stacked input/output pairs of same edges')
     parser.add_argument('--merge-input-sep', default=' | ', help='Separator of merged inputs with common output')
     parser.add_argument('--merge-label-sep', default='\l ', help='Separator of merged labels of same edges')
@@ -287,7 +345,12 @@ if __name__ == '__main__':
 
     parser.add_argument('--remove-edge-pattern', help="Remove the edges that have labels of the provided pattern. "
                         "Format: i_<input> (match input), o_<output> (match output), l_<input / output> (match label). "
-                        "So the general format is: (i|o|l)_<patt>[,(i|o|l)_<patt>]*")
+                        "So the general format is: (i|o|l)_<name>[,(i|o|l)_<name>]*")
+
+    parser.add_argument('--set-label-symbol-pattern', nargs=2, metavar=('NEW_LABEL_SYMBOL', 'PATTERN'),
+                        help="Change the label symbol (which is '/' by default) of the edges that have labels of the provided pattern. "
+                        "Pattern Format: i_<input> (match input), o_<output> (match output), l_<input / output> (match label). "
+                        "So the general format is: (i|o|l)_<name>[,(i|o|l)_<name>]*")
 
     parser.add_argument('--html-like-labels', default=False, action='store_true', help="Enable html-like syntax in label names. "
                         "It defaults --stack-sep and --merge-label-sep to ' <br align=\"left\"/> '. "
@@ -318,12 +381,13 @@ if __name__ == '__main__':
     cmd_line_sep = 100 * '='
     print(cmd_line_sep)
 
-    remove_dct = dict_of_remove_pattern(args.remove_edge_pattern)
+    remove_dct = create_pattern_dct(args.remove_edge_pattern)
+    original_label_symbol_dct = create_pattern_dct_with_label_symbol(args.set_label_symbol_pattern)
     replacement_dct = read_replacement_file(args.r, args.replacement_sep)
 
-    nodes, edge_info_dct, initial_edge = get_info_from_graph(
-        args.i, not args.disable_shorten_nodes, remove_dct, replacement_dct,
-        args.start_node_name, args.start_edge_label)
+    nodes, edge_info_dct, initial_edge, label_symbol_dct = get_info_from_graph(
+        args.i, not args.disable_shorten_nodes, remove_dct, original_label_symbol_dct,
+        replacement_dct, args.start_node_name, args.start_edge_label)
 
     label_info_dct = {
         'same_edges_op': args.same_edges_op,
@@ -335,7 +399,7 @@ if __name__ == '__main__':
         'html_like_labels': args.html_like_labels
     }
 
-    new_graph = create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct)
+    new_graph = create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct, label_symbol_dct)
 
     prefix = args.o.replace('.dot', '') if args.o else (args.i.replace('.dot', '') + 'btf')
     new_graph_dot_name = prefix + '.dot'
@@ -359,10 +423,10 @@ if __name__ == '__main__':
 
         # alternative without formatting: new_graph.write(new_graph_dot_name, format='raw')
         format_and_write_dot_string(new_graph.to_string(), args.start_node_name, new_graph_dot_name)
-        print(f"written {new_graph_dot_name}")
+        print(f"Written {new_graph_dot_name}")
 
     for graph_name, fmt in other_format_pairs:
         new_graph.write(graph_name, format=fmt)
-        print(f"written {graph_name}")
+        print(f"Written {graph_name}")
 
     print(cmd_line_sep)
