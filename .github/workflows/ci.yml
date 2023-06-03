@@ -13,6 +13,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer -l
@@ -39,6 +42,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer -l
@@ -65,6 +71,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer -l
@@ -88,6 +97,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer -l
@@ -111,6 +123,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer -l
@@ -134,6 +149,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer -l
@@ -157,6 +175,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer -l
@@ -180,6 +201,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer -l

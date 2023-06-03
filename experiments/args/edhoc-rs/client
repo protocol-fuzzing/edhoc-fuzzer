@@ -17,6 +17,8 @@ W_METHOD,WP_METHOD
 
 
 ##### EdhocMapperConfig #####
+-protocolVersion
+v17
 ## Mapper Auth ##
 
 -mapCredType
@@ -47,8 +49,6 @@ P256
 Responder
 
 ##### SulConfig #####
--protocolVersion
-17
 -responseWait
 7000
 -processDir

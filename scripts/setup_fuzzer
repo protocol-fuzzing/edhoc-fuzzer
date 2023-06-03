@@ -3,17 +3,21 @@
 readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
 readonly BASE_DIR="$(dirname -- ${SCRIPT_DIR})"
 
-usage() {
-  cat << END
-  Usage: ${0##*/} [-opt]
-  Options:
-    -l  Fetch and setup cf-edhoc library
-    -h  Show usage message
-END
-  exit 0
+setup_psf() {
+    # setup protocol-state-fuzzer library
+
+    set -e
+    cd ${BASE_DIR}
+    git clone "git@github.com:protocol-fuzzing/protocol-state-fuzzer.git"
+    cd protocol-state-fuzzer
+    mvn install
+
+    cd ${BASE_DIR}
+    rm -rf ./protocol-state-fuzzer/
+    set +e
 }
 
-setup_library() {
+setup_cf_edhoc() {
     # setup cf-edhoc library
 
     readonly PATCH_FILE="${SCRIPT_DIR}/cf-edhoc.patch"
@@ -51,11 +55,25 @@ setup_fuzzer() {
     set +e
 }
 
+usage() {
+  cat << END
+  Usage: ${0##*/} [-opt]
+  Options (library setup prior to EDHOC-Fuzzer):
+    -p  Fetch and setup only protocol-state-fuzzer library
+    -e  Fetch and setup only cf-edhoc library
+    -l  Fetch and setup protocol-state-fuzzer and cf-edhoc libraries
+    -h  Show usage message
+END
+  exit 0
+}
 
-while getopts :lh flag
+
+while getopts :pelh flag
 do
   case "${flag}" in
-    l) setup_library ;;
+    p) setup_psf ;;
+    e) setup_cf_edhoc ;;
+    l) setup_psf; setup_cf_edhoc ;;
     : | \? | h | *) usage ;;
   esac
 done
