@@ -41,7 +41,7 @@ Assuming the commands are executed from the root directory:
 java -version
 mvn -version
 dot -V
-``` 
+```
 
 2. To set up EDHOC-Fuzzer use:
 ```bash
@@ -54,10 +54,10 @@ is created in the root directory.
 
 3. To set up a System Under Learning (SUL) use:
 ```bash
-./scripts/setup_sul 
+./scripts/setup_sul
 ```
 This will show the usage message of the script, in order to provide a SUL name as argument.
-This process will fetch, patch and build the corresponding remote project and the following directories should be created:  
+This process will fetch, patch and build the corresponding remote project and the following directories should be created:
 * `experiments/models/sources`, containing the remote project and the executables;
 * `experiments/models/clients`, containing a directory structure with softlinks to the client executables;
 * `experiments/models/servers`, containing a directory structure with soft links to the server executables.
@@ -90,10 +90,10 @@ Additional Testing Parameters:
   Run each test sequence N number of times, defaults to 1
 
 -testSpecification path/to/dot/model
-  If a .dot model is provided as a specification, the resulting outputs are 
+  If a .dot model is provided as a specification, the resulting outputs are
   compared against it. The test file will be run both on the implementation
   and on the specification model
-  
+
 -showTransitionSequence
   Shows the sequence of transitions at the end in a nicer format
 ```
@@ -114,7 +114,7 @@ replacing each label with a shorter one, using the following wrapper script:
 ```
 The label replacements can be found in the **./scripts/replacements.txt**. The optional arguments shown in the usage
 message can be used when the model provided corresponds to a client implementation. This way the initial message, which a
-client sends to start the EDHOC protocol, is added to the model. 
+client sends to start the EDHOC protocol, is added to the model.
 
 The above script is just a convenient wrapper of the following more customizable script:
 ```bash
@@ -134,12 +134,12 @@ The most important directories are **scripts**, **experiments** and **src/main/r
 * **setup_sul**, used for fetching, patching and building each remote sul (system under learning)
 
 
-* **beautify_model**, a wrapper for the **beautify_model.py** used for visually enhancing the resulting .dot files from 
-the learning process utilizing the **replacements.txt** 
+* **beautify_model**, a wrapper for the **beautify_model.py** used for visually enhancing the resulting .dot files from
+the learning process utilizing the **replacements.txt**
 
 
-* **gen_auth_hierarchy**, script used optionally for generating dummy authentication files in .pem, .der format in triples of 
-<private key, public key, x509 certificates>; corresponding to one for each EDHOC authentication method. 
+* **gen_auth_hierarchy**, script used optionally for generating dummy authentication files in .pem, .der format in triples of
+<private key, public key, x509 certificates>; corresponding to one for each EDHOC authentication method.
 The files in the .der format can be provided as input to the EDHOC-Fuzzer. The resulting directories are:
   * **./experiments/authentication/mapper**
     * **/sig**, containing an ed25519 triple and a p256 triple
@@ -156,25 +156,25 @@ The files in the .der format can be provided as input to the EDHOC-Fuzzer. The r
 The subdirectories *mapper/*, *sul/* can be generated using the *./scripts/gen_auth_hierarchy*
 
 
-* **models/** initially contains the custom patches used in the setup of the suls. The sub-directories 
+* **models/** initially contains the custom patches used in the setup of the suls. The sub-directories
 *sources/*, *clients/*, *servers/* can be generated using the *./scripts/setup_sul*
 
 
-* **results/** is the output directory designated by the *./experiments/args* files containing the resulting 
+* **results/** is the output directory designated by the *./experiments/args* files containing the resulting
 subdirectories during a learning process. Initially it does not exist
 
 
 * **tests/** contains a set of input test sequences used as input to the EDHOC-Fuzzer for testing them against
-a client/server implementation   
+a client/server implementation
 
 
 ### Inside ./src/main/resources/ directory
 
 * **default_alphabet.xml** is the default alphabet in .xml format provided to the EDHOC-Fuzzer, which contains all the
-currently supported message inputs and is used implicitly by the argument files in *./experiments/args* 
+currently supported message inputs and is used implicitly by the argument files in *./experiments/args*
 
 
-* **default_fuzzer.properties** contains the symbolic properties that are used in the argument files in the 
+* **default_fuzzer.properties** contains the symbolic properties that are used in the argument files in the
 *./experiments/args* (can be used also in command line arguments) and are in the format `${property_name}`.
 These are substituted in runtime. One implicit property name is `sul.port`, which is replaced with a randomly generated
 port and used when the sul accepts a port number as argument
