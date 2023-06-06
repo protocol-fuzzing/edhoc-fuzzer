@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Adapted from https://github.com/eriptic/uoscore-uedhoc/blob/dev/samples/cert_hierarchy/generate_ca_hierarchy.sh
 
-readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
+readonly SCRIPT_DIR="$(cd -- "$(dirname -- ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd)"
 readonly BASE_DIR="$(dirname -- ${SCRIPT_DIR})"
 readonly CERT_CNF="${SCRIPT_DIR}/cert.cnf"
 readonly AUTH_DIR="${BASE_DIR}/experiments/authentication"

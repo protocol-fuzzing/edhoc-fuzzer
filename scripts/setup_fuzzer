@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
-readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
-readonly BASE_DIR="$(dirname -- ${SCRIPT_DIR})"
+readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+readonly BASE_DIR="$(dirname -- "${SCRIPT_DIR}")"
 
 setup_psf() {
     # setup protocol-state-fuzzer library
 
     set -e
-    cd ${BASE_DIR}
+    cd "${BASE_DIR}"
     git clone "git@github.com:protocol-fuzzing/protocol-state-fuzzer.git"
     cd protocol-state-fuzzer
     mvn install
 
-    cd ${BASE_DIR}
+    cd "${BASE_DIR}"
     rm -rf ./protocol-state-fuzzer/
     set +e
 }
@@ -24,23 +24,23 @@ setup_cf_edhoc() {
     readonly COMMIT_HASH="723c652947bf22507dc10a72416d7896dcbc3649"
 
     set -e
-    cd ${BASE_DIR}
+    cd "${BASE_DIR}"
     git clone "https://github.com/rikard-sics/californium.git"
     cd californium
     git checkout edhoc
     git checkout ${COMMIT_HASH}
-    git apply ${PATCH_FILE}
+    git apply "${PATCH_FILE}"
     mvn package -DskipTests -am -pl cf-edhoc
     JAR_FILE=$(ls ./cf-edhoc/target/cf-edhoc-*-SNAPSHOT.jar)
 
     mvn install:install-file \
-        -Dfile=${JAR_FILE} \
+        -Dfile="${JAR_FILE}" \
         -DgroupId=se.ri.org.eclipse.californium \
         -DartifactId=cf-edhoc \
         -Dversion=0.0.0 \
         -Dpackaging=jar
 
-    cd ${BASE_DIR}
+    cd "${BASE_DIR}"
     rm -rf ./californium/
     set +e
 }
@@ -49,9 +49,9 @@ setup_fuzzer() {
     # package project and create symlink
 
     set -e
-    cd ${BASE_DIR}
+    cd "${BASE_DIR}"
     mvn clean package
-    ln -sf ${BASE_DIR}/target/edhoc-fuzzer-*-jar-with-dependencies.jar edhoc-fuzzer.jar
+    ln -sf "${BASE_DIR}"/target/edhoc-fuzzer-*-jar-with-dependencies.jar edhoc-fuzzer.jar
     set +e
 }
 
