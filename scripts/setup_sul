@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-readonly BASE_DIR="$(dirname -- "${SCRIPT_DIR}")"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+readonly SCRIPT_DIR
+BASE_DIR="$(dirname -- "${SCRIPT_DIR}")"
+readonly BASE_DIR
 readonly MODEL_DIR="${BASE_DIR}/experiments/models"
 readonly SOURCES_DIR="${MODEL_DIR}/sources"
 readonly PATCH_DIR="${MODEL_DIR}/patches"
@@ -155,7 +157,7 @@ else
     -a | --all ) setup_all_suls ;;
     -h | --help) usage ;;
     * ) echo "Unsupported option ${1}"; usage ;;
-  esac; shift; done
+  esac done
 
   for sul in "${@}"; do case ${sul} in
     edhoc-rs ) setup_edhoc_rs ;;
