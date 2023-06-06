@@ -87,18 +87,28 @@
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>2.37.0</version>
                 <configuration>
+                    <formats>
+                        <format>
+                            <includes>
+                                <include>src/**/*.java</include>
+                                <include>*.md</include>
+                                <include>*.xml</include>
+                            </includes>
+                            <endWithNewline />
+                            <trimTrailingWhitespace />
+                            <indent>
+                                <spaces>true</spaces>
+                                <spacesPerTab>4</spacesPerTab>
+                            </indent>
+                        </format>
+                    </formats>
                     <java>
-                        <endWithNewline />
-                        <trimTrailingWhitespace />
                         <importOrder>
                             <!-- the empty string is for all imports not specified explicitly, '|' joins groups without blank line -->
                             <order>,javax|java</order>
                         </importOrder>
                         <removeUnusedImports />
-                        <indent>
-                            <spaces>true</spaces>
-                            <spacesPerTab>4</spacesPerTab>
-                        </indent>
+                        <formatAnnotations />
                     </java>
                 </configuration>
             </plugin>
