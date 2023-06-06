@@ -719,7 +719,7 @@ public class MessageProcessorPersistent {
         CBORObject[] ead3 = null;
         List<CBORObject> ead3List = sideProcessor.getProducedEADs(Constants.EDHOC_MESSAGE_3);
         if (ead3List != null && !ead3List.isEmpty()) {
-            ead3 = (CBORObject[]) ead3List.toArray();
+            ead3 = ead3List.toArray(new CBORObject[ead3List.size()]);
         }
 
         /* Start computing Signature_or_MAC_3 */
@@ -1438,7 +1438,7 @@ public class MessageProcessorPersistent {
         CBORObject[] ead2 = null;
         List<CBORObject> ead2List = sideProcessor.getProducedEADs(Constants.EDHOC_MESSAGE_2);
         if (ead2List != null && !ead2List.isEmpty()) {
-            ead2 = (CBORObject[]) ead2List.toArray();
+            ead2 = ead2List.toArray(new CBORObject[ead2List.size()]);
         }
 
         /* Start computing Signature_or_MAC_2 */
@@ -1950,7 +1950,7 @@ public class MessageProcessorPersistent {
         CBORObject[] ead4 = null;
         List<CBORObject> ead4List = sideProcessor.getProducedEADs(Constants.EDHOC_MESSAGE_4);
         if (ead4List != null && !ead4List.isEmpty()) {
-            ead4 = (CBORObject[]) ead4List.toArray();
+            ead4 = ead4List.toArray(new CBORObject[ead4List.size()]);
         }
 
         // Prepare the plaintext
