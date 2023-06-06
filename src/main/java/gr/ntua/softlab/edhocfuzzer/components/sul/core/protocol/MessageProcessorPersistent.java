@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.cose.*;
 import org.eclipse.californium.edhoc.*;
 
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -2149,7 +2150,7 @@ public class MessageProcessorPersistent {
                     return false;
                 }
                 String errorMsg = objectList[index].AsString();
-                LOGGER.info("ERR_INFO: {} ~ {}", EdhocUtil.byteArrayToString(errorMsg.getBytes()), errorMsg);
+                LOGGER.info("ERR_INFO: {} ~ {}", EdhocUtil.byteArrayToString(errorMsg.getBytes(StandardCharsets.UTF_8)), errorMsg);
             }
 
             case Constants.ERR_CODE_WRONG_SELECTED_CIPHER_SUITE -> {

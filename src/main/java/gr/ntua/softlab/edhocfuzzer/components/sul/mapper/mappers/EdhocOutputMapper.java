@@ -13,6 +13,8 @@ import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.symbols.outputs.Message
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.charset.StandardCharsets;
+
 public class EdhocOutputMapper extends OutputMapper {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -78,7 +80,8 @@ public class EdhocOutputMapper extends OutputMapper {
         if (edhocMapperConnector.receivedMsg3WithOscoreApp()) {
             // received Message3_OSCORE_APP, from which application data propagated and decrypted
             LOGGER.info("EDHOC_MESSAGE_3_OSCORE_APP | OSCORE_APP_MESSAGE ({}): {} ~ {}",
-                    messageType, EdhocUtil.byteArrayToString(responsePayload), new String(responsePayload));
+                    messageType, EdhocUtil.byteArrayToString(responsePayload),
+                    new String(responsePayload, StandardCharsets.UTF_8));
 
             return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_3_OSCORE_APP.name());
         }
@@ -95,7 +98,8 @@ public class EdhocOutputMapper extends OutputMapper {
                     responsePayload is the decrypted request payload
              */
             LOGGER.info("OSCORE_APP_MESSAGE ({}): {} ~ {}",
-                    messageType, EdhocUtil.byteArrayToString(responsePayload), new String(responsePayload));
+                    messageType, EdhocUtil.byteArrayToString(responsePayload),
+                    new String(responsePayload, StandardCharsets.UTF_8));
 
             return new AbstractOutput(MessageOutputType.OSCORE_APP_MESSAGE.name());
         }
@@ -146,7 +150,8 @@ public class EdhocOutputMapper extends OutputMapper {
         // Check for coap error message
         if (edhocMapperConnector.receivedCoapErrorMessage()) {
             LOGGER.info("COAP_ERROR_MESSAGE ({}): {} ~ {}",
-                    messageType, EdhocUtil.byteArrayToString(responsePayload), new String(responsePayload));
+                    messageType, EdhocUtil.byteArrayToString(responsePayload),
+                    new String(responsePayload, StandardCharsets.UTF_8));
             return coapError();
         }
 
@@ -168,7 +173,8 @@ public class EdhocOutputMapper extends OutputMapper {
         // Application message is any non-error coap message, no distinction based on payload
         if (edhocMapperConnector.receivedCoapAppMessage()) {
             LOGGER.info("COAP_APP_MESSAGE ({}): {} ~ {}",
-                messageType, EdhocUtil.byteArrayToString(responsePayload), new String(responsePayload));
+                messageType, EdhocUtil.byteArrayToString(responsePayload),
+                new String(responsePayload, StandardCharsets.UTF_8));
             return new AbstractOutput(MessageOutputType.COAP_APP_MESSAGE.name());
         }
 
