@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class TestVectorAuthenticationConfig implements RunDescriptionPrinter {
@@ -58,7 +59,7 @@ public class TestVectorAuthenticationConfig implements RunDescriptionPrinter {
 
     private TestVector jsonFile2TestVector(String filename, String key) {
         Gson gson = new Gson();
-        try(FileReader reader = new FileReader(filename)) {
+        try(FileReader reader = new FileReader(filename, StandardCharsets.UTF_8)) {
             Type testVectorType = new TypeToken<Map<String, TestVector>>() {}.getType();
             Map<String, TestVector> map = gson.fromJson(reader, testVectorType);
             return map.get(key);

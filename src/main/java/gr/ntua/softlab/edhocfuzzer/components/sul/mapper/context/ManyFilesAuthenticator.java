@@ -45,7 +45,7 @@ public class ManyFilesAuthenticator implements Authenticator {
     protected List<Integer> supportedCipherSuites;
 
     // cache read DER files, so as not to read them after each constructor call
-    protected static HashMap<String, byte[]> sharedDerFilesMap = new HashMap<>();
+    protected static final HashMap<String, byte[]> sharedDerFilesMap = new HashMap<>();
 
     protected ManyFilesAuthenticationConfig manyFilesAuthenticationConfig;
 
