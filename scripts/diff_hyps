@@ -21,8 +21,7 @@ if [[ ! -d "${dir2}" ]]; then
 fi
 
 for ((i = 1 ; i <= "${num_rounds}" ; i++)); do
-    diff --unified=0 "${dir1}"/hyp${i}.dot "${dir2}"/hyp${i}.dot
-    if [ ${?} != 0 ]; then
+    if ! diff --unified=0 "${dir1}"/hyp"${i}".dot "${dir2}"/hyp"${i}".dot; then
         exit 1
     fi
 done

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-readonly SCRIPT_DIR="$(cd -- $(dirname -- ${BASH_SOURCE[0]}) >/dev/null 2>&1 && pwd)"
+readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 readonly REPL_FILE="${SCRIPT_DIR}/replacements.txt"
 readonly PY_SCRIPT="${SCRIPT_DIR}/beautify_model.py"
 
@@ -35,5 +35,5 @@ else
         exit 1
     fi
 
-    python3 "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" --start-edge-label "${start_edge_label}" --remove-edge-pattern "${remove_edge_pattern}"
+    python3 "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" --start-edge-label "${start_edge_label}" #--remove-edge-pattern "${remove_edge_pattern}"
 fi
