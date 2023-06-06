@@ -112,6 +112,15 @@
                     </java>
                 </configuration>
             </plugin>
+            <!-- Static code analysis -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <!-- <version>4.7.3.0</version> -->
+                <configuration>
+                    <threshold>High</threshold>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
