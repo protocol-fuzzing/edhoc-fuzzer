@@ -90,7 +90,6 @@
                     <formats>
                         <format>
                             <includes>
-                                <include>src/**/*.java</include>
                                 <include>*.md</include>
                                 <include>*.xml</include>
                             </includes>
@@ -109,9 +108,16 @@
                         </importOrder>
                         <removeUnusedImports />
                         <formatAnnotations />
+                        <endWithNewline />
+                        <trimTrailingWhitespace />
+                        <indent>
+                            <spaces>true</spaces>
+                            <spacesPerTab>4</spacesPerTab>
+                        </indent>
                     </java>
                 </configuration>
             </plugin>
+
             <!-- Static code analysis -->
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
@@ -121,6 +127,7 @@
                     <threshold>High</threshold>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -133,6 +140,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
