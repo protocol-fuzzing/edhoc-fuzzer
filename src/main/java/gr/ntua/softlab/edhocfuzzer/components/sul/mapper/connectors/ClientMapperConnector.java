@@ -67,6 +67,13 @@ public class ClientMapperConnector implements EdhocMapperConnector {
         expectedAppResponse = false;
         currentCoapExchangeInfo = null;
 
+        if (payload == null) {
+            LOGGER.error("Payload to send is null");
+            exceptionCodeOccurred = 0;
+            response = null;
+            return;
+        }
+
         Request request = new Request(CoAP.Code.valueOf(messageCode), CoAP.Type.CON);
         request.getOptions().setContentFormat(contentFormat);
         request.setPayload(payload);

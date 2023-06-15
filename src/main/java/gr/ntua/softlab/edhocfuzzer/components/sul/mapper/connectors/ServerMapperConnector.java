@@ -90,6 +90,13 @@ public class ServerMapperConnector implements EdhocMapperConnector {
             }
         }
 
+        if (payload == null) {
+            LOGGER.error("Payload to send is null");
+            exceptionCodeOccurred = 0;
+            currentCoapExchangeInfo = null;
+            return;
+        }
+
         CoapExchange currentExchange = currentCoapExchangeInfo.getCoapExchange();
 
         Response response = new Response(CoAP.ResponseCode.valueOf(messageCode));
