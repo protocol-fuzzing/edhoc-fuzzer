@@ -29,8 +29,8 @@ EDHOC-Fuzzer supports the following functionality:
 * maven correctly setup to point to Java 17 JDK.
 * graphviz library, containing the dot utility, which should be located in the system's PATH.
 * (suggested) make utility, required by the setup of some systems.
-* (suggested) python >=3.6 and pydot interface >=1.4.2, in order to use the [beautify_model](scripts/beautify_model) script.
-* (optional) openssl utility, required by the [gen_auth_hierarchy](scripts/gen_auth_hierarchy) script.
+* (suggested) python >=3.6 and pydot interface >=1.4.2, in order to use the [beautify_model](scripts/beautify_model.sh) script.
+* (optional) openssl utility, required by the [gen_auth_hierarchy](scripts/gen_auth_hierarchy.sh) script.
 
 ## Setup
 
@@ -45,7 +45,7 @@ dot -V
 
 2. To set up EDHOC-Fuzzer use:
 ```bash
-./scripts/setup_fuzzer -l
+./scripts/setup_fuzzer.sh -l
 ```
 The `-l` flag is used to fetch the remote project used as library, compile and install it in the local maven repository.
 The fetched source files are deleted after the installation. After the first installation of the library, the script can
@@ -54,7 +54,7 @@ is created in the root directory.
 
 3. To set up a System Under Learning (SUL) use:
 ```bash
-./scripts/setup_sul
+./scripts/setup_sul.sh
 ```
 This will show the usage message of the script, in order to provide a SUL name as argument.
 This process will fetch, patch and build the corresponding remote project and the following directories should be created:
@@ -110,7 +110,7 @@ dot -Tpdf path/to/in_model.dot > path/to/out_model.pdf
 After a .dot model has been generated, it can be visually enhanced, in the form of merging same transitions and
 replacing each label with a shorter one, using the following wrapper script:
 ```bash
-./scripts/beautify_model
+./scripts/beautify_model.sh
 ```
 The label replacements can be found in the **./scripts/replacements.txt**. The optional arguments shown in the usage
 message can be used when the model provided corresponds to a client implementation. This way the initial message, which a
@@ -128,17 +128,17 @@ The most important directories are **scripts**, **experiments** and **src/main/r
 
 ### Inside ./scripts/ directory
 
-* **setup_fuzzer**, used for installing the remote library and (re-)building the project
+* **setup_fuzzer.sh**, used for installing the remote library and (re-)building the project
 
 
-* **setup_sul**, used for fetching, patching and building each remote sul (system under learning)
+* **setup_sul.sh**, used for fetching, patching and building each remote sul (system under learning)
 
 
-* **beautify_model**, a wrapper for the **beautify_model.py** used for visually enhancing the resulting .dot files from
+* **beautify_model.sh**, a wrapper for the **beautify_model.py** used for visually enhancing the resulting .dot files from
 the learning process utilizing the **replacements.txt**
 
 
-* **gen_auth_hierarchy**, script used optionally for generating dummy authentication files in .pem, .der format in triples of
+* **gen_auth_hierarchy.sh**, used optionally for generating dummy authentication files in .pem, .der format in triples of
 <private key, public key, x509 certificates>; corresponding to one for each EDHOC authentication method.
 The files in the .der format can be provided as input to the EDHOC-Fuzzer. The resulting directories are:
   * **./experiments/authentication/mapper**
@@ -153,11 +153,11 @@ The files in the .der format can be provided as input to the EDHOC-Fuzzer. The r
 
 
 * **authentication/** initially contains the **test_vectors** directory with files in the test-vector json format.
-The subdirectories *mapper/*, *sul/* can be generated using the *./scripts/gen_auth_hierarchy*
+The subdirectories *mapper/*, *sul/* can be generated using the *./scripts/gen_auth_hierarchy.sh*
 
 
 * **models/** initially contains the custom patches used in the setup of the suls. The sub-directories
-*sources/*, *clients/*, *servers/* can be generated using the *./scripts/setup_sul*
+*sources/*, *clients/*, *servers/* can be generated using the *./scripts/setup_sul.sh*
 
 
 * **results/** is the output directory designated by the *./experiments/args* files containing the resulting
