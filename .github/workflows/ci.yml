@@ -18,18 +18,18 @@ jobs:
           ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer -l
+        run: ./scripts/setup_fuzzer.sh -l
 
       - name: Setup EDHOC-Rust
         run: |
           curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
           source "${HOME}/.cargo/env"
-          ./scripts/setup_sul edhoc-rs
+          ./scripts/setup_sul.sh edhoc-rs
 
       - name: Test EDHOC-Rust Client
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/edhoc-rs/client -roundLimit 3
-          ./scripts/diff_hyps experiments/saved_results/clients/edhoc-rs_client experiments/results/clients/edhoc-rs_client 3
+          ./scripts/diff_hyps.sh experiments/saved_results/clients/edhoc-rs_client experiments/results/clients/edhoc-rs_client 3
 
   EDHOC-Rust-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -47,18 +47,18 @@ jobs:
           ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer -l
+        run: ./scripts/setup_fuzzer.sh -l
 
       - name: Setup EDHOC-Rust
         run: |
           curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
           source "${HOME}/.cargo/env"
-          ./scripts/setup_sul edhoc-rs
+          ./scripts/setup_sul.sh edhoc-rs
 
       - name: Test EDHOC-Rust Server
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/edhoc-rs/server -roundLimit 3
-          ./scripts/diff_hyps experiments/saved_results/servers/edhoc-rs_server experiments/results/servers/edhoc-rs_server 3
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/edhoc-rs_server experiments/results/servers/edhoc-rs_server 3
 
   RISE-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -76,15 +76,15 @@ jobs:
           ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer -l
+        run: ./scripts/setup_fuzzer.sh -l
 
       - name: Setup RISE
-        run: ./scripts/setup_sul rise
+        run: ./scripts/setup_sul.sh rise
 
       - name: Test RISE Client (m4_app)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/rise/client_m4_app -roundLimit 3
-          ./scripts/diff_hyps experiments/saved_results/clients/rise_client_m4_app experiments/results/clients/rise_client_m4_app 3
+          ./scripts/diff_hyps.sh experiments/saved_results/clients/rise_client_m4_app experiments/results/clients/rise_client_m4_app 3
 
   RISE-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -102,15 +102,15 @@ jobs:
           ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer -l
+        run: ./scripts/setup_fuzzer.sh -l
 
       - name: Setup RISE
-        run: ./scripts/setup_sul rise
+        run: ./scripts/setup_sul.sh rise
 
       - name: Test RISE Server (m4_app)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/rise/server_m4_app -roundLimit 3
-          ./scripts/diff_hyps experiments/saved_results/servers/rise_server_m4_app experiments/results/servers/rise_server_m4_app 3
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/rise_server_m4_app experiments/results/servers/rise_server_m4_app 3
 
   SIFIS-HOME-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -128,15 +128,15 @@ jobs:
           ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer -l
+        run: ./scripts/setup_fuzzer.sh -l
 
       - name: Setup SIFIS-HOME
-        run: ./scripts/setup_sul sifis-home
+        run: ./scripts/setup_sul.sh sifis-home
 
       - name: Test SIFIS-HOME Client (phase_1)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/client_phase_1 -roundLimit 3
-          ./scripts/diff_hyps experiments/saved_results/clients/sifis-home_client_phase_1 experiments/results/clients/sifis-home_client_phase_1 3
+          ./scripts/diff_hyps.sh experiments/saved_results/clients/sifis-home_client_phase_1 experiments/results/clients/sifis-home_client_phase_1 3
 
   SIFIS-HOME-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -154,15 +154,15 @@ jobs:
           ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer -l
+        run: ./scripts/setup_fuzzer.sh -l
 
       - name: Setup SIFIS-HOME
-        run: ./scripts/setup_sul sifis-home
+        run: ./scripts/setup_sul.sh sifis-home
 
       - name: Test SIFIS-HOME Server (phase_1)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1 -roundLimit 3
-          ./scripts/diff_hyps experiments/saved_results/servers/sifis-home_server_phase_1 experiments/results/servers/sifis-home_server_phase_1 3
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/sifis-home_server_phase_1 experiments/results/servers/sifis-home_server_phase_1 3
 
   uOSCORE-uEDHOC-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -180,15 +180,15 @@ jobs:
           ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer -l
+        run: ./scripts/setup_fuzzer.sh -l
 
       - name: Setup uOSCORE-uEDHOC
-        run: ./scripts/setup_sul uoscore-uedhoc
+        run: ./scripts/setup_sul.sh uoscore-uedhoc
 
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -roundLimit 2
-          ./scripts/diff_hyps experiments/saved_results/clients/uoscore-uedhoc_client_linux_edhoc_oscore experiments/results/clients/uoscore-uedhoc_client_linux_edhoc_oscore 2
+          ./scripts/diff_hyps.sh experiments/saved_results/clients/uoscore-uedhoc_client_linux_edhoc_oscore experiments/results/clients/uoscore-uedhoc_client_linux_edhoc_oscore 2
 
   uOSCORE-uEDHOC-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -206,12 +206,12 @@ jobs:
           ssh-private-key: ${{ secrets.PSF_SSH_PRIVATE_KEY }}
 
       - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer -l
+        run: ./scripts/setup_fuzzer.sh -l
 
       - name: Setup uOSCORE-uEDHOC
-        run: ./scripts/setup_sul uoscore-uedhoc
+        run: ./scripts/setup_sul.sh uoscore-uedhoc
 
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -roundLimit 2
-          ./scripts/diff_hyps experiments/saved_results/servers/uoscore-uedhoc_server_linux_edhoc_oscore experiments/results/servers/uoscore-uedhoc_server_linux_edhoc_oscore 2
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/uoscore-uedhoc_server_linux_edhoc_oscore experiments/results/servers/uoscore-uedhoc_server_linux_edhoc_oscore 2
