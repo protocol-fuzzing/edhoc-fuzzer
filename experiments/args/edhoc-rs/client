@@ -3,7 +3,7 @@ state-fuzzer-client
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.clients}/edhoc-rs_client
+${results.learning.clients}/edhoc-rs
 
 
 ##### LearnerConfig #####
