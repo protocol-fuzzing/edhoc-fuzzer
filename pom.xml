@@ -116,6 +116,14 @@
                         </indent>
                     </java>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Static code analysis -->
@@ -126,21 +134,30 @@
                 <configuration>
                     <threshold>High</threshold>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
             </plugin>
 
+            <!-- Disable jar:jar run on package phase -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.3.0</version>
                 <executions>
                     <execution>
-                        <!-- disable jar:jar run on package phase -->
                         <id>default-jar</id>
                         <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>
 
+            <!-- Enable assembly:single run on package phase -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
@@ -158,12 +175,10 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <!-- enable assembly:single run on package phase -->
-                        <id>make-assembly</id>
-                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
+                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>
