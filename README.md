@@ -28,7 +28,7 @@ EDHOC-Fuzzer supports the following functionality:
 * Java 17 JDK.
 * maven correctly setup to point to Java 17 JDK.
 * graphviz library, containing the dot utility, which should be located in the system's PATH.
-* (suggested) make utility, required by the setup of some systems.
+* (suggested) make utility, rust and cargo required by the setup of some SULs.
 * (suggested) python >=3.6 and pydot interface >=1.4.2, in order to use the [beautify_model](scripts/beautify_model.sh) script.
 * (optional) openssl utility, required by the [gen_auth_hierarchy](scripts/gen_auth_hierarchy.sh) script.
 
@@ -47,9 +47,9 @@ dot -V
 ```bash
 ./scripts/setup_fuzzer.sh -l
 ```
-The `-l` flag is used to fetch the remote project used as library, compile and install it in the local maven repository.
-The fetched source files are deleted after the installation. After the first installation of the library, the script can
-be used without the `-l` flag, in order to rebuild the project. After a successful build, the softlink `edhoc-fuzzer.jar`
+The `-l` flag is used to fetch the remote projects used as libraries, compile and install them in the local maven repository.
+The fetched source files are deleted after the installation. After the first installation of the libraries, the script can
+be used without the `-l` flag, in order to rebuild the project. After a successful build, the soft link `edhoc-fuzzer.jar`
 is created in the root directory.
 
 3. To set up a System Under Learning (SUL) use:
@@ -57,9 +57,9 @@ is created in the root directory.
 ./scripts/setup_sul.sh
 ```
 This will show the usage message of the script, in order to provide a SUL name as argument.
-This process will fetch, patch and build the corresponding remote project and the following directories should be created:
+This process will fetch, possibly patch, and build the corresponding remote project and the following directories should be created:
 * `experiments/models/sources`, containing the remote project and the executables;
-* `experiments/models/clients`, containing a directory structure with softlinks to the client executables;
+* `experiments/models/clients`, containing a directory structure with soft links to the client executables;
 * `experiments/models/servers`, containing a directory structure with soft links to the server executables.
 
 
