@@ -3,7 +3,7 @@ state-fuzzer-server
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.servers}/rise_server
+${results.learning.servers}/rise
 
 
 ##### LearnerConfig #####
