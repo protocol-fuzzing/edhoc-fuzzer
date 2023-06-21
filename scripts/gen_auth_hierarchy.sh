@@ -132,7 +132,7 @@ gen_ed25519 () {
     openssl pkey -in "${tgt_dir}"/priv.pem -pubout -outform der -out "${tgt_dir}"/pub.der
 
     # generate x509 certificate
-    gen_x509_cert "${tgt_dir}" "$cn"
+    gen_x509_cert "${tgt_dir}" "${cn}"
 
     set +e
 }
@@ -155,7 +155,7 @@ gen_p256 () {
     openssl ec -in "${tgt_dir}"/priv.pem -pubout -outform der -out "${tgt_dir}"/pub.der
 
     # generate x509 certificate
-    gen_x509_cert "${tgt_dir}" "$cn"
+    gen_x509_cert "${tgt_dir}" "${cn}"
 
     set +e
 }
@@ -176,7 +176,7 @@ gen_x25519 () {
     openssl pkey -in "${tgt_dir}"/priv.pem -pubout -outform der -out "${tgt_dir}"/pub.der
 
     # generate x509 certificate
-    gen_x509_cert_for_x25519 "${tgt_dir}" "$cn"
+    gen_x509_cert_for_x25519 "${tgt_dir}" "${cn}"
 
     set +e
 }
