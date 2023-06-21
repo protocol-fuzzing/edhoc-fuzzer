@@ -2,8 +2,10 @@
 
 # Adapted from https://github.com/eriptic/uoscore-uedhoc/blob/dev/samples/cert_hierarchy/generate_ca_hierarchy.sh
 
-readonly SCRIPT_DIR="$(cd -- "$(dirname -- ${BASH_SOURCE[0]})" >/dev/null 2>&1 && pwd)"
-readonly BASE_DIR="$(dirname -- ${SCRIPT_DIR})"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+readonly SCRIPT_DIR
+BASE_DIR="$(dirname -- "${SCRIPT_DIR}")"
+readonly BASE_DIR
 readonly CERT_CNF="${SCRIPT_DIR}/cert.cnf"
 readonly AUTH_DIR="${BASE_DIR}/experiments/authentication"
 
@@ -57,7 +59,7 @@ gen_root_ca () {
     # generate csr
     echo "Generate CSR for self-signed root CA certificate"
     common_name=root_ca
-    openssl req -config ${CERT_CNF} -new -sha256 -key root_ca/priv.pem -out root_ca/csr.pem
+    openssl req -config "${CERT_CNF}" -new -sha256 -key root_ca/priv.pem -out root_ca/csr.pem
     # self-sign certificate
     echo "Generate self signed root CA certificate"
     openssl req -x509 -sha256 -days 365 -key root_ca/priv.pem -in root_ca/csr.pem \
@@ -76,15 +78,15 @@ gen_x509_cert () {
     # generate csr
     echo "Generate CSR for x509 certificate"
     common_name="${2}"
-    openssl req -config ${CERT_CNF} -new -sha256 -key ${tgt_dir}/priv.pem -out ${tgt_dir}/csr.pem
+    openssl req -config "${CERT_CNF}" -new -sha256 -key "${tgt_dir}"/priv.pem -out "${tgt_dir}"/csr.pem
     # sign x509 certificate
     echo "Generate x509 certificate"
-    openssl ca -config ${CERT_CNF} -days 365 -notext -md sha256 -batch -in ${tgt_dir}/csr.pem \
-               -out ${tgt_dir}/x509_cert.pem
-    openssl x509 -in ${tgt_dir}/x509_cert.pem -outform der -out ${tgt_dir}/x509_cert.der
+    openssl ca -config "${CERT_CNF}" -days 365 -notext -md sha256 -batch -in "${tgt_dir}"/csr.pem \
+               -out "${tgt_dir}"/x509_cert.pem
+    openssl x509 -in "${tgt_dir}"/x509_cert.pem -outform der -out "${tgt_dir}"/x509_cert.der
     # remove csr
     echo "Remove CSR for x509 certificate"
-    rm ${tgt_dir}/csr.pem
+    rm "${tgt_dir}"/csr.pem
 
     set +e
 }
@@ -95,21 +97,21 @@ gen_x509_cert_for_x25519 () {
     tgt_dir="${1}"
     # generate temp ed25519 private key for signing
     echo "Generate temporary ed25519 private key"
-    openssl genpkey -algorithm ed25519 -out ${tgt_dir}/temp_priv.pem
+    openssl genpkey -algorithm ed25519 -out "${tgt_dir}"/temp_priv.pem
     # generate csr
     echo "Generate CSR for x509 certificate"
     common_name="${2}"
-    openssl req -config ${CERT_CNF} -new -sha256 -key ${tgt_dir}/temp_priv.pem -out ${tgt_dir}/csr.pem
+    openssl req -config "${CERT_CNF}" -new -sha256 -key "${tgt_dir}"/temp_priv.pem -out "${tgt_dir}"/csr.pem
     # sign x509 certificate
     echo "Generate x509 certificate"
-    openssl x509 -req -in ${tgt_dir}/csr.pem -CA root_ca/x509_cert.pem -CAkey root_ca/priv.pem \
-                 -CAserial root_ca/serial -force_pubkey ${tgt_dir}/pub.pem -out ${tgt_dir}/x509_cert.pem
-    openssl x509 -in ${tgt_dir}/x509_cert.pem -outform der -out ${tgt_dir}/x509_cert.der
+    openssl x509 -req -in "${tgt_dir}"/csr.pem -CA root_ca/x509_cert.pem -CAkey root_ca/priv.pem \
+                 -CAserial root_ca/serial -force_pubkey "${tgt_dir}"/pub.pem -out "${tgt_dir}"/x509_cert.pem
+    openssl x509 -in "${tgt_dir}"/x509_cert.pem -outform der -out "${tgt_dir}"/x509_cert.der
     # remove csr
     echo "Remove CSR for x509 certificate"
-    rm ${tgt_dir}/csr.pem
+    rm "${tgt_dir}"/csr.pem
     # remove temp ed25519 private key
-    rm ${tgt_dir}/temp_priv.pem
+    rm "${tgt_dir}"/temp_priv.pem
 
     set +e
 }
@@ -121,16 +123,16 @@ gen_ed25519 () {
     cn="${2}"
     # generate private key
     echo "Generate private key"
-    openssl genpkey -algorithm ed25519 -out ${tgt_dir}/priv.pem
-    openssl pkey -in ${tgt_dir}/priv.pem -outform der -out ${tgt_dir}/priv.der
+    openssl genpkey -algorithm ed25519 -out "${tgt_dir}"/priv.pem
+    openssl pkey -in "${tgt_dir}"/priv.pem -outform der -out "${tgt_dir}"/priv.der
 
     # generate public key
     echo "Generate public key"
-    openssl pkey -in ${tgt_dir}/priv.pem -pubout -out ${tgt_dir}/pub.pem
-    openssl pkey -in ${tgt_dir}/priv.pem -pubout -outform der -out ${tgt_dir}/pub.der
+    openssl pkey -in "${tgt_dir}"/priv.pem -pubout -out "${tgt_dir}"/pub.pem
+    openssl pkey -in "${tgt_dir}"/priv.pem -pubout -outform der -out "${tgt_dir}"/pub.der
 
     # generate x509 certificate
-    gen_x509_cert ${tgt_dir} $cn
+    gen_x509_cert "${tgt_dir}" "$cn"
 
     set +e
 }
@@ -142,18 +144,18 @@ gen_p256 () {
     cn="${2}"
     # generate private key
     echo "Generate private key"
-    openssl ecparam -name secp256r1 -genkey -out ${tgt_dir}/priv.pem
-    openssl pkcs8 -topk8 -nocrypt -in $p256_dir/priv.pem -out ${tgt_dir}/npriv.pem
-    mv ${tgt_dir}/npriv.pem ${tgt_dir}/priv.pem
-    openssl pkcs8 -topk8 -nocrypt -in ${tgt_dir}/priv.pem -outform der -out ${tgt_dir}/priv.der
+    openssl ecparam -name secp256r1 -genkey -out "${tgt_dir}"/priv.pem
+    openssl pkcs8 -topk8 -nocrypt -in "$p256_dir"/priv.pem -out "${tgt_dir}"/npriv.pem
+    mv "${tgt_dir}"/npriv.pem "${tgt_dir}"/priv.pem
+    openssl pkcs8 -topk8 -nocrypt -in "${tgt_dir}"/priv.pem -outform der -out "${tgt_dir}"/priv.der
 
     # generate public key
     echo "Generate public key"
-    openssl ec -in ${tgt_dir}/priv.pem -pubout -out ${tgt_dir}/pub.pem
-    openssl ec -in ${tgt_dir}/priv.pem -pubout -outform der -out ${tgt_dir}/pub.der
+    openssl ec -in "${tgt_dir}"/priv.pem -pubout -out "${tgt_dir}"/pub.pem
+    openssl ec -in "${tgt_dir}"/priv.pem -pubout -outform der -out "${tgt_dir}"/pub.der
 
     # generate x509 certificate
-    gen_x509_cert ${tgt_dir} $cn
+    gen_x509_cert "${tgt_dir}" "$cn"
 
     set +e
 }
@@ -165,16 +167,16 @@ gen_x25519 () {
     cn="${2}"
     # generate private key
     echo "Generate private key"
-    openssl genpkey -algorithm x25519 -out ${tgt_dir}/priv.pem
-    openssl pkey -in ${tgt_dir}/priv.pem -outform der -out ${tgt_dir}/priv.der
+    openssl genpkey -algorithm x25519 -out "${tgt_dir}"/priv.pem
+    openssl pkey -in "${tgt_dir}"/priv.pem -outform der -out "${tgt_dir}"/priv.der
 
     # generate public key
     echo "Generate public key"
-    openssl pkey -in ${tgt_dir}/priv.pem -pubout -out ${tgt_dir}/pub.pem
-    openssl pkey -in ${tgt_dir}/priv.pem -pubout -outform der -out ${tgt_dir}/pub.der
+    openssl pkey -in "${tgt_dir}"/priv.pem -pubout -out "${tgt_dir}"/pub.pem
+    openssl pkey -in "${tgt_dir}"/priv.pem -pubout -outform der -out "${tgt_dir}"/pub.der
 
     # generate x509 certificate
-    gen_x509_cert_for_x25519 ${tgt_dir} $cn
+    gen_x509_cert_for_x25519 "${tgt_dir}" "$cn"
 
     set +e
 }
@@ -185,42 +187,42 @@ gen_all () {
 
     # SIG
     tgt_sig_dir=${tgt_outer_dir}/sig
-    mkdir -p ${tgt_sig_dir}
+    mkdir -p "${tgt_sig_dir}"
 
     # ed25519
     ed25519_dir=${tgt_sig_dir}/ed25519
-    mkdir ${ed25519_dir}
+    mkdir "${ed25519_dir}"
 
     echo "Generate ed25519 keys and x509 certificate for ${name}"
-    gen_ed25519 ${ed25519_dir} ${name}_ed25519_sig
+    gen_ed25519 "${ed25519_dir}" "${name}"_ed25519_sig
     echo ----------------
 
     # p256
     p256_dir=${tgt_sig_dir}/p256
-    mkdir ${p256_dir}
+    mkdir "${p256_dir}"
 
     echo "Generate p256 keys and x509 certificate (SIG) for ${name}"
-    gen_p256 ${p256_dir} ${name}_p256_sig
+    gen_p256 "${p256_dir}" "${name}"_p256_sig
     echo ----------------
 
     # STAT
     tgt_stat_dir=${tgt_outer_dir}/stat
-    mkdir -p ${tgt_stat_dir}
+    mkdir -p "${tgt_stat_dir}"
 
     # x25519
     x25519_dir=${tgt_stat_dir}/x25519
-    mkdir ${x25519_dir}
+    mkdir "${x25519_dir}"
 
     echo "Generate x25519 keys and x509 certificate for ${name}"
-    gen_x25519 ${x25519_dir} ${name}_x25519_stat
+    gen_x25519 "${x25519_dir}" "${name}"_x25519_stat
     echo ----------------
 
     # p256
     p256_dir=${tgt_stat_dir}/p256
-    mkdir ${p256_dir}
+    mkdir "${p256_dir}"
 
     echo "Generate p256 keys and x509 certificate (STAT) for ${name}"
-    gen_p256 ${p256_dir} ${name}_p256_stat
+    gen_p256 "${p256_dir}" "${name}"_p256_stat
     echo ----------------
 }
 
