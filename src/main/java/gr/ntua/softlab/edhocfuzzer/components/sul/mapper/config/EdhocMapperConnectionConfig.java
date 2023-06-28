@@ -9,7 +9,7 @@ public class EdhocMapperConnectionConfig implements MapperConnectionConfig {
     private Configuration configuration;
 
     public EdhocMapperConnectionConfig(InputStream inputStream) {
-        this.configuration = Configuration.createFromStream(inputStream, null);
+        this.configuration = inputStream == null ? Configuration.getStandard() : Configuration.createFromStream(inputStream, null);
     }
 
     public Configuration getConfiguration() {

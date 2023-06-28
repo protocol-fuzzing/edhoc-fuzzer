@@ -56,8 +56,7 @@ public class EdhocSul extends AbstractSul {
             Long responseWait = sulConfig.getResponseWait();
 
             if (responseWait < coapExchangeLifetime) {
-                LOGGER.warn("Provided responseWait ({} ms) is less than COAP.EXCHANGE_LIFETIME ({} ms) in "
-                                + "mapper_connection config file", responseWait, coapExchangeLifetime);
+                LOGGER.info("Provided responseWait ({} ms) < COAP.EXCHANGE_LIFETIME ({} ms)", responseWait, coapExchangeLifetime);
             }
 
             this.originalTimeout = responseWait;
@@ -65,6 +64,7 @@ public class EdhocSul extends AbstractSul {
             // apply delegate
             sulConfig.applyDelegate(mapperConnectionConfig);
         } catch (IOException e) {
+            LOGGER.error("Exception occurred: " + e.getMessage());
             throw new RuntimeException(e);
         }
 
