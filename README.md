@@ -118,7 +118,7 @@ client sends to start the EDHOC protocol, is added to the model.
 
 The above script is just a convenient wrapper of the following more customizable script:
 ```bash
-python ./scripts/beautify_model.py -h
+python3 ./scripts/beautify_model.py -h
 ```
 
 
