@@ -2,7 +2,7 @@ package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfigStandard;
 import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
 import org.eclipse.californium.elements.util.StringUtil;
 
@@ -11,7 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
 
-public class EdhocMapperConfig extends MapperConfig {
+public class EdhocMapperConfig extends MapperConfigStandard {
     protected String host = "";
 
     @ParametersDelegate
