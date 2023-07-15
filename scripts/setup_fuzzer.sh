@@ -10,7 +10,7 @@ setup_psf() {
 
     set -e
     cd "${BASE_DIR}"
-    git clone "git@github.com:protocol-fuzzing/protocol-state-fuzzer.git"
+    git clone "https://github.com/protocol-fuzzing/protocol-state-fuzzer.git"
     cd protocol-state-fuzzer
     mvn install
 
