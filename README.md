@@ -15,13 +15,15 @@
 ## Description
 
 EDHOC-Fuzzer is a protocol state fuzzer of EDHOC clients and servers.
-It draws inspiration from a similar tool, called [DTLS-Fuzzer](https://github.com/assist-project/dtls-fuzzer),
-for the DTLS network protocol.
+It is built upon [ProtocolState-Fuzzer](https://github.com/protocol-fuzzing/protocol-state-fuzzer).
 
 EDHOC-Fuzzer supports the following functionality:
 
 1. Learning a state machine model of an EDHOC client or server implementation.
 2. Testing (executing sequences of inputs) of an EDHOC client or server implementation.
+
+More information about the functionality of EDHOC-Fuzzer, its design and architecture, and some of its uses cases
+can be found in this [open access paper](https://dl.acm.org/doi/10.1145/3597926.3604922).
 
 ## Prerequisites
 
