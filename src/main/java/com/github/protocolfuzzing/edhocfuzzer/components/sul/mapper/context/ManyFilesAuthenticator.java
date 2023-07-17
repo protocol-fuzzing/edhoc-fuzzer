@@ -1,10 +1,10 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.context;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context;
 
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocEndpointInfoPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.ManyFilesAuthenticationConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs.KeyConfig;
 import com.upokecenter.cbor.CBORObject;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.EdhocEndpointInfoPersistent;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.ManyFilesAuthenticationConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs.KeyConfig;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;

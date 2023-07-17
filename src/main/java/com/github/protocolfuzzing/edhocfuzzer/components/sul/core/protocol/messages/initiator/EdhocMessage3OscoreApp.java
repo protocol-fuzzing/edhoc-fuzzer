@@ -1,8 +1,8 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages.initiator;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.initiator;
 
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages.PayloadType;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages.common.AppMessage;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.PayloadType;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.common.AppMessage;
 
 public class EdhocMessage3OscoreApp extends AppMessage {
 

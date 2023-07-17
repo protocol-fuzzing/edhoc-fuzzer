@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.symbols.outputs;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs;
 
 /** Messages that can be received.
  *  Possible additional messages not included are those generated from

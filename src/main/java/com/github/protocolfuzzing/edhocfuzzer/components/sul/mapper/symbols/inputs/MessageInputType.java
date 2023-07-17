@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.symbols.inputs;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs;
 
 public enum MessageInputType {
     EDHOC_MESSAGE_1,

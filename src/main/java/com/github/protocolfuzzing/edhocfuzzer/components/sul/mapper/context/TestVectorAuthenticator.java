@@ -1,10 +1,10 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.context;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context;
 
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocEndpointInfoPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.TestVector;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.TestVectorAuthenticationConfig;
 import com.upokecenter.cbor.CBORObject;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.EdhocEndpointInfoPersistent;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.TestVector;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.TestVectorAuthenticationConfig;
 import org.eclipse.californium.cose.OneKey;
 import org.eclipse.californium.edhoc.Constants;
 import org.eclipse.californium.edhoc.SharedSecretCalculation;

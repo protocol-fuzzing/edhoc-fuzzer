@@ -1,12 +1,12 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs.Ed25519KeySigConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs.P256KeySigConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs.P256KeyStatConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs.X25519KeyStatConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.RunDescriptionPrinter;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs.Ed25519KeySigConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs.P256KeySigConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs.P256KeyStatConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs.X25519KeyStatConfig;
 import org.eclipse.californium.edhoc.Constants;
 
 import java.io.PrintWriter;

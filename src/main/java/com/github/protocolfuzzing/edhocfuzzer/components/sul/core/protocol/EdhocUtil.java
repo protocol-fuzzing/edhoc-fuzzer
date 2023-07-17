@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol;
 
 import net.i2p.crypto.eddsa.Utils;
 import org.eclipse.californium.edhoc.Util;

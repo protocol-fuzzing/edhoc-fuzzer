@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.keyconfigs;
 
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.RunDescriptionPrinter;
 

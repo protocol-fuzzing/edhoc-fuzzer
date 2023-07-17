@@ -1,13 +1,13 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.mappers;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers;
 
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.protocol.ProtocolMessage;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutputChecker;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.ExecutionContext;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.InputMapper;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
 public class EdhocInputMapper extends InputMapper {

@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.authentication;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication;
 
 import com.google.gson.annotations.SerializedName;
 

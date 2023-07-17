@@ -1,5 +1,10 @@
-package gr.ntua.softlab.edhocfuzzer;
+package com.github.protocolfuzzing.edhocfuzzer;
 
+import com.github.protocolfuzzing.edhocfuzzer.components.learner.EdhocAlphabetPojoXml;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.EdhocSulBuilder;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSulClientConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSulServerConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
@@ -25,11 +30,6 @@ import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.tim
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.TimingProbeBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeEnabler;
-import gr.ntua.softlab.edhocfuzzer.components.learner.EdhocAlphabetPojoXml;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.EdhocSulBuilder;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.config.EdhocSulClientConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.config.EdhocSulServerConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 
 public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilder, TestRunnerBuilder, TimingProbeBuilder {
 

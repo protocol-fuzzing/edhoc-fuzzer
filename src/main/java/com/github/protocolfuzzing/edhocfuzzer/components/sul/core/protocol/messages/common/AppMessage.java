@@ -1,9 +1,9 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages.common;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.common;
 
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 

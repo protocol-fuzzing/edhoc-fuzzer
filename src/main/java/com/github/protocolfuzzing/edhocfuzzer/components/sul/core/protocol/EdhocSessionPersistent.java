@@ -1,8 +1,8 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol;
 
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.CoapExchanger;
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.connectors.CoapExchanger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.cose.AlgorithmID;

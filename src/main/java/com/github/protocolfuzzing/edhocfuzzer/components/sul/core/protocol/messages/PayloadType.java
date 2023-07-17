@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages;
 
 public enum PayloadType {
     EDHOC_MESSAGE,

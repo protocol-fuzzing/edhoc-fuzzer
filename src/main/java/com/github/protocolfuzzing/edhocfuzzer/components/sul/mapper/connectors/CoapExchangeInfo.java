@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.connectors;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors;
 
 import org.eclipse.californium.core.server.resources.CoapExchange;
 

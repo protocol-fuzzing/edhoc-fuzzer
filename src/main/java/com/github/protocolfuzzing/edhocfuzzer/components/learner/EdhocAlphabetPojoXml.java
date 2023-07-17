@@ -1,8 +1,8 @@
-package gr.ntua.softlab.edhocfuzzer.components.learner;
+package com.github.protocolfuzzing.edhocfuzzer.components.learner;
 
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.*;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.xml.AlphabetPojoXml;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractInput;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.symbols.inputs.*;
 import jakarta.xml.bind.annotation.*;
 
 import java.util.List;

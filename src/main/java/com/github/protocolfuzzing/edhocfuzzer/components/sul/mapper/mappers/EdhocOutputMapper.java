@@ -1,15 +1,15 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.mappers;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers;
 
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocUtil;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.*;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.ExecutionContext;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.OutputMapper;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.EdhocUtil;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.connectors.*;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
-import gr.ntua.softlab.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

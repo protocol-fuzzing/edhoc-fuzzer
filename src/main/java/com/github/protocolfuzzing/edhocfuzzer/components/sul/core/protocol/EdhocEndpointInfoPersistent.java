@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol;
 
 import com.upokecenter.cbor.CBORObject;
 import org.eclipse.californium.cose.OneKey;

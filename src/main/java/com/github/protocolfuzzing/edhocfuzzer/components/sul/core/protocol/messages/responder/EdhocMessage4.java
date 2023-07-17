@@ -1,7 +1,7 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages.responder;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.responder;
 
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
 
 public class EdhocMessage4 extends EdhocProtocolMessage {
 

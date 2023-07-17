@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.context;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context;
 
 public interface Authenticator {
     void setupOwnAuthenticationCredentials();

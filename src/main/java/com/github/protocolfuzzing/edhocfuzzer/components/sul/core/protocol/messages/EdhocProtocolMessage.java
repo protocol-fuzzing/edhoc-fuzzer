@@ -1,7 +1,7 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages;
 
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.protocol.ProtocolMessage;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.edhoc.Constants;
 

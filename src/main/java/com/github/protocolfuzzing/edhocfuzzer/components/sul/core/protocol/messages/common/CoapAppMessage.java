@@ -1,7 +1,7 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages.common;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.common;
 
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.messages.PayloadType;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.PayloadType;
 
 public class CoapAppMessage extends AppMessage {
 

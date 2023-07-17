@@ -1,6 +1,6 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.connectors;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors;
 
-import gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.CoapResource;

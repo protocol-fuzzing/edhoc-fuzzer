@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core;
 
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.AbstractSul;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulBuilder;

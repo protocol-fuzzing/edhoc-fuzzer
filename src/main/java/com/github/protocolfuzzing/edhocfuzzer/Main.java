@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer;
+package com.github.protocolfuzzing.edhocfuzzer;
 
 import com.github.protocolfuzzing.protocolstatefuzzer.entrypoints.CommandLineParser;
 

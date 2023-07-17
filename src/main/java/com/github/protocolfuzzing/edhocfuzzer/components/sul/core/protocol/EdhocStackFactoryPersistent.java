@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.core.protocol;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol;
 
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.network.ExtendedCoapStackFactory;

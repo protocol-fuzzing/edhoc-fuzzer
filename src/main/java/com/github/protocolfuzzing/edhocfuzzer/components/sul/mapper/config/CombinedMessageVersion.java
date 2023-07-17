@@ -1,4 +1,4 @@
-package gr.ntua.softlab.edhocfuzzer.components.sul.mapper.config;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config;
 
 public enum CombinedMessageVersion {
     v06,
