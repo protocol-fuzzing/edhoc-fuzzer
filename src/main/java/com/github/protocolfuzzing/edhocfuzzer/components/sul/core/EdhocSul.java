@@ -211,7 +211,7 @@ public class EdhocSul extends AbstractSul {
                     abstractOutput.getName());
         }
 
-        LOGGER.info("Received {} from client", expectedMessageType);
+        LOGGER.debug("Received {} from client", expectedMessageType);
         serverWaitForInitialMessageDone = true;
     }
 }
