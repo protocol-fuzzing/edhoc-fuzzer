@@ -93,7 +93,7 @@ index 000000000..1469bc0ba
 +    }
 +}
 diff --git a/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocClient.java b/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocClient.java
-index 63e16ee02..e729d1499 100644
+index 1b37ca16e..f8cc4395b 100644
 --- a/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocClient.java
 +++ b/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocClient.java
 @@ -63,11 +63,11 @@ public class EdhocClient {
@@ -146,7 +146,7 @@ index 63e16ee02..e729d1499 100644
  		
  		URI uri = null; // URI parameter of the request
 diff --git a/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocServer.java b/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocServer.java
-index 7accf5530..6f040aa8a 100644
+index e80583f8f..71b0fc3c4 100644
 --- a/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocServer.java
 +++ b/cf-edhoc/src/test/java/org/eclipse/californium/edhoc/EdhocServer.java
 @@ -136,6 +136,12 @@ public class EdhocServer extends CoapServer {
@@ -178,7 +178,7 @@ index 7accf5530..6f040aa8a 100644
 +				return;
 +			}
 +		}
- 		appProfiles.put(uriLocal + "/.well-known/edhoc", appProfile);
+ 		appProfiles.put("/.well-known/edhoc", appProfile);
  		
  		try {
 diff --git a/cf-oscore/pom.xml b/cf-oscore/pom.xml
