@@ -17,7 +17,7 @@ setup_edhoc_rs() {
   readonly COMMIT_HASH="a3abcbb08c3f7514008fc43405aab3493600ecf5"
 
   set -e
-  echo "Setting up EDHOC-Rust"
+  echo "Setting up EDHOC-Rust in ${SOURCES_DIR}"
   cd "${SOURCES_DIR}"
   git clone https://github.com/openwsn-berkeley/edhoc-rs.git
   cd edhoc-rs
@@ -45,7 +45,7 @@ setup_rise() {
   readonly EDHOC_SERVER="${CF_EDHOC_TEST_DIR}/EdhocServer.java"
 
   set -e
-  echo "Setting up RISE"
+  echo "Setting up RISE in ${SOURCES_DIR}"
   cd "${SOURCES_DIR}"
   git clone https://github.com/rikard-sics/californium.git
   cd californium
@@ -69,7 +69,7 @@ setup_sifis_home() {
   readonly COMMIT_HASH="9956c8cf9a6f8cb3ab09e48842ceafeb9d2a790e"
 
   set -e
-  echo "Setting up SIFIS-HOME"
+  echo "Setting up SIFIS-HOME in ${SOURCES_DIR}"
   cd "${SOURCES_DIR}"
   git clone https://github.com/sifis-home/wp3-solutions.git
   SF_HOME_DIR="${SOURCES_DIR}/wp3-solutions"
@@ -100,7 +100,7 @@ setup_uoscore_uedhoc() {
   readonly COMMIT_HASH="fbaa96caa1a2028d369c70e24a173caa60a0ce15"
 
   set -e
-  echo "Setting up uOSCORE-uEDHOC"
+  echo "Setting up uOSCORE-uEDHOC in ${SOURCES_DIR}t"
   cd "${SOURCES_DIR}"
   git clone --recurse-submodules https://github.com/eriptic/uoscore-uedhoc.git
   UOE_DIR="${SOURCES_DIR}/uoscore-uedhoc"
