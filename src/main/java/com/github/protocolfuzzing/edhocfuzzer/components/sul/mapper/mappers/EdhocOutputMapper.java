@@ -127,8 +127,26 @@ public class EdhocOutputMapper extends OutputMapper {
                 return abstractOutputAfterCheck(ok, MessageOutputType.EDHOC_MESSAGE_2.name());
             }
 
-            case EDHOC_MESSAGE_3_OR_EDHOC_MESSAGE_4 -> {
+            case EDHOC_MESSAGE_3_OR_4 -> {
                 // message may be 3 or 4
+                LOGGER.info("Reading as EDHOC Message 3 or 4");
+                ok = messageProcessorPersistent.readMessage3(responsePayload);
+                if (ok) {
+                    return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_3.name());
+                }
+
+                ok = messageProcessorPersistent.readMessage4(responsePayload);
+                return abstractOutputAfterCheck(ok, MessageOutputType.EDHOC_MESSAGE_4.name());
+            }
+
+            case EDHOC_MESSAGE_2_OR_3_OR_4 -> {
+                // message may be 2 or 3 or 4
+                LOGGER.info("Reading as EDHOC Message 2 or 3 or 4");
+                ok = messageProcessorPersistent.readMessage2(responsePayload);
+                if (ok) {
+                    return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_2.name());
+                }
+
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
                 if (ok) {
                     return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_3.name());
