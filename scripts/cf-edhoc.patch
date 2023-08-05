@@ -57,7 +57,7 @@ index 40a137656..b4d4c5114 100644
  		final String digest = "SHA256"; // Hash to use
  
 diff --git a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
-index a255c4bd1..de3353efe 100644
+index 8872b04d7..eabbd1b36 100644
 --- a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
 +++ b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
 @@ -286,7 +286,7 @@ public class SharedSecretCalculation {
@@ -155,7 +155,7 @@ index a255c4bd1..de3353efe 100644
       * @return one of the square roots
       */
 -	static BigInteger squareMod(BigInteger val, BigInteger prime) {
-+	private static BigInteger squareMod(BigInteger val, BigInteger prime) {
++	protected static BigInteger squareMod(BigInteger val, BigInteger prime) {
  
  		BigInteger three = new BigInteger("3");
  		BigInteger four = new BigInteger("4");
@@ -167,21 +167,21 @@ index a255c4bd1..de3353efe 100644
 +	public static byte[] generateSharedSecret(OneKey privateKey, OneKey publicKey) {
  
  		if (privateKey == null || publicKey == null) {
- 			System.err.println("Public key and/or privat key not found.");
+ 			System.err.println("Public key and/or private key not found.");
 @@ -835,7 +835,7 @@ public class SharedSecretCalculation {
  	 * 
  	 * @throws CoseException
  	 */
 -	static OneKey convertEd25519ToCurve25519(OneKey initialKey) throws CoseException {
-+	private static OneKey convertEd25519ToCurve25519(OneKey initialKey) throws CoseException {
++	protected static OneKey convertEd25519ToCurve25519(OneKey initialKey) throws CoseException {
  
  		FieldElement y = null;
  		try {
 diff --git a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
-index 974fa820f..83922130b 100644
+index 1e6e8a3fd..e305a8749 100644
 --- a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
 +++ b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
-@@ -1155,7 +1155,7 @@ public class Util {
+@@ -1156,7 +1156,7 @@ public class Util {
  		claimSetMap.Add(Constants.CWT_CLAIMS_SUB, subjectName);
  		claimSetMap.Add(Constants.CWT_CLAIMS_CNF, cnfMap);
  
@@ -191,7 +191,7 @@ index 974fa820f..83922130b 100644
          return claimSetMap.EncodeToBytes();
  		
 diff --git a/cf-oscore/pom.xml b/cf-oscore/pom.xml
-index d1abd4e7d..18921706a 100644
+index d1abd4e7d..7c8701b3a 100644
 --- a/cf-oscore/pom.xml
 +++ b/cf-oscore/pom.xml
 @@ -38,7 +38,8 @@

@@ -23,7 +23,7 @@ setup_cf_edhoc() {
     # setup cf-edhoc library
 
     readonly PATCH_FILE="${SCRIPT_DIR}/cf-edhoc.patch"
-    readonly COMMIT_HASH="723c652947bf22507dc10a72416d7896dcbc3649"
+    readonly COMMIT_HASH="d728368ac44dabceff2b4a2c5fcd757552e65f9e"
 
     set -e
     cd "${BASE_DIR}"
