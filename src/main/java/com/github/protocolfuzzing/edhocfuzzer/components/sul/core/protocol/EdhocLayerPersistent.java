@@ -214,10 +214,10 @@ public class EdhocLayerPersistent extends AbstractLayer {
         // Extract EDHOC message_3 from the stored CBOR sequence (? C_R, EDHOC message_3)
         CBORObject[] message3SequenceElements = CBORObject.DecodeSequenceFromBytes(message3Sequence);
         int index = messageProcessorPersistent.getEdhocMapperState().sendWithPrependedCX() ? 1 : 0;
-        byte[] edhocMessage3 = message3SequenceElements[index].GetByteString();
+        CBORObject edhocMessage3Cbor = message3SequenceElements[index];
 
         LOGGER.debug(EdhocUtil.byteArrayToString("Message 3 Sequence ", message3Sequence));
-        LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 3", edhocMessage3));
+        LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 3", edhocMessage3Cbor.GetByteString()));
         LOGGER.debug(EdhocUtil.byteArrayToString("OSCORE payload", oscorePayload));
 
         byte[] combinedMessagePart1, combinedMessagePart2;
@@ -226,13 +226,13 @@ public class EdhocLayerPersistent extends AbstractLayer {
             // The combined message is composed of two concatenated elements:
             // 1. A CBOR byte string, with value the EDHOC Message 3
             // 2. A CBOR byte string, with value the original OSCORE payload
-            combinedMessagePart1 = CBORObject.FromObject(edhocMessage3).EncodeToBytes();
+            combinedMessagePart1 = CBORObject.FromObject(edhocMessage3Cbor.GetByteString()).EncodeToBytes();
             combinedMessagePart2 = CBORObject.FromObject(oscorePayload).EncodeToBytes();
         } else {
             // The combined message is composed of two concatenated elements:
             // 1. The EDHOC Message 3 (of type Byte String)
             // 2. The original OSCORE payload
-            combinedMessagePart1 = edhocMessage3;
+            combinedMessagePart1 = edhocMessage3Cbor.EncodeToBytes();
             combinedMessagePart2 = oscorePayload;
         }
 
