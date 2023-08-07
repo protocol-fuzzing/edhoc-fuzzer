@@ -18,7 +18,7 @@ W_METHOD,WP_METHOD
 
 ##### EdhocMapperConfig #####
 -protocolVersion
-v19
+v20
 
 -combinedMessageVersion
 v07

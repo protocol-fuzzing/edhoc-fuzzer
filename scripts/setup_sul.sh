@@ -35,7 +35,7 @@ setup_edhoc_rs() {
 
 setup_rise() {
   # rise
-  readonly COMMIT_HASH="500f1bea0128e91a1bfee72723a74b4ca565ac02"
+  readonly COMMIT_HASH="d728368ac44dabceff2b4a2c5fcd757552e65f9e"
   readonly PREFIX="${SOURCES_DIR}/californium/cf-edhoc/src"
   readonly POSTFIX="java/org/eclipse/californium/edhoc"
   readonly CF_EDHOC_MAIN_DIR="${PREFIX}/main/${POSTFIX}"
