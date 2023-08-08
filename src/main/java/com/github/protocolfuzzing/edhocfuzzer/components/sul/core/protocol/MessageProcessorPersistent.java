@@ -35,7 +35,8 @@ public class MessageProcessorPersistent {
     public enum StructureCodes {
         EDHOC_MESSAGE_1,
         EDHOC_MESSAGE_2,
-        EDHOC_MESSAGE_3_OR_EDHOC_MESSAGE_4,
+        EDHOC_MESSAGE_2_OR_3_OR_4,
+        EDHOC_MESSAGE_3_OR_4,
         EDHOC_ERROR_MESSAGE,
         UNKNOWN_MESSAGE
     }
@@ -72,12 +73,21 @@ public class MessageProcessorPersistent {
                 return StructureCodes.EDHOC_MESSAGE_1;
             }
             case 2 -> {
-                // message 2 has 2 elements
-                return StructureCodes.EDHOC_MESSAGE_2;
+                if (hasProtocolVersionLeqV19()) {
+                    // message 2 has 2 elements for <=v19
+                    return StructureCodes.EDHOC_MESSAGE_2;
+                }
+
+                return StructureCodes.UNKNOWN_MESSAGE;
             }
             case 1 -> {
-                // message 3 and 4 have 1 element
-                return StructureCodes.EDHOC_MESSAGE_3_OR_EDHOC_MESSAGE_4;
+                if (hasProtocolVersionLeqV19()) {
+                    // message 3 and 4 have 1 element for <=v19
+                    return StructureCodes.EDHOC_MESSAGE_3_OR_4;
+                }
+
+                // message 2, 3 and 4 have 1 element
+                return StructureCodes.EDHOC_MESSAGE_2_OR_3_OR_4;
             }
             default -> {
                 return StructureCodes.UNKNOWN_MESSAGE;
@@ -349,28 +359,33 @@ public class MessageProcessorPersistent {
         System.arraycopy(gY_Ciphertext2, gYLength, ciphertext2, 0, ciphertext2Length);
         LOGGER.debug(EdhocUtil.byteArrayToString("CIPHERTEXT_2", ciphertext2));
 
-        // C_R
-        index++;
-        CBORObject cR = objectListRequest[index];
+        CBORObject cR = null;
+        byte[] connectionIdentifierResponder = null;
 
-        if (cR.getType() != CBORType.ByteString && cR.getType() != CBORType.Integer) {
-            LOGGER.error("R_M2: C_R must be a byte string or an integer");
-            return false;
-        }
+        if (hasProtocolVersionLeqV19()) {
+            // C_R for version leq v19
+            index++;
+            cR = objectListRequest[index];
 
-        byte[] connectionIdentifierResponder = decodeIdentifier(cR);
-        if (connectionIdentifierResponder == null) {
-            LOGGER.error("R_M2: Invalid encoding of C_R");
-            return false;
-        }
+            if (cR.getType() != CBORType.ByteString && cR.getType() != CBORType.Integer) {
+                LOGGER.error("R_M2: C_R must be a byte string or an integer");
+                return false;
+            }
 
-        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
-        LOGGER.debug(EdhocUtil.byteArrayToString("C_R", cR.EncodeToBytes()));
+            connectionIdentifierResponder = decodeIdentifier(cR);
+            if (connectionIdentifierResponder == null) {
+                LOGGER.error("R_M2: Invalid encoding of C_R");
+                return false;
+            }
 
-        if (session.getApplicationProfile().getUsedForOSCORE()
+            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
+            LOGGER.debug(EdhocUtil.byteArrayToString("C_R", cR.EncodeToBytes()));
+
+            if (session.getApplicationProfile().getUsedForOSCORE()
                 && Arrays.equals(connectionIdentifierInitiator, connectionIdentifierResponder)) {
-            LOGGER.error("R_M2: C_R must be different from C_I");
-            return false;
+                LOGGER.error("R_M2: C_R must be different from C_I");
+                return false;
+            }
         }
 
         /* Decrypt CIPHERTEXT_2 */
@@ -380,8 +395,13 @@ public class MessageProcessorPersistent {
         byte[] hashMessage1 = session.getHashMessage1();
         byte[] hashMessage1SerializedCBOR = CBORObject.FromObject(hashMessage1).EncodeToBytes();
         byte[] gYSerializedCBOR = CBORObject.FromObject(gY).EncodeToBytes();
-        byte[] cRSerializedCBOR = cR.EncodeToBytes();
-        byte[] th2 = computeTH2(hashAlgorithm, gYSerializedCBOR, cRSerializedCBOR, hashMessage1SerializedCBOR);
+
+        byte[] th2 = null;
+        if (hasProtocolVersionLeqV19()) {
+            th2 = computeTH2(hashAlgorithm, gYSerializedCBOR, cR.EncodeToBytes(), hashMessage1SerializedCBOR);
+        } else {
+            th2 = computeTH2(hashAlgorithm, gYSerializedCBOR, new byte[0], hashMessage1SerializedCBOR);
+        }
 
         if (th2 == null) {
             LOGGER.error("R_M2: Computing TH2");
@@ -430,6 +450,7 @@ public class MessageProcessorPersistent {
         LOGGER.debug(EdhocUtil.byteArrayToString("Plaintext retrieved from CIPHERTEXT_2", plaintext2));
 
         // Parse the plaintext as a CBOR sequence
+        // baseIndex is the index of ID_CRED_R
         int baseIndex = 0;
         CBORObject[] plaintextElementList;
         try {
@@ -452,10 +473,42 @@ public class MessageProcessorPersistent {
             }
         }
 
-        // ID_CRED_R and Signature_or_MAC_2 should be contained
-        if (plaintextElementList.length - baseIndex < 2) {
-            LOGGER.error("R_M2: Plaintext_2 contains less than two elements");
-            return false;
+        if (hasProtocolVersionLeqV19()) {
+            // ID_CRED_R and Signature_or_MAC_2 should be contained
+            if (plaintextElementList.length - baseIndex < 2) {
+                LOGGER.error("R_M2: Plaintext_2 contains less than two elements");
+                return false;
+            }
+        } else {
+            // C_R, ID_CRED_R and Signature_or_MAC_2 should be contained
+            if (plaintextElementList.length - baseIndex < 3) {
+                LOGGER.error("R_M2: Plaintext_2 contains less than three elements");
+                return false;
+            }
+
+            // C_R for version greater than v19
+            cR = plaintextElementList[baseIndex];
+            baseIndex++;
+
+            if (cR.getType() != CBORType.ByteString && cR.getType() != CBORType.Integer) {
+                LOGGER.error("R_M2: C_R must be a byte string or an integer");
+                return false;
+            }
+
+            connectionIdentifierResponder = decodeIdentifier(cR);
+            if (connectionIdentifierResponder == null) {
+                LOGGER.error("R_M2: Invalid encoding of C_R");
+                return false;
+            }
+
+            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
+            LOGGER.debug(EdhocUtil.byteArrayToString("C_R", cR.EncodeToBytes()));
+
+            if (session.getApplicationProfile().getUsedForOSCORE()
+                && Arrays.equals(connectionIdentifierInitiator, connectionIdentifierResponder)) {
+                LOGGER.error("R_M2: C_R must be different from C_I");
+                return false;
+            }
         }
 
         // check ID_CRED_R
@@ -1366,8 +1419,13 @@ public class MessageProcessorPersistent {
         byte[] hashMessage1 = session.getHashMessage1();
         byte[] hashMessage1SerializedCBOR = CBORObject.FromObject(hashMessage1).EncodeToBytes();
         byte[] gYSerializedCBOR = gY.EncodeToBytes();
-        byte[] cRSerializedCBOR = cR.EncodeToBytes();
-        byte[] th2 = computeTH2(hashAlgorithm, gYSerializedCBOR, cRSerializedCBOR, hashMessage1SerializedCBOR);
+
+        byte[] th2 = null;
+        if (hasProtocolVersionLeqV19()) {
+            th2 = computeTH2(hashAlgorithm, gYSerializedCBOR, cR.EncodeToBytes(), hashMessage1SerializedCBOR);
+        } else {
+            th2 = computeTH2(hashAlgorithm, gYSerializedCBOR, new byte[0], hashMessage1SerializedCBOR);
+        }
 
         if (th2 == null) {
             LOGGER.error("W_M2: Computing TH_2");
@@ -1475,6 +1533,10 @@ public class MessageProcessorPersistent {
         List<CBORObject> plaintextElementList = new ArrayList<>();
         CBORObject plaintextElement;
 
+        if (!hasProtocolVersionLeqV19()) {
+            plaintextElementList.add(cR);
+        }
+
         if (session.getIdCred().ContainsKey(HeaderKeys.KID.AsCBOR())) {
             // ID_CRED_R uses 'kid', whose value is the only thing to include in the plaintext
             CBORObject kid = session.getIdCred().get(HeaderKeys.KID.AsCBOR());
@@ -1515,8 +1577,10 @@ public class MessageProcessorPersistent {
         objectList.add(CBORObject.FromObject(gY_Ciphertext2));
         LOGGER.debug(EdhocUtil.byteArrayToString("G_Y | CIPHERTEXT_2", gY_Ciphertext2));
 
-        // The outer CBOR sequence finishes with the connection identifier C_R
-        objectList.add(cR);
+        if (hasProtocolVersionLeqV19()) {
+            // The outer CBOR sequence finishes with the connection identifier C_R
+            objectList.add(cR);
+        }
 
         /* Prepare EDHOC Message 2 */
         byte[] message2 = EdhocUtil.buildCBORSequence(objectList);
@@ -2969,8 +3033,15 @@ public class MessageProcessorPersistent {
     }
 
     protected boolean hasProtocolVersionLeqV17() {
-        return switch(edhocMapperState.getProtocolVersion()) {
-            case v14, v15, v16, v17 -> true;
+        return hasProtocolVersionLeqV15() || switch(edhocMapperState.getProtocolVersion()) {
+            case v16, v17 -> true;
+            default -> false;
+        };
+    }
+
+    protected boolean hasProtocolVersionLeqV19() {
+        return hasProtocolVersionLeqV17() || switch(edhocMapperState.getProtocolVersion()) {
+            case v18, v19 -> true;
             default -> false;
         };
     }
@@ -3091,10 +3162,11 @@ public class MessageProcessorPersistent {
                 continue;
             }
 
-            if (!supportedEADs.contains(eadLabel)) {
+            int eadLabelUnsigned = Math.abs(eadLabel);
+            if (!supportedEADs.contains(eadLabelUnsigned)) {
                 if (eadLabel < 0) {
                     // The EAD item is critical but not supported
-                    LOGGER.error("Unsupported EAD_" + msgNum + " critical item with ead_label " + eadLabel);
+                    LOGGER.error("Unsupported EAD_" + msgNum + " critical item with ead_label " + eadLabelUnsigned);
                     return null;
                 }
 
