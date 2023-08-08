@@ -14,7 +14,7 @@ mkdir -p "${SOURCES_DIR}" "${SERVERS_DIR}" "${CLIENTS_DIR}"
 
 setup_edhoc_rs() {
   # edhoc-rs
-  readonly COMMIT_HASH="a3abcbb08c3f7514008fc43405aab3493600ecf5"
+  readonly COMMIT_HASH="81984f9ff8dffef92949c9e28a31d3a3a5bd448d"
 
   set -e
   echo "Setting up EDHOC-Rust in ${SOURCES_DIR}"

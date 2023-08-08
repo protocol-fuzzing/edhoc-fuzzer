@@ -18,7 +18,8 @@ W_METHOD,WP_METHOD
 
 ##### EdhocMapperConfig #####
 -protocolVersion
-v17
+v20
+
 ## Mapper Auth ##
 
 -mapCredType
