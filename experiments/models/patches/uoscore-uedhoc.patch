@@ -1,14 +1,13 @@
 diff --git a/samples/linux_edhoc_oscore/initiator_client/src/main.cpp b/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
-index 5f37a6e..b842385 100644
+index cf4694d..c365fda 100644
 --- a/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
 +++ b/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
-@@ -271,7 +271,8 @@ int main()
- 			protected_pdu->reset();
- 			protected_pdu->setVersion(1);
- 			protected_pdu->setType(CoapPDU::COAP_CONFIRMABLE);
--			protected_pdu->setCode(CoapPDU::COAP_GET);
-+			//protected_pdu->setCode(CoapPDU::COAP_GET);
-+			protected_pdu->setCode(CoapPDU::COAP_POST);
- 			protected_pdu->setToken((uint8_t *)&(++token),
- 						sizeof(token));
- 			protected_pdu->setURI((char *)"tv1", 3);
+@@ -276,7 +276,7 @@ int main()
+ 		protected_pdu->reset();
+ 		protected_pdu->setVersion(1);
+ 		protected_pdu->setType(CoapPDU::COAP_CONFIRMABLE);
+-		protected_pdu->setCode(CoapPDU::COAP_GET);
++		protected_pdu->setCode(CoapPDU::COAP_POST);
+ 		protected_pdu->setToken((uint8_t *)&(++token), sizeof(token));
+ 		protected_pdu->setURI((char *)"tv1", 3);
+ 		protected_pdu->setMessageID(mid1++);

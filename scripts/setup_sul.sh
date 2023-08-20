@@ -97,10 +97,10 @@ setup_sifis_home() {
 
 setup_uoscore_uedhoc() {
   # uoscore-uedhoc
-  readonly COMMIT_HASH="fbaa96caa1a2028d369c70e24a173caa60a0ce15"
+  readonly COMMIT_HASH="5fe2cb613bd7e4590bd1b00c2adf181ac0229379"
 
   set -e
-  echo "Setting up uOSCORE-uEDHOC in ${SOURCES_DIR}t"
+  echo "Setting up uOSCORE-uEDHOC in ${SOURCES_DIR}"
   cd "${SOURCES_DIR}"
   git clone --recurse-submodules https://github.com/eriptic/uoscore-uedhoc.git
   UOE_DIR="${SOURCES_DIR}/uoscore-uedhoc"
