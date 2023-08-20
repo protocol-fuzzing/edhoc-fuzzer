@@ -30,9 +30,9 @@ can be found in this [open access paper](https://dl.acm.org/doi/10.1145/3597926.
 * Java 17 JDK.
 * maven correctly setup to point to Java 17 JDK.
 * graphviz library, containing the dot utility, which should be located in the system's PATH.
+* python >=3.6 and pydot interface >=1.4.2, in order to use the [beautify_model.sh](scripts/beautify_model.sh) script.
 * (suggested) make utility, rust and cargo required by the setup of some SULs.
-* (suggested) python >=3.6 and pydot interface >=1.4.2, in order to use the [beautify_model](scripts/beautify_model.sh) script.
-* (optional) openssl utility, required by the [gen_auth_hierarchy](scripts/gen_auth_hierarchy.sh) script.
+* (optional) openssl utility, required by the [gen_auth_hierarchy.sh](scripts/gen_auth_hierarchy.sh) script.
 
 ## Setup
 
@@ -43,6 +43,8 @@ Assuming the commands are executed from the root directory:
 java -version
 mvn -version
 dot -V
+python3 --version
+pip show pydot
 ```
 
 2. To set up EDHOC-Fuzzer use:
@@ -70,19 +72,18 @@ After setting up the EDHOC-Fuzzer and the SUL of interest, one can learn the mod
 using one of the argument files in the [experiments/args](experiments/args) subdirectories
 (or using a file similar to them).
 Command-line arguments can be also provided, in order to overwrite those in the argument file.
-Notice the use of `@` before the argument file.
-The simplest high-level command is:
+The `@` symbol before the argument file can be omitted.
+The simplest command is:
 ```bash
 java -jar edhoc-fuzzer.jar @path/to/argfile
 ```
-The above command without the last part (the argument file) lists the command line options that EDHOC-Fuzzer accepts.
+The above command without the argument file lists all the available command line options.
 
 
 ## Testing
-After setting up the EDHOC-Fuzzer and the SUL of interest, an argument file inside the **./experiments/args/**
-subdirectories can be used or a similar one can be created. The same applies to the test sequences inside the
-**./experiments/tests/** subdirectories. Testing can be used prior to learning, in order to check that everything
-runs as expected. The test command is:
+Testing requires not only an argument file but also a test sequence, some of which can be found
+in the [experiments/tests](experiments/tests) subdirectories. Testing can also be used prior to learning,
+in order to check that everything runs as expected. The test command is:
 ```
 java -jar edhoc-fuzzer.jar @path/to/arg/file -test path/to/test/file [-additional_param]
 
@@ -102,21 +103,26 @@ Additional Testing Parameters:
 
 
 ## Visualizing
-The EDHOC-Fuzzer, after the learning process generated the **learnedModel.dot** file, tries to create the
-**learnedModel.pdf** file.
-In case the conversion to .pdf fails, the following command can be used:
+The EDHOC-Fuzzer, after the learning process generated the **learnedModel.dot** file, tries to:
+
+* create the **learnedModel.pdf** file using the `dot` utility;
+* create the beautified versions of the learned model: **learnedModelbtf.dot** and **learnedModelbtf.pdf**
+  using the `./scripts/beautify_model.sh` script
+
+For the conversion to `.pdf`, EDHOC-Fuzzer uses the command:
 ```bash
-dot -Tpdf path/to/in_model.dot > path/to/out_model.pdf
+dot -Tpdf path/to/in_model.dot -o path/to/out_model.pdf
 ```
 
-After a .dot model has been generated, it can be visually enhanced, in the form of merging same transitions and
-replacing each label with a shorter one, using the following wrapper script:
+For the beautification EDHOC-Fuzzer *currently* uses the script:
 ```bash
 ./scripts/beautify_model.sh
 ```
-The label replacements can be found in the **./scripts/replacements.txt**. The optional arguments shown in the usage
-message can be used when the model provided corresponds to a client implementation. This way the initial message, which a
-client sends to start the EDHOC protocol, is added to the model.
+*Beautification* involves the merging of same transitions and the replacing of
+each label with a shorter one. The label replacements can be found in the **./scripts/replacements.txt**.
+The script's optional arguments can be used when the provided model corresponds
+to a client implementation, in order to add to the model the initial message that
+the client implementation sends to start the EDHOC protocol.
 
 The above script is just a convenient wrapper of the following more customizable script:
 ```bash
@@ -165,6 +171,7 @@ The subdirectories *mapper/*, *sul/* can be generated using the *./scripts/gen_a
 * **results/** is the output directory designated by the *./experiments/args* files containing the resulting
 subdirectories during a learning process. Initially it does not exist
 
+* **saved_results/** is the directory containing saved models used for regression testing.
 
 * **tests/** contains a set of input test sequences used as input to the EDHOC-Fuzzer for testing them against
 a client/server implementation
