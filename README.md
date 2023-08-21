@@ -103,23 +103,23 @@ Additional Testing Parameters:
 
 
 ## Visualizing
-The EDHOC-Fuzzer, after the learning process generated the **learnedModel.dot** file, tries to:
+After the learning process has generated the **learnedModel.dot** file, EDHOC-Fuzzer tries to:
 
 * create the **learnedModel.pdf** file using the `dot` utility;
 * create the beautified versions of the learned model: **learnedModelbtf.dot** and **learnedModelbtf.pdf**
-  using the `./scripts/beautify_model.sh` script
+  using the `./scripts/beautify_model.sh` script.
 
 For the conversion to `.pdf`, EDHOC-Fuzzer uses the command:
 ```bash
 dot -Tpdf path/to/in_model.dot -o path/to/out_model.pdf
 ```
 
-For the beautification EDHOC-Fuzzer *currently* uses the script:
+For the beautification, EDHOC-Fuzzer *currently* uses the script:
 ```bash
 ./scripts/beautify_model.sh
 ```
-*Beautification* involves the merging of same transitions and the replacing of
-each label with a shorter one. The label replacements can be found in the **./scripts/replacements.txt**.
+*Beautification* involves the merging of same transitions and replacing of labels with shorter ones.
+The label replacements can be found in the **./scripts/replacements.txt**.
 The script's optional arguments can be used when the provided model corresponds
 to a client implementation, in order to add to the model the initial message that
 the client implementation sends to start the EDHOC protocol.
