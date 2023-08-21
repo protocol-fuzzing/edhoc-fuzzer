@@ -22,8 +22,10 @@ EDHOC-Fuzzer supports the following functionality:
 1. Learning a state machine model of an EDHOC client or server implementation.
 2. Testing (executing sequences of inputs) of an EDHOC client or server implementation.
 
-More information about the functionality of EDHOC-Fuzzer, its design and architecture, and some of its uses cases
-can be found in this [open access paper](https://dl.acm.org/doi/10.1145/3597926.3604922).
+More information about the functionality of EDHOC-Fuzzer, its design and architecture,
+and some of its early uses cases can be found in this
+[open access paper](https://dl.acm.org/doi/10.1145/3597926.3604922)
+published in the proceedings of ISSTA 2023.
 
 ## Prerequisites
 
@@ -61,7 +63,8 @@ is created in the root directory.
 ./scripts/setup_sul.sh
 ```
 This will show the usage message of the script, in order to provide a SUL name as argument.
-This process will fetch, possibly patch, and build the corresponding remote project and the following directories should be created:
+This process will fetch, possibly patch and build the corresponding remote project,
+and the following directories should be created:
 * `experiments/models/sources`, containing the remote project and the executables;
 * `experiments/models/clients`, containing a directory structure with soft links to the client executables;
 * `experiments/models/servers`, containing a directory structure with soft links to the server executables.
