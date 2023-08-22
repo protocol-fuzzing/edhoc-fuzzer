@@ -56,13 +56,13 @@ tv1
 
 ##### SulConfig #####
 -responseWait
-2500
+3000
 -processDir
 ${models.servers}/uoscore-uedhoc/
 -cmd
 ./linux-edhoc-responder
 -startWait
-2500
+1000
 
 
 ##### EdhocSulServerConfig #####

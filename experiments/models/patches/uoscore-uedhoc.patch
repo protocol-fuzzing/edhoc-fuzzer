@@ -1,5 +1,5 @@
 diff --git a/samples/linux_edhoc_oscore/initiator_client/src/main.cpp b/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
-index cf4694d..c365fda 100644
+index cf4694d..b385a87 100644
 --- a/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
 +++ b/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
 @@ -276,7 +276,7 @@ int main()
@@ -11,3 +11,14 @@ index cf4694d..c365fda 100644
  		protected_pdu->setToken((uint8_t *)&(++token), sizeof(token));
  		protected_pdu->setURI((char *)"tv1", 3);
  		protected_pdu->setMessageID(mid1++);
+@@ -344,8 +344,8 @@ int main()
+ 			}
+ 		}
+ 
+-		/*wait 5 sec before sending the next packet*/
+-		sleep(5);
++		/*wait 0.5 sec before sending the next packet*/
++		sleep(0.5);
+ 	}
+ 	close(sockfd);
+ 	return 0;
