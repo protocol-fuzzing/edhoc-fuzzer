@@ -143,8 +143,8 @@ jobs:
 
       - name: Test SIFIS-HOME Server (phase_1)
         run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1 -roundLimit 3
-          ./scripts/diff_hyps.sh experiments/saved_results/servers/sifis-home_phase_1 experiments/results/servers/sifis-home_phase_1 3
+          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1 -roundLimit 5
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/sifis-home_phase_1 experiments/results/servers/sifis-home_phase_1 5
 
   uOSCORE-uEDHOC-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
