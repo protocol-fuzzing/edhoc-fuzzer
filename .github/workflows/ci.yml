@@ -13,6 +13,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v1
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer.sh -l
@@ -39,6 +40,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v1
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer.sh -l
@@ -65,6 +67,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v1
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer.sh -l
@@ -88,6 +91,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v1
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer.sh -l
@@ -111,6 +115,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v1
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer.sh -l
@@ -134,6 +139,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v1
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer.sh -l
@@ -157,6 +163,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v1
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer.sh -l
@@ -180,6 +187,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v1
+        run: pip3 install pydot
 
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer.sh -l
