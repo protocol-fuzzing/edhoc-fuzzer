@@ -188,6 +188,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - uses: ts-graphviz/setup-graphviz@v1
+      - name: Install pydot
         run: pip3 install pydot
 
       - name: Setup EDHOC-Fuzzer
