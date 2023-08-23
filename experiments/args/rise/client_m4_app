@@ -64,7 +64,7 @@ ${models.clients}/rise
 -cmd
 java -cp cf-edhoc.jar org.eclipse.californium.edhoc.EdhocClient 5
 -startWait
-1000
+500
 
 
 ##### EdhocSulClientConfig #####

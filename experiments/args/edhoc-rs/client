@@ -57,7 +57,7 @@ ${models.clients}/edhoc-rs
 -cmd
 ./coapclient
 -startWait
-1000
+500
 
 
 ##### EdhocSulClientConfig #####

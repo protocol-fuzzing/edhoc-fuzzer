@@ -57,7 +57,7 @@ ${models.servers}/edhoc-rs
 -cmd
 ./coapserver
 -startWait
-1000
+500
 
 
 ##### EdhocSulServerConfig #####

@@ -60,7 +60,7 @@ ${models.clients}/sifis-home
 -cmd
 java -cp edhoc-applications.jar se.sics.edhocapps.Phase2Client
 -startWait
-1000
+500
 
 
 ##### EdhocSulClientConfig #####

@@ -61,7 +61,7 @@ ${models.clients}/uoscore-uedhoc
 -cmd
 ./linux-edhoc-initiator
 -startWait
-1000
+500
 
 
 ##### EdhocSulClientConfig #####
