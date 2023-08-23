@@ -51,7 +51,7 @@ Initiator
 
 ##### SulConfig #####
 -responseWait
-15000
+2000
 -processDir
 ${models.servers}/edhoc-rs
 -cmd

@@ -51,7 +51,7 @@ Responder
 
 ##### SulConfig #####
 -responseWait
-7000
+2000
 -processDir
 ${models.clients}/edhoc-rs
 -cmd
