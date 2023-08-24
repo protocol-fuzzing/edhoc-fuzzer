@@ -52,7 +52,7 @@ setup_fuzzer() {
 
     set -e
     cd "${BASE_DIR}"
-    mvn clean package
+    mvn clean verify
     ln -sf "${BASE_DIR}"/target/edhoc-fuzzer-*-jar-with-dependencies.jar edhoc-fuzzer.jar
     set +e
 }

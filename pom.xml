@@ -15,7 +15,7 @@
 
         <protocol-state-fuzzer.version>1.0.0</protocol-state-fuzzer.version>
         <cf-edhoc.version>0.0.0</cf-edhoc.version>
-        <jaxb-api.version>4.0.0</jaxb-api.version>
+        <jakarta-xml.version>4.0.0</jakarta-xml.version>
         <jcommander.version>1.82</jcommander.version>
         <log4j.version>2.20.0</log4j.version>
         <gson.version>2.10.1</gson.version>
@@ -37,11 +37,11 @@
                 <version>${cf-edhoc.version}</version>
             </dependency>
 
-            <!-- jaxb api -->
+            <!-- jakarta-xml api -->
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
                 <artifactId>jakarta.xml.bind-api</artifactId>
-                <version>${jaxb-api.version}</version>
+                <version>${jakarta-xml.version}</version>
             </dependency>
 
             <!-- jcommander -->
@@ -51,14 +51,12 @@
                 <version>${jcommander.version}</version>
             </dependency>
 
-            <!-- log4j -->
+            <!-- log4j-api -->
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-bom</artifactId>
+                <artifactId>log4j-api</artifactId>
                 <version>${log4j.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-           </dependency>
+            </dependency>
 
             <!-- gson -->
             <dependency>
@@ -83,16 +81,19 @@
             <artifactId>cf-edhoc</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.beust/jcommander -->
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -107,7 +108,46 @@
 
     <build>
         <plugins>
-            <!-- Format the source code -->
+            <!-- Disable jar:jar run on package phase -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Verify phase -->
+
+            <!-- Dependency analysis -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>analyze</id>
+                        <goals>
+                            <goal>analyze-only</goal>
+                        </goals>
+                        <configuration>
+                            <failOnWarning>true</failOnWarning>
+
+                            <ignoredUsedUndeclaredDependencies>
+                                <ignoredUsedUndeclaredDependency>
+                                    org.slf4j:slf4j-api
+                                </ignoredUsedUndeclaredDependency>
+                            </ignoredUsedUndeclaredDependencies>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Source code formatting check -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
@@ -148,7 +188,6 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
-                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -166,31 +205,11 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
-                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.6.0</version>
-            </plugin>
-
-            <!-- Disable jar:jar run on package phase -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>default-jar</id>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Enable assembly:single run on package phase -->
+            <!-- Fat jar creation -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
@@ -211,7 +230,7 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
-                        <phase>package</phase>
+                        <phase>verify</phase>
                     </execution>
                 </executions>
             </plugin>
