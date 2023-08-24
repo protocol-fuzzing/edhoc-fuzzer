@@ -51,13 +51,13 @@ Responder
 
 ##### SulConfig #####
 -responseWait
-2000
+300
 -processDir
 ${models.clients}/edhoc-rs
 -cmd
 ./coapclient
 -startWait
-500
+50
 
 
 ##### EdhocSulClientConfig #####

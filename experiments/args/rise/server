@@ -56,7 +56,7 @@ helloWorld
 
 ##### SulConfig #####
 -responseWait
-2000
+500
 -processDir
 ${models.servers}/rise
 -cmd

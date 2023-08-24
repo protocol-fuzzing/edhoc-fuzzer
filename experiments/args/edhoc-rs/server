@@ -51,13 +51,13 @@ Initiator
 
 ##### SulConfig #####
 -responseWait
-2000
+300
 -processDir
 ${models.servers}/edhoc-rs
 -cmd
 ./coapserver
 -startWait
-500
+50
 
 
 ##### EdhocSulServerConfig #####

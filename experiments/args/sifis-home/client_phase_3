@@ -54,13 +54,13 @@ light
 
 ##### SulConfig #####
 -responseWait
-2000
+400
 -processDir
 ${models.clients}/sifis-home
 -cmd
 java -cp edhoc-applications.jar se.sics.edhocapps.Phase3Client
 -startWait
-500
+50
 
 
 ##### EdhocSulClientConfig #####

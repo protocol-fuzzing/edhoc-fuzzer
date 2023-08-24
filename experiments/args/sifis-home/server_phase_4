@@ -58,7 +58,7 @@ POST
 
 ##### SulConfig #####
 -responseWait
-2000
+500
 -processDir
 ${models.servers}/sifis-home
 -cmd
