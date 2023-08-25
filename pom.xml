@@ -144,19 +144,13 @@
                 <version>3.6.0</version>
                 <executions>
                     <execution>
-                        <id>analyze</id>
+                        <id>analyze-only</id>
                         <goals>
                             <goal>analyze-only</goal>
                         </goals>
                         <configuration>
                             <failOnWarning>true</failOnWarning>
-
-                            <ignoredUnusedDeclaredDependencies>
-                                <ignoredUnusedDeclaredDependency>
-                                    <!-- runtime -->
-                                    org.apache.logging.log4j:log4j-core
-                                </ignoredUnusedDeclaredDependency>
-                            </ignoredUnusedDeclaredDependencies>
+                            <ignoreUnusedRuntime>true</ignoreUnusedRuntime>
 
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>
