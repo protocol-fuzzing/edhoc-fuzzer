@@ -58,6 +58,14 @@
                 <version>${log4j.version}</version>
             </dependency>
 
+            <!-- log4j-core -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
             <!-- gson -->
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -99,6 +107,12 @@
             <artifactId>log4j-api</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -137,8 +151,16 @@
                         <configuration>
                             <failOnWarning>true</failOnWarning>
 
+                            <ignoredUnusedDeclaredDependencies>
+                                <ignoredUnusedDeclaredDependency>
+                                    <!-- runtime -->
+                                    org.apache.logging.log4j:log4j-core
+                                </ignoredUnusedDeclaredDependency>
+                            </ignoredUnusedDeclaredDependencies>
+
                             <ignoredUsedUndeclaredDependencies>
                                 <ignoredUsedUndeclaredDependency>
+                                    <!-- transitive -->
                                     org.slf4j:slf4j-api
                                 </ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
