@@ -61,13 +61,13 @@ tv1
 
 ##### SulConfig #####
 -responseWait
-7500
+500
 -processDir
 ${models.clients}/uoscore-uedhoc
 -cmd
 ./linux-edhoc-oscore-initiator-client
 -startWait
-2500
+50
 
 
 ##### EdhocSulClientConfig #####

@@ -22,13 +22,13 @@ setup_edhoc_rs() {
   git clone https://github.com/openwsn-berkeley/edhoc-rs.git
   cd edhoc-rs
   git checkout ${COMMIT_HASH}
-  cargo build
-  TGT_DBG_DIR=${SOURCES_DIR}/edhoc-rs/target/debug
+  cargo build --release
+  TGT_DIR=${SOURCES_DIR}/edhoc-rs/target/release
 
   cd "${MODEL_DIR}"
   mkdir -p "${SERVERS_DIR}"/edhoc-rs "${CLIENTS_DIR}"/edhoc-rs
-  ln -sf "${TGT_DBG_DIR}"/coapserver "${SERVERS_DIR}"/edhoc-rs/coapserver
-  ln -sf "${TGT_DBG_DIR}"/coapclient "${CLIENTS_DIR}"/edhoc-rs/coapclient
+  ln -sf "${TGT_DIR}"/coapserver "${SERVERS_DIR}"/edhoc-rs/coapserver
+  ln -sf "${TGT_DIR}"/coapclient "${CLIENTS_DIR}"/edhoc-rs/coapclient
   echo "Successfully set up EDHOC-Rust"
   set +e
 }
