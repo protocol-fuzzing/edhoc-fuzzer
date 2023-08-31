@@ -15,7 +15,7 @@ public class EdhocMapperConfig extends MapperConfigStandard {
     protected String host = "";
 
     @ParametersDelegate
-    protected AuthenticationConfig AuthenticationConfig = new AuthenticationConfig();
+    protected AuthenticationConfig authenticationConfig = new AuthenticationConfig();
 
     @Parameter(names = "-protocolVersion", required = true, description = "Protocol version to be analyzed",
             converter = ProtocolVersionConverter.class)
@@ -103,7 +103,7 @@ public class EdhocMapperConfig extends MapperConfigStandard {
     }
 
     public AuthenticationConfig getAuthenticationConfig() {
-        return AuthenticationConfig;
+        return authenticationConfig;
     }
 
     public ProtocolVersion getProtocolVersion() {
