@@ -24,7 +24,7 @@ public class EdhocUtil extends Util {
 
             stringBuilder.append(contentStr.charAt(i));
 
-            if ((i % 2) == 1) {
+            if ((i & 1) == 1) { // if i is odd
                 stringBuilder.append(" ");
             }
         }
@@ -40,7 +40,7 @@ public class EdhocUtil extends Util {
         for (int i = 0; i < (content.length * 2); i++) {
             stringBuilder.append(contentStr.charAt(i));
 
-            if ((i % 2) == 1) {
+            if ((i & 1) == 1) { // if i is odd
                 stringBuilder.append(" ");
             }
         }
