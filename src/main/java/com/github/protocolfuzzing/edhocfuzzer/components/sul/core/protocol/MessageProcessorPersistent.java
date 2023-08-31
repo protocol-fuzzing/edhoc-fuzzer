@@ -3055,7 +3055,7 @@ public class MessageProcessorPersistent {
             return null;
         }
 
-        if ((length % 2) == 1) {
+        if ((length & 1) == 1) { // if odd length
             LOGGER.error("EAD items should have even length, but found length " + length);
             return null;
         }
@@ -3065,7 +3065,7 @@ public class MessageProcessorPersistent {
         for (int i = baseIndex; i < objectList.length; i++) {
 
             // The first element of each pair is an ead_label, and must be a non-zero CBOR integer
-            if ((eadIndex % 2) == 0) {
+            if ((eadIndex & 1) == 0) {
                 if (objectList[i].getType() != CBORType.Integer || objectList[i].AsInt32() == 0) {
                     LOGGER.error("Malformed or Invalid EAD label");
                     return null;
@@ -3084,7 +3084,7 @@ public class MessageProcessorPersistent {
             }
 
             // The second element of each pair is an ead_value, and must be a CBOR byte string
-            if ((eadIndex % 2) == 1) {
+            if ((eadIndex & 1) == 1) {
                 if (objectList[i].getType() != CBORType.ByteString) {
                     LOGGER.error("Malformed or invalid EAD value");
                     return null;
