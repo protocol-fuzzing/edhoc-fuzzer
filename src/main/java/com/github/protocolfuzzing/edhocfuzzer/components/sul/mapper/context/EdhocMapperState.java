@@ -36,16 +36,6 @@ public abstract class EdhocMapperState implements State {
     // The authentication method to include in EDHOC message_1 (relevant only when Initiator)
     protected int authenticationMethod;
 
-    // The type of the authentication credential of this peer (same type for all its credentials)
-    // Possible values: CRED_TYPE_CWT ; CRED_TYPE_CCS ; CRED_TYPE_X509
-    protected int credType;
-
-    // The type of the credential identifier of this peer (same type for all its credentials)
-    // This will be the type of ID_CRED_R used in EDHOC message_2 or as ID_CRED_I in EDHOC message_3.
-    // Possible values: ID_CRED_TYPE_KID ; ID_CRED_TYPE_CWT ; ID_CRED_TYPE_CCS ;
-    //                  ID_CRED_TYPE_X5T ; ID_CRED_TYPE_X5U ; ID_CRED_TYPE_X5CHAIN
-    protected int idCredType;
-
     // Authentication credentials of this peer
     // At the top level, authentication credentials are sorted by key usage of the authentication keys.
     // The outer map has label SIGNATURE_KEY or ECDH_KEY for distinguishing the two key usages.
@@ -131,8 +121,6 @@ public abstract class EdhocMapperState implements State {
             this.supportedCipherSuites.addAll(config.getTestVector().getCipherSuites());
         }
 
-        this.credType = authenticationConfig.getMapCredType();
-        this.idCredType = authenticationConfig.getMapIdCredType();
         this.trustModel = authenticationConfig.getTrustModel();
 
         // Set the application profile
