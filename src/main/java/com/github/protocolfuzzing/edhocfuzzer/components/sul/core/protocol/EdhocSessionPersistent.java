@@ -74,7 +74,7 @@ public class EdhocSessionPersistent extends EdhocSession {
         reset();
     }
 
-    public void resetIfEnabled() {
+    public synchronized void resetIfEnabled() {
         if (sessionResetEnabled) {
             reset();
         } else {
@@ -83,7 +83,7 @@ public class EdhocSessionPersistent extends EdhocSession {
         }
     }
 
-    public void reset() {
+    public synchronized void reset() {
         // own info with first supported cipher suite
         int selectedCipherSuite = getSupportedCipherSuites().get(0);
         setSelectedCipherSuite(selectedCipherSuite);
