@@ -254,6 +254,11 @@ public class EdhocLayerPersistent extends AbstractLayer {
     protected record CombinedMessagePair(CBORObject edhocMessage3, byte[] oscorePayload) {}
 
     protected CombinedMessagePair splitCombinedMessage(byte[] combinedMessage) {
+        if (combinedMessage == null) {
+            LOGGER.error("Provided null combined message to split");
+            return null;
+        }
+
         if (hasCombinedMessageVersionEqV6()) {
             // CBOR objects included in the received CBOR sequence
             CBORObject[] cborObjectList = CBORObject.DecodeSequenceFromBytes(combinedMessage);
@@ -278,23 +283,28 @@ public class EdhocLayerPersistent extends AbstractLayer {
         CBORObject edhocMessage3 = null;
         try {
             edhocMessage3 = CBORObject.Read(inputStream);
-        } catch (CBORException | NullPointerException e) {
+        } catch (CBORException e) {
             LOGGER.error("{}: {}", e.getClass().getSimpleName(), e.getMessage());
             return null;
         }
 
         if (edhocMessage3 == null || edhocMessage3.getType() != CBORType.ByteString) {
-            LOGGER.error("Invalid edhocMessage3 from received combined Message");
+            LOGGER.error("Invalid edhocMessage3 from received combined message");
             return null;
         }
 
         int oscoreLength = combinedMessage.length - edhocMessage3.EncodeToBytes().length;
+        if (oscoreLength <= 0) {
+            LOGGER.error("Negative or zero length of OSCORE message in received combined message");
+            return null;
+        }
+
         byte[] oscorePayload = new byte[oscoreLength];
 
         int bytesRead = -1;
         try {
             bytesRead = inputStream.read(oscorePayload, 0, oscoreLength);
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
             LOGGER.error("{}: {}", e.getClass().getSimpleName(), e.getMessage());
             return null;
         }
