@@ -45,7 +45,7 @@ public class ManyFilesAuthenticator implements Authenticator {
     protected List<Integer> supportedCipherSuites;
 
     // cache read DER files, so as not to read them after each constructor call
-    protected static final HashMap<String, byte[]> sharedDerFilesMap = new HashMap<>();
+    static final HashMap<String, byte[]> sharedDerFilesMap = new HashMap<>();  // package-private
 
     protected ManyFilesAuthenticationConfig manyFilesAuthenticationConfig;
 
@@ -467,9 +467,11 @@ public class ManyFilesAuthenticator implements Authenticator {
             } else {
                 switch (credType) {
                     case Constants.CRED_TYPE_CCS ->
-                            addAllPeerIdCredForCCSCred(cred, peerPublicKey, kid);
+                        addAllPeerIdCredForCCSCred(cred, peerPublicKey, kid);
                     case Constants.CRED_TYPE_X509 ->
-                            addAllPeerIdCredForX509Cred(cred, peerPublicKey, serializedCert, x5uLink);
+                        addAllPeerIdCredForX509Cred(cred, peerPublicKey, serializedCert, x5uLink);
+                    default ->
+                        throw new IllegalStateException("Unexpected credType value: " + credType);
                 }
             }
         }
