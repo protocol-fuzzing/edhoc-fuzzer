@@ -467,10 +467,11 @@ public class ManyFilesAuthenticator implements Authenticator {
             } else {
                 switch (credType) {
                     case Constants.CRED_TYPE_CCS ->
-                            addAllPeerIdCredForCCSCred(cred, peerPublicKey, kid);
+                        addAllPeerIdCredForCCSCred(cred, peerPublicKey, kid);
                     case Constants.CRED_TYPE_X509 ->
-                            addAllPeerIdCredForX509Cred(cred, peerPublicKey, serializedCert, x5uLink);
-                    default -> throw new IllegalStateException("Unexpected credType value: " + credType);
+                        addAllPeerIdCredForX509Cred(cred, peerPublicKey, serializedCert, x5uLink);
+                    default ->
+                        throw new IllegalStateException("Unexpected credType value: " + credType);
                 }
             }
         }
