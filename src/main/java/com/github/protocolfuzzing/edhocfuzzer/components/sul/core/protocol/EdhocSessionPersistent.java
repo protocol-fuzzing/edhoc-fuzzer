@@ -239,6 +239,7 @@ public class EdhocSessionPersistent extends EdhocSession {
         return coapExchanger;
     }
 
+    @Override
     public List<Integer> getPeerSupportedCipherSuites() {
         return peerSupportedCipherSuites;
     }

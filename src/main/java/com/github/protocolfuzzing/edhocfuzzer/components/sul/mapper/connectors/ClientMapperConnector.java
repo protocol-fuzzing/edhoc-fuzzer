@@ -169,6 +169,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
                 && currentCoapExchangeInfo.hasOscoreAppMessage();
     }
 
+    @Override
     public boolean receivedCoapEmptyMessage() {
         return isResponseSuccessful()
                 && response.getPayloadSize() == 0

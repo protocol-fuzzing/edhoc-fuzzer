@@ -67,6 +67,7 @@ public class ManyFilesAuthenticator implements Authenticator {
         this.supportedCipherSuites = edhocEndpointInfoPersistent.getSupportedCipherSuites();
     }
 
+    @Override
     public void setupOwnAuthenticationCredentials() {
         keyPairs.put(Constants.SIGNATURE_KEY, new HashMap<>());
         keyPairs.put(Constants.ECDH_KEY, new HashMap<>());
@@ -158,6 +159,7 @@ public class ManyFilesAuthenticator implements Authenticator {
         }
     }
 
+    @Override
     public void setupPeerAuthenticationCredentials() {
         // Add as many authentication credentials are provided
 

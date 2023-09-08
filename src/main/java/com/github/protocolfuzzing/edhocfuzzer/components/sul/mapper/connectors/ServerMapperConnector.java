@@ -41,6 +41,7 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         this.port = Integer.parseInt(hostAndPort[1]);
     }
 
+    @Override
     public void initialize(EdhocStackFactoryPersistent edhocStackFactoryPersistent,
                            CoapExchanger coapExchanger) {
         this.coapExchanger = coapExchanger;
