@@ -155,7 +155,7 @@ public class EdhocSul extends AbstractSul {
 
         AbstractOutput abstractOutput = executeInput(abstractInput, preferredMapper);
 
-        if (abstractOutput == AbstractOutput.disabled() || !executionContextStepped.isExecutionEnabled()) {
+        if (abstractOutput.equals(AbstractOutput.disabled()) || !executionContextStepped.isExecutionEnabled()) {
             // this should lead to a disabled sink state
             executionContextStepped.disableExecution();
         }
