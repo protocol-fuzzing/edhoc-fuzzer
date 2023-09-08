@@ -468,7 +468,7 @@ public class MessageProcessorPersistent {
         if (hasProtocolVersionLeqV17()) {
             // Discard possible padding prepended to the plaintext
             while (baseIndex < plaintextElementList.length
-                    && plaintextElementList[baseIndex] == CBORObject.True) {
+                    && plaintextElementList[baseIndex].equals(CBORObject.True)) {
                 baseIndex++;
             }
         }
@@ -1029,7 +1029,7 @@ public class MessageProcessorPersistent {
             if (hasProtocolVersionLeqV17()) {
                 // Discard possible padding prepended to the plaintext
                 while (baseIndex < plaintextElementList.length
-                        && plaintextElementList[baseIndex] == CBORObject.True) {
+                        && plaintextElementList[baseIndex].equals(CBORObject.True)) {
                     baseIndex++;
                 }
             }
@@ -1731,7 +1731,7 @@ public class MessageProcessorPersistent {
         if (hasProtocolVersionLeqV17()) {
             // Discard possible padding prepended to the plaintext
             while (baseIndex < plaintextElementList.length
-                   && plaintextElementList[baseIndex] == CBORObject.True) {
+                   && plaintextElementList[baseIndex].equals(CBORObject.True)) {
                 baseIndex++;
             }
         }
