@@ -4,6 +4,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParametersDelegate;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.AuthenticationConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfigStandard;
+import com.google.common.base.Ascii;
 import org.eclipse.californium.elements.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -123,7 +124,7 @@ public class EdhocMapperConfig extends MapperConfigStandard {
     }
 
     public String getAppMessageCodeToCoapServer() {
-        return appMessageCodeToCoapServer.toUpperCase();
+        return Ascii.toUpperCase(appMessageCodeToCoapServer);
     }
 
     public String getAppMessagePayloadToCoapServer() {
@@ -131,7 +132,7 @@ public class EdhocMapperConfig extends MapperConfigStandard {
     }
 
     public String getAppMessageCodeToCoapClient() {
-        return appMessageCodeToCoapClient.toUpperCase();
+        return Ascii.toUpperCase(appMessageCodeToCoapClient);
     }
 
     public String getAppMessagePayloadToCoapClient() {
@@ -196,7 +197,7 @@ public class EdhocMapperConfig extends MapperConfigStandard {
     protected String getCoapUri(String host, String resource) {
         try {
             String coapUri = String.format("coap://%s/%s", host, resource);
-            return (new URI(coapUri)).toString();
+            return new URI(coapUri).toString();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
