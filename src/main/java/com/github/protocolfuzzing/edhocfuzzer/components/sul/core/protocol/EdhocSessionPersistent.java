@@ -13,6 +13,7 @@ import org.eclipse.californium.oscore.HashMapCtxDB;
 import org.eclipse.californium.oscore.OSCoreCtx;
 import org.eclipse.californium.oscore.OSException;
 
+import java.lang.Thread;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -187,7 +188,7 @@ public class EdhocSessionPersistent extends EdhocSession {
         LOGGER.debug("Start of waitForOscoreContext");
         if (!oscoreCtxGenerated) {
             try {
-                wait(timeoutMillis);
+                Thread.sleep(timeoutMillis);
             } catch (InterruptedException e) {
                 LOGGER.warn("Wait for OSCORE context generation interrupted: {}", e.getMessage());
             }
