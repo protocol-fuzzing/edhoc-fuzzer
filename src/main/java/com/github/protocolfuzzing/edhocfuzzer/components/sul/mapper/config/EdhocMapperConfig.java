@@ -179,7 +179,7 @@ public class EdhocMapperConfig extends MapperConfigStandard {
     }
 
     protected String checkAndReturnHost(String host) {
-        String[] hostArray = host.split(":");
+        String[] hostArray = host.split(":", -1);
 
         if (hostArray.length != 2) {
             throw new RuntimeException("Argument provided to -connect has not the correct format: ip:port");
