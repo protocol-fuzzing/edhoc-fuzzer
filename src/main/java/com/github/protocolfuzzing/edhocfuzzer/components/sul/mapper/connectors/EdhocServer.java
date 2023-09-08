@@ -34,7 +34,7 @@ public class EdhocServer extends CoapServer {
     }
 
     protected String extractLeafResourceString(String resource) {
-        String[] resources = resource.split("/");
+        String[] resources = resource.split("/", -1);
         return resources[resources.length - 1];
     }
 
@@ -50,7 +50,7 @@ public class EdhocServer extends CoapServer {
     protected CoapResource createInnerResourceTree(String resource) {
         // resources list includes names of:
         // root resource, inner resources and leaf resource
-        String[] resources = resource.split("/");
+        String[] resources = resource.split("/", -1);
 
         if (resources.length <= 1) {
             // only leaf resource name is present
