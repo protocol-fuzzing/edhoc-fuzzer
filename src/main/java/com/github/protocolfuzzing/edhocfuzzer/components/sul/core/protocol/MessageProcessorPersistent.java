@@ -2558,9 +2558,9 @@ public class MessageProcessorPersistent {
             int regularPartSize = 255 * hashLength;
             int lastPartSize = regularPartSize;
 
-            int numParts = length / (regularPartSize);
-            if ((length % (regularPartSize)) != 0) {
-                lastPartSize = length % (regularPartSize);
+            int numParts = length / regularPartSize;
+            if ((length % regularPartSize) != 0) {
+                lastPartSize = length % regularPartSize;
                 numParts++;
             }
 
