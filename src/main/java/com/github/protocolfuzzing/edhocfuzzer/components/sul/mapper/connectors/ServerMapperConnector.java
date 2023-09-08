@@ -36,7 +36,7 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         this.appResource = appResource;
         this.timeout = originalTimeout;
 
-        String[] hostAndPort = coapHost.replace("coap://", "").split(":");
+        String[] hostAndPort = coapHost.replace("coap://", "").split(":", -1);
         this.host = hostAndPort[0];
         this.port = Integer.parseInt(hostAndPort[1]);
     }
