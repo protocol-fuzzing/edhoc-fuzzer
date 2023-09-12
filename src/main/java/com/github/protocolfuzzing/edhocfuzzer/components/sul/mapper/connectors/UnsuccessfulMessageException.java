@@ -1,5 +1,7 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors;
 
+import java.io.Serial;
+
 public class UnsuccessfulMessageException extends Exception {
 
     @Serial
