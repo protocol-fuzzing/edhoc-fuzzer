@@ -8,15 +8,16 @@ import org.eclipse.californium.oscore.HashMapCtxDB;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class EdhocEndpointInfoPersistent extends EdhocEndpointInfo {
-    protected HashMap<CBORObject, EdhocSessionPersistent> edhocSessionsPersistent;
+    protected Map<CBORObject, EdhocSessionPersistent> edhocSessionsPersistent;
 
     public EdhocEndpointInfoPersistent(
             HashMap<Integer, HashMap<Integer, CBORObject>> idCreds, HashMap<Integer, HashMap<Integer, CBORObject>> creds,
             HashMap<Integer, HashMap<Integer, OneKey>> keyPairs, HashMap<CBORObject, OneKey> peerPublicKeys,
-            HashMap<CBORObject, CBORObject> peerCredentials, HashMap<CBORObject, EdhocSessionPersistent> edhocSessionsPersistent,
+            HashMap<CBORObject, CBORObject> peerCredentials, Map<CBORObject, EdhocSessionPersistent> edhocSessionsPersistent,
             Set<CBORObject> usedConnectionIds, List<Integer> supportedCipherSuites, Set<Integer> supportedEADs,
             HashMap<Integer, List<CBORObject>> eadProductionInput, int trustModel, HashMapCtxDB db, String oscoreUri,
             int OSCORE_REPLAY_WINDOW, int MAX_UNFRAGMENTED_SIZE, HashMap<String, AppProfile> appProfiles) {
@@ -28,7 +29,7 @@ public class EdhocEndpointInfoPersistent extends EdhocEndpointInfo {
         this.edhocSessionsPersistent = edhocSessionsPersistent;
     }
 
-    public HashMap<CBORObject, EdhocSessionPersistent> getEdhocSessionsPersistent() {
+    public Map<CBORObject, EdhocSessionPersistent> getEdhocSessionsPersistent() {
         return edhocSessionsPersistent;
     }
 

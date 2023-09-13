@@ -252,7 +252,7 @@ public class MessageProcessorPersistent {
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage2} */
     public boolean readMessage2(byte[] sequence) {
         LOGGER.debug("Start of readMessage2");
-        HashMap<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
+        Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
         HashMap<CBORObject, OneKey> peerPublicKeys = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerPublicKeys();
         HashMap<CBORObject, CBORObject> peerCredentials = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerCredentials();
         Set<CBORObject> usedConnectionIds = edhocMapperState.getEdhocEndpointInfoPersistent().getUsedConnectionIds();
@@ -907,7 +907,7 @@ public class MessageProcessorPersistent {
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage4} */
     public boolean readMessage4(byte[] sequence) {
         LOGGER.debug("Start of readMessage4");
-        HashMap<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
+        Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
         Set<CBORObject> usedConnectionIds = edhocMapperState.getEdhocEndpointInfoPersistent().getUsedConnectionIds();
 
         if (sequence == null || edhocSessions == null || usedConnectionIds == null) {
@@ -1601,7 +1601,7 @@ public class MessageProcessorPersistent {
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage3} */
     public boolean readMessage3(byte[] sequence) {
         LOGGER.debug("Start of readMessage3");
-        HashMap<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
+        Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
         HashMap<CBORObject, OneKey> peerPublicKeys = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerPublicKeys();
         HashMap<CBORObject, CBORObject> peerCredentials = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerCredentials();
         Set<CBORObject> usedConnectionIds = edhocMapperState.getEdhocEndpointInfoPersistent().getUsedConnectionIds();
@@ -2138,7 +2138,7 @@ public class MessageProcessorPersistent {
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readErrorMessage} */
     public boolean readErrorMessage(byte[] sequence) {
         LOGGER.debug("Start of readErrorMessage");
-        HashMap<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent()
+        Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent()
                 .getEdhocSessionsPersistent();
 
         if (sequence == null || edhocSessions == null) {
