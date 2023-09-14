@@ -383,8 +383,7 @@ public class MessageProcessorPersistent {
 
             if (session.getApplicationProfile().getUsedForOSCORE()
                 && Arrays.equals(connectionIdentifierInitiator, connectionIdentifierResponder)) {
-                LOGGER.error("R_M2: C_R must be different from C_I");
-                return false;
+                LOGGER.warn("R_M2: Found C_R equal to C_I in an OSCORE enabled Application Profile");
             }
         }
 
@@ -506,8 +505,7 @@ public class MessageProcessorPersistent {
 
             if (session.getApplicationProfile().getUsedForOSCORE()
                 && Arrays.equals(connectionIdentifierInitiator, connectionIdentifierResponder)) {
-                LOGGER.error("R_M2: C_R must be different from C_I");
-                return false;
+                LOGGER.warn("R_M2: Found C_R equal to C_I in an OSCORE enabled Application Profile");
             }
         }
 
