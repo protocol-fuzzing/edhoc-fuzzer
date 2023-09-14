@@ -34,18 +34,18 @@ public class ManyFilesAuthenticator implements Authenticator {
     protected int authenticationMethod;
     protected int ownCredType;
     protected int ownIdCredType;
-    protected HashMap<Integer, HashMap<Integer, OneKey>> keyPairs;
-    protected HashMap<Integer, HashMap<Integer, CBORObject>> idCreds;
-    protected HashMap<Integer, HashMap<Integer, CBORObject>> creds;
+    protected Map<Integer, HashMap<Integer, OneKey>> keyPairs;
+    protected Map<Integer, HashMap<Integer, CBORObject>> idCreds;
+    protected Map<Integer, HashMap<Integer, CBORObject>> creds;
     protected Set<CBORObject> ownIdCreds;
     protected int peerCredType;
     protected int peerIdCredType;
-    protected HashMap<CBORObject, OneKey> peerPublicKeys;
-    protected HashMap<CBORObject, CBORObject> peerCredentials;
+    protected Map<CBORObject, OneKey> peerPublicKeys;
+    protected Map<CBORObject, CBORObject> peerCredentials;
     protected List<Integer> supportedCipherSuites;
 
     // cache read DER files, so as not to read them after each constructor call
-    static final HashMap<String, byte[]> sharedDerFilesMap = new HashMap<>();  // package-private
+    static final Map<String, byte[]> sharedDerFilesMap = new HashMap<>();
 
     protected ManyFilesAuthenticationConfig manyFilesAuthenticationConfig;
 

@@ -23,8 +23,8 @@ import org.eclipse.californium.oscore.OSException;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Adapted from {@link org.eclipse.californium.edhoc.EdhocLayer} */
 public class EdhocLayerPersistent extends AbstractLayer {
@@ -33,8 +33,8 @@ public class EdhocLayerPersistent extends AbstractLayer {
     // The OSCORE context database
     OSCoreCtxDB ctxDb;
 
-     // Map of existing EDHOC sessions
-    HashMap<CBORObject, EdhocSessionPersistent> edhocSessionsPersistent;
+    // Map of existing EDHOC sessions
+    Map<CBORObject, EdhocSessionPersistent> edhocSessionsPersistent;
 
     // MessageProcessor for reading message 3
     MessageProcessorPersistent messageProcessorPersistent;
