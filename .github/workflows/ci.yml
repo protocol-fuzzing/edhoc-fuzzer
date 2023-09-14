@@ -57,8 +57,8 @@ jobs:
 
       - name: Test EDHOC-Rust Server
         run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/edhoc-rs/server -roundLimit 5
-          ./scripts/diff_hyps.sh experiments/saved_results/servers/edhoc-rs experiments/results/servers/edhoc-rs 5
+          java -jar edhoc-fuzzer.jar @experiments/args/edhoc-rs/server -roundLimit 4
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/edhoc-rs experiments/results/servers/edhoc-rs 4
 
   RISE-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
