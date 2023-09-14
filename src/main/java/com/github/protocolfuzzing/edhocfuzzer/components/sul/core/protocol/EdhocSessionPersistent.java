@@ -160,27 +160,22 @@ public class EdhocSessionPersistent extends EdhocSession {
         AlgorithmID alg = getAppAEAD(selectedCipherSuite);
         AlgorithmID hkdf = getAppHkdf(selectedCipherSuite);
 
-        OSCoreCtx ctx;
         if (Arrays.equals(senderId, recipientId)) {
-            throw new RuntimeException("Error: the Sender ID coincides with the Recipient ID");
+            LOGGER.warn("The Sender ID will be equal to the Recipient ID in this OSCORE Security Context");
         }
 
         try {
-            ctx = new OSCoreCtx(masterSecret, true, alg, senderId, recipientId, hkdf,
+            OSCoreCtx ctx = new OSCoreCtx(masterSecret, true, alg, senderId, recipientId, hkdf,
                     oscoreReplayWindow, masterSalt, null, oscoreMaxUnfragmentedSize);
-        } catch (OSException e) {
-            throw new RuntimeException("Error when deriving the OSCORE Security Context: " + e.getMessage());
-        }
 
-        try {
             getOscoreDb().addContext(oscoreUri, ctx);
+            oscoreCtxGenerated = true;
         } catch (OSException e) {
-            throw new RuntimeException("Error when adding the OSCORE Security Context to the context database: "
-                    + e.getMessage());
+            oscoreCtxGenerated = false;
+            LOGGER.error("Error when setting up the OSCORE Security Context: " + e.getMessage());
+        } finally {
+            notifyAll();
         }
-
-        oscoreCtxGenerated = true;
-        notifyAll();
     }
 
     public synchronized void waitForOscoreContext(long timeoutMillis) {

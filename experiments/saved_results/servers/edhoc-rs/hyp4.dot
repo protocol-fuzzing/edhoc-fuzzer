@@ -22,7 +22,7 @@ digraph g {
 	s1 -> s1 [label="OSCORE_APP_MESSAGE / SOCKET_CLOSED"];
 	s1 -> s1 [label="COAP_APP_MESSAGE / SOCKET_CLOSED"];
 	s1 -> s1 [label="COAP_EMPTY_MESSAGE / SOCKET_CLOSED"];
-	s2 -> s3 [label="EDHOC_MESSAGE_1 / EDHOC_MESSAGE_2"];
+	s2 -> s2 [label="EDHOC_MESSAGE_1 / EDHOC_MESSAGE_2"];
 	s2 -> s2 [label="EDHOC_MESSAGE_2 / TIMEOUT"];
 	s2 -> s3 [label="EDHOC_MESSAGE_3 / COAP_EMPTY_MESSAGE"];
 	s2 -> s2 [label="EDHOC_MESSAGE_4 / TIMEOUT"];
@@ -31,11 +31,11 @@ digraph g {
 	s2 -> s2 [label="OSCORE_APP_MESSAGE / COAP_ERROR_MESSAGE"];
 	s2 -> s2 [label="COAP_APP_MESSAGE / COAP_ERROR_MESSAGE"];
 	s2 -> s1 [label="COAP_EMPTY_MESSAGE / TIMEOUT"];
-	s3 -> s3 [label="EDHOC_MESSAGE_1 / EDHOC_MESSAGE_2"];
+	s3 -> s2 [label="EDHOC_MESSAGE_1 / EDHOC_MESSAGE_2"];
 	s3 -> s3 [label="EDHOC_MESSAGE_2 / TIMEOUT"];
 	s3 -> s3 [label="EDHOC_MESSAGE_3 / TIMEOUT"];
 	s3 -> s3 [label="EDHOC_MESSAGE_4 / TIMEOUT"];
-	s3 -> s1 [label="EDHOC_ERROR_MESSAGE / TIMEOUT"];
+	s3 -> s3 [label="EDHOC_ERROR_MESSAGE / TIMEOUT"];
 	s3 -> s3 [label="EDHOC_MESSAGE_3_OSCORE_APP / COAP_ERROR_MESSAGE"];
 	s3 -> s3 [label="OSCORE_APP_MESSAGE / COAP_ERROR_MESSAGE"];
 	s3 -> s3 [label="COAP_APP_MESSAGE / COAP_ERROR_MESSAGE"];
