@@ -12,17 +12,18 @@ import org.eclipse.californium.elements.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 public class TestVectorAuthenticator implements Authenticator {
 
-    protected HashMap<Integer, HashMap<Integer, OneKey>> keyPairs;
-    protected HashMap<Integer, HashMap<Integer, CBORObject>> idCreds;
-    protected HashMap<Integer, HashMap<Integer, CBORObject>> creds;
+    protected Map<Integer, HashMap<Integer, OneKey>> keyPairs;
+    protected Map<Integer, HashMap<Integer, CBORObject>> idCreds;
+    protected Map<Integer, HashMap<Integer, CBORObject>> creds;
     protected Set<CBORObject> ownIdCreds;
-    protected HashMap<CBORObject, OneKey> peerPublicKeys;
-    protected HashMap<CBORObject, CBORObject> peerCredentials;
+    protected Map<CBORObject, OneKey> peerPublicKeys;
+    protected Map<CBORObject, CBORObject> peerCredentials;
     protected List<Integer> supportedCipherSuites;
 
     protected TestVectorAuthenticationConfig testVectorAuthenticationConfig;

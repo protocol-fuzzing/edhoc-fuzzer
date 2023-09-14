@@ -253,8 +253,8 @@ public class MessageProcessorPersistent {
     public boolean readMessage2(byte[] sequence) {
         LOGGER.debug("Start of readMessage2");
         Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
-        HashMap<CBORObject, OneKey> peerPublicKeys = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerPublicKeys();
-        HashMap<CBORObject, CBORObject> peerCredentials = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerCredentials();
+        Map<CBORObject, OneKey> peerPublicKeys = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerPublicKeys();
+        Map<CBORObject, CBORObject> peerCredentials = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerCredentials();
         Set<CBORObject> usedConnectionIds = edhocMapperState.getEdhocEndpointInfoPersistent().getUsedConnectionIds();
         Set<CBORObject> ownIdCreds = edhocMapperState.getOwnIdCreds();
 
@@ -1602,8 +1602,8 @@ public class MessageProcessorPersistent {
     public boolean readMessage3(byte[] sequence) {
         LOGGER.debug("Start of readMessage3");
         Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
-        HashMap<CBORObject, OneKey> peerPublicKeys = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerPublicKeys();
-        HashMap<CBORObject, CBORObject> peerCredentials = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerCredentials();
+        Map<CBORObject, OneKey> peerPublicKeys = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerPublicKeys();
+        Map<CBORObject, CBORObject> peerCredentials = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerCredentials();
         Set<CBORObject> usedConnectionIds = edhocMapperState.getEdhocEndpointInfoPersistent().getUsedConnectionIds();
 
         if (sequence == null || edhocSessions == null || peerPublicKeys == null || peerCredentials == null
