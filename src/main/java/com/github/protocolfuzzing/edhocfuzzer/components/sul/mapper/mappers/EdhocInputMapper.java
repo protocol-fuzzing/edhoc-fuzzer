@@ -10,6 +10,16 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.cont
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.InputMapper;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
 public class EdhocInputMapper extends InputMapper {
     EdhocMapperConnector edhocMapperConnector;
 
@@ -30,6 +40,32 @@ public class EdhocInputMapper extends InputMapper {
         // enable or disable content format
         EdhocMapperConfig edhocMapperConfig = (EdhocMapperConfig) mapperConfig;
         int contentFormat = edhocMapperConfig.useContentFormat() ? edhocProtocolMessage.getContentFormat() : MediaTypeRegistry.UNDEFINED;
+
+        try {
+            File fileReader = new File("send.length");
+            int recordLength = 0;
+            if(fileReader.exists()) {
+                Scanner scanner = new Scanner(fileReader, StandardCharsets.UTF_8);
+                recordLength = scanner.nextInt();
+            }
+            recordLength += 1;
+            FileWriter fileWriter = new FileWriter("send.length", StandardCharsets.UTF_8);
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            printWriter.print(recordLength+"\n");
+            fileWriter.close();
+            printWriter.close();
+            byte[] val = edhocProtocolMessage.getPayload();
+            byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
+            FileOutputStream fosRep = new FileOutputStream("send.replay",true);
+            if (val.length > 0) fosRep.write(len);
+            fosRep.write(val);
+            fosRep.close();
+            FileOutputStream fosRaw = new FileOutputStream("send.raw",true);
+            fosRaw.write(val);
+            fosRaw.close();
+        } catch (IOException e) {
+            ;
+        }
 
         edhocMapperConnector.send(edhocProtocolMessage.getPayload(), edhocProtocolMessage.getPayloadType(),
                 edhocProtocolMessage.getMessageCode(), contentFormat);

@@ -13,7 +13,15 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mapp
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class EdhocOutputMapper extends OutputMapper {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -32,6 +40,31 @@ public class EdhocOutputMapper extends OutputMapper {
 
         try {
             responsePayload = edhocMapperConnector.receive();
+            try {
+                File fileReader = new File("recv.length");
+                int recordLength = 0;
+                if(fileReader.exists()) {
+                    Scanner scanner = new Scanner(fileReader, StandardCharsets.UTF_8);
+                    recordLength = scanner.nextInt();
+                }
+                recordLength += 1;
+                FileWriter fileWriter = new FileWriter("recv.length", StandardCharsets.UTF_8);
+                PrintWriter printWriter = new PrintWriter(fileWriter);
+                printWriter.print(recordLength+"\n");
+                fileWriter.close();
+                printWriter.close();
+                byte[] val = responsePayload;
+                byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
+                FileOutputStream fosRep = new FileOutputStream("recv.replay",true);
+                if (val.length > 0) fosRep.write(len);
+                fosRep.write(val);
+                fosRep.close();
+                FileOutputStream fosRaw = new FileOutputStream("recv.raw",true);
+                fosRaw.write(val);
+                fosRaw.close();
+            } catch (IOException e) {
+                ;
+            }
         } catch (GenericErrorException e) {
             return socketClosed();
         } catch (TimeoutException e) {
