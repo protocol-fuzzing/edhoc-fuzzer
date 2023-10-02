@@ -153,6 +153,11 @@ public abstract class EdhocMapperState implements State {
         authenticator.setupPeerAuthenticationCredentials();
 
         // Prepare new session
+
+        // add empty connection id to used ones so as not to be used
+        // in case a new connection id is generated automatically
+        usedConnectionIds.add(CBORObject.FromObject(new byte[0]));
+
         byte[] connectionId = edhocMapperConfig.getOwnConnectionId();
         usedConnectionIds.add(CBORObject.FromObject(connectionId));
 

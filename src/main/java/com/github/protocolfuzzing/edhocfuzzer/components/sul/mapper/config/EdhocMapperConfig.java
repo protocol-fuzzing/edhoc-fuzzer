@@ -75,9 +75,15 @@ public class EdhocMapperConfig extends MapperConfigStandard {
 
     @Parameter(names = "-ownConnectionId", description = "Use this id as own connection id for the EDHOC protocol. "
             + "Avoid an id that would coincide with a peer connection id found during EDHOC, in order for the OSCORE "
-            + "context to be derived successfully from those two ids. Available: empty byte string: [] or single-line "
-            + "hexadecimal byte string in the format: 0a0b0c0d0e0f")
+            + "context to be derived successfully from those two ids. If the mapper is a Responder and "
+            + "`disableOwnConnectionIdGeneration` is not specified, then the `ownConnectionId` is ignored. "
+            + "Available: empty byte string: [] or single-line hexadecimal byte string in the format: 0a0b0c0d0e0f.")
     protected String ownConnectionId = "36";
+
+    @Parameter(names = "-disableOwnConnectionIdGeneration", description = "It is used only when the mapper is a Responder. "
+            + "It disables the automatic generation of the mapper's connection id every time when an EDHOC Message 1 "
+            + "is received from the Initiator SUT. In that case the `ownConnectionId` is used every time.")
+    protected boolean disableOwnConnectionIdGeneration = false;
 
     @Parameter(names = "-forceOscoreSenderId", description = "Use this OSCORE sender id, instead of the peer "
             + "connection id that is found during EDHOC. Available: empty byte string: [] or single-line hexadecimal "
@@ -159,6 +165,10 @@ public class EdhocMapperConfig extends MapperConfigStandard {
         return parseHexString(ownConnectionId);
     }
 
+    public boolean generateOwnConnectionId() {
+        return !disableOwnConnectionIdGeneration;
+    }
+
     public byte[] getForceOscoreSenderId() {
         return parseHexString(forceOscoreSenderId);
     }
@@ -234,6 +244,7 @@ public class EdhocMapperConfig extends MapperConfigStandard {
         printWriter.println("use Session Reset: " + useSessionReset());
         printWriter.println("use CX Correlation: " + useCXCorrelation());
         printWriter.println("Own Connection Id: " + this.ownConnectionId);
+        printWriter.println("Generate Own Connection Id: " + generateOwnConnectionId());
         printWriter.println("Force Oscore Sender Id: " + this.forceOscoreSenderId);
         printWriter.println("Force Oscore Recipient Id: " + this.forceOscoreRecipientId);
     }
