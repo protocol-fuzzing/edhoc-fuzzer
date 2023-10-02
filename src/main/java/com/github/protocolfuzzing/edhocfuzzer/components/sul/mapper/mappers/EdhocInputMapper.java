@@ -22,10 +22,12 @@ import java.util.Scanner;
 
 public class EdhocInputMapper extends InputMapper {
     EdhocMapperConnector edhocMapperConnector;
+    boolean concretize;
 
     public EdhocInputMapper(MapperConfig mapperConfig, AbstractOutputChecker outputChecker,
-                            EdhocMapperConnector edhocMapperConnector) {
+                            EdhocMapperConnector edhocMapperConnector, boolean concretize) {
         super(mapperConfig, outputChecker);
+        this.concretize = concretize;
         this.edhocMapperConnector = edhocMapperConnector;
     }
 
@@ -41,7 +43,7 @@ public class EdhocInputMapper extends InputMapper {
         EdhocMapperConfig edhocMapperConfig = (EdhocMapperConfig) mapperConfig;
         int contentFormat = edhocMapperConfig.useContentFormat() ? edhocProtocolMessage.getContentFormat() : MediaTypeRegistry.UNDEFINED;
 
-        try {
+        if (concretize) try {
             File fileReader = new File("send.length");
             int recordLength = 0;
             if(fileReader.exists()) {

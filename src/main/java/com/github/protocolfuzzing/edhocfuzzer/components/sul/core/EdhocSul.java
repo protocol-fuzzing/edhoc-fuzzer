@@ -38,9 +38,11 @@ public class EdhocSul extends AbstractSul {
     protected EdhocMapperState edhocMapperState;
     protected EdhocMapperConnector edhocMapperConnector;
     protected boolean serverWaitForInitialMessageDone;
+    private boolean concretize;
 
-    public EdhocSul(SulConfig sulConfig, CleanupTasks cleanupTasks) {
+    public EdhocSul(SulConfig sulConfig, CleanupTasks cleanupTasks, boolean concretize) {
         super(sulConfig, cleanupTasks);
+        this.concretize = concretize;
 
         this.protocolVersion = ((EdhocMapperConfig) sulConfig.getMapperConfig()).getProtocolVersion();
 
@@ -83,8 +85,8 @@ public class EdhocSul extends AbstractSul {
 
     protected Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
         return new MapperComposer(
-                new EdhocInputMapper(mapperConfig,  new EdhocOutputChecker(), edhocMapperConnector),
-                new EdhocOutputMapper(mapperConfig, edhocMapperConnector)
+                new EdhocInputMapper(mapperConfig, new EdhocOutputChecker(), edhocMapperConnector, concretize),
+                new EdhocOutputMapper(mapperConfig, edhocMapperConnector, concretize)
         );
     }
 

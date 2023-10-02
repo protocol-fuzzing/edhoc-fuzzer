@@ -32,13 +32,17 @@ import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.tim
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeEnabler;
 
 public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilder, TestRunnerBuilder, TimingProbeBuilder {
+    protected SulBuilder sulBuilder;
+    protected SulWrapper sulWrapper;
+
+    public MultiBuilder(boolean concretize) {
+        sulBuilder = new EdhocSulBuilder(concretize);
+        sulWrapper = new SulWrapperStandard();
+    }
 
     protected AlphabetBuilder alphabetBuilder = new AlphabetBuilderStandard(
             new AlphabetSerializerXml<>(EdhocAlphabetPojoXml.class)
     );
-
-    protected SulBuilder sulBuilder = new EdhocSulBuilder();
-    protected SulWrapper sulWrapper = new SulWrapperStandard();
 
     @Override
     public StateFuzzerClientConfig buildClientConfig() {

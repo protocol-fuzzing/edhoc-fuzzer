@@ -27,9 +27,11 @@ public class EdhocOutputMapper extends OutputMapper {
     private static final Logger LOGGER = LogManager.getLogger();
 
     EdhocMapperConnector edhocMapperConnector;
+    boolean concretize;
 
-    public EdhocOutputMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
+    public EdhocOutputMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector, boolean concretize) {
         super(mapperConfig);
+        this.concretize = concretize;
         this.edhocMapperConnector = edhocMapperConnector;
     }
 
@@ -40,7 +42,7 @@ public class EdhocOutputMapper extends OutputMapper {
 
         try {
             responsePayload = edhocMapperConnector.receive();
-            try {
+            if (concretize) try {
                 File fileReader = new File("recv.length");
                 int recordLength = 0;
                 if(fileReader.exists()) {
