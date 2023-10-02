@@ -1316,8 +1316,11 @@ public class MessageProcessorPersistent {
             return true;
         }
 
-        byte[] connectionIdResponder = Util.getConnectionId(endpointInfo.getUsedConnectionIds(),
+        byte[] connectionIdResponder = oldSession.getConnectionId();
+        if (edhocMapperState.getEdhocMapperConfig().generateOwnConnectionId()) {
+            connectionIdResponder = Util.getConnectionId(endpointInfo.getUsedConnectionIds(),
                 endpointInfo.getOscoreDb(), connectionIdInitiator);
+        }
 
         EdhocSessionPersistent newSession = new EdhocSessionPersistent(oldSession.getSessionUri(),
                 oldSession.isInitiator(), oldSession.isClientInitiated(), method, connectionIdResponder, endpointInfo,
