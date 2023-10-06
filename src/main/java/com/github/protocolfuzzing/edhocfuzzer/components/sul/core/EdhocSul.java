@@ -75,7 +75,7 @@ public class EdhocSul extends AbstractSul {
                     originalTimeout, concretize);
         } else {
             this.edhocMapperConnector = new ClientMapperConnector(edhocMapperConfig.getEdhocCoapUri(),
-                    edhocMapperConfig.getAppCoapUri(), originalTimeout);
+                    edhocMapperConfig.getAppCoapUri(), originalTimeout, concretize);
         }
 
         this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);

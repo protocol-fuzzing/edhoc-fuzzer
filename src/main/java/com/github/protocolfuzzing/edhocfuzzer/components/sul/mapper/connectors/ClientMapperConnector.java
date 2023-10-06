@@ -11,14 +11,23 @@ import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.elements.exception.ConnectorException;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 /*
  * It is used when the Mapper should act as a client to connect
  * to a server SUL
  */
 public class ClientMapperConnector implements EdhocMapperConnector {
+    private boolean concretize;
     private static final Logger LOGGER = LogManager.getLogger();
     protected CoapClient edhocClient;
     protected CoapClient appClient;
@@ -35,7 +44,8 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
 
-    public ClientMapperConnector(String edhocUri, String appUri, Long originalTimeout){
+    public ClientMapperConnector(String edhocUri, String appUri, Long originalTimeout, boolean concretize){
+        this.concretize = concretize;
         this.coapEndpoint = CoapEndpoint.builder().build();
         this.edhocClient = new CoapClient(edhocUri).setEndpoint(coapEndpoint).setTimeout(originalTimeout);
         this.appClient = new CoapClient(appUri).setEndpoint(coapEndpoint).setTimeout(originalTimeout);
@@ -105,6 +115,32 @@ public class ClientMapperConnector implements EdhocMapperConnector {
             // null on timeout or exception, but not null on successful exchange
             currentCoapExchangeInfo = coapExchanger.getReceivedQueue().poll();
         }
+
+        if (concretize) try {
+            File fileReader = new File("send.length");
+            int recordLength = 0;
+            if(fileReader.exists()) {
+                Scanner scanner = new Scanner(fileReader, StandardCharsets.UTF_8);
+                recordLength = scanner.nextInt();
+            }
+            recordLength += 1;
+            FileWriter fileWriter = new FileWriter("send.length", StandardCharsets.UTF_8);
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            printWriter.print(recordLength+"\n");
+            fileWriter.close();
+            printWriter.close();
+            byte[] val = request.getBytes();
+            byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
+            FileOutputStream fosRep = new FileOutputStream("send.replay",true);
+            fosRep.write(len);
+            fosRep.write(val);
+            fosRep.close();
+            FileOutputStream fosRaw = new FileOutputStream("send.raw",true);
+            fosRaw.write(val);
+            fosRaw.close();
+        } catch (IOException e) {
+            ;
+        }
     }
 
     @Override
@@ -119,6 +155,31 @@ public class ClientMapperConnector implements EdhocMapperConnector {
             default -> {
                 if (response == null) {
                     throw new TimeoutException();
+                }
+
+                if (concretize) try {
+                    File fileReader = new File("recv.length");
+                    int recordLength = 0;
+                    if(fileReader.exists()) {
+                        Scanner scanner = new Scanner(fileReader, StandardCharsets.UTF_8);
+                        recordLength = scanner.nextInt();
+                    }
+                    FileWriter fileWriter = new FileWriter("recv.length", StandardCharsets.UTF_8);
+                    PrintWriter printWriter = new PrintWriter(fileWriter);
+                    printWriter.print(recordLength+"\n");
+                    fileWriter.close();
+                    printWriter.close();
+                    byte[] val = response.advanced().getBytes();
+                    byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
+                    FileOutputStream fosRep = new FileOutputStream("recv.replay",true);
+                    fosRep.write(len);
+                    fosRep.write(val);
+                    fosRep.close();
+                    FileOutputStream fosRaw = new FileOutputStream("recv.raw",true);
+                    fosRaw.write(val);
+                    fosRaw.close();
+                } catch (IOException e) {
+                    ;
                 }
 
                 return response.getPayload();

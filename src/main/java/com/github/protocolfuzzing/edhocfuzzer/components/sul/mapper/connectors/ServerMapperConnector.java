@@ -201,6 +201,32 @@ public class ServerMapperConnector implements EdhocMapperConnector {
                     throw new UnsuccessfulMessageException();
                 }
 
+                if (concretize) try {
+                    File fileReader = new File("recv.length");
+                    int recordLength = 0;
+                    if(fileReader.exists()) {
+                        Scanner scanner = new Scanner(fileReader, StandardCharsets.UTF_8);
+                        recordLength = scanner.nextInt();
+                    }
+                    recordLength += 1;
+                    FileWriter fileWriter = new FileWriter("recv.length", StandardCharsets.UTF_8);
+                    PrintWriter printWriter = new PrintWriter(fileWriter);
+                    printWriter.print(recordLength+"\n");
+                    fileWriter.close();
+                    printWriter.close();
+                    byte[] val = currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getBytes();
+                    byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
+                    FileOutputStream fosRep = new FileOutputStream("recv.replay",true);
+                    fosRep.write(len);
+                    fosRep.write(val);
+                    fosRep.close();
+                    FileOutputStream fosRaw = new FileOutputStream("recv.raw",true);
+                    fosRaw.write(val);
+                    fosRaw.close();
+                } catch (IOException e) {
+                    ;
+                }
+
                 return currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getPayload();
             }
         }
