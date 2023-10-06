@@ -85,8 +85,8 @@ public class EdhocSul extends AbstractSul {
 
     protected Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
         return new MapperComposer(
-                new EdhocInputMapper(mapperConfig, new EdhocOutputChecker(), edhocMapperConnector, concretize),
-                new EdhocOutputMapper(mapperConfig, edhocMapperConnector, concretize)
+                new EdhocInputMapper(mapperConfig, new EdhocOutputChecker(), edhocMapperConnector),
+                new EdhocOutputMapper(mapperConfig, edhocMapperConnector)
         );
     }
 
