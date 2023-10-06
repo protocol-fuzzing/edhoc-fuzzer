@@ -170,6 +170,7 @@ public class ServerMapperConnector implements EdhocMapperConnector {
             fileWriter.close();
             printWriter.close();
             byte[] val = response.getBytes();
+            if (val == null) throw new IOException();
             byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
             FileOutputStream fosRep = new FileOutputStream("send.replay",true);
             fosRep.write(len);
@@ -215,6 +216,7 @@ public class ServerMapperConnector implements EdhocMapperConnector {
                     fileWriter.close();
                     printWriter.close();
                     byte[] val = currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getBytes();
+                    if (val == null) throw new IOException();
                     byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
                     FileOutputStream fosRep = new FileOutputStream("recv.replay",true);
                     fosRep.write(len);

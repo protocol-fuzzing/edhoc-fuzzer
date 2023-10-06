@@ -130,6 +130,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
             fileWriter.close();
             printWriter.close();
             byte[] val = request.getBytes();
+            if (val == null) throw new IOException();
             byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
             FileOutputStream fosRep = new FileOutputStream("send.replay",true);
             fosRep.write(len);
@@ -170,6 +171,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
                     fileWriter.close();
                     printWriter.close();
                     byte[] val = response.advanced().getBytes();
+                    if (val == null) throw new IOException();
                     byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
                     FileOutputStream fosRep = new FileOutputStream("recv.replay",true);
                     fosRep.write(len);
