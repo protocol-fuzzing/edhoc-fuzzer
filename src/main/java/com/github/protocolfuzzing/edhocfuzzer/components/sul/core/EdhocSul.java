@@ -38,11 +38,9 @@ public class EdhocSul extends AbstractSul {
     protected EdhocMapperState edhocMapperState;
     protected EdhocMapperConnector edhocMapperConnector;
     protected boolean serverWaitForInitialMessageDone;
-    private boolean concretize;
 
     public EdhocSul(SulConfig sulConfig, CleanupTasks cleanupTasks, boolean concretize) {
         super(sulConfig, cleanupTasks);
-        this.concretize = concretize;
 
         this.protocolVersion = ((EdhocMapperConfig) sulConfig.getMapperConfig()).getProtocolVersion();
 
@@ -74,7 +72,7 @@ public class EdhocSul extends AbstractSul {
         if (sulConfig.isFuzzingClient()){
             this.edhocMapperConnector = new ServerMapperConnector(edhocMapperConfig.getHostCoapUri(),
                     edhocMapperConfig.getEdhocCoapResource(), edhocMapperConfig.getAppCoapResource(),
-                    originalTimeout);
+                    originalTimeout, concretize);
         } else {
             this.edhocMapperConnector = new ClientMapperConnector(edhocMapperConfig.getEdhocCoapUri(),
                     edhocMapperConfig.getAppCoapUri(), originalTimeout);

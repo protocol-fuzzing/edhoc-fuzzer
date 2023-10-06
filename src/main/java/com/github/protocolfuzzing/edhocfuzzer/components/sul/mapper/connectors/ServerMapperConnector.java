@@ -8,6 +8,15 @@ import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -15,6 +24,7 @@ import java.util.concurrent.TimeUnit;
  * to a client SUL
  */
 public class ServerMapperConnector implements EdhocMapperConnector {
+    private boolean concretize;
     private static final Logger LOGGER = LogManager.getLogger();
     protected String host;
     protected int port;
@@ -31,7 +41,8 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
 
-    public ServerMapperConnector(String coapHost, String edhocResource, String appResource, Long originalTimeout) {
+    public ServerMapperConnector(String coapHost, String edhocResource, String appResource, Long originalTimeout, boolean concretize) {
+        this.concretize = concretize;
         this.edhocResource = edhocResource;
         this.appResource = appResource;
         this.timeout = originalTimeout;
@@ -143,6 +154,32 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         } catch (InterruptedException e) {
             exceptionCodeOccurred = 0;
             currentCoapExchangeInfo = null;
+        }
+
+        if (concretize) try {
+            File fileReader = new File("send.length");
+            int recordLength = 0;
+            if(fileReader.exists()) {
+                Scanner scanner = new Scanner(fileReader, StandardCharsets.UTF_8);
+                recordLength = scanner.nextInt();
+            }
+            recordLength += 1;
+            FileWriter fileWriter = new FileWriter("send.length", StandardCharsets.UTF_8);
+            PrintWriter printWriter = new PrintWriter(fileWriter);
+            printWriter.print(recordLength+"\n");
+            fileWriter.close();
+            printWriter.close();
+            byte[] val = response.getBytes();
+            byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
+            FileOutputStream fosRep = new FileOutputStream("send.replay",true);
+            fosRep.write(len);
+            fosRep.write(val);
+            fosRep.close();
+            FileOutputStream fosRaw = new FileOutputStream("send.raw",true);
+            fosRaw.write(val);
+            fosRaw.close();
+        } catch (IOException e) {
+            ;
         }
     }
 
