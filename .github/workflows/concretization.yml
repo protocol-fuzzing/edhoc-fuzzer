@@ -24,8 +24,7 @@ jobs:
         run: ./scripts/setup_sul.sh uoscore-uedhoc
 
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore)
-        run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -test experiments/tests/clients/m1_m1 -concretize
+        run: java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -test experiments/tests/clients/m1_m1 -concretize
 
   uOSCORE-uEDHOC-Server:
     if: ${{ !contains(github.event.head_commit.message, 'concretization skip') }}
@@ -49,5 +48,4 @@ jobs:
         run: ./scripts/setup_sul.sh uoscore-uedhoc
 
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore)
-        run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -test experiments/tests/servers/m1_m2_m3 -concretize
+        run: java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -test experiments/tests/servers/m1_m2_m3 -concretize
