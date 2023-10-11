@@ -31,7 +31,10 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
 
-    public ServerMapperConnector(String coapHost, String edhocResource, String appResource, Long originalTimeout) {
+    protected Concretizer sendConcretizer;
+    protected Concretizer recvConcretizer;
+
+    public ServerMapperConnector(String coapHost, String edhocResource, String appResource, Long originalTimeout, String path) {
         this.edhocResource = edhocResource;
         this.appResource = appResource;
         this.timeout = originalTimeout;
@@ -39,6 +42,10 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         String[] hostAndPort = coapHost.replace("coap://", "").split(":", -1);
         this.host = hostAndPort[0];
         this.port = Integer.parseInt(hostAndPort[1]);
+        if (path != null) {
+            this.sendConcretizer = new Concretizer(path, "send");
+            this.recvConcretizer = new Concretizer(path, "recv");
+        }
     }
 
     @Override
@@ -62,6 +69,13 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     public void shutdown() {
         if (edhocServer != null) {
             edhocServer.destroy();
+        }
+
+        if (sendConcretizer != null) {
+            sendConcretizer.close();
+        }
+        if (recvConcretizer != null) {
+            recvConcretizer.close();
         }
     }
 
@@ -144,6 +158,10 @@ public class ServerMapperConnector implements EdhocMapperConnector {
             exceptionCodeOccurred = 0;
             currentCoapExchangeInfo = null;
         }
+
+        if (sendConcretizer != null) {
+            sendConcretizer.concretize(response.getBytes());
+        }
     }
 
     @Override
@@ -162,6 +180,10 @@ public class ServerMapperConnector implements EdhocMapperConnector {
 
                 if (currentCoapExchangeInfo.hasUnsuccessfulMessage()) {
                     throw new UnsuccessfulMessageException();
+                }
+
+                if (recvConcretizer != null) {
+                    recvConcretizer.concretize(currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getBytes());
                 }
 
                 return currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getPayload();

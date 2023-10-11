@@ -95,6 +95,9 @@ public class EdhocMapperConfig extends MapperConfigStandard {
             + "the format: 0a0b0c0d0e0f")
     protected String forceOscoreRecipientId = null;
 
+    @Parameter(names = "-concretize", description = "The folder to save the concretized seed (give the abstract seed with -test parameter)")
+    protected String concretize = null;
+
     public void initializeHost(String host) {
         if (Objects.equals(this.host, "")) {
             this.host = checkAndReturnHost(host);
@@ -187,6 +190,10 @@ public class EdhocMapperConfig extends MapperConfigStandard {
 
     public String getAppCoapUri() {
         return getCoapUri(host, appCoapResource);
+    }
+
+    public String getConcretize() {
+        return concretize;
     }
 
     protected String checkAndReturnHost(String host) {
