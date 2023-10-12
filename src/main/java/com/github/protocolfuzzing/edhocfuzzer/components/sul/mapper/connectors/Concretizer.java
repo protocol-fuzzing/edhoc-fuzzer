@@ -24,10 +24,17 @@ public class Concretizer {
         try {
             if (path.equals("")) path = ".";
             this.recordLength = 0;
-            this.fileWriter = new FileWriter(new File(path, name + ".length"), StandardCharsets.UTF_8);
+            File folder = new File(path);
+            if (!folder.exists()) {
+                if(!folder.mkdir()) {
+                    LOGGER.error("Cannot create folder");
+                    return;
+                }
+            }
+            this.fileWriter = new FileWriter(new File(folder, name + ".length"), StandardCharsets.UTF_8);
             this.printWriter = new PrintWriter(fileWriter);
-            this.fosRep = new FileOutputStream(new File(path, name + ".replay"), true);
-            this.fosRaw = new FileOutputStream(new File(path, name + ".raw"), true);
+            this.fosRep = new FileOutputStream(new File(folder, name + ".replay"), true);
+            this.fosRaw = new FileOutputStream(new File(folder, name + ".raw"), true);
         } catch (IOException e) {
             LOGGER.error("Cannot create files");
         }
