@@ -1,5 +1,6 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,11 +18,12 @@ public class Concretizer {
 
     public Concretizer(String path, String name) {
         try {
+            if (path.equals("")) path = ".";
             this.recordLength = 0;
-            this.fileWriter = new FileWriter(path + "/" + name + ".length", StandardCharsets.UTF_8);
+            this.fileWriter = new FileWriter(new File(path, name + ".length"), StandardCharsets.UTF_8);
             this.printWriter = new PrintWriter(fileWriter);
-            this.fosRep = new FileOutputStream(path + "/" + name + ".replay",true);
-            this.fosRaw = new FileOutputStream(path + "/" + name + ".raw",true);
+            this.fosRep = new FileOutputStream(new File(path, name + ".replay"), true);
+            this.fosRaw = new FileOutputStream(new File(path, name + ".raw"), true);
         } catch (IOException e) {
             ;
         }

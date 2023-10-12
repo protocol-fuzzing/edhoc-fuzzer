@@ -5,6 +5,7 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messa
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.coap.CoAP;
+import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 
@@ -31,8 +32,8 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
 
-    protected Concretizer sendConcretizer;
-    protected Concretizer recvConcretizer;
+    protected Concretizer sendConcretizer = null;
+    protected Concretizer recvConcretizer = null;
 
     public ServerMapperConnector(String coapHost, String edhocResource, String appResource, Long originalTimeout, String path) {
         this.edhocResource = edhocResource;
@@ -181,12 +182,13 @@ public class ServerMapperConnector implements EdhocMapperConnector {
                 if (currentCoapExchangeInfo.hasUnsuccessfulMessage()) {
                     throw new UnsuccessfulMessageException();
                 }
+                Request request = currentCoapExchangeInfo.getCoapExchange().advanced().getRequest();
 
                 if (recvConcretizer != null) {
-                    recvConcretizer.concretize(currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getBytes());
+                    recvConcretizer.concretize(request.getBytes());
                 }
 
-                return currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getPayload();
+                return request.getPayload();
             }
         }
     }

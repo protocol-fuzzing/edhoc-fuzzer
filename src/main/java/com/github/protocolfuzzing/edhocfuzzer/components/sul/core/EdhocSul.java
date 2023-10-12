@@ -72,10 +72,10 @@ public class EdhocSul extends AbstractSul {
         if (sulConfig.isFuzzingClient()){
             this.edhocMapperConnector = new ServerMapperConnector(edhocMapperConfig.getHostCoapUri(),
                     edhocMapperConfig.getEdhocCoapResource(), edhocMapperConfig.getAppCoapResource(),
-                    originalTimeout, edhocMapperConfig.getConcretize());
+                    originalTimeout, edhocMapperConfig.getConcretizeDir());
         } else {
             this.edhocMapperConnector = new ClientMapperConnector(edhocMapperConfig.getEdhocCoapUri(),
-                    edhocMapperConfig.getAppCoapUri(), originalTimeout, edhocMapperConfig.getConcretize());
+                    edhocMapperConfig.getAppCoapUri(), originalTimeout, edhocMapperConfig.getConcretizeDir());
         }
 
         this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);

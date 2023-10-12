@@ -35,8 +35,8 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
 
-    protected Concretizer sendConcretizer;
-    protected Concretizer recvConcretizer;
+    protected Concretizer sendConcretizer = null;
+    protected Concretizer recvConcretizer = null;
 
     public ClientMapperConnector(String edhocUri, String appUri, Long originalTimeout, String path) {
         this.coapEndpoint = CoapEndpoint.builder().build();
