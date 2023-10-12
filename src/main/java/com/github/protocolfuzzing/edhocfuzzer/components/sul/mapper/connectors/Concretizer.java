@@ -1,5 +1,8 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -10,6 +13,7 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
 public class Concretizer {
+    private static final Logger LOGGER = LogManager.getLogger();
     protected int recordLength;
     protected FileWriter fileWriter;
     protected PrintWriter printWriter;
@@ -25,20 +29,23 @@ public class Concretizer {
             this.fosRep = new FileOutputStream(new File(path, name + ".replay"), true);
             this.fosRaw = new FileOutputStream(new File(path, name + ".raw"), true);
         } catch (IOException e) {
-            ;
+            LOGGER.error("Cannot create files");
         }
     }
 
     public void concretize(byte[] val) {
         try {
-            if (val == null) throw new IOException();
+            if (val == null) {
+                LOGGER.error("Message to concretize is null");
+                return;
+            }
             recordLength += 1;
             byte[] len = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(val.length).array();
             fosRep.write(len);
             fosRep.write(val);
             fosRaw.write(val);
         } catch (IOException e) {
-            ;
+            LOGGER.error("Cannot write files");
         }
     }
 
@@ -50,7 +57,7 @@ public class Concretizer {
             fosRep.close();
             fosRaw.close();
         } catch (IOException e) {
-            ;
+            LOGGER.error("Cannot close files");
         }
     }
 }
