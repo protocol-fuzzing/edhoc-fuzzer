@@ -26,7 +26,7 @@ jobs:
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -test experiments/tests/clients/m1_m1 -concretizeDir seeds
-          test -e seeds/send.length
+          [[ "$(cat seeds/send.length)" == "1" ]]
           test -e seeds/send.replay
           test -e seeds/send.raw
 
@@ -54,6 +54,6 @@ jobs:
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -test experiments/tests/servers/m1_m1 -concretizeDir seeds
-          test -e seeds/send.length
+          [[ "$(cat seeds/send.length)" == "2" ]]
           test -e seeds/send.replay
           test -e seeds/send.raw
