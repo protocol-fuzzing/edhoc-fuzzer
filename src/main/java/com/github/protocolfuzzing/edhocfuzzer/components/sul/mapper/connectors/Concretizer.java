@@ -33,8 +33,8 @@ public class Concretizer {
             }
             this.fileWriter = new FileWriter(new File(folder, name + ".length"), StandardCharsets.UTF_8);
             this.printWriter = new PrintWriter(fileWriter);
-            this.fosRep = new FileOutputStream(new File(folder, name + ".replay"), true);
-            this.fosRaw = new FileOutputStream(new File(folder, name + ".raw"), true);
+            this.fosRep = new FileOutputStream(new File(folder, name + ".replay"), false);
+            this.fosRaw = new FileOutputStream(new File(folder, name + ".raw"), false);
         } catch (IOException e) {
             LOGGER.error("Cannot create files");
         }
