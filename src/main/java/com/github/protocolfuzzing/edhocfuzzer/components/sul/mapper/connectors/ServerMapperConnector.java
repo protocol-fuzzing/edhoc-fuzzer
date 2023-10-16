@@ -32,10 +32,7 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
 
-    protected Concretizer sendConcretizer = null;
-    protected Concretizer recvConcretizer = null;
-
-    public ServerMapperConnector(String coapHost, String edhocResource, String appResource, Long originalTimeout, String path) {
+    public ServerMapperConnector(String coapHost, String edhocResource, String appResource, Long originalTimeout) {
         this.edhocResource = edhocResource;
         this.appResource = appResource;
         this.timeout = originalTimeout;
@@ -43,10 +40,6 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         String[] hostAndPort = coapHost.replace("coap://", "").split(":", -1);
         this.host = hostAndPort[0];
         this.port = Integer.parseInt(hostAndPort[1]);
-        if (path != null) {
-            this.sendConcretizer = new Concretizer(path, "send");
-            this.recvConcretizer = new Concretizer(path, "recv");
-        }
     }
 
     @Override
@@ -70,13 +63,6 @@ public class ServerMapperConnector implements EdhocMapperConnector {
     public void shutdown() {
         if (edhocServer != null) {
             edhocServer.destroy();
-        }
-
-        if (sendConcretizer != null) {
-            sendConcretizer.close();
-        }
-        if (recvConcretizer != null) {
-            recvConcretizer.close();
         }
     }
 
@@ -159,10 +145,6 @@ public class ServerMapperConnector implements EdhocMapperConnector {
             exceptionCodeOccurred = 0;
             currentCoapExchangeInfo = null;
         }
-
-        if (sendConcretizer != null) {
-            sendConcretizer.concretize(response.getBytes());
-        }
     }
 
     @Override
@@ -183,10 +165,6 @@ public class ServerMapperConnector implements EdhocMapperConnector {
                     throw new UnsuccessfulMessageException();
                 }
                 Request request = currentCoapExchangeInfo.getCoapExchange().advanced().getRequest();
-
-                if (recvConcretizer != null) {
-                    recvConcretizer.concretize(request.getBytes());
-                }
 
                 return request.getPayload();
             }

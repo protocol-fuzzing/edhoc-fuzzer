@@ -35,17 +35,10 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
 
-    protected Concretizer sendConcretizer = null;
-    protected Concretizer recvConcretizer = null;
-
-    public ClientMapperConnector(String edhocUri, String appUri, Long originalTimeout, String path) {
+    public ClientMapperConnector(String edhocUri, String appUri, Long originalTimeout) {
         this.coapEndpoint = CoapEndpoint.builder().build();
         this.edhocClient = new CoapClient(edhocUri).setEndpoint(coapEndpoint).setTimeout(originalTimeout);
         this.appClient = new CoapClient(appUri).setEndpoint(coapEndpoint).setTimeout(originalTimeout);
-        if (path != null) {
-            this.sendConcretizer = new Concretizer(path, "send");
-            this.recvConcretizer = new Concretizer(path, "recv");
-        }
     }
 
     @Override
@@ -112,10 +105,6 @@ public class ClientMapperConnector implements EdhocMapperConnector {
             // null on timeout or exception, but not null on successful exchange
             currentCoapExchangeInfo = coapExchanger.getReceivedQueue().poll();
         }
-
-        if (sendConcretizer != null) {
-            sendConcretizer.concretize(request.getBytes());
-        }
     }
 
     @Override
@@ -130,10 +119,6 @@ public class ClientMapperConnector implements EdhocMapperConnector {
             default -> {
                 if (response == null) {
                     throw new TimeoutException();
-                }
-
-                if (recvConcretizer != null) {
-                    recvConcretizer.concretize(response.advanced().getBytes());
                 }
 
                 return response.getPayload();
@@ -196,14 +181,5 @@ public class ClientMapperConnector implements EdhocMapperConnector {
                 && response.advanced().isSuccess()
                 && currentCoapExchangeInfo != null
                 && currentCoapExchangeInfo.getMID() == response.advanced().getMID();
-    }
-
-    public void shutdown() {
-        if (sendConcretizer != null) {
-            sendConcretizer.close();
-        }
-        if (recvConcretizer != null) {
-            recvConcretizer.close();
-        }
     }
 }

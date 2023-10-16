@@ -72,10 +72,10 @@ public class EdhocSul extends AbstractSul {
         if (sulConfig.isFuzzingClient()){
             this.edhocMapperConnector = new ServerMapperConnector(edhocMapperConfig.getHostCoapUri(),
                     edhocMapperConfig.getEdhocCoapResource(), edhocMapperConfig.getAppCoapResource(),
-                    originalTimeout, edhocMapperConfig.getConcretizeDir());
+                    originalTimeout);
         } else {
             this.edhocMapperConnector = new ClientMapperConnector(edhocMapperConfig.getEdhocCoapUri(),
-                    edhocMapperConfig.getAppCoapUri(), originalTimeout, edhocMapperConfig.getConcretizeDir());
+                    edhocMapperConfig.getAppCoapUri(), originalTimeout);
         }
 
         this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);
@@ -114,7 +114,6 @@ public class EdhocSul extends AbstractSul {
         } else {
             edhocMapperState = new ClientMapperState(protocolVersion, edhocMapperConfig,
                     (ClientMapperConnector) edhocMapperConnector);
-            cleanupTasks.submit(((ClientMapperConnector) edhocMapperConnector)::shutdown);
         }
 
         this.executionContextStepped = new ExecutionContextStepped(edhocMapperState);
