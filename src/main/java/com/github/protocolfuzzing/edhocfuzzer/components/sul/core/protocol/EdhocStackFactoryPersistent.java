@@ -1,5 +1,6 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol;
 
+import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.network.ExtendedCoapStackFactory;
 import org.eclipse.californium.core.network.Outbox;
@@ -12,11 +13,13 @@ public class EdhocStackFactoryPersistent implements ExtendedCoapStackFactory {
 
     protected EdhocEndpointInfoPersistent edhocEndpointInfoPersistent;
     protected MessageProcessorPersistent messageProcessorPersistent;
+    protected CleanupTasks cleanupTasks;
 
     public EdhocStackFactoryPersistent(EdhocEndpointInfoPersistent edhocEndpointInfoPersistent,
-                                 MessageProcessorPersistent messageProcessorPersistent) {
+                                 MessageProcessorPersistent messageProcessorPersistent, CleanupTasks cleanupTasks) {
         this.edhocEndpointInfoPersistent = edhocEndpointInfoPersistent;
         this.messageProcessorPersistent = messageProcessorPersistent;
+        this.cleanupTasks = cleanupTasks;
     }
 
     @Override
@@ -32,7 +35,7 @@ public class EdhocStackFactoryPersistent implements ExtendedCoapStackFactory {
         }
 
         return new EdhocStackPersistent(tag, config, outbox, matchingStrategy,
-                edhocEndpointInfoPersistent, messageProcessorPersistent);
+                edhocEndpointInfoPersistent, messageProcessorPersistent, cleanupTasks);
     }
 
     @SuppressWarnings("deprecation")

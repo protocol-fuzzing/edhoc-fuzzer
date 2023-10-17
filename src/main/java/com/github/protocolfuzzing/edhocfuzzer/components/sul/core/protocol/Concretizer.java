@@ -1,4 +1,4 @@
-package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

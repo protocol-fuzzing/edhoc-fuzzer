@@ -97,7 +97,7 @@ public class EdhocSul extends AbstractSul {
 
         if (sulConfig.isFuzzingClient()) {
             ServerMapperConnector serverMapperConnector = (ServerMapperConnector) edhocMapperConnector;
-            edhocMapperState = new ServerMapperState(protocolVersion, edhocMapperConfig, serverMapperConnector);
+            edhocMapperState = new ServerMapperState(protocolVersion, edhocMapperConfig, serverMapperConnector, cleanupTasks);
 
             serverWaitForInitialMessageDone = false;
             cleanupTasks.submit(serverMapperConnector::shutdown);
@@ -113,7 +113,7 @@ public class EdhocSul extends AbstractSul {
             }
         } else {
             edhocMapperState = new ClientMapperState(protocolVersion, edhocMapperConfig,
-                    (ClientMapperConnector) edhocMapperConnector);
+                    (ClientMapperConnector) edhocMapperConnector, cleanupTasks);
         }
 
         this.executionContextStepped = new ExecutionContextStepped(edhocMapperState);

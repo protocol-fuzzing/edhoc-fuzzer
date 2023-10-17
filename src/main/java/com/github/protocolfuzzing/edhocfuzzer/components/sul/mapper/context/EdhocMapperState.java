@@ -13,6 +13,7 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authe
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.CoapExchanger;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.State;
+import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import com.upokecenter.cbor.CBORObject;
 import net.i2p.crypto.eddsa.EdDSASecurityProvider;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -96,7 +97,7 @@ public abstract class EdhocMapperState implements State {
     protected EdhocEndpointInfoPersistent edhocEndpointInfoPersistent;
 
     public EdhocMapperState(ProtocolVersion protocolVersion, EdhocMapperConfig edhocMapperConfig,
-                            String edhocSessionUri, String oscoreUri, EdhocMapperConnector edhocMapperConnector) {
+                            String edhocSessionUri, String oscoreUri, EdhocMapperConnector edhocMapperConnector, CleanupTasks cleanupTasks) {
 
         this.protocolVersion = protocolVersion;
         this.edhocMapperConfig = edhocMapperConfig;
@@ -184,7 +185,7 @@ public abstract class EdhocMapperState implements State {
 
         // Initialize connector
         edhocMapperConnector.initialize(new EdhocStackFactoryPersistent(edhocEndpointInfoPersistent,
-                new MessageProcessorPersistent(this)), edhocSessionPersistent.getCoapExchanger());
+                new MessageProcessorPersistent(this), cleanupTasks), edhocSessionPersistent.getCoapExchanger());
     }
 
     public ProtocolVersion getProtocolVersion() {
