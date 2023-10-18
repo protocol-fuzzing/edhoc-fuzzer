@@ -45,11 +45,14 @@ public class EdhocLayerPersistent extends AbstractLayer {
     MessageProcessorPersistent messageProcessorPersistent;
 
     public EdhocLayerPersistent(EdhocEndpointInfoPersistent edhocEndpointInfoPersistent,
-                                MessageProcessorPersistent messageProcessorPersistent, CleanupTasks cleanupTasks) {
+                                MessageProcessorPersistent messageProcessorPersistent) {
+        LOGGER.debug("Initializing EDHOC layer persistent");
+
         this.ctxDb = edhocEndpointInfoPersistent.getOscoreDb();
         this.edhocSessionsPersistent = edhocEndpointInfoPersistent.getEdhocSessionsPersistent();
         this.messageProcessorPersistent = messageProcessorPersistent;
-        LOGGER.debug("Initializing EDHOC layer persistent");
+        
+        CleanupTasks cleanupTasks = messageProcessorPersistent.getEdhocMapperState().getCleanupTasks();
         String path = messageProcessorPersistent.getEdhocMapperState().getEdhocMapperConfig().getConcretizeDir();
         if (path != null) {
             this.sendConcretizer = new Concretizer(path, "send");

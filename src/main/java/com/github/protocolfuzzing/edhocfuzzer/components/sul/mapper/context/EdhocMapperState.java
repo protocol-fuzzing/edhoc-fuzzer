@@ -96,12 +96,15 @@ public abstract class EdhocMapperState implements State {
 
     protected EdhocEndpointInfoPersistent edhocEndpointInfoPersistent;
 
+    protected CleanupTasks cleanupTasks;
+
     public EdhocMapperState(ProtocolVersion protocolVersion, EdhocMapperConfig edhocMapperConfig,
-                            String edhocSessionUri, String oscoreUri, EdhocMapperConnector edhocMapperConnector, CleanupTasks cleanupTasks) {
+                            String edhocSessionUri, String oscoreUri, CleanupTasks cleanupTasks) {
 
         this.protocolVersion = protocolVersion;
         this.edhocMapperConfig = edhocMapperConfig;
         this.combinedMessageVersion = edhocMapperConfig.getCombinedMessageVersion();
+        this.cleanupTasks = cleanupTasks;
 
         // Insert security providers
         Security.insertProviderAt(new EdDSASecurityProvider(), 1);
@@ -182,10 +185,16 @@ public abstract class EdhocMapperState implements State {
             edhocSessionsPersistent.put(CBORObject.FromObject(edhocMapperConfig.getForceOscoreRecipientId()),
                     edhocSessionPersistent);
         }
+    }
 
-        // Initialize connector
+    public EdhocMapperState initialize(EdhocMapperConnector edhocMapperConnector) {
         edhocMapperConnector.initialize(new EdhocStackFactoryPersistent(edhocEndpointInfoPersistent,
-                new MessageProcessorPersistent(this), cleanupTasks), edhocSessionPersistent.getCoapExchanger());
+                new MessageProcessorPersistent(this)), edhocSessionPersistent.getCoapExchanger());
+        return this;
+    }
+
+    public CleanupTasks getCleanupTasks() {
+        return cleanupTasks;
     }
 
     public ProtocolVersion getProtocolVersion() {
