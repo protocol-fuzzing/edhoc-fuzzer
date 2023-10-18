@@ -51,7 +51,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
         this.ctxDb = edhocEndpointInfoPersistent.getOscoreDb();
         this.edhocSessionsPersistent = edhocEndpointInfoPersistent.getEdhocSessionsPersistent();
         this.messageProcessorPersistent = messageProcessorPersistent;
-        
+
         CleanupTasks cleanupTasks = messageProcessorPersistent.getEdhocMapperState().getCleanupTasks();
         String path = messageProcessorPersistent.getEdhocMapperState().getEdhocMapperConfig().getConcretizeDir();
         if (path != null) {
