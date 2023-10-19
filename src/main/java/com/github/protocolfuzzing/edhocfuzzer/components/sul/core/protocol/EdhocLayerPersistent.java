@@ -2,6 +2,7 @@ package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol;
 
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.CombinedMessageVersion;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.CoapExchangeInfo;
+import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import com.upokecenter.cbor.CBORException;
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.coap.EmptyMessage;
 import org.eclipse.californium.core.coap.Message;
+import org.eclipse.californium.core.coap.MessageObserverAdapter;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.network.Exchange;
@@ -30,6 +32,9 @@ import java.util.Map;
 public class EdhocLayerPersistent extends AbstractLayer {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    protected Concretizer sendConcretizer = null;
+    protected Concretizer recvConcretizer = null;
+
     // The OSCORE context database
     OSCoreCtxDB ctxDb;
 
@@ -41,10 +46,20 @@ public class EdhocLayerPersistent extends AbstractLayer {
 
     public EdhocLayerPersistent(EdhocEndpointInfoPersistent edhocEndpointInfoPersistent,
                                 MessageProcessorPersistent messageProcessorPersistent) {
+        LOGGER.debug("Initializing EDHOC layer persistent");
+
         this.ctxDb = edhocEndpointInfoPersistent.getOscoreDb();
         this.edhocSessionsPersistent = edhocEndpointInfoPersistent.getEdhocSessionsPersistent();
         this.messageProcessorPersistent = messageProcessorPersistent;
-        LOGGER.debug("Initializing EDHOC layer persistent");
+
+        CleanupTasks cleanupTasks = messageProcessorPersistent.getEdhocMapperState().getCleanupTasks();
+        String path = messageProcessorPersistent.getEdhocMapperState().getEdhocMapperConfig().getConcretizeDir();
+        if (path != null) {
+            this.sendConcretizer = new Concretizer(path, "send");
+            this.recvConcretizer = new Concretizer(path, "recv");
+            cleanupTasks.submit(sendConcretizer::close);
+            cleanupTasks.submit(recvConcretizer::close);
+        }
     }
 
     @Override
@@ -80,6 +95,17 @@ public class EdhocLayerPersistent extends AbstractLayer {
             request.setPayload(combinedMessage);
         }
 
+        if(sendConcretizer != null) {
+            request.addMessageObserver(new MessageObserverAdapter() {
+                @Override
+                public void onSent(boolean retransmission) {
+                    if (!retransmission) {
+                        sendConcretizer.concretize(request.getBytes());
+                    }
+                }
+            });
+        }
+
         super.sendRequest(exchange, request);
     }
 
@@ -99,13 +125,27 @@ public class EdhocLayerPersistent extends AbstractLayer {
             return;
         }
 
+        if(sendConcretizer != null) {
+            response.addMessageObserver(new MessageObserverAdapter() {
+                @Override
+                public void onSent(boolean retransmission) {
+                    if (!retransmission) {
+                        sendConcretizer.concretize(response.getBytes());
+                    }
+                }
+            });
+        }
+
         super.sendResponse(exchange, response);
     }
 
     @Override
     public void receiveRequest(Exchange exchange, Request request) {
-
         LOGGER.debug("Receiving request through EDHOC layer");
+
+        if(recvConcretizer != null) {
+            recvConcretizer.concretize(request.getBytes());
+        }
 
         if (request.getOptions().hasEdhoc()) {
 
@@ -185,11 +225,17 @@ public class EdhocLayerPersistent extends AbstractLayer {
         }
 
         super.receiveRequest(exchange, request);
+
     }
 
     @Override
     public void receiveResponse(Exchange exchange, Response response) {
         LOGGER.debug("Receiving response through EDHOC layer");
+
+        if(recvConcretizer != null) {
+            recvConcretizer.concretize(response.getBytes());
+        }
+
         addCoapExchangeInfo(response, false,
                 messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent());
         super.receiveResponse(exchange, response);

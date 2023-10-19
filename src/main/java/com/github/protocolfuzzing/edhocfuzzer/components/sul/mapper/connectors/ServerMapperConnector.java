@@ -5,6 +5,7 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messa
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.coap.CoAP;
+import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 
@@ -163,8 +164,9 @@ public class ServerMapperConnector implements EdhocMapperConnector {
                 if (currentCoapExchangeInfo.hasUnsuccessfulMessage()) {
                     throw new UnsuccessfulMessageException();
                 }
+                Request request = currentCoapExchangeInfo.getCoapExchange().advanced().getRequest();
 
-                return currentCoapExchangeInfo.getCoapExchange().advanced().getRequest().getPayload();
+                return request.getPayload();
             }
         }
     }

@@ -35,7 +35,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     protected CoapExchanger coapExchanger;
     protected CoapExchangeInfo currentCoapExchangeInfo;
 
-    public ClientMapperConnector(String edhocUri, String appUri, Long originalTimeout){
+    public ClientMapperConnector(String edhocUri, String appUri, Long originalTimeout) {
         this.coapEndpoint = CoapEndpoint.builder().build();
         this.edhocClient = new CoapClient(edhocUri).setEndpoint(coapEndpoint).setTimeout(originalTimeout);
         this.appClient = new CoapClient(appUri).setEndpoint(coapEndpoint).setTimeout(originalTimeout);
