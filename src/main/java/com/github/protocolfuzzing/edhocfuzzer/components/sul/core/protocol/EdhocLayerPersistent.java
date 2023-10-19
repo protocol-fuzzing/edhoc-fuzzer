@@ -141,8 +141,11 @@ public class EdhocLayerPersistent extends AbstractLayer {
 
     @Override
     public void receiveRequest(Exchange exchange, Request request) {
-
         LOGGER.debug("Receiving request through EDHOC layer");
+
+        if(recvConcretizer != null) {
+            recvConcretizer.concretize(request.getBytes());
+        }
 
         if (request.getOptions().hasEdhoc()) {
 
@@ -223,21 +226,19 @@ public class EdhocLayerPersistent extends AbstractLayer {
 
         super.receiveRequest(exchange, request);
 
-        if(recvConcretizer != null) {
-            recvConcretizer.concretize(request.getBytes());
-        }
     }
 
     @Override
     public void receiveResponse(Exchange exchange, Response response) {
         LOGGER.debug("Receiving response through EDHOC layer");
-        addCoapExchangeInfo(response, false,
-                messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent());
-        super.receiveResponse(exchange, response);
 
         if(recvConcretizer != null) {
             recvConcretizer.concretize(response.getBytes());
         }
+
+        addCoapExchangeInfo(response, false,
+                messageProcessorPersistent.getEdhocMapperState().getEdhocSessionPersistent());
+        super.receiveResponse(exchange, response);
     }
 
     @Override
