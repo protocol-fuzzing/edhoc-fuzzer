@@ -30,14 +30,14 @@ import org.eclipse.californium.core.config.CoapConfig;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class EdhocSul extends AbstractSul {
+public final class EdhocSul extends AbstractSul {
     private static final Logger LOGGER = LogManager.getLogger();
-    protected ExecutionContextStepped executionContextStepped;
-    protected ProtocolVersion protocolVersion;
-    protected Long originalTimeout;
-    protected EdhocMapperState edhocMapperState;
-    protected EdhocMapperConnector edhocMapperConnector;
-    protected boolean serverWaitForInitialMessageDone;
+    ExecutionContextStepped executionContextStepped;
+    ProtocolVersion protocolVersion;
+    Long originalTimeout;
+    EdhocMapperState edhocMapperState;
+    EdhocMapperConnector edhocMapperConnector;
+    boolean serverWaitForInitialMessageDone;
 
     public EdhocSul(SulConfig sulConfig, CleanupTasks cleanupTasks) {
         super(sulConfig, cleanupTasks);
@@ -81,7 +81,7 @@ public class EdhocSul extends AbstractSul {
         this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);
     }
 
-    protected Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
+    Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
         return new MapperComposer(
                 new EdhocInputMapper(mapperConfig,  new EdhocOutputChecker(), edhocMapperConnector),
                 new EdhocOutputMapper(mapperConfig, edhocMapperConnector)
@@ -165,7 +165,7 @@ public class EdhocSul extends AbstractSul {
         return abstractOutput;
     }
 
-    protected AbstractOutput executeInput(AbstractInput abstractInput, Mapper mapper) {
+    AbstractOutput executeInput(AbstractInput abstractInput, Mapper mapper) {
         boolean timeoutChanged = false;
 
         // handle timeout from extendedWait and from inputResponse
@@ -187,7 +187,7 @@ public class EdhocSul extends AbstractSul {
         return abstractOutput;
     }
 
-    protected void serverWaitForInitialMessage() {
+    void serverWaitForInitialMessage() {
         boolean isServer = !edhocMapperState.isCoapClient();
         boolean isResponder = !edhocMapperState.getEdhocSessionPersistent().isInitiator();
         MessageOutputType expectedMessageType = isResponder ?
