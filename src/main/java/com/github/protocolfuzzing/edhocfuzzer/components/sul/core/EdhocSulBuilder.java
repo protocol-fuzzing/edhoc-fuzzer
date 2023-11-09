@@ -8,6 +8,6 @@ import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 public class EdhocSulBuilder implements SulBuilder {
     @Override
     public AbstractSul build(SulConfig sulConfig, CleanupTasks cleanupTasks) {
-        return new EdhocSul(sulConfig, cleanupTasks);
+        return new EdhocSul(sulConfig, cleanupTasks).initialize();
     }
 }
