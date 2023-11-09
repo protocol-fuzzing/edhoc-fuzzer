@@ -25,10 +25,8 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mapp
 import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.californium.core.config.CoapConfig;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 public class EdhocSul extends AbstractSul {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -43,30 +41,7 @@ public class EdhocSul extends AbstractSul {
         super(sulConfig, cleanupTasks);
 
         this.protocolVersion = ((EdhocMapperConfig) sulConfig.getMapperConfig()).getProtocolVersion();
-
-        try {
-            EdhocMapperConnectionConfig mapperConnectionConfig = new EdhocMapperConnectionConfig(
-                    sulConfig.getMapperConfig().getMapperConnectionConfigInputStream());
-
-            // timeout taken from configuration file
-            Long coapExchangeLifetime = mapperConnectionConfig.getConfiguration().get(
-                    CoapConfig.EXCHANGE_LIFETIME, TimeUnit.MILLISECONDS);
-
-            // timeout taken from responseWait in command-line
-            Long responseWait = sulConfig.getResponseWait();
-
-            if (responseWait < coapExchangeLifetime) {
-                LOGGER.info("Provided responseWait ({} ms) < COAP.EXCHANGE_LIFETIME ({} ms)", responseWait, coapExchangeLifetime);
-            }
-
-            this.originalTimeout = responseWait;
-
-            // apply delegate
-            sulConfig.applyDelegate(mapperConnectionConfig);
-        } catch (IOException e) {
-            LOGGER.error("Exception occurred: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
+        this.originalTimeout = sulConfig.getResponseWait();
 
         EdhocMapperConfig edhocMapperConfig = (EdhocMapperConfig) sulConfig.getMapperConfig();
         if (sulConfig.isFuzzingClient()){
@@ -75,10 +50,23 @@ public class EdhocSul extends AbstractSul {
                     originalTimeout);
         } else {
             this.edhocMapperConnector = new ClientMapperConnector(edhocMapperConfig.getEdhocCoapUri(),
-                    edhocMapperConfig.getAppCoapUri(), originalTimeout);
+                    edhocMapperConfig.getAppCoapUri(), this.originalTimeout);
         }
 
         this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);
+    }
+
+    public EdhocSul initialize() {
+        try {
+            EdhocMapperConnectionConfig mapperConnectionConfig = new EdhocMapperConnectionConfig(
+                    sulConfig.getMapperConfig().getMapperConnectionConfigInputStream());
+
+            sulConfig.applyDelegate(mapperConnectionConfig);
+        } catch (IOException e) {
+            LOGGER.error("Exception occurred: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return this;
     }
 
     protected Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
