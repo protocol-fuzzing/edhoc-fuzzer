@@ -63,17 +63,17 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
     @Override
     public StateFuzzer build(StateFuzzerEnabler stateFuzzerEnabler) {
         return new StateFuzzerStandard(
-                new StateFuzzerComposerStandard(stateFuzzerEnabler, alphabetBuilder, sulBuilder, sulWrapper)
+                new StateFuzzerComposerStandard(stateFuzzerEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize()
         );
     }
 
     @Override
     public TestRunner build(TestRunnerEnabler testRunnerEnabler) {
-        return new TestRunner(testRunnerEnabler, alphabetBuilder, sulBuilder, sulWrapper);
+        return new TestRunner(testRunnerEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize();
     }
 
     @Override
     public TimingProbe build(TimingProbeEnabler timingProbeEnabler) {
-        return new TimingProbe(timingProbeEnabler, alphabetBuilder, sulBuilder, sulWrapper);
+        return new TimingProbe(timingProbeEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize();
     }
 }
