@@ -39,10 +39,23 @@ public class EdhocSul extends AbstractSul {
 
     public EdhocSul(SulConfig sulConfig, CleanupTasks cleanupTasks) {
         super(sulConfig, cleanupTasks);
-
         this.protocolVersion = ((EdhocMapperConfig) sulConfig.getMapperConfig()).getProtocolVersion();
         this.originalTimeout = sulConfig.getResponseWait();
+    }
 
+    public EdhocSul initialize() {
+        try {
+            // Adds also the californium standard configuration
+            EdhocMapperConnectionConfig mapperConnectionConfig = new EdhocMapperConnectionConfig(
+                    sulConfig.getMapperConfig().getMapperConnectionConfigInputStream());
+
+            sulConfig.applyDelegate(mapperConnectionConfig);
+        } catch (IOException e) {
+            LOGGER.error("Exception occurred: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        // The connector uses the californium standard configuration
         EdhocMapperConfig edhocMapperConfig = (EdhocMapperConfig) sulConfig.getMapperConfig();
         if (sulConfig.isFuzzingClient()){
             this.edhocMapperConnector = new ServerMapperConnector(edhocMapperConfig.getHostCoapUri(),
@@ -54,18 +67,7 @@ public class EdhocSul extends AbstractSul {
         }
 
         this.mapper = buildMapper(sulConfig.getMapperConfig(), this.edhocMapperConnector);
-    }
 
-    public EdhocSul initialize() {
-        try {
-            EdhocMapperConnectionConfig mapperConnectionConfig = new EdhocMapperConnectionConfig(
-                    sulConfig.getMapperConfig().getMapperConnectionConfigInputStream());
-
-            sulConfig.applyDelegate(mapperConnectionConfig);
-        } catch (IOException e) {
-            LOGGER.error("Exception occurred: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
         return this;
     }
 
@@ -195,7 +197,7 @@ public class EdhocSul extends AbstractSul {
         boolean isExpectedMessage = edhocOutputChecker.isMessage(abstractOutput, expectedMessageType);
 
         if (!isExpectedMessage) {
-            throw new RuntimeException("After initial waiting, instead of " + expectedMessageType + ", received " +
+            throw new RuntimeException("After initial wait, instead of " + expectedMessageType + ", received " +
                     abstractOutput.getName());
         }
 
