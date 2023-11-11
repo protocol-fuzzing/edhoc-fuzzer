@@ -25,8 +25,10 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mapp
 import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.californium.core.config.CoapConfig;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class EdhocSul extends AbstractSul {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -50,6 +52,16 @@ public class EdhocSul extends AbstractSul {
                     sulConfig.getMapperConfig().getMapperConnectionConfigInputStream());
 
             sulConfig.applyDelegate(mapperConnectionConfig);
+
+            // Warn about possible retransmissions
+            Long coapAckTimeout = mapperConnectionConfig.getConfiguration().get(
+                CoapConfig.ACK_TIMEOUT, TimeUnit.MILLISECONDS);
+
+            if (originalTimeout > coapAckTimeout) {
+                LOGGER.warn("Found COAP.ACK_TIMEOUT ({} ms) < responseWait ({} ms)", coapAckTimeout, originalTimeout);
+                LOGGER.warn("Retransmissions may occur implicitly and may affect the learned model's correctness");
+                LOGGER.warn("To avoid them: [COAP.ACK_TIMEOUT > longest wait time] or [COAP.MAX_RETRANSMIT = 0]");
+            }
         } catch (IOException e) {
             LOGGER.error("Exception occurred: " + e.getMessage());
             throw new RuntimeException(e);
