@@ -246,7 +246,7 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>4.8.1.0</version>
                 <configuration>
-                    <includeFilterFile>spotbugs-include.xml</includeFilterFile>
+                    <includeFilterFile>.spotbugs/include.xml</includeFilterFile>
                 </configuration>
                 <executions>
                     <execution>
