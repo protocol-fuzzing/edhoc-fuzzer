@@ -8,10 +8,13 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
+    COMMIT_HASH="34db17a7d9ed74396342e74d7a8efc6b22740417"
+
     set -e
     cd "${BASE_DIR}"
     git clone "https://github.com/protocol-fuzzing/protocol-state-fuzzer.git"
     cd protocol-state-fuzzer
+    git checkout ${COMMIT_HASH}
     mvn install
 
     cd "${BASE_DIR}"
@@ -23,7 +26,7 @@ setup_cf_edhoc() {
     # setup cf-edhoc library
 
     readonly PATCH_FILE="${SCRIPT_DIR}/cf-edhoc.patch"
-    readonly COMMIT_HASH="d728368ac44dabceff2b4a2c5fcd757552e65f9e"
+    COMMIT_HASH="d728368ac44dabceff2b4a2c5fcd757552e65f9e"
 
     set -e
     cd "${BASE_DIR}"
