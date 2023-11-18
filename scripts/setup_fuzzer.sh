@@ -25,7 +25,7 @@ setup_psf() {
 setup_cf_edhoc() {
     # setup cf-edhoc library
 
-    readonly PATCH_FILE="${SCRIPT_DIR}/cf-edhoc.patch"
+    PATCH_FILE="${SCRIPT_DIR}/cf-edhoc.patch"
     COMMIT_HASH="d728368ac44dabceff2b4a2c5fcd757552e65f9e"
 
     set -e
