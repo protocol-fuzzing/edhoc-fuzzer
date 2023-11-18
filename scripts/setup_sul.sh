@@ -14,7 +14,7 @@ mkdir -p "${SOURCES_DIR}" "${SERVERS_DIR}" "${CLIENTS_DIR}"
 
 setup_edhoc_rs() {
   # edhoc-rs
-  readonly COMMIT_HASH="337c47ca684b60f5dbf09828ec7705afac0e79f4"
+  COMMIT_HASH="337c47ca684b60f5dbf09828ec7705afac0e79f4"
 
   set -e
   echo "Setting up EDHOC-Rust in ${SOURCES_DIR}"
@@ -35,14 +35,14 @@ setup_edhoc_rs() {
 
 setup_rise() {
   # rise
-  readonly COMMIT_HASH="d728368ac44dabceff2b4a2c5fcd757552e65f9e"
-  readonly PREFIX="${SOURCES_DIR}/californium/cf-edhoc/src"
-  readonly POSTFIX="java/org/eclipse/californium/edhoc"
-  readonly CF_EDHOC_MAIN_DIR="${PREFIX}/main/${POSTFIX}"
-  readonly CF_EDHOC_TEST_DIR="${PREFIX}/test/${POSTFIX}"
-  readonly APP_PROFILE_BUILDER="${CF_EDHOC_TEST_DIR}/AppProfileBuilder.java"
-  readonly EDHOC_CLIENT="${CF_EDHOC_TEST_DIR}/EdhocClient.java"
-  readonly EDHOC_SERVER="${CF_EDHOC_TEST_DIR}/EdhocServer.java"
+  COMMIT_HASH="d728368ac44dabceff2b4a2c5fcd757552e65f9e"
+  PREFIX="${SOURCES_DIR}/californium/cf-edhoc/src"
+  POSTFIX="java/org/eclipse/californium/edhoc"
+  CF_EDHOC_MAIN_DIR="${PREFIX}/main/${POSTFIX}"
+  CF_EDHOC_TEST_DIR="${PREFIX}/test/${POSTFIX}"
+  APP_PROFILE_BUILDER="${CF_EDHOC_TEST_DIR}/AppProfileBuilder.java"
+  EDHOC_CLIENT="${CF_EDHOC_TEST_DIR}/EdhocClient.java"
+  EDHOC_SERVER="${CF_EDHOC_TEST_DIR}/EdhocServer.java"
 
   set -e
   echo "Setting up RISE in ${SOURCES_DIR}"
@@ -66,7 +66,7 @@ setup_rise() {
 
 setup_sifis_home() {
   # sifis-home
-  readonly COMMIT_HASH="9956c8cf9a6f8cb3ab09e48842ceafeb9d2a790e"
+  COMMIT_HASH="9956c8cf9a6f8cb3ab09e48842ceafeb9d2a790e"
 
   set -e
   echo "Setting up SIFIS-HOME in ${SOURCES_DIR}"
@@ -97,7 +97,7 @@ setup_sifis_home() {
 
 setup_uoscore_uedhoc() {
   # uoscore-uedhoc
-  readonly COMMIT_HASH="9c18a3503ad905e79e2dbe847cb14c1650524eee"
+  COMMIT_HASH="9c18a3503ad905e79e2dbe847cb14c1650524eee"
 
   set -e
   echo "Setting up uOSCORE-uEDHOC in ${SOURCES_DIR}"
