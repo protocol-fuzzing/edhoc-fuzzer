@@ -1,8 +1,8 @@
 diff --git a/bom/pom.xml b/bom/pom.xml
-index 9a37b944c..a73e3406e 100644
+index 15e2b4810..d79b11316 100644
 --- a/bom/pom.xml
 +++ b/bom/pom.xml
-@@ -123,7 +123,7 @@
+@@ -129,7 +129,7 @@
  				<groupId>net.i2p.crypto</groupId>
  				<artifactId>eddsa</artifactId>
  				<version>${eddsa.version}</version>
@@ -12,10 +12,10 @@ index 9a37b944c..a73e3406e 100644
  
  			<dependency>
 diff --git a/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java b/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java
-index b04065b31..f319344a3 100644
+index 1ac6465fc..cb6c25e0b 100644
 --- a/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java
 +++ b/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java
-@@ -358,7 +358,7 @@ public final class CoapConfig {
+@@ -387,7 +387,7 @@ public final class CoapConfig {
  	 * target="_blank">RFC7252, 4.8. Transmission Parameters</a>.
  	 */
  	public static final IntegerDefinition MAX_RETRANSMIT = new IntegerDefinition(MODULE + "MAX_RETRANSMIT",
@@ -24,14 +24,6 @@ index b04065b31..f319344a3 100644
  	/**
  	 * The EXCHANGE_LIFETIME for CON requests. See
  	 * <a href="https://datatracker.ietf.org/doc/html/rfc7252#section-4.8.2"
-@@ -691,6 +691,7 @@ public final class CoapConfig {
- 			config.set(COAP_SECURE_PORT, CoAP.DEFAULT_COAP_SECURE_PORT);
- 
- 			config.set(ACK_TIMEOUT, 2000, TimeUnit.MILLISECONDS);
-+			config.set(MAX_ACK_TIMEOUT, 60000, TimeUnit.MILLISECONDS);
- 			config.set(ACK_INIT_RANDOM, 1.5f);
- 			config.set(ACK_TIMEOUT_SCALE, 2f);
- 			config.set(MAX_RETRANSMIT, 4);
 diff --git a/californium-core/src/main/java/org/eclipse/californium/core/network/stack/ReliabilityLayerParameters.java b/californium-core/src/main/java/org/eclipse/californium/core/network/stack/ReliabilityLayerParameters.java
 index 41d06c9cc..9bd3d912b 100644
 --- a/californium-core/src/main/java/org/eclipse/californium/core/network/stack/ReliabilityLayerParameters.java
@@ -48,7 +40,7 @@ index 41d06c9cc..9bd3d912b 100644
  			if (1 > nstart) {
  				throw new IllegalStateException("Nstart " + nstart + " must not be less than 1!");
 diff --git a/cf-edhoc/pom.xml b/cf-edhoc/pom.xml
-index 8847ec87f..cc45e3998 100644
+index 5dd9cc4ac..02b2bf46c 100644
 --- a/cf-edhoc/pom.xml
 +++ b/cf-edhoc/pom.xml
 @@ -71,7 +71,8 @@
@@ -93,7 +85,7 @@ index 40a137656..b4d4c5114 100644
  		final String digest = "SHA256"; // Hash to use
  
 diff --git a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
-index 8872b04d7..715bf49aa 100644
+index 78fc7c2f2..4ae366605 100644
 --- a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
 +++ b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
 @@ -286,7 +286,7 @@ public class SharedSecretCalculation {
@@ -204,7 +196,7 @@ index 8872b04d7..715bf49aa 100644
  
  		if (privateKey == null || publicKey == null) {
  			System.err.println("Public key and/or private key not found.");
-@@ -835,7 +835,7 @@ public class SharedSecretCalculation {
+@@ -847,7 +847,7 @@ public class SharedSecretCalculation {
  	 * 
  	 * @throws CoseException
  	 */
@@ -227,10 +219,10 @@ index 1e6e8a3fd..e305a8749 100644
          return claimSetMap.EncodeToBytes();
  		
 diff --git a/cf-oscore/pom.xml b/cf-oscore/pom.xml
-index d1abd4e7d..7c8701b3a 100644
+index f730afadd..9416f1244 100644
 --- a/cf-oscore/pom.xml
 +++ b/cf-oscore/pom.xml
-@@ -38,7 +38,8 @@
+@@ -41,7 +41,8 @@
          	<dependency> <!-- Rikard: Added this dependency -->
  	            <groupId>net.i2p.crypto</groupId>
  	            <artifactId>eddsa</artifactId>
