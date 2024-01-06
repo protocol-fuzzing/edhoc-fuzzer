@@ -8,7 +8,7 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    COMMIT_HASH="86da423ac2269f5d7b61503ae8b8c2f45a37f570"
+    COMMIT_HASH="4d7d6256d0be4cce240399b65ce9e486700b15bb"
 
     set -e
     cd "${BASE_DIR}"
