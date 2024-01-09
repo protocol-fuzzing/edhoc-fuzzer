@@ -8,7 +8,6 @@ import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.cbor.CBORType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.coap.EmptyMessage;
 import org.eclipse.californium.core.coap.Message;
 import org.eclipse.californium.core.coap.MessageObserverAdapter;
@@ -400,7 +399,7 @@ public class EdhocLayerPersistent extends AbstractLayer {
         CoapExchangeInfo coapExchangeInfo = new CoapExchangeInfo(MID);
         coapExchangeInfo.setHasUnsuccessfulMessage(true);
 
-        coapExchangeInfo.setCoapExchange(new CoapExchange(exchange, new CoapResource("temporary")));
+        coapExchangeInfo.setCoapExchange(new CoapExchange(exchange));
         if (!edhocSessionPersistent.getCoapExchanger().getReceivedQueue().offer(coapExchangeInfo)) {
             LOGGER.warn("Full received queue found");
         }

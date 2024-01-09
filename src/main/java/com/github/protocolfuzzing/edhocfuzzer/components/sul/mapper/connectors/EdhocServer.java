@@ -11,6 +11,7 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 import java.net.InetSocketAddress;
 
 public class EdhocServer extends CoapServer {
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public EdhocServer(String host, int port, String edhocResource, String appResource,
                        EdhocStackFactoryPersistent edhocStackFactoryPersistent,

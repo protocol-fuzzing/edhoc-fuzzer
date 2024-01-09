@@ -8,7 +8,7 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    COMMIT_HASH="86da423ac2269f5d7b61503ae8b8c2f45a37f570"
+    COMMIT_HASH="4d7d6256d0be4cce240399b65ce9e486700b15bb"
 
     set -e
     cd "${BASE_DIR}"
@@ -26,7 +26,7 @@ setup_cf_edhoc() {
     # setup cf-edhoc library
 
     PATCH_FILE="${SCRIPT_DIR}/cf-edhoc.patch"
-    COMMIT_HASH="d728368ac44dabceff2b4a2c5fcd757552e65f9e"
+    COMMIT_HASH="4cacfe37d5e213d03c0ab0a8dacaaeb156a704d2"
 
     set -e
     cd "${BASE_DIR}"
@@ -37,13 +37,15 @@ setup_cf_edhoc() {
     git apply "${PATCH_FILE}"
     mvn package -DskipTests -am -pl cf-edhoc
     JAR_FILE=$(ls ./cf-edhoc/target/cf-edhoc-*-SNAPSHOT.jar)
+    POM_FILE=$(ls ./pom.xml)
 
     mvn install:install-file \
         -Dfile="${JAR_FILE}" \
         -DgroupId=se.ri.org.eclipse.californium \
         -DartifactId=cf-edhoc \
         -Dversion=0.0.0 \
-        -Dpackaging=jar
+        -Dpackaging=jar \
+        -DpomFile="${POM_FILE}"
 
     cd "${BASE_DIR}"
     rm -rf ./californium/
