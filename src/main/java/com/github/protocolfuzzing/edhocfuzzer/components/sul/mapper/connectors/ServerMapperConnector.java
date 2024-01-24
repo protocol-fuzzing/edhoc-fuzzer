@@ -17,8 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ServerMapperConnector implements EdhocMapperConnector {
     private static final Logger LOGGER = LogManager.getLogger();
-    protected String host;
-    protected int port;
+    protected String coapHost;
     protected String edhocResource;
     protected String appResource;
 
@@ -36,15 +35,17 @@ public class ServerMapperConnector implements EdhocMapperConnector {
         this.edhocResource = edhocResource;
         this.appResource = appResource;
         this.timeout = originalTimeout;
-
-        String[] hostAndPort = coapHost.replace("coap://", "").split(":", -1);
-        this.host = hostAndPort[0];
-        this.port = Integer.parseInt(hostAndPort[1]);
+        this.coapHost = coapHost;
     }
 
     @Override
     public void initialize(EdhocStackFactoryPersistent edhocStackFactoryPersistent,
                            CoapExchanger coapExchanger) {
+        // initialize host and port
+        String[] hostAndPort = coapHost.replace("coap://", "").split(":", -1);
+        String host = hostAndPort[0];
+        Integer port = Integer.parseInt(hostAndPort[1]);
+
         this.coapExchanger = coapExchanger;
 
         // destroy last server
