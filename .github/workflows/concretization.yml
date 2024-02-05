@@ -13,7 +13,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: ts-graphviz/setup-graphviz@v1
+      - uses: ts-graphviz/setup-graphviz@v2
       - name: Install pydot
         run: pip3 install pydot
 
@@ -44,7 +44,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: ts-graphviz/setup-graphviz@v1
+      - uses: ts-graphviz/setup-graphviz@v2
       - name: Install pydot
         run: pip3 install pydot
 
