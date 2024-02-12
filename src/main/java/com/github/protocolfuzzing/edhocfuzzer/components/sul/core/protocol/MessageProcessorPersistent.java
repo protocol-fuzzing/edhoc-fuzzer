@@ -630,7 +630,7 @@ public class MessageProcessorPersistent {
         byte[] peerCredential = peerCredCBOR.GetByteString();
 
         // Compute MAC_2
-        byte[] mac2 = computeMAC2(session, prk3e2m, th2, idCredR, peerCredential, ead2);
+        byte[] mac2 = computeMAC2(session, prk3e2m, th2, cR, idCredR, peerCredential, ead2);
         if (mac2 == null) {
             LOGGER.error("R_M2: Computing MAC_2");
             return false;
@@ -1504,7 +1504,7 @@ public class MessageProcessorPersistent {
         /* Start computing Signature_or_MAC_2 */
 
         // Compute MAC_2
-        byte[] mac2 = computeMAC2(session, prk3e2m, th2, session.getIdCred(), session.getCred(), ead2);
+        byte[] mac2 = computeMAC2(session, prk3e2m, th2, cR, session.getIdCred(), session.getCred(), ead2);
         if (mac2 == null) {
             LOGGER.error("W_M2: Computing MAC_2");
             return null;
@@ -2431,11 +2431,14 @@ public class MessageProcessorPersistent {
 
     /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeMAC2} */
     protected byte[] computeMAC2(EdhocSessionPersistent session, byte[] prk3e2m, byte[] th2,
-                                 CBORObject idCredR, byte[] credR, CBORObject[] ead2) {
+                                 CBORObject cR, CBORObject idCredR, byte[] credR, CBORObject[] ead2) {
 
         // Build the CBOR sequence to use for 'context': ( ID_CRED_R, TH_2, CRED_R, ?EAD_2 )
         // The actual 'context' is a CBOR byte string with value the serialization of the CBOR sequence
         List<CBORObject> objectList = new ArrayList<>();
+        if (!hasProtocolVersionLeqV22()) {
+            objectList.add(cR);
+        }
         objectList.add(idCredR);
         objectList.add(CBORObject.FromObject(th2));
         objectList.add(CBORObject.DecodeFromBytes(credR));
@@ -3043,6 +3046,13 @@ public class MessageProcessorPersistent {
     protected boolean hasProtocolVersionLeqV19() {
         return hasProtocolVersionLeqV17() || switch(edhocMapperState.getProtocolVersion()) {
             case v18, v19 -> true;
+            default -> false;
+        };
+    }
+
+    protected boolean hasProtocolVersionLeqV22() {
+        return hasProtocolVersionLeqV19() || switch(edhocMapperState.getProtocolVersion()) {
+            case v20, v21, v22 -> true;
             default -> false;
         };
     }
