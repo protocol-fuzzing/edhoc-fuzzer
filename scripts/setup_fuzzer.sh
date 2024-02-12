@@ -26,7 +26,7 @@ setup_cf_edhoc() {
     # setup cf-edhoc library
 
     PATCH_FILE="${SCRIPT_DIR}/cf-edhoc.patch"
-    COMMIT_HASH="4cacfe37d5e213d03c0ab0a8dacaaeb156a704d2"
+    COMMIT_HASH="0e2723dff0507c749e6dfdbb33c0d0f84e023d51"
 
     set -e
     cd "${BASE_DIR}"
