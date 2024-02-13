@@ -1,9 +1,9 @@
-state-fuzzer-server
+state-fuzzer-client
 
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.servers}/edhoc-rs
+${results.learning.clients}/lakers
 
 
 ##### LearnerConfig #####
@@ -14,6 +14,7 @@ W_METHOD,WP_METHOD
 -logQueries
 -cacheTests
 -skipNonDetTests
+
 
 ##### EdhocMapperConfig #####
 -protocolVersion
@@ -37,7 +38,7 @@ KID
 
 # TestVector
 -testVectorJson
-${authentication.test_vectors}/test_vectors_edhoc_rs.json
+${authentication.test_vectors}/test_vectors_lakers.json
 
 -testVectorJsonKey
 test_vector_p256
@@ -46,20 +47,19 @@ test_vector_p256
 P256
 
 -edhocRole
-Initiator
-
+Responder
 
 ##### SulConfig #####
 -responseWait
 300
 -processDir
-${models.servers}/edhoc-rs
+${models.clients}/lakers
 -cmd
-./coapserver
+./coapclient
 -startWait
 50
 
 
-##### EdhocSulServerConfig #####
--connect
-localhost:5683
+##### EdhocSulClientConfig #####
+-port
+5683

@@ -2,7 +2,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  EDHOC-Rust-Client:
+  Lakers-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     runs-on: ubuntu-latest
     strategy:
@@ -20,18 +20,18 @@ jobs:
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer.sh -l
 
-      - name: Setup EDHOC-Rust
+      - name: Setup Lakers
         run: |
           curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
           source "${HOME}/.cargo/env"
-          ./scripts/setup_sul.sh edhoc-rs
+          ./scripts/setup_sul.sh lakers
 
-      - name: Test EDHOC-Rust Client
+      - name: Test Lakers Client
         run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/edhoc-rs/client -roundLimit 3
-          ./scripts/diff_hyps.sh experiments/saved_results/clients/edhoc-rs experiments/results/clients/edhoc-rs 3
+          java -jar edhoc-fuzzer.jar @experiments/args/lakers/client -roundLimit 3
+          ./scripts/diff_hyps.sh experiments/saved_results/clients/lakers experiments/results/clients/lakers 3
 
-  EDHOC-Rust-Server:
+  Lakers-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     runs-on: ubuntu-latest
     strategy:
@@ -49,16 +49,16 @@ jobs:
       - name: Setup EDHOC-Fuzzer
         run: ./scripts/setup_fuzzer.sh -l
 
-      - name: Setup EDHOC-Rust
+      - name: Setup Lakers
         run: |
           curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
           source "${HOME}/.cargo/env"
-          ./scripts/setup_sul.sh edhoc-rs
+          ./scripts/setup_sul.sh lakers
 
-      - name: Test EDHOC-Rust Server
+      - name: Test Lakers Server
         run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/edhoc-rs/server -roundLimit 2
-          ./scripts/diff_hyps.sh experiments/saved_results/servers/edhoc-rs experiments/results/servers/edhoc-rs 2
+          java -jar edhoc-fuzzer.jar @experiments/args/lakers/server -roundLimit 2
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/lakers experiments/results/servers/lakers 2
 
   RISE-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}

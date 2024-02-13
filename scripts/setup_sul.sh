@@ -12,24 +12,24 @@ readonly CLIENTS_DIR="${MODEL_DIR}/clients"
 
 mkdir -p "${SOURCES_DIR}" "${SERVERS_DIR}" "${CLIENTS_DIR}"
 
-setup_edhoc_rs() {
-  # edhoc-rs
+setup_lakers() {
+  # lakers
   CHECKOUT="tags/v0.5.0"
 
   set -e
-  echo "Setting up EDHOC-Rust in ${SOURCES_DIR}"
+  echo "Setting up Lakers in ${SOURCES_DIR}"
   cd "${SOURCES_DIR}"
-  git clone https://github.com/openwsn-berkeley/edhoc-rs.git
-  cd edhoc-rs
+  git clone https://github.com/openwsn-berkeley/lakers.git
+  cd lakers
   git checkout ${CHECKOUT}
   cargo build --release
-  TGT_DIR=${SOURCES_DIR}/edhoc-rs/target/release
+  TGT_DIR=${SOURCES_DIR}/lakers/target/release
 
   cd "${MODEL_DIR}"
-  mkdir -p "${SERVERS_DIR}"/edhoc-rs "${CLIENTS_DIR}"/edhoc-rs
-  ln -sf "${TGT_DIR}"/coapserver "${SERVERS_DIR}"/edhoc-rs/coapserver
-  ln -sf "${TGT_DIR}"/coapclient "${CLIENTS_DIR}"/edhoc-rs/coapclient
-  echo "Successfully set up EDHOC-Rust"
+  mkdir -p "${SERVERS_DIR}"/lakers "${CLIENTS_DIR}"/lakers
+  ln -sf "${TGT_DIR}"/coapserver "${SERVERS_DIR}"/lakers/coapserver
+  ln -sf "${TGT_DIR}"/coapclient "${CLIENTS_DIR}"/lakers/coapclient
+  echo "Successfully set up Lakers"
   set +e
 }
 
@@ -127,7 +127,7 @@ setup_uoscore_uedhoc() {
 }
 
 setup_all_suls() {
-  setup_edhoc_rs
+  setup_lakers
   setup_rise
   setup_sifis_home
   setup_uoscore_uedhoc
@@ -141,7 +141,7 @@ usage() {
     -a, --all  : Try to setup all SULs
     -h, --help : Show usage
   SULs:
-    edhoc-rs
+    lakers
     rise
     sifis-home
     uoscore-uedhoc
@@ -160,7 +160,7 @@ else
   esac done
 
   for sul in "${@}"; do case ${sul} in
-    edhoc-rs ) setup_edhoc_rs ;;
+    lakers ) setup_lakers ;;
     rise ) setup_rise ;;
     sifis-home ) setup_sifis_home ;;
     uoscore-uedhoc ) setup_uoscore_uedhoc ;;
