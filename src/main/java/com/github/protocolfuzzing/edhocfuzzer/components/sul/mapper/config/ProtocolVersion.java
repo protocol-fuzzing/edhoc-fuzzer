@@ -7,5 +7,8 @@ public enum ProtocolVersion {
     v17,
     v18,
     v19,
-    v20;
+    v20,
+    v21,
+    v22,
+    v23
 }

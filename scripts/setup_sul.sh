@@ -14,14 +14,14 @@ mkdir -p "${SOURCES_DIR}" "${SERVERS_DIR}" "${CLIENTS_DIR}"
 
 setup_edhoc_rs() {
   # edhoc-rs
-  COMMIT_HASH="337c47ca684b60f5dbf09828ec7705afac0e79f4"
+  CHECKOUT="tags/v0.5.0"
 
   set -e
   echo "Setting up EDHOC-Rust in ${SOURCES_DIR}"
   cd "${SOURCES_DIR}"
   git clone https://github.com/openwsn-berkeley/edhoc-rs.git
   cd edhoc-rs
-  git checkout ${COMMIT_HASH}
+  git checkout ${CHECKOUT}
   cargo build --release
   TGT_DIR=${SOURCES_DIR}/edhoc-rs/target/release
 
@@ -35,7 +35,7 @@ setup_edhoc_rs() {
 
 setup_rise() {
   # rise
-  COMMIT_HASH="d728368ac44dabceff2b4a2c5fcd757552e65f9e"
+  CHECKOUT="d728368ac44dabceff2b4a2c5fcd757552e65f9e"
   PREFIX="${SOURCES_DIR}/californium/cf-edhoc/src"
   POSTFIX="java/org/eclipse/californium/edhoc"
   CF_EDHOC_MAIN_DIR="${PREFIX}/main/${POSTFIX}"
@@ -50,7 +50,7 @@ setup_rise() {
   git clone https://github.com/rikard-sics/californium.git
   cd californium
   git checkout edhoc
-  git checkout ${COMMIT_HASH}
+  git checkout ${CHECKOUT}
   git apply "${PATCH_DIR}"/rise.patch
   cp "${APP_PROFILE_BUILDER}" "${EDHOC_CLIENT}" "${EDHOC_SERVER}" "${CF_EDHOC_MAIN_DIR}"
   mvn package -DskipTests -am -pl cf-edhoc
@@ -66,7 +66,7 @@ setup_rise() {
 
 setup_sifis_home() {
   # sifis-home
-  COMMIT_HASH="9956c8cf9a6f8cb3ab09e48842ceafeb9d2a790e"
+  CHECKOUT="9956c8cf9a6f8cb3ab09e48842ceafeb9d2a790e"
 
   set -e
   echo "Setting up SIFIS-HOME in ${SOURCES_DIR}"
@@ -75,7 +75,7 @@ setup_sifis_home() {
   SF_HOME_DIR="${SOURCES_DIR}/wp3-solutions"
 
   cd "${SF_HOME_DIR}"
-  git checkout ${COMMIT_HASH}
+  git checkout ${CHECKOUT}
   git apply "${PATCH_DIR}"/sifis-home.patch
 
   # install in local repository, in order for the edhoc-applications'
@@ -97,7 +97,7 @@ setup_sifis_home() {
 
 setup_uoscore_uedhoc() {
   # uoscore-uedhoc
-  COMMIT_HASH="9c18a3503ad905e79e2dbe847cb14c1650524eee"
+  CHECKOUT="9c18a3503ad905e79e2dbe847cb14c1650524eee"
 
   set -e
   echo "Setting up uOSCORE-uEDHOC in ${SOURCES_DIR}"
@@ -105,7 +105,7 @@ setup_uoscore_uedhoc() {
   git clone --recurse-submodules https://github.com/eriptic/uoscore-uedhoc.git
   UOE_DIR="${SOURCES_DIR}/uoscore-uedhoc"
   cd "${UOE_DIR}"
-  git checkout ${COMMIT_HASH}
+  git checkout ${CHECKOUT}
   git apply "${PATCH_DIR}"/uoscore-uedhoc.patch
   make
   make -C samples/linux_edhoc/initiator
