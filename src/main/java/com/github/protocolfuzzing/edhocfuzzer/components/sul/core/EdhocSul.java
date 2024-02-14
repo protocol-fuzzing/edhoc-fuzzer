@@ -1,6 +1,7 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.core;
 
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSulClientConfig;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.ProtocolVersion;
@@ -8,20 +9,23 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.C
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.ServerMapperConnector;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.ClientMapperState;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContext;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.ServerMapperState;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocInputMapper;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocOutputMapper;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInput;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutput;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputBuilder;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.AbstractSul;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.Mapper;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractInput;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.ExecutionContextStepped;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.InputMapper;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.MapperComposer;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.OutputMapper;
 import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,9 +34,9 @@ import org.eclipse.californium.core.config.CoapConfig;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class EdhocSul extends AbstractSul {
+public class EdhocSul extends AbstractSul<EdhocInput, EdhocOutput, EdhocExecutionContext> {
     private static final Logger LOGGER = LogManager.getLogger();
-    protected ExecutionContextStepped executionContextStepped;
+    protected EdhocExecutionContext edhocExecutionContext;
     protected ProtocolVersion protocolVersion;
     protected Long originalTimeout;
     protected EdhocMapperState edhocMapperState;
@@ -83,10 +87,10 @@ public class EdhocSul extends AbstractSul {
         return this;
     }
 
-    protected Mapper buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
-        return new MapperComposer(
+    protected Mapper<EdhocInput, EdhocOutput, EdhocExecutionContext> buildMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
+        return new EdhocMapperComposer (
                 new EdhocInputMapper(mapperConfig,  new EdhocOutputChecker(), edhocMapperConnector),
-                new EdhocOutputMapper(mapperConfig, edhocMapperConnector)
+                new EdhocOutputMapper(mapperConfig, new EdhocOutputBuilder(), new EdhocOutputChecker(), edhocMapperConnector)
         );
     }
 
@@ -118,7 +122,7 @@ public class EdhocSul extends AbstractSul {
             edhocMapperState = new ClientMapperState(protocolVersion, edhocMapperConfig, cleanupTasks).initialize(clientMapperConnector);
         }
 
-        this.executionContextStepped = new ExecutionContextStepped(edhocMapperState);
+        this.edhocExecutionContext = new EdhocExecutionContext(edhocMapperState);
 
         long startWait = sulConfig.getStartWait();
         if (startWait > 0) {
@@ -139,27 +143,23 @@ public class EdhocSul extends AbstractSul {
     }
 
     @Override
-    public AbstractOutput step(AbstractInput abstractInput) {
+    public EdhocOutput step(EdhocInput abstractInput) {
         // In case of server mapper, wait for initial message from client
         serverWaitForInitialMessage();
 
         LOGGER.debug("SUL 'step' start");
 
-        executionContextStepped.addStepContext();
-        Mapper preferredMapper = abstractInput.getPreferredMapper(sulConfig);
-        if (preferredMapper == null) {
-            preferredMapper = this.mapper;
+        edhocExecutionContext.addStepContext();
+
+        if (!edhocExecutionContext.isExecutionEnabled()) {
+            return ((EdhocMapperComposer) mapper).getOutputMapper().disabled();
         }
 
-        if (!executionContextStepped.isExecutionEnabled()) {
-            return ((MapperComposer) this.mapper).getOutputMapper().disabled();
-        }
+        EdhocOutput abstractOutput = executeInput(abstractInput, mapper);
 
-        AbstractOutput abstractOutput = executeInput(abstractInput, preferredMapper);
-
-        if (abstractOutput.equals(AbstractOutput.disabled()) || !executionContextStepped.isExecutionEnabled()) {
+        if (mapper.getOutputChecker().isDisabled(abstractOutput) || !edhocExecutionContext.isExecutionEnabled()) {
             // this should lead to a disabled sink state
-            executionContextStepped.disableExecution();
+            edhocExecutionContext.disableExecution();
         }
 
         LOGGER.debug("SUL 'step' end");
@@ -167,7 +167,7 @@ public class EdhocSul extends AbstractSul {
         return abstractOutput;
     }
 
-    protected AbstractOutput executeInput(AbstractInput abstractInput, Mapper mapper) {
+    protected EdhocOutput executeInput(EdhocInput abstractInput, Mapper<EdhocInput, EdhocOutput, EdhocExecutionContext> mapper) {
         boolean timeoutChanged = false;
 
         // handle timeout from extendedWait and from inputResponse
@@ -180,7 +180,7 @@ public class EdhocSul extends AbstractSul {
             timeoutChanged = true;
         }
 
-        AbstractOutput abstractOutput = mapper.execute(abstractInput, executionContextStepped);
+        EdhocOutput abstractOutput = mapper.execute(abstractInput, edhocExecutionContext);
 
         // reset timeout
         if (timeoutChanged) {
@@ -200,12 +200,12 @@ public class EdhocSul extends AbstractSul {
             return;
         }
 
-        MapperComposer mapperComposer = (MapperComposer) mapper;
+        EdhocMapperComposer mapperComposer = (EdhocMapperComposer) mapper;
         ServerMapperConnector serverMapperConnector = (ServerMapperConnector) edhocMapperConnector;
-        EdhocOutputChecker edhocOutputChecker = (EdhocOutputChecker) mapperComposer.getAbstractOutputChecker();
+        EdhocOutputChecker edhocOutputChecker = (EdhocOutputChecker) mapperComposer.getOutputChecker();
 
         serverMapperConnector.waitForClientMessage();
-        AbstractOutput abstractOutput = mapperComposer.getOutputMapper().receiveOutput(executionContextStepped);
+        EdhocOutput abstractOutput = mapperComposer.getOutputMapper().receiveOutput(edhocExecutionContext);
         boolean isExpectedMessage = edhocOutputChecker.isMessage(abstractOutput, expectedMessageType);
 
         if (!isExpectedMessage) {
@@ -215,5 +215,14 @@ public class EdhocSul extends AbstractSul {
 
         LOGGER.debug("Received {} from client", expectedMessageType);
         serverWaitForInitialMessageDone = true;
+    }
+
+
+    protected static class EdhocMapperComposer extends MapperComposer<EdhocInput, EdhocOutput, EdhocProtocolMessage, EdhocExecutionContext, EdhocMapperState> {
+        public EdhocMapperComposer(
+            InputMapper<EdhocInput, EdhocOutput, EdhocProtocolMessage, EdhocExecutionContext> inputMapper,
+            OutputMapper<EdhocOutput, EdhocProtocolMessage, EdhocExecutionContext> outputMapper) {
+            super(inputMapper, outputMapper);
+        }
     }
 }

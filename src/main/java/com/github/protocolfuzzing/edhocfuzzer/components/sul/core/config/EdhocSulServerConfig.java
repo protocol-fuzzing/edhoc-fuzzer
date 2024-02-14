@@ -5,7 +5,6 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.Edhoc
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulAdapterConfigEmpty;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulServerConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConnectionConfig;
 import org.eclipse.californium.elements.config.Configuration;
 
 public class EdhocSulServerConfig extends SulServerConfigStandard {
@@ -20,7 +19,9 @@ public class EdhocSulServerConfig extends SulServerConfigStandard {
     }
 
     @Override
-    public void applyDelegate(MapperConnectionConfig config) {
-        Configuration.setStandard(((EdhocMapperConnectionConfig) config).getConfiguration());
+    public <MC> void applyDelegate(MC config) {
+        if (config instanceof EdhocMapperConnectionConfig) {
+            Configuration.setStandard(EdhocMapperConnectionConfig.class.cast(config).getConfiguration());
+        }
     }
 }
