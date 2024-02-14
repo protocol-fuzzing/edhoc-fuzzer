@@ -1,7 +1,6 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs;
 
-/**
- * Messages that can be received.
+/** Messages that can be received.
  * The last four are from the OutputBuilder.
  */
 public enum MessageOutputType {
