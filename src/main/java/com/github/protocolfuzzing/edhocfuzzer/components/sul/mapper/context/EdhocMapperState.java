@@ -12,7 +12,6 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authe
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.TestVectorAuthenticationConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.CoapExchanger;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.State;
 import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import com.upokecenter.cbor.CBORObject;
 import net.i2p.crypto.eddsa.EdDSASecurityProvider;
@@ -26,7 +25,7 @@ import java.security.Security;
 import java.util.*;
 
 /** Adapted from test files EdhocClient / EdhocServer from edhoc repo */
-public abstract class EdhocMapperState implements State {
+public abstract class EdhocMapperState {
 
     // The protocol version of edhoc used for the session of this state
     protected ProtocolVersion protocolVersion;
