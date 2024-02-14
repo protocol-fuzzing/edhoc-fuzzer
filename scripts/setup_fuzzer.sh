@@ -8,8 +8,7 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    # this is the commit _just_ before Generics were introduced
-    CHECKOUT="398c9bc526c94294569e46286d43692b5171c175"
+    CHECKOUT="generics"
 
     set -e
     cd "${BASE_DIR}"
