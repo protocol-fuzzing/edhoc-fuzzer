@@ -12,6 +12,7 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabe
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigStandard;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.MealyMachineWrapper;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulWrapper;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulWrapperStandard;
@@ -36,7 +37,11 @@ import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.tim
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeEnabler;
 
-public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilder<EdhocInput, EdhocOutput>, TestRunnerBuilder, TimingProbeBuilder {
+public class MultiBuilder implements
+    StateFuzzerConfigBuilder,
+    StateFuzzerBuilder<MealyMachineWrapper<EdhocInput, EdhocOutput>>,
+    TestRunnerBuilder,
+    TimingProbeBuilder {
 
     protected AlphabetBuilder<EdhocInput> alphabetBuilder = new AlphabetBuilderStandard<>(
         new AlphabetSerializerXml<EdhocInput, EdhocAlphabetPojoXml>(EdhocInput.class, EdhocAlphabetPojoXml.class)
@@ -66,7 +71,7 @@ public class MultiBuilder implements StateFuzzerConfigBuilder, StateFuzzerBuilde
     }
 
     @Override
-    public StateFuzzer<EdhocInput, EdhocOutput> build(StateFuzzerEnabler stateFuzzerEnabler) {
+    public StateFuzzer<MealyMachineWrapper<EdhocInput, EdhocOutput>> build(StateFuzzerEnabler stateFuzzerEnabler) {
         return new StateFuzzerStandard<>(
             new StateFuzzerComposerStandard<>(stateFuzzerEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize()
         );
