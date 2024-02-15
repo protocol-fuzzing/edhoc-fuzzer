@@ -14,7 +14,11 @@ import java.util.List;
 public class EdhocDotProcessor {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static void beautify(LearnerResult<?, ?> learnerResult) {
+    public static void beautify(LearnerResult<?> learnerResult) {
+        if (learnerResult.isFromTest()) {
+            return;
+        }
+
         if (learnerResult.isEmpty()) {
             LOGGER.warn("Provided empty LearnerResult");
             return;
