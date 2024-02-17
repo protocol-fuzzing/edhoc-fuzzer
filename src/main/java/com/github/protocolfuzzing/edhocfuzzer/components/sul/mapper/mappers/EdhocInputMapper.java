@@ -6,7 +6,7 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.E
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContext;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInput;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutput;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.OutputChecker;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.InputMapper;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
@@ -14,7 +14,7 @@ import org.eclipse.californium.core.coap.MediaTypeRegistry;
 public class EdhocInputMapper extends InputMapper<EdhocInput, EdhocOutput, EdhocProtocolMessage, EdhocExecutionContext> {
     EdhocMapperConnector edhocMapperConnector;
 
-    public EdhocInputMapper(MapperConfig mapperConfig, OutputChecker<EdhocOutput> outputChecker, EdhocMapperConnector edhocMapperConnector) {
+    public EdhocInputMapper(MapperConfig mapperConfig, EdhocOutputChecker outputChecker, EdhocMapperConnector edhocMapperConnector) {
         super(mapperConfig, outputChecker);
         this.edhocMapperConnector = edhocMapperConnector;
     }

@@ -27,12 +27,6 @@ import java.util.*;
 /** Adapted from test files EdhocClient / EdhocServer from edhoc repo */
 public abstract class EdhocMapperState {
 
-    // The protocol version of edhoc used for the session of this state
-    protected ProtocolVersion protocolVersion;
-
-    // The combined message (EDHOC+OSCORE) version used for the session of this state
-    protected CombinedMessageVersion combinedMessageVersion;
-
     // The authentication method to include in EDHOC message_1 (relevant only when Initiator)
     protected int authenticationMethod;
 
@@ -97,12 +91,9 @@ public abstract class EdhocMapperState {
 
     protected CleanupTasks cleanupTasks;
 
-    public EdhocMapperState(ProtocolVersion protocolVersion, EdhocMapperConfig edhocMapperConfig,
-                            String edhocSessionUri, String oscoreUri, CleanupTasks cleanupTasks) {
+    public EdhocMapperState(EdhocMapperConfig edhocMapperConfig, String edhocSessionUri, String oscoreUri, CleanupTasks cleanupTasks) {
 
-        this.protocolVersion = protocolVersion;
         this.edhocMapperConfig = edhocMapperConfig;
-        this.combinedMessageVersion = edhocMapperConfig.getCombinedMessageVersion();
         this.cleanupTasks = cleanupTasks;
 
         // Insert security providers
@@ -197,11 +188,11 @@ public abstract class EdhocMapperState {
     }
 
     public ProtocolVersion getProtocolVersion() {
-        return protocolVersion;
+        return edhocMapperConfig.getProtocolVersion();
     }
 
     public CombinedMessageVersion getCombinedMessageVersion() {
-        return combinedMessageVersion;
+        return edhocMapperConfig.getCombinedMessageVersion();
     }
 
     public EdhocSessionPersistent getEdhocSessionPersistent() {
