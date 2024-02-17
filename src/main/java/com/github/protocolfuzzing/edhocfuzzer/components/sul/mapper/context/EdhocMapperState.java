@@ -27,8 +27,7 @@ import java.util.*;
 /** Adapted from test files EdhocClient / EdhocServer from edhoc repo */
 public abstract class EdhocMapperState {
 
-    // The authentication method to include in EDHOC message_1 (relevant only when
-    // Initiator)
+    // The authentication method to include in EDHOC message_1 (relevant only when Initiator)
     protected int authenticationMethod;
 
     // Authentication credentials of this peer
@@ -98,8 +97,7 @@ public abstract class EdhocMapperState {
 
     protected CleanupTasks cleanupTasks;
 
-    public EdhocMapperState(EdhocMapperConfig edhocMapperConfig, String edhocSessionUri, String oscoreUri,
-            CleanupTasks cleanupTasks) {
+    public EdhocMapperState(EdhocMapperConfig edhocMapperConfig, String edhocSessionUri, String oscoreUri, CleanupTasks cleanupTasks) {
 
         this.edhocMapperConfig = edhocMapperConfig;
         this.cleanupTasks = cleanupTasks;
