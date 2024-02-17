@@ -27,12 +27,6 @@ import java.util.*;
 /** Adapted from test files EdhocClient / EdhocServer from edhoc repo */
 public abstract class EdhocMapperState {
 
-    // The protocol version of edhoc used for the session of this state
-    protected ProtocolVersion protocolVersion;
-
-    // The combined message (EDHOC+OSCORE) version used for the session of this state
-    protected CombinedMessageVersion combinedMessageVersion;
-
     // The authentication method to include in EDHOC message_1 (relevant only when Initiator)
     protected int authenticationMethod;
 
