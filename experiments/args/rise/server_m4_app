@@ -17,7 +17,7 @@ W_METHOD,WP_METHOD
 
 ##### EdhocMapperConfig #####
 -protocolVersion
-v20
+v23
 
 -combinedMessageVersion
 v07
@@ -62,7 +62,7 @@ ${models.servers}/rise
 -cmd
 java -cp cf-edhoc.jar org.eclipse.californium.edhoc.EdhocServer 5
 -startWait
-600
+300
 
 
 ##### EdhocSulServerConfig #####
