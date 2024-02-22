@@ -66,7 +66,7 @@ setup_rise() {
 
 setup_sifis_home() {
   # sifis-home
-  CHECKOUT="9956c8cf9a6f8cb3ab09e48842ceafeb9d2a790e"
+  CHECKOUT="3d1b68b6bda978778575682a48b3344028d47028"
 
   set -e
   echo "Setting up SIFIS-HOME in ${SOURCES_DIR}"
