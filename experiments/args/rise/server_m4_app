@@ -62,7 +62,7 @@ ${models.servers}/rise
 -cmd
 java -cp cf-edhoc.jar org.eclipse.californium.edhoc.EdhocServer 5
 -startWait
-600
+250
 
 
 ##### EdhocSulServerConfig #####
