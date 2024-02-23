@@ -68,7 +68,7 @@ ${models.servers}/sifis-home
 -cmd
 java -cp edhoc-applications.jar se.sics.edhocapps.Phase4Server
 -startWait
-300
+400
 
 
 ##### EdhocSulServerConfig #####
