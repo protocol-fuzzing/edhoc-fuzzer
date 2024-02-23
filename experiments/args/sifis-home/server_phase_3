@@ -17,7 +17,11 @@ W_METHOD,WP_METHOD
 
 ##### EdhocMapperConfig #####
 -protocolVersion
-v16
+v22
+
+-combinedMessageVersion
+v07
+
 ## Mapper Auth ##
 
 -mapCredType
@@ -64,9 +68,9 @@ ${models.servers}/sifis-home
 -cmd
 java -cp edhoc-applications.jar se.sics.edhocapps.Phase3Server
 -startWait
-600
+400
 
 
 ##### EdhocSulServerConfig #####
 -connect
-localhost:5683
+localhost:5696
