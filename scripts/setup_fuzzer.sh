@@ -8,11 +8,11 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    CHECKOUT="generics"
+    CHECKOUT="main"
 
     set -e
     cd "${BASE_DIR}"
-    git clone "https://github.com/protocol-fuzzing/protocol-state-fuzzer.git"
+    git clone "https://github.com/Kax-y/protocol-state-fuzzer.git"
     cd protocol-state-fuzzer
     git checkout "${CHECKOUT}"
     bash ./install.sh
