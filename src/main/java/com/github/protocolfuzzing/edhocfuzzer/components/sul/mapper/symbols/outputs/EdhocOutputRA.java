@@ -2,7 +2,6 @@ package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.out
 
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.MapperOutput;
-
 import de.learnlib.ralib.data.DataType;
 import de.learnlib.ralib.data.DataValue;
 import de.learnlib.ralib.words.OutputSymbol;
@@ -14,7 +13,7 @@ import java.util.List;
 public class EdhocOutputRA extends PSymbolInstance implements MapperOutput<EdhocOutputRA, EdhocProtocolMessage> {
     List<EdhocProtocolMessage> messages;
 
-    public EdhocOutputRA(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol, DataValue... parameterValues) {
+    public EdhocOutputRA(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol, @SuppressWarnings("rawtypes") DataValue... parameterValues) {
         super(baseSymbol, parameterValues);
         this.messages = messages;
     }

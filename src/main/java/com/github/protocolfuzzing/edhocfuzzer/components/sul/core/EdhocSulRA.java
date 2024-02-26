@@ -7,16 +7,15 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.C
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.ServerMapperConnector;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.ClientMapperState;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContext;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.ServerMapperState;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocInputMapper;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocMapperComposer;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocInputMapperRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocMapperComposerRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocOutputMapper;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocOutputMapperRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInputRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputBuilder;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputBuilderRA;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputCheckerRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.AbstractSul;
@@ -31,14 +30,14 @@ import org.eclipse.californium.core.config.CoapConfig;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, EdhocExecutionContext> {
+public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     protected SulConfig sulConfig;
     protected CleanupTasks cleanupTasks;
     protected EdhocMapperConfig edhocMapperConfig;
     protected EdhocMapperComposerRA edhocMapperComposer;
-    protected EdhocExecutionContext edhocExecutionContext;
+    protected EdhocExecutionContextRA edhocExecutionContext;
     protected Long originalTimeout;
     protected EdhocMapperState edhocMapperState;
     protected EdhocMapperConnector edhocMapperConnector;
@@ -84,8 +83,8 @@ public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, Edho
         }
 
         this.edhocMapperComposer = new EdhocMapperComposerRA(
-                new EdhocInputMapper(edhocMapperConfig, new EdhocOutputChecker(), edhocMapperConnector),
-                new EdhocOutputMapper(edhocMapperConfig, new EdhocOutputBuilder(), new EdhocOutputChecker(),
+                new EdhocInputMapperRA(edhocMapperConfig, new EdhocOutputCheckerRA(), edhocMapperConnector),
+                new EdhocOutputMapperRA(edhocMapperConfig, new EdhocOutputBuilderRA(), new EdhocOutputCheckerRA(),
                         edhocMapperConnector));
 
         return this;
@@ -146,7 +145,7 @@ public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, Edho
             edhocMapperState = new ClientMapperState(edhocMapperConfig, cleanupTasks).initialize(clientMapperConnector);
         }
 
-        this.edhocExecutionContext = new EdhocExecutionContext(edhocMapperState);
+        this.edhocExecutionContext = new EdhocExecutionContextRA(edhocMapperState);
 
         long startWait = sulConfig.getStartWait();
         if (startWait > 0) {
@@ -225,7 +224,7 @@ public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, Edho
         }
 
         ServerMapperConnector serverMapperConnector = (ServerMapperConnector) edhocMapperConnector;
-        EdhocOutputChecker edhocOutputChecker = edhocMapperComposer.getOutputChecker();
+        EdhocOutputCheckerRA edhocOutputChecker = edhocMapperComposer.getOutputChecker();
 
         serverMapperConnector.waitForClientMessage();
         EdhocOutputRA abstractOutput = edhocMapperComposer.getOutputMapper().receiveOutput(edhocExecutionContext);

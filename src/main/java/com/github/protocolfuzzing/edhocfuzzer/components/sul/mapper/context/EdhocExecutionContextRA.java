@@ -8,7 +8,7 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.cont
 public class EdhocExecutionContextRA
 extends ExecutionContextStepped<EdhocInputRA, EdhocOutputRA, EdhocMapperState, StepContext<EdhocInputRA, EdhocOutputRA>> {
 
-	public EdhocExecutionContextRA(EdhocMapperState state) {
+    public EdhocExecutionContextRA(EdhocMapperState state) {
         super(state);
     }
 

@@ -17,7 +17,8 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outp
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.OutputMapper;
-
+import de.learnlib.ralib.data.DataValue;
+import de.learnlib.ralib.words.ParameterizedSymbol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -103,7 +104,7 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
              * sent oscore protected app data and received oscore protected
              * app data, handled by oscore layer, so responsePayload is the
              * decrypted response
-             * 
+             *
              * Server Mapper:
              * received oscore-protected request to application data, so
              * responsePayload is the decrypted request payload
@@ -190,7 +191,7 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
              * Client Mapper:
              * received empty coap ack, possible when client mapper is
              * Initiator and message 3 is the final edhoc message
-             * 
+             *
              * Server Mapper:
              * received empty coap request for some reason
              */
@@ -230,8 +231,13 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
         return new EdhocOutputRA(type.name());
     }
 
+    protected EdhocOutputRA buildOutput(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol,
+            @SuppressWarnings("rawtypes") DataValue... parameterValues) {
+        return new EdhocOutputRA(messages, baseSymbol, parameterValues);
+    }
+
     @Override
     protected EdhocOutputRA buildOutput(String name, List<EdhocProtocolMessage> messages) {
-        return new EdhocOutputRA(name, messages);
+        throw new UnsupportedOperationException("Unsupported output builder arguments");
     }
 }

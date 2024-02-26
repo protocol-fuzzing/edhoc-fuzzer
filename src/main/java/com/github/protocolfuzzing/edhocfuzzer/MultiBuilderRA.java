@@ -1,21 +1,17 @@
 package com.github.protocolfuzzing.edhocfuzzer;
 
-import com.github.protocolfuzzing.edhocfuzzer.components.learner.EdhocAlphabetPojoXml;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.EdhocSulBuilder;
+import com.github.protocolfuzzing.edhocfuzzer.components.learner.EdhocAlphabetPojoXmlRA;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.EdhocSulBuilderRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSulClientConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSulServerConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContext;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInput;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInputRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutput;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigRA;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigStandard;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.MealyMachineWrapper;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.RegisterAutomatonWrapper;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulWrapper;
@@ -23,9 +19,7 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulWra
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzer;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerComposerRA;
-import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerComposerStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerRA;
-import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.config.StateFuzzerClientConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.config.StateFuzzerClientConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.config.StateFuzzerConfigBuilder;
@@ -49,12 +43,12 @@ public class MultiBuilderRA implements
     TestRunnerBuilder,
     TimingProbeBuilder {
 
-    protected AlphabetBuilder<EdhocInput> alphabetBuilder = new AlphabetBuilderStandard<>(
-        new AlphabetSerializerXml<EdhocInput, EdhocAlphabetPojoXml>(EdhocInput.class, EdhocAlphabetPojoXml.class)
+    protected AlphabetBuilder<EdhocInputRA> alphabetBuilder = new AlphabetBuilderStandard<>(
+        new AlphabetSerializerXml<EdhocInputRA, EdhocAlphabetPojoXmlRA>(EdhocInputRA.class, EdhocAlphabetPojoXmlRA.class)
     );
 
-    protected SulBuilder<EdhocInputRA, EdhocOutputRA, EdhocExecutionContext> sulBuilder = new EdhocSulBuilder();
-    protected SulWrapper<EdhocInputRA, EdhocOutputRA, EdhocExecutionContext> sulWrapper = new SulWrapperStandard<>();
+    protected SulBuilder<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA> sulBuilder = new EdhocSulBuilderRA();
+    protected SulWrapper<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA> sulWrapper = new SulWrapperStandard<>();
 
     @Override
     public StateFuzzerClientConfig buildClientConfig() {
@@ -69,7 +63,7 @@ public class MultiBuilderRA implements
     @Override
     public StateFuzzerServerConfig buildServerConfig() {
         return new StateFuzzerServerConfigStandard(
-                new LearnerConfigStandard(),
+                new LearnerConfigRA(),
                 new EdhocSulServerConfig(new EdhocMapperConfig()),
                 new TestRunnerConfigStandard(),
                 new TimingProbeConfigStandard()
@@ -79,13 +73,13 @@ public class MultiBuilderRA implements
     @Override
     public StateFuzzer<RegisterAutomatonWrapper<EdhocInputRA>> build(StateFuzzerEnabler stateFuzzerEnabler) {
         return new StateFuzzerRA<>(
-            new StateFuzzerComposerRA<EdhocInputRA, EdhocOutputRA, EdhocExecutionContext>(stateFuzzerEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize()
+            new StateFuzzerComposerRA<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA>(stateFuzzerEnabler, alphabetBuilder, sulBuilder, sulWrapper, null).initialize()
         );
     }
 
     @Override
     public TestRunner build(TestRunnerEnabler testRunnerEnabler) {
-        return new TestRunnerStandard<EdhocInputRA, EdhocOutputRA, PROTOCOL_MSG, EdhocExecutionContext>(testRunnerEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize();
+        return new TestRunnerStandard<>(testRunnerEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize();
     }
 
     @Override

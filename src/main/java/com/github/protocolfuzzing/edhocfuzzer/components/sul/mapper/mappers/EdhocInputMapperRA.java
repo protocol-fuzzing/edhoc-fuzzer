@@ -4,10 +4,8 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messa
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInput;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInputRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutput;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputCheckerRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.InputMapper;
@@ -16,7 +14,7 @@ import org.eclipse.californium.core.coap.MediaTypeRegistry;
 public class EdhocInputMapperRA extends InputMapper<EdhocInputRA, EdhocOutputRA, EdhocProtocolMessage, EdhocExecutionContextRA> {
     EdhocMapperConnector edhocMapperConnector;
 
-    public EdhocInputMapperRA(MapperConfig mapperConfig, EdhocOutputChecker outputChecker, EdhocMapperConnector edhocMapperConnector) {
+    public EdhocInputMapperRA(MapperConfig mapperConfig, EdhocOutputCheckerRA outputChecker, EdhocMapperConnector edhocMapperConnector) {
         super(mapperConfig, outputChecker);
         this.edhocMapperConnector = edhocMapperConnector;
     }
