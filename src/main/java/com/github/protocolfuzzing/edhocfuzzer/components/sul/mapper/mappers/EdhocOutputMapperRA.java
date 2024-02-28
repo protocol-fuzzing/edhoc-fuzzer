@@ -27,14 +27,11 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtocolMessage, EdhocExecutionContextRA> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     EdhocMapperConnector edhocMapperConnector;
-
-    Map<MessageOutputType, OutputSymbol> baseSymbols;
 
     public EdhocOutputMapperRA(MapperConfig mapperConfig, EdhocOutputBuilderRA edhocOutputBuilder,
             EdhocOutputCheckerRA edhocOutputChecker, EdhocMapperConnector edhocMapperConnector) {

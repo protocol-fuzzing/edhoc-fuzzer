@@ -28,6 +28,20 @@ public class EdhocOutputRA extends PSymbolInstance implements MapperOutput<Edhoc
     }
 
     @Override
+    public boolean equals(Object other) {
+        if (other instanceof EdhocOutputRA) {
+            return super.equals((PSymbolInstance) other);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
     public boolean isComposite() {
         // TODO Auto-generated method stub
         return false;

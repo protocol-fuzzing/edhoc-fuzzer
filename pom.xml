@@ -7,6 +7,7 @@
     <groupId>com.github.protocolfuzzing</groupId>
     <artifactId>edhoc-fuzzer</artifactId>
     <version>1.0.0</version>
+    <packaging>pom</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -78,6 +79,15 @@
                 <scope>runtime</scope>
             </dependency>
 
+            <!-- ralib -->
+            <dependency>
+                <groupId>de.learnlib</groupId>
+                <artifactId>ralib</artifactId>
+                <version>${ralib.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- gson -->
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -131,6 +141,13 @@
             <artifactId>log4j-slf4j-impl</artifactId>
         </dependency>
 
+        <!-- locally installed ralib -->
+        <dependency>
+            <groupId>de.learnlib</groupId>
+            <artifactId>ralib</artifactId>
+            <version>${ralib.version}</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -181,6 +198,10 @@
                                 <ignoredUsedUndeclaredDependency>
                                     <!-- transitive -->
                                     org.slf4j:slf4j-api
+                                </ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>
+                                    <!-- transitive -->
+                                    de.learnlib:learnlib-api:jar:*
                                 </ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                         </configuration>
