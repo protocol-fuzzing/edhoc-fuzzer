@@ -21,7 +21,8 @@
         <guava.version>33.5.0-jre</guava.version>
         <jakarta-xml.version>4.0.4</jakarta-xml.version>
         <jcommander.version>1.82</jcommander.version>
-        <log4j.version>2.25.3</log4j.version>
+        <log4j.version>2.22.1</log4j.version>
+        <ralib.version>0.1-SNAPSHOT</ralib.version>
     </properties>
 
     <dependencyManagement>
