@@ -13,12 +13,16 @@ import java.util.List;
 public class EdhocOutputRA extends PSymbolInstance implements MapperOutput<EdhocOutputRA, EdhocProtocolMessage> {
     List<EdhocProtocolMessage> messages;
 
+    public EdhocOutputRA(ParameterizedSymbol baseSymbol, @SuppressWarnings("rawtypes") DataValue... parameterValues) {
+        super(baseSymbol, parameterValues);
+    }
+
     public EdhocOutputRA(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol, @SuppressWarnings("rawtypes") DataValue... parameterValues) {
         super(baseSymbol, parameterValues);
         this.messages = messages;
     }
 
-    /** Used only by @link #EdhocOutputBuilder. */
+    /** Used only by @link #EdhocOutputBuilderRA. */
     public EdhocOutputRA(String name) {
         super(new OutputSymbol(name, (DataType[]) null), (DataValue[]) null);
     }

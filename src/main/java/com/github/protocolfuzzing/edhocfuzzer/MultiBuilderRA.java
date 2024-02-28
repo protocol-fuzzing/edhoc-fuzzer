@@ -36,16 +36,23 @@ import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.tim
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.TimingProbeStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeEnabler;
+import com.upokecenter.cbor.CBORObject;
+import de.learnlib.ralib.data.DataType;
+import de.learnlib.ralib.theory.Theory;
+import de.learnlib.ralib.tools.theories.IntegerEqualityTheory;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MultiBuilderRA implements
-    StateFuzzerConfigBuilder,
-    StateFuzzerBuilder<RegisterAutomatonWrapper<EdhocInputRA>>,
-    TestRunnerBuilder,
-    TimingProbeBuilder {
+        StateFuzzerConfigBuilder,
+        StateFuzzerBuilder<RegisterAutomatonWrapper<EdhocInputRA>>,
+        TestRunnerBuilder,
+        TimingProbeBuilder {
 
     protected AlphabetBuilder<EdhocInputRA> alphabetBuilder = new AlphabetBuilderStandard<>(
-        new AlphabetSerializerXml<EdhocInputRA, EdhocAlphabetPojoXmlRA>(EdhocInputRA.class, EdhocAlphabetPojoXmlRA.class)
-    );
+            new AlphabetSerializerXml<EdhocInputRA, EdhocAlphabetPojoXmlRA>(EdhocInputRA.class,
+                    EdhocAlphabetPojoXmlRA.class));
 
     protected SulBuilder<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA> sulBuilder = new EdhocSulBuilderRA();
     protected SulWrapper<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA> sulWrapper = new SulWrapperStandard<>();
@@ -56,8 +63,7 @@ public class MultiBuilderRA implements
                 new LearnerConfigRA(),
                 new EdhocSulClientConfig(new EdhocMapperConfig()),
                 new TestRunnerConfigStandard(),
-                new TimingProbeConfigStandard()
-        );
+                new TimingProbeConfigStandard());
     }
 
     @Override
@@ -66,15 +72,18 @@ public class MultiBuilderRA implements
                 new LearnerConfigRA(),
                 new EdhocSulServerConfig(new EdhocMapperConfig()),
                 new TestRunnerConfigStandard(),
-                new TimingProbeConfigStandard()
-        );
+                new TimingProbeConfigStandard());
     }
 
     @Override
     public StateFuzzer<RegisterAutomatonWrapper<EdhocInputRA>> build(StateFuzzerEnabler stateFuzzerEnabler) {
+        DataType T_CI = new DataType("C_I", CBORObject.class);
+        @SuppressWarnings("rawtypes")
+        final Map<DataType, Theory> teachers = new LinkedHashMap<>();
+        teachers.put(T_CI, new IntegerEqualityTheory(T_CI));
         return new StateFuzzerRA<>(
-            new StateFuzzerComposerRA<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA>(stateFuzzerEnabler, alphabetBuilder, sulBuilder, sulWrapper, null).initialize()
-        );
+                new StateFuzzerComposerRA<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA>(stateFuzzerEnabler,
+                        alphabetBuilder, sulBuilder, sulWrapper, teachers).initialize());
     }
 
     @Override
