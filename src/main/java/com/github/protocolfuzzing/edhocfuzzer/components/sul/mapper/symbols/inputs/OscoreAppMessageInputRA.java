@@ -9,7 +9,7 @@ import de.learnlib.ralib.words.ParameterizedSymbol;
 
 public class OscoreAppMessageInputRA extends EdhocInputRA {
 
-    OscoreAppMessageInputRA(ParameterizedSymbol baseSymbol, @SuppressWarnings("rawtypes") DataValue[] parameterValues) {
+    OscoreAppMessageInputRA(ParameterizedSymbol baseSymbol, DataValue<?>[] parameterValues) {
         super(baseSymbol, parameterValues);
     }
 

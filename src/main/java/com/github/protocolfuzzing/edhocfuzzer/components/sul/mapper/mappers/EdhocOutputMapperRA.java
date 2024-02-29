@@ -266,8 +266,7 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
         // if payload was not empty then a coap message is received
         // because no other transport protocol than coap is supported yet
         OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_MESSAGE.name(), (DataType[]) null);
-        @SuppressWarnings("rawtypes")
-        DataValue[] values = (DataValue[]) null;
+        DataValue<?>[] values = (DataValue[]) null;
         return edhocOutputAfterCheck(responsePayload != null, base, values);
     }
 
@@ -281,17 +280,15 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
         }
     }
 
-    protected EdhocOutputRA edhocOutputAfterCheck(boolean successfulCheck, OutputSymbol baseSymbol,
-            @SuppressWarnings("rawtypes") DataValue... values) {
+    protected EdhocOutputRA edhocOutputAfterCheck(boolean successfulCheck, OutputSymbol baseSymbol, DataValue<?>... values) {
         return successfulCheck ? edhocOutputRA(baseSymbol, values) : null;
     }
 
-    protected EdhocOutputRA edhocOutputRA(OutputSymbol baseSymbol, @SuppressWarnings("rawtypes") DataValue... values) {
+    protected EdhocOutputRA edhocOutputRA(OutputSymbol baseSymbol, DataValue<?>... values) {
         return new EdhocOutputRA(baseSymbol, values);
     }
 
-    protected EdhocOutputRA buildOutput(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol,
-            @SuppressWarnings("rawtypes") DataValue... parameterValues) {
+    protected EdhocOutputRA buildOutput(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol, DataValue<?>... parameterValues) {
         return new EdhocOutputRA(messages, baseSymbol, parameterValues);
     }
 

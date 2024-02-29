@@ -13,7 +13,7 @@ public abstract class EdhocInputRA extends PSymbolInstance
         implements MapperInput<EdhocOutputRA, EdhocProtocolMessage, EdhocExecutionContextRA> {
     public abstract Enum<MessageInputType> getInputType();
 
-    EdhocInputRA(ParameterizedSymbol baseSymbol, @SuppressWarnings("rawtypes") DataValue... parameterValues) {
+    EdhocInputRA(ParameterizedSymbol baseSymbol, DataValue<?>... parameterValues) {
         super(baseSymbol, parameterValues);
     }
 

@@ -9,7 +9,7 @@ import de.learnlib.ralib.words.ParameterizedSymbol;
 
 public class EdhocMessage4InputRA extends EdhocInputRA {
 
-    EdhocMessage4InputRA(ParameterizedSymbol baseSymbol, @SuppressWarnings("rawtypes") DataValue[] parameterValues) {
+    EdhocMessage4InputRA(ParameterizedSymbol baseSymbol, DataValue<?>[] parameterValues) {
         super(baseSymbol, parameterValues);
     }
 
