@@ -1,5 +1,6 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs;
 
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocSessionPersistent;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.responder.EdhocMessage2;
@@ -16,6 +17,13 @@ public class EdhocMessage2InputRA extends EdhocInputRA {
     @Override
     public EdhocProtocolMessage generateProtocolMessage(EdhocExecutionContextRA context) {
         return new EdhocMessage2(new MessageProcessorPersistent(context.getState()));
+    }
+
+    @Override
+    public void preSendUpdate(EdhocExecutionContextRA context) {
+        EdhocSessionPersistent session = context.getState().getEdhocSessionPersistent();
+
+        updatePeerConnectionId(session);
     }
 
     @Override

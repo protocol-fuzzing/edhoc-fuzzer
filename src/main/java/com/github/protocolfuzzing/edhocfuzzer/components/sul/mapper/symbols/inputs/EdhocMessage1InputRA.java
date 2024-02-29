@@ -10,7 +10,7 @@ import de.learnlib.ralib.words.ParameterizedSymbol;
 
 public class EdhocMessage1InputRA extends EdhocInputRA {
 
-    EdhocMessage1InputRA(ParameterizedSymbol baseSymbol, @SuppressWarnings("rawtypes") DataValue[] parameterValues) {
+    EdhocMessage1InputRA(ParameterizedSymbol baseSymbol, DataValue<?>[] parameterValues) {
         super(baseSymbol, parameterValues);
     }
 
@@ -23,6 +23,8 @@ public class EdhocMessage1InputRA extends EdhocInputRA {
             // so previous session state must be cleaned unless reset is disabled
             session.resetIfEnabled();
         }
+
+        updatePeerConnectionId(session);
     }
 
     @Override
