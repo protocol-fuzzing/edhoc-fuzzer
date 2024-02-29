@@ -83,8 +83,6 @@
                 <groupId>de.learnlib</groupId>
                 <artifactId>ralib</artifactId>
                 <version>${ralib.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
             </dependency>
 
             <!-- gson -->
