@@ -12,7 +12,7 @@ import java.util.List;
 
 @XmlRootElement(name = "alphabet")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EdhocAlphabetPojoXmlRA extends AlphabetPojoXml<EdhocInputRA> {
+public class EdhocAlphabetPojoXmlRA extends AlphabetPojoXml<InputSymbolXml> {
     @XmlElements(value = {
             @XmlElement(type = EdhocMessage1InputRA.class, name = "EdhocMessage1Input"),
             @XmlElement(type = EdhocMessage2InputRA.class, name = "EdhocMessage2Input"),
@@ -24,16 +24,16 @@ public class EdhocAlphabetPojoXmlRA extends AlphabetPojoXml<EdhocInputRA> {
             @XmlElement(type = CoapAppMessageInputRA.class, name = "CoapAppMessageInput"),
             @XmlElement(type = CoapEmptyMessageInputRA.class, name = "CoapEmptyMessageInput")
     })
-    protected List<EdhocInputRA> inputs;
+    protected List<InputSymbolXml> inputs;
 
     public EdhocAlphabetPojoXmlRA() {}
 
-    public EdhocAlphabetPojoXmlRA(List<EdhocInputRA> inputs) {
+    public EdhocAlphabetPojoXmlRA(List<InputSymbolXml> inputs) {
         this.inputs = inputs;
     }
 
     @Override
-    public List<EdhocInputRA> getInputs(){
+    public List<InputSymbolXml> getInputs(){
         return inputs;
     }
 }

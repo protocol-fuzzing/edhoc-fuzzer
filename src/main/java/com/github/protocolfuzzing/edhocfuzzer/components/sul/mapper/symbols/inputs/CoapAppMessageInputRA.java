@@ -9,7 +9,7 @@ import de.learnlib.ralib.words.ParameterizedSymbol;
 
 public class CoapAppMessageInputRA extends EdhocInputRA {
 
-    CoapAppMessageInputRA(ParameterizedSymbol baseSymbol, DataValue<?>[] parameterValues) {
+    public CoapAppMessageInputRA(ParameterizedSymbol baseSymbol, DataValue<?>[] parameterValues) {
         super(baseSymbol, parameterValues);
     }
 

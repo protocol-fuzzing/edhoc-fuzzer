@@ -10,7 +10,7 @@ import de.learnlib.ralib.words.ParameterizedSymbol;
 
 public class EdhocMessage1InputRA extends EdhocInputRA {
 
-    EdhocMessage1InputRA(ParameterizedSymbol baseSymbol, DataValue<?>[] parameterValues) {
+    public EdhocMessage1InputRA(ParameterizedSymbol baseSymbol, DataValue<?>[] parameterValues) {
         super(baseSymbol, parameterValues);
     }
 
