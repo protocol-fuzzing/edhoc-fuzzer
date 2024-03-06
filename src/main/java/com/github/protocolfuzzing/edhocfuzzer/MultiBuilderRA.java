@@ -9,7 +9,6 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.Edho
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInputRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.InputSymbolXml;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputRA;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigRA;
@@ -51,11 +50,11 @@ public class MultiBuilderRA implements
         TestRunnerBuilder,
         TimingProbeBuilder {
 
-    protected AlphabetBuilder<InputSymbolXml> alphabetBuilder = new AlphabetBuilderStandard<>(
+    protected AlphabetBuilderStandard<InputSymbolXml> alphabetBuilder = new AlphabetBuilderStandard<>(
             new AlphabetSerializerXml<InputSymbolXml, EdhocAlphabetPojoXmlRA>(InputSymbolXml.class,
                     EdhocAlphabetPojoXmlRA.class));
-    
-    protected AlphabetTransformerRA alphabetTransformer = new AlphabetTransformerRA((AlphabetBuilderStandard<InputSymbolXml>) alphabetBuilder);
+
+    protected AlphabetTransformerRA alphabetTransformer = new AlphabetTransformerRA(alphabetBuilder);
 
     protected SulBuilder<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA> sulBuilder = new EdhocSulBuilderRA();
     protected SulWrapper<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA> sulWrapper = new SulWrapperStandard<>();
@@ -86,16 +85,16 @@ public class MultiBuilderRA implements
         teachers.put(T_CI, new IntegerEqualityTheory(T_CI));
         return new StateFuzzerRA<>(
                 new StateFuzzerComposerRA<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA>(stateFuzzerEnabler,
-                        alphabetBuilder, sulBuilder, sulWrapper, teachers).initialize());
+                        alphabetTransformer, sulBuilder, sulWrapper, teachers).initialize());
     }
 
     @Override
     public TestRunner build(TestRunnerEnabler testRunnerEnabler) {
-        return new TestRunnerStandard<>(testRunnerEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize();
+        return new TestRunnerStandard<>(testRunnerEnabler, alphabetTransformer, sulBuilder, sulWrapper).initialize();
     }
 
     @Override
     public TimingProbe build(TimingProbeEnabler timingProbeEnabler) {
-        return new TimingProbeStandard<>(timingProbeEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize();
+        return new TimingProbeStandard<>(timingProbeEnabler, alphabetTransformer, sulBuilder, sulWrapper).initialize();
     }
 }
