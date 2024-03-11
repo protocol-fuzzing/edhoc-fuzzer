@@ -1,31 +1,30 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs;
 
-import de.learnlib.ralib.data.DataType;
-import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name = "InputSymbol")
 public class InputSymbolXml {
 
+    @XmlElement(name="Name")
     private String name = null;
-    private DataType[] types = null;
 
-    public InputSymbolXml() {
+    @XmlElement(name="DataTypes")
+    private DataTypeXml[] types = {};
+
+    public InputSymbolXml(String name, DataTypeXml... types) {
+        this.name = name;
+        this.types = types;
     }
 
-    @XmlAttribute(name = "name", required = true)
-    public void setName(String name) {
-        this.name = name;
+    public InputSymbolXml() {
     }
 
     public String getName() {
         return this.name;
     }
 
-    @XmlAttribute(name = "datatype", required = false)
-    public void setDataTypes(DataType[] types) {
-        this.types = types;
-    }
-
-    public DataType[] getDataTypes() {
+    public DataTypeXml[] getDataTypes() {
         return this.types;
     }
 }

@@ -1,12 +1,12 @@
 package com.github.protocolfuzzing.edhocfuzzer;
 
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.*;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInputRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.InputSymbolXml;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.MessageInputType;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderTransformer;
+import de.learnlib.ralib.data.DataType;
 import de.learnlib.ralib.words.InputSymbol;
+
+import java.util.Arrays;
 
 public class AlphabetTransformerRA extends AlphabetBuilderTransformer<InputSymbolXml, EdhocInputRA> {
     public AlphabetTransformerRA(AlphabetBuilderStandard<InputSymbolXml> alphabetBuilderStandard) {
@@ -15,15 +15,21 @@ public class AlphabetTransformerRA extends AlphabetBuilderTransformer<InputSymbo
 
     @Override
     public InputSymbolXml fromTransformedInput(EdhocInputRA input) {
-        InputSymbolXml result = new InputSymbolXml();
-        result.setName(input.getBaseSymbol().getName());
-        result.setDataTypes(input.getBaseSymbol().getPtypes());
-        return result;
+        DataTypeXml[] types = Arrays.stream(input.getDataTypes())
+                .map(type -> new DataTypeXml(type.getName(), type.getBase())).toArray(DataTypeXml[]::new);
+        return new InputSymbolXml(input.getName(), types);
     }
 
     @Override
     public EdhocInputRA toTransformedInput(InputSymbolXml input) {
-        InputSymbol base = new InputSymbol(input.getName(), input.getDataTypes());
+        DataType[] types = Arrays.stream(input.getDataTypes()).map(type -> new DataType(type.getName(), type.getBase()))
+                .toArray(DataType[]::new);
+        InputSymbol base = new InputSymbol(input.getName(), types);
+
+        if (input.getName() == null) {
+            throw new RuntimeException("Nameless symbol found, possibly due to malformed alphabet file");
+        }
+
         switch (MessageInputType.valueOf(input.getName())) {
             case EDHOC_MESSAGE_1:
                 return new EdhocMessage1InputRA(base, null);
