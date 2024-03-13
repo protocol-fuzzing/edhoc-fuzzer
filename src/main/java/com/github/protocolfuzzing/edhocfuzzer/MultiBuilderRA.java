@@ -85,7 +85,7 @@ public class MultiBuilderRA implements
         teachers.put(T_CI, new IntegerEqualityTheory(T_CI));
         return new StateFuzzerRA<>(
                 new StateFuzzerComposerRA<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA>(stateFuzzerEnabler,
-                        alphabetTransformer, sulBuilder, sulWrapper, teachers).initialize());
+                        alphabetTransformer, sulBuilder, sulWrapper, teachers, EdhocInputRA.class).initialize());
     }
 
     @Override
