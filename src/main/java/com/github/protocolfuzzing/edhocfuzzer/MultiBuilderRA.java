@@ -83,9 +83,10 @@ public class MultiBuilderRA implements
         @SuppressWarnings("rawtypes")
         final Map<DataType, Theory> teachers = new LinkedHashMap<>();
         teachers.put(T_CI, new IntegerEqualityTheory(T_CI));
+        final EdhocInputConverter converter = new EdhocInputConverter();
         return new StateFuzzerRA<>(
                 new StateFuzzerComposerRA<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA>(stateFuzzerEnabler,
-                        alphabetTransformer, sulBuilder, sulWrapper, teachers, EdhocInputRA.class).initialize());
+                        alphabetTransformer, sulBuilder, sulWrapper, teachers, converter).initialize());
     }
 
     @Override
