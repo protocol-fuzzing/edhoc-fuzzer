@@ -17,14 +17,19 @@ public class EdhocOutputRA extends PSymbolInstance implements MapperOutput<Edhoc
         super(baseSymbol, parameterValues);
     }
 
-    public EdhocOutputRA(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol, DataValue<?>... parameterValues) {
+    public EdhocOutputRA(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol,
+            DataValue<?>... parameterValues) {
         super(baseSymbol, parameterValues);
         this.messages = messages;
     }
 
     /** Used only by @link #EdhocOutputBuilderRA. */
     public EdhocOutputRA(String name) {
-        super(new OutputSymbol(name, (DataType[]) null), (DataValue[]) null);
+        super(new OutputSymbol(name, new DataType[] {}), new DataValue<?>[] {});
+    }
+
+    public EdhocOutputRA(ParameterizedSymbol baseSymbol) {
+        super(baseSymbol, new DataValue<?>[] {});
     }
 
     @Override

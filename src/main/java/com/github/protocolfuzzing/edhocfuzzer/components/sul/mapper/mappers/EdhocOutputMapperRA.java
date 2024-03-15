@@ -54,15 +54,15 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
             // special output to demonstrate that the input message the learner requested
             // was unable to be sent and deemed unsupported
 
-            OutputSymbol base = new OutputSymbol(MessageOutputType.UNSUPPORTED_MESSAGE.name(), (DataType[]) null);
-            return edhocOutputRA(base, (DataValue[]) null);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.UNSUPPORTED_MESSAGE.name(), new DataType[] {});
+            return edhocOutputRA(base);
         } catch (UnsuccessfulMessageException e) {
             // special output to demonstrate that the received message evoked an error
             // in a middle layer and did not reach the upper resource in the case of
             // server mapper
 
-            OutputSymbol base = new OutputSymbol(MessageOutputType.UNSUPPORTED_MESSAGE.name(), (DataType[]) null);
-            return edhocOutputRA(base, (DataValue[]) null);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.UNSUPPORTED_MESSAGE.name(), new DataType[] {});
+            return edhocOutputRA(base);
         }
 
         EdhocOutputRA abstractOutput;
@@ -103,8 +103,8 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
                     new String(responsePayload, StandardCharsets.UTF_8));
 
             OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3_OSCORE_APP.name(),
-                    (DataType[]) null);
-            return edhocOutputRA(base, (DataValue[]) null);
+                    new DataType[] {});
+            return edhocOutputRA(base);
         }
 
         if (edhocMapperConnector.receivedOscoreAppMessage()) {
@@ -122,8 +122,8 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
                     messageType, EdhocUtil.byteArrayToString(responsePayload),
                     new String(responsePayload, StandardCharsets.UTF_8));
 
-            OutputSymbol base = new OutputSymbol(MessageOutputType.OSCORE_APP_MESSAGE.name(), (DataType[]) null);
-            return edhocOutputRA(base, (DataValue[]) null);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.OSCORE_APP_MESSAGE.name(), new DataType[] {});
+            return edhocOutputRA(base);
         }
 
         return null;
@@ -138,8 +138,8 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
             case EDHOC_ERROR_MESSAGE -> {
                 ok = messageProcessorPersistent.readErrorMessage(responsePayload);
 
-                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_ERROR_MESSAGE.name(), (DataType[]) null);
-                return edhocOutputAfterCheck(ok, base, (DataValue[]) null);
+                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_ERROR_MESSAGE.name(), new DataType[] {});
+                return edhocOutputAfterCheck(ok, base, new DataValue<?>[] {});
             }
 
             case EDHOC_MESSAGE_1 -> {
@@ -246,8 +246,8 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
              * Server Mapper:
              * received empty coap request for some reason
              */
-            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_EMPTY_MESSAGE.name(), (DataType[]) null);
-            return edhocOutputRA(base, (DataValue[]) null);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_EMPTY_MESSAGE.name(), new DataType[] {});
+            return edhocOutputRA(base);
         }
 
         // Check for unprotected coap message
@@ -259,28 +259,28 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
             LOGGER.info("COAP_APP_MESSAGE ({}): {} ~ {}",
                     messageType, EdhocUtil.byteArrayToString(responsePayload),
                     new String(responsePayload, StandardCharsets.UTF_8));
-            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_APP_MESSAGE.name(), (DataType[]) null);
-            return edhocOutputRA(base, (DataValue[]) null);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_APP_MESSAGE.name(), new DataType[] {});
+            return edhocOutputRA(base);
         }
 
         // if payload was not empty then a coap message is received
         // because no other transport protocol than coap is supported yet
-        OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_MESSAGE.name(), (DataType[]) null);
-        DataValue<?>[] values = (DataValue[]) null;
-        return edhocOutputAfterCheck(responsePayload != null, base, values);
+        OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_MESSAGE.name(), new DataType[] {});
+        return edhocOutputAfterCheck(responsePayload != null, base, new DataValue<?>[] {});
     }
 
     protected EdhocOutputRA coapError() {
         if (((EdhocMapperConfig) mapperConfig).isCoapErrorAsEdhocError()) {
-            OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_ERROR_MESSAGE.name(), (DataType[]) null);
-            return edhocOutputRA(base, (DataValue[]) null);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_ERROR_MESSAGE.name(), new DataType[] {});
+            return edhocOutputRA(base);
         } else {
-            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_ERROR_MESSAGE.name(), (DataType[]) null);
-            return edhocOutputRA(base, (DataValue[]) null);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_ERROR_MESSAGE.name(), new DataType[] {});
+            return edhocOutputRA(base);
         }
     }
 
-    protected EdhocOutputRA edhocOutputAfterCheck(boolean successfulCheck, OutputSymbol baseSymbol, DataValue<?>... values) {
+    protected EdhocOutputRA edhocOutputAfterCheck(boolean successfulCheck, OutputSymbol baseSymbol,
+            DataValue<?>... values) {
         return successfulCheck ? edhocOutputRA(baseSymbol, values) : null;
     }
 
@@ -288,7 +288,8 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
         return new EdhocOutputRA(baseSymbol, values);
     }
 
-    protected EdhocOutputRA buildOutput(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol, DataValue<?>... parameterValues) {
+    protected EdhocOutputRA buildOutput(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol,
+            DataValue<?>... parameterValues) {
         return new EdhocOutputRA(messages, baseSymbol, parameterValues);
     }
 
