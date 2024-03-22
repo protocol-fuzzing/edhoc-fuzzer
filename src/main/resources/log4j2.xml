@@ -12,6 +12,9 @@
         <Logger name="com.github.protocolfuzzing.protocolstatefuzzer" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
+        <Logger name="de.learnlib.ralib" level="debug" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
         <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>

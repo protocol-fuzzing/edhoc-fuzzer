@@ -70,10 +70,10 @@
                 <scope>runtime</scope>
             </dependency>
 
-            <!-- log4j-slf4j-impl -->
+            <!-- log4j-slf4j2-impl -->
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
+                <artifactId>log4j-slf4j2-impl</artifactId>
                 <version>${log4j.version}</version>
                 <scope>runtime</scope>
             </dependency>
@@ -132,10 +132,10 @@
             <artifactId>log4j-core</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
+        <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j2-impl -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
         </dependency>
 
         <!-- locally installed ralib -->
@@ -192,10 +192,6 @@
                             <ignoreUnusedRuntime>true</ignoreUnusedRuntime>
 
                             <ignoredUsedUndeclaredDependencies>
-                                <ignoredUsedUndeclaredDependency>
-                                    <!-- transitive -->
-                                    org.slf4j:slf4j-api
-                                </ignoredUsedUndeclaredDependency>
                                 <ignoredUsedUndeclaredDependency>
                                     <!-- transitive -->
                                     de.learnlib:learnlib-api:jar:*
