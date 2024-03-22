@@ -41,7 +41,8 @@ public class EdhocSessionPersistent extends EdhocSession {
     protected byte[] forceOscoreSenderId;
     protected byte[] forceOscoreRecipientId;
 
-    @SuppressWarnings("this-escape")
+    protected byte[] connectionId;
+
     public EdhocSessionPersistent(
             String sessionUri, boolean initiator, boolean clientInitiated, int method, byte[] connectionId,
             EdhocEndpointInfoPersistent edhocEndpointInfoPersistent, List<Integer> peerSupportedCipherSuites,
@@ -49,10 +50,11 @@ public class EdhocSessionPersistent extends EdhocSession {
             byte[] forceOscoreSenderId, byte[] forceOscoreRecipientId) {
 
         super(initiator, clientInitiated, method, connectionId, edhocEndpointInfoPersistent.getKeyPairs(),
-            edhocEndpointInfoPersistent.getIdCreds(), edhocEndpointInfoPersistent.getCreds(),
-            edhocEndpointInfoPersistent.getSupportedCipherSuites(), peerSupportedCipherSuites,
-            edhocEndpointInfoPersistent.getSupportedEADs(), edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri),
-            edhocEndpointInfoPersistent.getTrustModel(), oscoreDB);
+                edhocEndpointInfoPersistent.getIdCreds(), edhocEndpointInfoPersistent.getCreds(),
+                edhocEndpointInfoPersistent.getSupportedCipherSuites(), peerSupportedCipherSuites,
+                edhocEndpointInfoPersistent.getSupportedEADs(),
+                edhocEndpointInfoPersistent.getAppProfiles().get(sessionUri),
+                edhocEndpointInfoPersistent.getTrustModel(), oscoreDB);
 
         this.sessionUri = sessionUri;
         this.oscoreUri = edhocEndpointInfoPersistent.getOscoreUri();
@@ -63,13 +65,12 @@ public class EdhocSessionPersistent extends EdhocSession {
         this.sessionResetEnabled = sessionResetEnabled;
         this.forceOscoreSenderId = forceOscoreSenderId;
         this.forceOscoreRecipientId = forceOscoreRecipientId;
+        this.connectionId = connectionId;
 
         SideProcessor sideProcessor = new SideProcessor(
-            edhocEndpointInfoPersistent.getTrustModel(),
-            edhocEndpointInfoPersistent.getPeerPublicKeys(),
-            edhocEndpointInfoPersistent.getPeerCredentials(),
-            edhocEndpointInfoPersistent.getEadProductionInput()
-        );
+                edhocEndpointInfoPersistent.getTrustModel(),
+                edhocEndpointInfoPersistent.getPeerCredentials(),
+                edhocEndpointInfoPersistent.getEadProductionInput());
         sideProcessor.setEdhocSession(this);
         this.setSideProcessor(sideProcessor);
 
@@ -93,38 +94,39 @@ public class EdhocSessionPersistent extends EdhocSession {
         setEphemeralKey();
 
         // peer dummy info
-        setPeerConnectionId(new byte[]{0, 0, 0, 0});
-        setPeerCred(new byte[]{0, 0, 0, 0});
+        setPeerConnectionId(new byte[] { 0, 0, 0, 0 });
+        setPeerCred(new byte[] { 0, 0, 0, 0 });
         setPeerIdCred(Util.buildIdCredKid(getPeerCred()));
 
-        // in order for the ephemeral and long-term keys of the two peers to be of the same curve
+        // in order for the ephemeral and long-term keys of the two peers to be of the
+        // same curve
         // dummy peerEphemeralPublicKey same as own ephemeral key
         // dummy peerLongTermPublicKey same as own long-term key
         setPeerEphemeralPublicKey(getEphemeralKey());
         setPeerLongTermPublicKey(getKeyPair());
 
         // message1 hash
-        setHashMessage1(new byte[]{1});
+        setHashMessage1(new byte[] { 1 });
 
         // plaintext2
-        setPlaintext2(new byte[]{1});
+        setPlaintext2(new byte[] { 1 });
 
         // inner key-derivation Keys
-        setPRK2e(new byte[]{1});
-        setPRK3e2m(new byte[]{1});
-        setPRK4e3m(new byte[]{1});
+        setPRK2e(new byte[] { 1 });
+        setPRK3e2m(new byte[] { 1 });
+        setPRK4e3m(new byte[] { 1 });
 
         // transcript hashes
-        setTH2(new byte[]{1});
-        setTH3(new byte[]{1});
-        setTH4(new byte[]{1});
+        setTH2(new byte[] { 1 });
+        setTH3(new byte[] { 1 });
+        setTH4(new byte[] { 1 });
 
         // key after successful EDHOC execution
-        setPRKout(new byte[]{1});
-        setPRKexporter(new byte[]{1});
+        setPRKout(new byte[] { 1 });
+        setPRKexporter(new byte[] { 1 });
 
         // message3, to be used for building an EDHOC+OSCORE request
-        setMessage3(new byte[]{1});
+        setMessage3(new byte[] { 1 });
 
         // setup dummy oscore context and reset flag
         oscoreCtxGenerated = false;
@@ -221,7 +223,8 @@ public class EdhocSessionPersistent extends EdhocSession {
     }
 
     @Override
-    public byte[] edhocExporter(int label, CBORObject context, int len) throws InvalidKeyException, NoSuchAlgorithmException {
+    public byte[] edhocExporter(int label, CBORObject context, int len)
+            throws InvalidKeyException, NoSuchAlgorithmException {
         if (label < 0 || context.getType() != CBORType.ByteString || len < 0)
             return null;
         // do not check for session currentStep
@@ -265,5 +268,18 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     public byte[] getForceOscoreRecipientId() {
         return forceOscoreRecipientId;
+    }
+
+    public void setConnectionId(byte[] id) {
+        this.connectionId = id;
+    }
+
+    /**
+     * Note: Override to enable modification of connectionId.
+     * It is private and (in practice) immutable in the parent class EdhocSession.
+     */
+    @Override
+    public byte[] getConnectionId() {
+        return this.connectionId;
     }
 }

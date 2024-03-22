@@ -1,6 +1,7 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs;
 
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocSessionPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocUtil;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputRA;
@@ -11,14 +12,16 @@ import de.learnlib.ralib.data.DataType;
 import de.learnlib.ralib.data.DataValue;
 import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class EdhocInputRA extends PSymbolInstance
         implements MapperInput<EdhocOutputRA, EdhocProtocolMessage, EdhocExecutionContextRA> {
 
     private long extendedWait = 0;
-    protected DataType T_CI = new DataType("C_I", CBORObject.class);
+    protected DataType T_CI = new DataType("C_I", Integer.class);
 
+    private static Logger LOGGER = LogManager.getLogger();
 
     EdhocInputRA(ParameterizedSymbol baseSymbol, DataValue<?>... parameterValues) {
         super(baseSymbol, parameterValues);
@@ -71,13 +74,18 @@ public abstract class EdhocInputRA extends PSymbolInstance
      * a randomly selected integer in the learner to a corresponding bytestring is
      * possible.
      */
-    public void updatePeerConnectionId(EdhocSessionPersistent session) {
-        for (DataValue<?> dv : this.getParameterValues()) {
-            if (dv.getType().equals(T_CI)) {
+    public void updateConnectionId(EdhocSessionPersistent session) {
 
-                // TODO: Unsafe typecast.
-                CBORObject value = (CBORObject) dv.getId();
-                session.setPeerConnectionId(value.EncodeToBytes());
+        LOGGER.info("Running updateConnectionId method");
+        LOGGER.info("Current ConnectionId: " + EdhocUtil.byteArrayToString(session.getConnectionId()));
+
+        for (DataValue<?> dv : this.getParameterValues()) {
+
+            LOGGER.info("Datavalue: " + dv.toString());
+            if (dv.getType().equals(T_CI)) {
+                CBORObject value = CBORObject.FromObject(dv.getId());
+
+                session.setConnectionId(value.EncodeToBytes());
             }
         }
     }

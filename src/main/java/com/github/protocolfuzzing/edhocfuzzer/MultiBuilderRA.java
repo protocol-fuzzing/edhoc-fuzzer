@@ -36,7 +36,6 @@ import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.tim
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.TimingProbeStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeEnabler;
-import com.upokecenter.cbor.CBORObject;
 import de.learnlib.ralib.data.DataType;
 import de.learnlib.ralib.theory.Theory;
 import de.learnlib.ralib.tools.theories.IntegerEqualityTheory;
@@ -79,7 +78,7 @@ public class MultiBuilderRA implements
 
     @Override
     public StateFuzzer<RegisterAutomatonWrapper<EdhocInputRA>> build(StateFuzzerEnabler stateFuzzerEnabler) {
-        DataType T_CI = new DataType("C_I", CBORObject.class);
+        DataType T_CI = new DataType("C_I", Integer.class);
         @SuppressWarnings("rawtypes")
         final Map<DataType, Theory> teachers = new LinkedHashMap<>();
         teachers.put(T_CI, new IntegerEqualityTheory(T_CI));

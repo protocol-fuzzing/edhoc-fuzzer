@@ -8,14 +8,14 @@ ${results.learning.servers}/lakers
 
 ##### LearnerConfig #####
 -learningAlgorithm
-RALAMBDA
+RaLambda
 -equivalenceAlgorithms
 IO_RANDOM_WALK
 -logQueries
 -cacheTests
 -skipNonDetTests
 -alphabet
-alphabet_ra
+./src/main/resources/alphabet_ra.xml
 
 ##### EdhocMapperConfig #####
 -protocolVersion

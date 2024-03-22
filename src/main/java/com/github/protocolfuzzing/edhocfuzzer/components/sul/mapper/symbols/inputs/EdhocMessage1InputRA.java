@@ -24,7 +24,7 @@ public class EdhocMessage1InputRA extends EdhocInputRA {
             session.resetIfEnabled();
         }
 
-        updatePeerConnectionId(session);
+        updateConnectionId(session);
     }
 
     @Override

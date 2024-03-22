@@ -132,7 +132,7 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
     protected EdhocOutputRA edhocOutputRA(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(edhocMapperState);
         boolean ok;
-        DataType T_CI = new DataType("C_I", CBORObject.class);
+        DataType T_CI = new DataType("C_I", Integer.class);
 
         switch (messageProcessorPersistent.messageTypeFromStructure(responsePayload)) {
             case EDHOC_ERROR_MESSAGE -> {
@@ -145,22 +145,26 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
             case EDHOC_MESSAGE_1 -> {
                 ok = messageProcessorPersistent.readMessage1(responsePayload);
 
-                CBORObject parameter = CBORObject
-                        .FromObject(edhocMapperState.getEdhocSessionPersistent().getPeerConnectionId());
+                Integer parameter = CBORObject
+                        .DecodeObjectFromBytes(
+                                edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
+                                Integer.class);
                 OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_1.name(), T_CI);
 
-                DataValue<CBORObject> value = new DataValue<CBORObject>(T_CI, parameter);
+                DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                 return edhocOutputAfterCheck(ok, base, value);
             }
 
             case EDHOC_MESSAGE_2 -> {
                 ok = messageProcessorPersistent.readMessage2(responsePayload);
 
-                CBORObject parameter = CBORObject
-                        .FromObject(edhocMapperState.getEdhocSessionPersistent().getPeerConnectionId());
+                Integer parameter = CBORObject
+                        .DecodeObjectFromBytes(
+                                edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
+                                Integer.class);
                 OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_2.name(), T_CI);
 
-                DataValue<CBORObject> value = new DataValue<CBORObject>(T_CI, parameter);
+                DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                 return edhocOutputAfterCheck(ok, base, value);
             }
 
@@ -170,20 +174,24 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
 
                 if (ok) {
-                    CBORObject parameter = CBORObject
-                            .FromObject(edhocMapperState.getEdhocSessionPersistent().getPeerConnectionId());
-                    OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_2.name(), T_CI);
+                    Integer parameter = CBORObject
+                            .DecodeObjectFromBytes(
+                                    edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
+                                    Integer.class);
+                    OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3.name(), T_CI);
 
-                    DataValue<CBORObject> value = new DataValue<CBORObject>(T_CI, parameter);
+                    DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                     return edhocOutputRA(base, value);
                 }
 
                 ok = messageProcessorPersistent.readMessage4(responsePayload);
-                CBORObject parameter = CBORObject
-                        .FromObject(edhocMapperState.getEdhocSessionPersistent().getPeerConnectionId());
-                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_2.name(), T_CI);
+                Integer parameter = CBORObject
+                        .DecodeObjectFromBytes(
+                                edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
+                                Integer.class);
+                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_4.name(), T_CI);
 
-                DataValue<CBORObject> value = new DataValue<CBORObject>(T_CI, parameter);
+                DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                 return edhocOutputAfterCheck(ok, base, value);
             }
 
@@ -192,30 +200,36 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
                 LOGGER.info("Reading as EDHOC Message 2 or 3 or 4");
                 ok = messageProcessorPersistent.readMessage2(responsePayload);
                 if (ok) {
-                    CBORObject parameter = CBORObject
-                            .FromObject(edhocMapperState.getEdhocSessionPersistent().getPeerConnectionId());
+                    Integer parameter = CBORObject
+                            .DecodeObjectFromBytes(
+                                    edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
+                                    Integer.class);
                     OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_2.name(), T_CI);
 
-                    DataValue<CBORObject> value = new DataValue<CBORObject>(T_CI, parameter);
+                    DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                     return edhocOutputRA(base, value);
                 }
 
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
                 if (ok) {
-                    CBORObject parameter = CBORObject
-                            .FromObject(edhocMapperState.getEdhocSessionPersistent().getPeerConnectionId());
+                    Integer parameter = CBORObject
+                            .DecodeObjectFromBytes(
+                                    edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
+                                    Integer.class);
                     OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3.name(), T_CI);
 
-                    DataValue<CBORObject> value = new DataValue<CBORObject>(T_CI, parameter);
+                    DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                     return edhocOutputRA(base, value);
                 }
 
                 ok = messageProcessorPersistent.readMessage4(responsePayload);
-                CBORObject parameter = CBORObject
-                        .FromObject(edhocMapperState.getEdhocSessionPersistent().getPeerConnectionId());
+                Integer parameter = CBORObject
+                        .DecodeObjectFromBytes(
+                                edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
+                                Integer.class);
                 OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_4.name(), T_CI);
 
-                DataValue<CBORObject> value = new DataValue<CBORObject>(T_CI, parameter);
+                DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                 return edhocOutputAfterCheck(ok, base, value);
             }
 

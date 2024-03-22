@@ -18,7 +18,7 @@ public class EdhocMessage3OscoreAppInputRA extends EdhocInputRA {
     public void preSendUpdate(EdhocExecutionContextRA context) {
         EdhocSessionPersistent session = context.getState().getEdhocSessionPersistent();
 
-        updatePeerConnectionId(session);
+        updateConnectionId(session);
 
         // construct Message3 in order to store it in session 'message3' field,
         // derive new oscore context and make Message3 available to oscore layer

@@ -18,7 +18,7 @@ public class EdhocMessage4InputRA extends EdhocInputRA {
     public void preSendUpdate(EdhocExecutionContextRA context) {
         EdhocSessionPersistent session = context.getState().getEdhocSessionPersistent();
 
-        updatePeerConnectionId(session);
+        updateConnectionId(session);
     }
 
     @Override
