@@ -12,28 +12,49 @@ import java.util.List;
 
 @XmlRootElement(name = "alphabet")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EdhocAlphabetPojoXmlRA extends AlphabetPojoXml<InputSymbolXml> {
+public class EdhocAlphabetPojoXmlRA extends AlphabetPojoXml<SymbolXml> {
     @XmlElements(value = {
-            @XmlElement(type = InputSymbolXml.class, name = "EdhocMessage1Input"),
-            @XmlElement(type = InputSymbolXml.class, name = "EdhocMessage2Input"),
-            @XmlElement(type = InputSymbolXml.class, name = "EdhocMessage3Input"),
-            @XmlElement(type = InputSymbolXml.class, name = "EdhocMessage4Input"),
-            @XmlElement(type = InputSymbolXml.class, name = "EdhocErrorMessageInput"),
-            @XmlElement(type = InputSymbolXml.class, name = "EdhocMessage3OscoreAppInput"),
-            @XmlElement(type = InputSymbolXml.class, name = "OscoreAppMessageInput"),
-            @XmlElement(type = InputSymbolXml.class, name = "CoapAppMessageInput"),
-            @XmlElement(type = InputSymbolXml.class, name = "CoapEmptyMessageInput")
+            @XmlElement(type = SymbolXml.class, name = "EdhocMessage1Input"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocMessage2Input"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocMessage3Input"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocMessage4Input"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocErrorMessageInput"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocMessage3OscoreAppInput"),
+            @XmlElement(type = SymbolXml.class, name = "OscoreAppMessageInput"),
+            @XmlElement(type = SymbolXml.class, name = "CoapAppMessageInput"),
+            @XmlElement(type = SymbolXml.class, name = "CoapEmptyMessageInput"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocMessage1"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocMessage2"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocMessage3"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocMessage4"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocErrorMessage"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocMessage3OscoreApp"),
+            @XmlElement(type = SymbolXml.class, name = "OscoreAppMessage"),
+            @XmlElement(type = SymbolXml.class, name = "CoapAppMessage"),
+            @XmlElement(type = SymbolXml.class, name = "CoapEmptyMessage"),
+            @XmlElement(type = SymbolXml.class, name = "Disabled"),
+            @XmlElement(type = SymbolXml.class, name = "SocketClosed"),
+            @XmlElement(type = SymbolXml.class, name = "Unknown"),
+            @XmlElement(type = SymbolXml.class, name = "Timeout"),
+            @XmlElement(type = SymbolXml.class, name = "CoapErrorMessage"),
+            @XmlElement(type = SymbolXml.class, name = "CoapEmptyMessage"),
+            @XmlElement(type = SymbolXml.class, name = "UnsupportedMessage"),
+            @XmlElement(type = SymbolXml.class, name = "EdhocErrorMessage"),
+            @XmlElement(type = SymbolXml.class, name = "CoapMessage"),
+            @XmlElement(type = SymbolXml.class, name = "CoapAppMessage"),
+            @XmlElement(type = SymbolXml.class, name = "OscoreAppMessage"),
     })
-    protected List<InputSymbolXml> inputs;
+    protected List<SymbolXml> inputs;
 
-    public EdhocAlphabetPojoXmlRA() {}
+    public EdhocAlphabetPojoXmlRA() {
+    }
 
-    public EdhocAlphabetPojoXmlRA(List<InputSymbolXml> inputs) {
+    public EdhocAlphabetPojoXmlRA(List<SymbolXml> inputs) {
         this.inputs = inputs;
     }
 
     @Override
-    public List<InputSymbolXml> getInputs(){
+    public List<SymbolXml> getInputs() {
         return inputs;
     }
 }
