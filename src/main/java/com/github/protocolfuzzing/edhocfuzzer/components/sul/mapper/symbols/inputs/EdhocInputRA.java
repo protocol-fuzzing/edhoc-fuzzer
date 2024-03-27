@@ -67,9 +67,6 @@ public abstract class EdhocInputRA extends PSymbolInstance
      * TODO This is bad in multiple ways:
      * - We need to have access to the datatype, which means defining it multiple
      * times. For teachers, EdhocInputRA and the EdhocOutputMapperRA.
-     * - It is uncertain if we can cast back to CBORObject, since the learner
-     * selects a random new value, which means it is unreasonable to assume it can
-     * convert to any type, since it only has the integer equality theories.
      * - If the C_I is a bytestring it is unclear if use of a mapper to convert from
      * a randomly selected integer in the learner to a corresponding bytestring is
      * possible.
@@ -77,15 +74,18 @@ public abstract class EdhocInputRA extends PSymbolInstance
     public void updateConnectionId(EdhocSessionPersistent session) {
 
         LOGGER.info("Running updateConnectionId method");
-        LOGGER.info("Current ConnectionId: " + EdhocUtil.byteArrayToString(session.getConnectionId()));
+        LOGGER.info("Current ConnectionId: " + EdhocUtil.bytesToInt(session.getConnectionId()));
 
         for (DataValue<?> dv : this.getParameterValues()) {
 
             LOGGER.info("Datavalue: " + dv.toString());
             if (dv.getType().equals(T_CI)) {
                 CBORObject value = CBORObject.FromObject(dv.getId());
+                LOGGER.info("CBORObject version of DataValue id: " + value.toString());
 
                 session.setConnectionId(value.EncodeToBytes());
+                LOGGER.info(
+                        "Current ConnectionId after set: " + EdhocUtil.bytesToInt(session.getConnectionId()));
             }
         }
     }

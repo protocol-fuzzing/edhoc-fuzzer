@@ -17,7 +17,6 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outp
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.OutputMapper;
-import com.upokecenter.cbor.CBORObject;
 import de.learnlib.ralib.data.DataType;
 import de.learnlib.ralib.data.DataValue;
 import de.learnlib.ralib.words.OutputSymbol;
@@ -94,6 +93,7 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
 
     protected EdhocOutputRA appOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         String messageType = edhocMapperState.isCoapClient() ? "response" : "request";
+        DataType T_CI = new DataType("C_I", Integer.class);
 
         if (edhocMapperConnector.receivedMsg3WithOscoreApp()) {
             // received Message3_OSCORE_APP, from which application data propagated and
@@ -102,9 +102,14 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
                     messageType, EdhocUtil.byteArrayToString(responsePayload),
                     new String(responsePayload, StandardCharsets.UTF_8));
 
-            OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3_OSCORE_APP.name(),
-                    new DataType[] {});
-            return edhocOutputRA(base);
+            Integer parameter = EdhocUtil
+                    .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
+            OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3_OSCORE_APP.name(), T_CI);
+
+            LOGGER.info("Reading as EDHOC Message 3 Oscore App, DataValue: " + parameter);
+            DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
+
+            return edhocOutputRA(base, value);
         }
 
         if (edhocMapperConnector.receivedOscoreAppMessage()) {
@@ -145,12 +150,10 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
             case EDHOC_MESSAGE_1 -> {
                 ok = messageProcessorPersistent.readMessage1(responsePayload);
 
-                Integer parameter = CBORObject
-                        .DecodeObjectFromBytes(
-                                edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
-                                Integer.class);
+                Integer parameter = EdhocUtil
+                        .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                 OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_1.name(), T_CI);
-
+                LOGGER.info("Reading as Message 1, DataValue: " + parameter);
                 DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                 return edhocOutputAfterCheck(ok, base, value);
             }
@@ -158,12 +161,10 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
             case EDHOC_MESSAGE_2 -> {
                 ok = messageProcessorPersistent.readMessage2(responsePayload);
 
-                Integer parameter = CBORObject
-                        .DecodeObjectFromBytes(
-                                edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
-                                Integer.class);
+                Integer parameter = EdhocUtil
+                        .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                 OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_2.name(), T_CI);
-
+                LOGGER.info("Reading as Message 2, DataValue: " + parameter);
                 DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                 return edhocOutputAfterCheck(ok, base, value);
             }
@@ -174,23 +175,19 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
 
                 if (ok) {
-                    Integer parameter = CBORObject
-                            .DecodeObjectFromBytes(
-                                    edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
-                                    Integer.class);
+                    Integer parameter = EdhocUtil
+                            .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                     OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3.name(), T_CI);
-
+                    LOGGER.info("Reading as Message 3, DataValue: " + parameter);
                     DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                     return edhocOutputRA(base, value);
                 }
 
                 ok = messageProcessorPersistent.readMessage4(responsePayload);
-                Integer parameter = CBORObject
-                        .DecodeObjectFromBytes(
-                                edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
-                                Integer.class);
+                Integer parameter = EdhocUtil
+                        .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                 OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_4.name(), T_CI);
-
+                LOGGER.info("Reading as Message 4, DataValue: " + parameter);
                 DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                 return edhocOutputAfterCheck(ok, base, value);
             }
@@ -200,35 +197,29 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
                 LOGGER.info("Reading as EDHOC Message 2 or 3 or 4");
                 ok = messageProcessorPersistent.readMessage2(responsePayload);
                 if (ok) {
-                    Integer parameter = CBORObject
-                            .DecodeObjectFromBytes(
-                                    edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
-                                    Integer.class);
+                    Integer parameter = EdhocUtil
+                            .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                     OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_2.name(), T_CI);
-
+                    LOGGER.info("Reading as Message 2, DataValue: " + parameter);
                     DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                     return edhocOutputRA(base, value);
                 }
 
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
                 if (ok) {
-                    Integer parameter = CBORObject
-                            .DecodeObjectFromBytes(
-                                    edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
-                                    Integer.class);
+                    Integer parameter = EdhocUtil
+                            .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                     OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3.name(), T_CI);
-
+                    LOGGER.info("Reading as Message 3, DataValue: " + parameter);
                     DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                     return edhocOutputRA(base, value);
                 }
 
                 ok = messageProcessorPersistent.readMessage4(responsePayload);
-                Integer parameter = CBORObject
-                        .DecodeObjectFromBytes(
-                                edhocMapperState.getEdhocSessionPersistent().getConnectionId(),
-                                Integer.class);
+                Integer parameter = EdhocUtil
+                        .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                 OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_4.name(), T_CI);
-
+                LOGGER.info("Reading as Message 4, DataValue: " + parameter);
                 DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
                 return edhocOutputAfterCheck(ok, base, value);
             }

@@ -15,10 +15,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 /**
- * Taken and heavily adapted from {@link org.eclipse.californium.edhoc.MessageProcessor}.
- * Substitutes the static functions of {@link org.eclipse.californium.edhoc.MessageProcessor} mainly by removing
- * field cleanup and purge session calls and by delaying changes to session. The read functions return boolean.
- * These functions are no longer static and take their parameters also from the class's field edhocMapperState.
+ * Taken and heavily adapted from
+ * {@link org.eclipse.californium.edhoc.MessageProcessor}.
+ * Substitutes the static functions of
+ * {@link org.eclipse.californium.edhoc.MessageProcessor} mainly by removing
+ * field cleanup and purge session calls and by delaying changes to session. The
+ * read functions return boolean.
+ * These functions are no longer static and take their parameters also from the
+ * class's field edhocMapperState.
  */
 public class MessageProcessorPersistent {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -41,7 +45,10 @@ public class MessageProcessorPersistent {
         UNKNOWN_MESSAGE
     }
 
-    /** Tries to match the byte sequence's structure of CBOR elements with an edhoc message */
+    /**
+     * Tries to match the byte sequence's structure of CBOR elements with an edhoc
+     * message
+     */
     public StructureCodes messageTypeFromStructure(byte[] sequence) {
         LOGGER.debug("Start of messageTypeFromStructure");
         if (sequence == null) {
@@ -62,8 +69,10 @@ public class MessageProcessorPersistent {
             return StructureCodes.EDHOC_ERROR_MESSAGE;
         }
 
-        // A CoAP client receives responses from CoAP server without connection identifiers prepended
-        // A CoAP server receives requests from CoAP clients with C_I or C_R prepended if enabled
+        // A CoAP client receives responses from CoAP server without connection
+        // identifiers prepended
+        // A CoAP server receives requests from CoAP clients with C_I or C_R prepended
+        // if enabled
         int cX_offset = edhocMapperState.receiveWithPrependedCX() ? 1 : 0;
         int messageElementsLength = elements.length - cX_offset;
 
@@ -95,10 +104,12 @@ public class MessageProcessorPersistent {
         }
     }
 
-
     /* Initiator message functions -- only session of Initiator is modified */
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#writeMessage1} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#writeMessage1}
+     */
     public byte[] writeMessage1() {
         LOGGER.debug("Start of writeMessage1");
         EdhocSessionPersistent session = edhocMapperState.getEdhocSessionPersistent();
@@ -126,12 +137,15 @@ public class MessageProcessorPersistent {
         int preferredSuite = supportedCipherSuites.get(0);
 
         if (peerSupportedCipherSuites == null || peerSupportedCipherSuites.isEmpty()) {
-            // No SUITES_R has been received, so it is not known what cipher suites the responder supports
+            // No SUITES_R has been received, so it is not known what cipher suites the
+            // responder supports
             // The selected cipher suite is the most preferred by the initiator
             selectedSuite = preferredSuite;
         } else {
-            // SUITES_R has been received, so it is known what cipher suites the responder supports
-            // Pick the selected cipher suite as the most preferred by the Initiator from the ones
+            // SUITES_R has been received, so it is known what cipher suites the responder
+            // supports
+            // Pick the selected cipher suite as the most preferred by the Initiator from
+            // the ones
             // supported by the Responder
             for (Integer i : supportedCipherSuites) {
                 if (peerSupportedCipherSuites.contains(i)) {
@@ -149,7 +163,8 @@ public class MessageProcessorPersistent {
         // Set the selected cipher suite
         session.setSelectedCipherSuite(selectedSuite);
 
-        // Set the asymmetric key pair, CRED and ID_CRED of the Initiator to use in this session
+        // Set the asymmetric key pair, CRED and ID_CRED of the Initiator to use in this
+        // session
         session.setAuthenticationCredential();
 
         // Set the ephemeral keys of the Initiator to use in this session
@@ -163,7 +178,8 @@ public class MessageProcessorPersistent {
             suitesI = CBORObject.FromObject(selectedSuite);
         } else {
             // SUITES_I is a CBOR array
-            // The elements are the Initiator's supported cipher suite in decreasing order of preference,
+            // The elements are the Initiator's supported cipher suite in decreasing order
+            // of preference,
             // up until and including the selected suite as last element of the array.
             suitesI = CBORObject.NewArray();
             for (Integer i : supportedCipherSuites) {
@@ -178,11 +194,11 @@ public class MessageProcessorPersistent {
         objectList.add(suitesI);
 
         // G_X as a CBOR byte string
-        CBORObject gX = switch(selectedSuite) {
+        CBORObject gX = switch (selectedSuite) {
             case Constants.EDHOC_CIPHER_SUITE_0, Constants.EDHOC_CIPHER_SUITE_1 ->
-                    session.getEphemeralKey().PublicKey().get(KeyKeys.OKP_X);
+                session.getEphemeralKey().PublicKey().get(KeyKeys.OKP_X);
             case Constants.EDHOC_CIPHER_SUITE_2, Constants.EDHOC_CIPHER_SUITE_3 ->
-                    session.getEphemeralKey().PublicKey().get(KeyKeys.EC2_X);
+                session.getEphemeralKey().PublicKey().get(KeyKeys.EC2_X);
             default ->
                 null;
         };
@@ -198,7 +214,8 @@ public class MessageProcessorPersistent {
         // C_I
         byte[] connectionIdentifierInitiator = session.getConnectionId();
         CBORObject cI = encodeIdentifier(connectionIdentifierInitiator);
-        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
+        LOGGER.debug(
+                EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
         LOGGER.debug(EdhocUtil.byteArrayToString("C_I", cI.EncodeToBytes()));
         objectList.add(cI);
 
@@ -212,10 +229,10 @@ public class MessageProcessorPersistent {
                 .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
 
             String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_1, false)
-                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
-                            .get(0)
-                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
-                            .AsString();
+                    .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                    .get(0)
+                    .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                    .AsString();
 
             // No need to keep this information any longer in the side processor object
             sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_1, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
@@ -249,12 +266,17 @@ public class MessageProcessorPersistent {
         return message1;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage2} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage2}
+     */
     public boolean readMessage2(byte[] sequence) {
         LOGGER.debug("Start of readMessage2");
-        Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
+        Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent()
+                .getEdhocSessionsPersistent();
         Map<CBORObject, OneKey> peerPublicKeys = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerPublicKeys();
-        Map<CBORObject, CBORObject> peerCredentials = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerCredentials();
+        Map<CBORObject, CBORObject> peerCredentials = edhocMapperState.getEdhocEndpointInfoPersistent()
+                .getPeerCredentials();
         Set<CBORObject> usedConnectionIds = edhocMapperState.getEdhocEndpointInfoPersistent().getUsedConnectionIds();
         Set<CBORObject> ownIdCreds = edhocMapperState.getOwnIdCreds();
 
@@ -284,7 +306,7 @@ public class MessageProcessorPersistent {
             index++;
             CBORObject cI = objectListRequest[index];
 
-            if (cI.getType() != CBORType.ByteString && cI.getType() != CBORType.Integer)  {
+            if (cI.getType() != CBORType.ByteString && cI.getType() != CBORType.Integer) {
                 LOGGER.error("R_M2: C_I must be a byte string or an integer");
                 return false;
             }
@@ -296,16 +318,18 @@ public class MessageProcessorPersistent {
                 return false;
             }
         } else {
-            // CoAP Client as Initiator when Message 2 is a CoAP response of a previous Message 1 request
+            // CoAP Client as Initiator when Message 2 is a CoAP response of a previous
+            // Message 1 request
             // or CoAP Server as Initiator with correlation with CX is disabled
             connectionIdentifierInitiator = edhocMapperState.getEdhocSessionPersistent().getConnectionId();
         }
 
-        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
+        LOGGER.debug(
+                EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
 
         CBORObject connectionIdentifierInitiatorCbor = CBORObject.FromObject(connectionIdentifierInitiator);
         EdhocSessionPersistent session = edhocSessions.get(connectionIdentifierInitiatorCbor);
-
+        LOGGER.info("Sessions: " + edhocSessions);
         if (session == null) {
             LOGGER.error("R_M2: EDHOC session not found");
             return false;
@@ -338,13 +362,13 @@ public class MessageProcessorPersistent {
         // Ephemeral public key of the Responder
         int selectedCipherSuite = session.getSelectedCipherSuite();
 
-        OneKey peerEphemeralKey = switch(selectedCipherSuite) {
+        OneKey peerEphemeralKey = switch (selectedCipherSuite) {
             case Constants.EDHOC_CIPHER_SUITE_0, Constants.EDHOC_CIPHER_SUITE_1 ->
-                    SharedSecretCalculation.buildCurve25519OneKey(null, gY);
+                SharedSecretCalculation.buildCurve25519OneKey(null, gY);
             case Constants.EDHOC_CIPHER_SUITE_2, Constants.EDHOC_CIPHER_SUITE_3 ->
-                    SharedSecretCalculation.buildEcdsa256OneKey(null, gY, null);
+                SharedSecretCalculation.buildEcdsa256OneKey(null, gY, null);
             default ->
-                    null;
+                null;
         };
 
         if (peerEphemeralKey == null) {
@@ -378,11 +402,12 @@ public class MessageProcessorPersistent {
                 return false;
             }
 
-            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
+            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder",
+                    connectionIdentifierResponder));
             LOGGER.debug(EdhocUtil.byteArrayToString("C_R", cR.EncodeToBytes()));
 
             if (session.getApplicationProfile().getUsedForOSCORE()
-                && Arrays.equals(connectionIdentifierInitiator, connectionIdentifierResponder)) {
+                    && Arrays.equals(connectionIdentifierInitiator, connectionIdentifierResponder)) {
                 LOGGER.warn("R_M2: Found C_R equal to C_I in an OSCORE enabled Application Profile");
             }
         }
@@ -500,11 +525,12 @@ public class MessageProcessorPersistent {
                 return false;
             }
 
-            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
+            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder",
+                    connectionIdentifierResponder));
             LOGGER.debug(EdhocUtil.byteArrayToString("C_R", cR.EncodeToBytes()));
 
             if (session.getApplicationProfile().getUsedForOSCORE()
-                && Arrays.equals(connectionIdentifierInitiator, connectionIdentifierResponder)) {
+                    && Arrays.equals(connectionIdentifierInitiator, connectionIdentifierResponder)) {
                 LOGGER.warn("R_M2: Found C_R equal to C_I in an OSCORE enabled Application Profile");
             }
         }
@@ -581,10 +607,10 @@ public class MessageProcessorPersistent {
                 .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
 
             String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, false)
-                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
-                            .get(0)
-                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
-                            .AsString();
+                    .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                    .get(0)
+                    .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                    .AsString();
 
             // No need to keep this information any longer in the side processor object
             sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_2, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
@@ -600,9 +626,9 @@ public class MessageProcessorPersistent {
                 .containsKey(Constants.SIDE_PROCESSOR_OUTER_CRED)) {
 
             peerCredCBOR = sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, false)
-                            .get(Constants.SIDE_PROCESSOR_OUTER_CRED)
-                            .get(0)
-                            .get(Constants.SIDE_PROCESSOR_INNER_CRED_VALUE);
+                    .get(Constants.SIDE_PROCESSOR_OUTER_CRED)
+                    .get(0)
+                    .get(Constants.SIDE_PROCESSOR_INNER_CRED_VALUE);
 
             if (peerCredCBOR == null) {
                 LOGGER.error("R_M2: Unable to retrieve the peer credential from the side processing on message 2");
@@ -666,10 +692,10 @@ public class MessageProcessorPersistent {
                     .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
 
                 String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, true)
-                                .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
-                                .get(0)
-                                .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
-                                .AsString();
+                        .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                        .get(0)
+                        .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                        .AsString();
 
                 // No need to keep this information any longer in the side processor object
                 sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_2, Constants.SIDE_PROCESSOR_OUTER_ERROR, true);
@@ -696,7 +722,10 @@ public class MessageProcessorPersistent {
         return true;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#writeMessage3} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#writeMessage3}
+     */
     public byte[] writeMessage3() {
         LOGGER.debug("Start of writeMessage3");
         EdhocSessionPersistent session = edhocMapperState.getEdhocSessionPersistent();
@@ -756,10 +785,10 @@ public class MessageProcessorPersistent {
                 .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
 
             String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, false)
-                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
-                            .get(0)
-                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
-                            .AsString();
+                    .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                    .get(0)
+                    .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                    .AsString();
 
             // No need to keep this information any longer in the side processor object
             sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_3, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
@@ -902,10 +931,14 @@ public class MessageProcessorPersistent {
         return message3;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage4} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage4}
+     */
     public boolean readMessage4(byte[] sequence) {
         LOGGER.debug("Start of readMessage4");
-        Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
+        Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent()
+                .getEdhocSessionsPersistent();
         Set<CBORObject> usedConnectionIds = edhocMapperState.getEdhocEndpointInfoPersistent().getUsedConnectionIds();
 
         if (sequence == null || edhocSessions == null || usedConnectionIds == null) {
@@ -932,7 +965,7 @@ public class MessageProcessorPersistent {
             // C_I is present as first element of the CBOR sequence
             index++;
             if (objectListRequest[index].getType() != CBORType.ByteString
-                    && objectListRequest[index].getType() != CBORType.Integer)  {
+                    && objectListRequest[index].getType() != CBORType.Integer) {
                 LOGGER.error("R_M4: C_I must be a byte string or an integer");
                 return false;
             }
@@ -943,7 +976,8 @@ public class MessageProcessorPersistent {
                 return false;
             }
         } else {
-            // CoAP Client as Initiator when Message 4 is a CoAP response of a previous Message 3 request
+            // CoAP Client as Initiator when Message 4 is a CoAP response of a previous
+            // Message 3 request
             // or CoAP Server as Initiator with correlation with CX is disabled
             connectionIdentifierInitiator = edhocMapperState.getEdhocSessionPersistent().getConnectionId();
         }
@@ -1002,15 +1036,18 @@ public class MessageProcessorPersistent {
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("IV", iv4ae));
 
-        byte[] plaintext4 = decryptCiphertext4(session.getSelectedCipherSuite(), externalData, ciphertext4, k4ae, iv4ae);
+        byte[] plaintext4 = decryptCiphertext4(session.getSelectedCipherSuite(), externalData, ciphertext4, k4ae,
+                iv4ae);
         if (plaintext4 == null) {
             LOGGER.error("R_M4: Decrypting CIPHERTEXT_4");
             return false;
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("Plaintext retrieved from CIPHERTEXT_4", plaintext4));
 
-        // Parse the outer plaintext as a CBOR sequence. To be valid, this is either the empty plaintext
-        // or just padding or padding followed by the External Authorization Data EAD_4 possibly
+        // Parse the outer plaintext as a CBOR sequence. To be valid, this is either the
+        // empty plaintext
+        // or just padding or padding followed by the External Authorization Data EAD_4
+        // possibly
         CBORObject[] ead4 = null;
 
         if (plaintext4.length > 0) {
@@ -1058,13 +1095,14 @@ public class MessageProcessorPersistent {
                             .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
 
                         String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_4, false)
-                                        .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
-                                        .get(0)
-                                        .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
-                                        .AsString();
+                                .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                                .get(0)
+                                .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                                .AsString();
 
                         // No need to keep this information any longer in the side processor object
-                        sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_4, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
+                        sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_4, Constants.SIDE_PROCESSOR_OUTER_ERROR,
+                                false);
 
                         LOGGER.error("R_M4: Using side processor on message 4: {}", error);
                         return false;
@@ -1077,13 +1115,16 @@ public class MessageProcessorPersistent {
         return true;
     }
 
-
     /* Responder message functions -- only session of Responder is modified */
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage1} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage1}
+     */
     public boolean readMessage1(byte[] sequence) {
         LOGGER.debug("Start of readMessage1");
-        List<Integer> supportedCipherSuites = edhocMapperState.getEdhocEndpointInfoPersistent().getSupportedCipherSuites();
+        List<Integer> supportedCipherSuites = edhocMapperState.getEdhocEndpointInfoPersistent()
+                .getSupportedCipherSuites();
         AppProfile appProfile = edhocMapperState.getEdhocSessionPersistent().getApplicationProfile();
 
         if (sequence == null || supportedCipherSuites == null || appProfile == null) {
@@ -1107,7 +1148,8 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        // If the received message is a request and the first element before the actual message_1 is the
+        // If the received message is a request and the first element before the actual
+        // message_1 is the
         // CBOR simple value 'true', it can be skipped
         if (edhocMapperState.receiveWithPrependedCX()) {
             index++;
@@ -1160,7 +1202,7 @@ public class MessageProcessorPersistent {
             }
 
             for (int i = 0; i < objectListRequest[index].size(); i++) {
-                if(objectListRequest[index].get(i).getType() != CBORType.Integer
+                if (objectListRequest[index].get(i).getType() != CBORType.Integer
                         || objectListRequest[index].get(i).AsInt32() < 0) {
                     LOGGER.error("R_M1: SUITES_I as an array must have positive integers as elements");
                     return false;
@@ -1169,7 +1211,7 @@ public class MessageProcessorPersistent {
 
             // The selected cipher suite is the last element of SUITES_I
             int size = objectListRequest[index].size();
-            selectedCipherSuite = objectListRequest[index].get(size-1).AsInt32();
+            selectedCipherSuite = objectListRequest[index].get(size - 1).AsInt32();
 
             int firstSharedCipherSuite = -1;
             // Find the first commonly supported cipher suite, i.e. the cipher suite both
@@ -1190,15 +1232,16 @@ public class MessageProcessorPersistent {
                     // The Responder does not support any cipher suites in SUITES_I.
                     // SUITES_R will include all the cipher suites supported by the Responder
                     cipherSuitesToOffer = supportedCipherSuites;
-                }
-                else {
+                } else {
                     // SUITES_R will include only the cipher suite supported
                     // by both peers and most preferred by the Initiator.
                     cipherSuitesToOffer = new ArrayList<>(firstSharedCipherSuite);
                 }
             } else if (firstSharedCipherSuite != selectedCipherSuite) {
-                // The Responder supports the selected cipher suite, but it has to reply with an EDHOC Error Message
-                // if it supports a cipher suite more preferred by the Initiator than the selected cipher suite
+                // The Responder supports the selected cipher suite, but it has to reply with an
+                // EDHOC Error Message
+                // if it supports a cipher suite more preferred by the Initiator than the
+                // selected cipher suite
 
                 LOGGER.error("R_M1: The selected cipher suite is not supported");
 
@@ -1247,9 +1290,11 @@ public class MessageProcessorPersistent {
         if (length > 0) {
             // EAD_1 is present
             if (hasProtocolVersionLeqV17()) {
-                ead1 = preParseEADleqV17(objectListRequest, index, edhocMapperState.getEdhocSessionPersistent().getSupportedEADs());
+                ead1 = preParseEADleqV17(objectListRequest, index,
+                        edhocMapperState.getEdhocSessionPersistent().getSupportedEADs());
             } else {
-                ead1 = preParseEAD(objectListRequest, index, 1, edhocMapperState.getEdhocSessionPersistent().getSupportedEADs());
+                ead1 = preParseEAD(objectListRequest, index, 1,
+                        edhocMapperState.getEdhocSessionPersistent().getSupportedEADs());
             }
 
             if (ead1 == null) {
@@ -1291,13 +1336,14 @@ public class MessageProcessorPersistent {
                         .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
 
                     String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_1, false)
-                                    .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
-                                    .get(0)
-                                    .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
-                                    .AsString();
+                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                            .get(0)
+                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                            .AsString();
 
                     // No need to keep this information any longer in the side processor object
-                    sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_1, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
+                    sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_1, Constants.SIDE_PROCESSOR_OUTER_ERROR,
+                            false);
 
                     LOGGER.error("R_M1: Using side processor on message 1: {}", error);
                     return false;
@@ -1305,7 +1351,10 @@ public class MessageProcessorPersistent {
             }
         }
 
-        /* Modify session -- Create a new edhocSessionPersistent to replace current session */
+        /*
+         * Modify session -- Create a new edhocSessionPersistent to replace current
+         * session
+         */
 
         EdhocSessionPersistent oldSession = edhocMapperState.getEdhocSessionPersistent();
         EdhocEndpointInfoPersistent endpointInfo = edhocMapperState.getEdhocEndpointInfoPersistent();
@@ -1317,9 +1366,10 @@ public class MessageProcessorPersistent {
         }
 
         byte[] connectionIdResponder = oldSession.getConnectionId();
+        LOGGER.info("Old Connection ID: " + EdhocUtil.bytesToInt(connectionIdResponder));
         if (edhocMapperState.getEdhocMapperConfig().generateOwnConnectionId()) {
             connectionIdResponder = Util.getConnectionId(endpointInfo.getUsedConnectionIds(),
-                endpointInfo.getOscoreDb(), connectionIdInitiator);
+                    endpointInfo.getOscoreDb(), connectionIdInitiator);
         }
 
         EdhocSessionPersistent newSession = new EdhocSessionPersistent(oldSession.getSessionUri(),
@@ -1331,20 +1381,21 @@ public class MessageProcessorPersistent {
         // Set the selected cipher suite
         newSession.setSelectedCipherSuite(selectedCipherSuite);
 
-        // Set the asymmetric key pair, CRED and ID_CRED of the Responder to use in this session
+        // Set the asymmetric key pair, CRED and ID_CRED of the Responder to use in this
+        // session
         newSession.setAuthenticationCredential();
 
         // Set the Connection Identifier of the peer
         newSession.setPeerConnectionId(connectionIdInitiator);
 
         // Set the ephemeral public key of the Initiator
-        OneKey peerEphemeralKey = switch(selectedCipherSuite) {
+        OneKey peerEphemeralKey = switch (selectedCipherSuite) {
             case Constants.EDHOC_CIPHER_SUITE_0, Constants.EDHOC_CIPHER_SUITE_1 ->
-                    SharedSecretCalculation.buildCurve25519OneKey(null, gX);
+                SharedSecretCalculation.buildCurve25519OneKey(null, gX);
             case Constants.EDHOC_CIPHER_SUITE_2, Constants.EDHOC_CIPHER_SUITE_3 ->
-                    SharedSecretCalculation.buildEcdsa256OneKey(null, gX, null);
+                SharedSecretCalculation.buildEcdsa256OneKey(null, gX, null);
             default ->
-                    throw new IllegalStateException("Unexpected value: " + selectedCipherSuite);
+                throw new IllegalStateException("Unexpected value: " + selectedCipherSuite);
         };
 
         newSession.setPeerEphemeralPublicKey(peerEphemeralKey);
@@ -1367,22 +1418,29 @@ public class MessageProcessorPersistent {
         // Update edhocSessions
         edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent()
                 .put(CBORObject.FromObject(connectionIdResponder), newSession);
+        LOGGER.info("Sessions after update: "
+                + edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent());
 
         LOGGER.debug("Successful processing of EDHOC Message 1");
         return true;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#writeMessage2} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#writeMessage2}
+     */
     public byte[] writeMessage2() {
         LOGGER.debug("Start of writeMessage2");
         EdhocSessionPersistent session = edhocMapperState.getEdhocSessionPersistent();
         List<CBORObject> objectList = new ArrayList<>();
 
-        // C_I, if EDHOC message_2 is transported in a CoAP request and CX correlation is enabled
+        // C_I, if EDHOC message_2 is transported in a CoAP request and CX correlation
+        // is enabled
         if (edhocMapperState.sendWithPrependedCX()) {
             byte[] connectionIdentifierInitiator = session.getPeerConnectionId();
             CBORObject cI = encodeIdentifier(connectionIdentifierInitiator);
-            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator", connectionIdentifierInitiator));
+            LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Initiator",
+                    connectionIdentifierInitiator));
             LOGGER.debug(EdhocUtil.byteArrayToString("C_I", cI.EncodeToBytes()));
             objectList.add(cI);
         }
@@ -1394,11 +1452,11 @@ public class MessageProcessorPersistent {
 
         // G_Y as a CBOR byte string
         int selectedSuite = session.getSelectedCipherSuite();
-        CBORObject gY = switch(selectedSuite) {
+        CBORObject gY = switch (selectedSuite) {
             case Constants.EDHOC_CIPHER_SUITE_0, Constants.EDHOC_CIPHER_SUITE_1 ->
-                    session.getEphemeralKey().PublicKey().get(KeyKeys.OKP_X);
+                session.getEphemeralKey().PublicKey().get(KeyKeys.OKP_X);
             case Constants.EDHOC_CIPHER_SUITE_2, Constants.EDHOC_CIPHER_SUITE_3 ->
-                    session.getEphemeralKey().PublicKey().get(KeyKeys.EC2_X);
+                session.getEphemeralKey().PublicKey().get(KeyKeys.EC2_X);
             default ->
                 null;
         };
@@ -1412,7 +1470,8 @@ public class MessageProcessorPersistent {
         // C_R
         byte[] connectionIdentifierResponder = session.getConnectionId();
         CBORObject cR = encodeIdentifier(connectionIdentifierResponder);
-        LOGGER.debug(EdhocUtil.byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
+        LOGGER.debug(
+                EdhocUtil.byteArrayToString("Connection Identifier of the Responder", connectionIdentifierResponder));
         LOGGER.debug(EdhocUtil.byteArrayToString("C_R", cR.EncodeToBytes()));
 
         // Compute TH_2
@@ -1435,7 +1494,6 @@ public class MessageProcessorPersistent {
 
         LOGGER.debug(EdhocUtil.byteArrayToString("H(message_1)", hashMessage1));
         LOGGER.debug(EdhocUtil.byteArrayToString("TH_2", th2));
-
 
         // Compute the key material
 
@@ -1483,10 +1541,10 @@ public class MessageProcessorPersistent {
                 .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
 
             String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_2, false)
-                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
-                            .get(0)
-                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
-                            .AsString();
+                    .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                    .get(0)
+                    .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                    .AsString();
 
             // No need to keep this information any longer in the side processor object
             sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_2, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
@@ -1539,7 +1597,8 @@ public class MessageProcessorPersistent {
         }
 
         if (session.getIdCred().ContainsKey(HeaderKeys.KID.AsCBOR())) {
-            // ID_CRED_R uses 'kid', whose value is the only thing to include in the plaintext
+            // ID_CRED_R uses 'kid', whose value is the only thing to include in the
+            // plaintext
             CBORObject kid = session.getIdCred().get(HeaderKeys.KID.AsCBOR());
             plaintextElement = encodeIdentifier(kid.GetByteString());
         } else {
@@ -1558,7 +1617,7 @@ public class MessageProcessorPersistent {
 
         // Compute KEYSTREAM_2
         byte[] keystream2 = computeKeystream2(session, th2, prk2e, plaintext2.length);
-        if (keystream2== null) {
+        if (keystream2 == null) {
             LOGGER.error("W_M2: Computing KEYSTREAM_2");
             return null;
         }
@@ -1574,7 +1633,8 @@ public class MessageProcessorPersistent {
         System.arraycopy(gY.GetByteString(), 0, gY_Ciphertext2, 0, gY.GetByteString().length);
         System.arraycopy(ciphertext2, 0, gY_Ciphertext2, gY.GetByteString().length, ciphertext2.length);
 
-        // Wrap the result in a single CBOR byte string, included in the outer CBOR sequence of EDHOC Message 2
+        // Wrap the result in a single CBOR byte string, included in the outer CBOR
+        // sequence of EDHOC Message 2
         objectList.add(CBORObject.FromObject(gY_Ciphertext2));
         LOGGER.debug(EdhocUtil.byteArrayToString("G_Y | CIPHERTEXT_2", gY_Ciphertext2));
 
@@ -1587,7 +1647,6 @@ public class MessageProcessorPersistent {
         byte[] message2 = EdhocUtil.buildCBORSequence(objectList);
         LOGGER.debug(EdhocUtil.byteArrayToString("EDHOC Message 2", message2));
 
-
         /* Modify session */
         if (!session.isInitiator()) {
             session.setTH2(th2);
@@ -1599,12 +1658,17 @@ public class MessageProcessorPersistent {
         return message2;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage3} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#readMessage3}
+     */
     public boolean readMessage3(byte[] sequence) {
         LOGGER.debug("Start of readMessage3");
-        Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent();
+        Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent()
+                .getEdhocSessionsPersistent();
         Map<CBORObject, OneKey> peerPublicKeys = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerPublicKeys();
-        Map<CBORObject, CBORObject> peerCredentials = edhocMapperState.getEdhocEndpointInfoPersistent().getPeerCredentials();
+        Map<CBORObject, CBORObject> peerCredentials = edhocMapperState.getEdhocEndpointInfoPersistent()
+                .getPeerCredentials();
         Set<CBORObject> usedConnectionIds = edhocMapperState.getEdhocEndpointInfoPersistent().getUsedConnectionIds();
 
         if (sequence == null || edhocSessions == null || peerPublicKeys == null || peerCredentials == null
@@ -1622,7 +1686,6 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-
         /* Consistency checks */
 
         // C_R
@@ -1633,7 +1696,7 @@ public class MessageProcessorPersistent {
             // C_R is present as first element of the CBOR sequence
             index++;
             if (objectListRequest[index].getType() != CBORType.ByteString
-                    && objectListRequest[index].getType() != CBORType.Integer)  {
+                    && objectListRequest[index].getType() != CBORType.Integer) {
                 LOGGER.error("R_M3: C_R must be a byte string or an integer");
                 return false;
             }
@@ -1644,7 +1707,8 @@ public class MessageProcessorPersistent {
                 return false;
             }
         } else {
-            // CoAP Client as Responder when Message 3 is a CoAP response of a previous Message 2 request
+            // CoAP Client as Responder when Message 3 is a CoAP response of a previous
+            // Message 2 request
             // or CoAP Server as Initiator with CX correlation disabled
             connectionIdentifierResponder = edhocMapperState.getEdhocSessionPersistent().getConnectionId();
         }
@@ -1695,7 +1759,6 @@ public class MessageProcessorPersistent {
         }
         LOGGER.debug(EdhocUtil.byteArrayToString("K_3", k3));
 
-
         byte[] iv3 = computeKeyOrIV3("IV", session, th3, session.getPRK3e2m());
         if (iv3 == null) {
             LOGGER.error("R_M3: Computing IV_3ae");
@@ -1732,7 +1795,7 @@ public class MessageProcessorPersistent {
         if (hasProtocolVersionLeqV17()) {
             // Discard possible padding prepended to the plaintext
             while (baseIndex < plaintextElementList.length
-                   && plaintextElementList[baseIndex].equals(CBORObject.True)) {
+                    && plaintextElementList[baseIndex].equals(CBORObject.True)) {
                 baseIndex++;
             }
         }
@@ -1807,10 +1870,10 @@ public class MessageProcessorPersistent {
                 .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
 
             String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, false)
-                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
-                            .get(0)
-                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
-                            .AsString();
+                    .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                    .get(0)
+                    .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                    .AsString();
 
             // No need to keep this information any longer in the side processor object
             sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_3, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
@@ -1819,16 +1882,17 @@ public class MessageProcessorPersistent {
             return false;
         }
 
-        // If no error occurred, the side processor object includes the authentication credential
+        // If no error occurred, the side processor object includes the authentication
+        // credential
         // of the other peer, if a valid one was found during the side processing
         CBORObject peerCredCBOR = null;
         if (sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, false)
                 .containsKey(Integer.valueOf(Constants.SIDE_PROCESSOR_OUTER_CRED))) {
 
             peerCredCBOR = sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, false)
-                            .get(Integer.valueOf(Constants.SIDE_PROCESSOR_OUTER_CRED))
-                            .get(0)
-                            .get(Integer.valueOf(Constants.SIDE_PROCESSOR_INNER_CRED_VALUE));
+                    .get(Integer.valueOf(Constants.SIDE_PROCESSOR_OUTER_CRED))
+                    .get(0)
+                    .get(Integer.valueOf(Constants.SIDE_PROCESSOR_INNER_CRED_VALUE));
 
             if (peerCredCBOR == null) {
                 LOGGER.error("R_M3: Unable to retrieve the peer credential from the side processing on message 3");
@@ -1894,10 +1958,10 @@ public class MessageProcessorPersistent {
                     .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
 
                 String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_3, true)
-                                .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
-                                .get(0)
-                                .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
-                                .AsString();
+                        .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                        .get(0)
+                        .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                        .AsString();
 
                 // No need to keep this information any longer in the side processor object
                 sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_3, Constants.SIDE_PROCESSOR_OUTER_ERROR, true);
@@ -1960,7 +2024,10 @@ public class MessageProcessorPersistent {
         return true;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#writeMessage4} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#writeMessage4}
+     */
     public byte[] writeMessage4() {
         LOGGER.debug("Start of writeMessage4");
         EdhocSessionPersistent session = edhocMapperState.getEdhocSessionPersistent();
@@ -1968,7 +2035,8 @@ public class MessageProcessorPersistent {
 
         /* Start preparing data_4 */
 
-        // C_I, if EDHOC message_4 is transported in a CoAP request and CX correlation is enabled
+        // C_I, if EDHOC message_4 is transported in a CoAP request and CX correlation
+        // is enabled
         if (edhocMapperState.sendWithPrependedCX()) {
             byte[] connectionIdentifierInitiator = session.getPeerConnectionId();
             CBORObject cI = encodeIdentifier(connectionIdentifierInitiator);
@@ -2001,10 +2069,10 @@ public class MessageProcessorPersistent {
                 .containsKey(Constants.SIDE_PROCESSOR_OUTER_ERROR)) {
 
             String error = sideProcessor.getResults(Constants.EDHOC_MESSAGE_4, false)
-                            .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
-                            .get(0)
-                            .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
-                            .AsString();
+                    .get(Constants.SIDE_PROCESSOR_OUTER_ERROR)
+                    .get(0)
+                    .get(Constants.SIDE_PROCESSOR_INNER_ERROR_DESCRIPTION)
+                    .AsString();
 
             // No need to keep this information any longer in the side processor object
             sideProcessor.removeResultSet(Constants.EDHOC_MESSAGE_4, Constants.SIDE_PROCESSOR_OUTER_ERROR, false);
@@ -2061,31 +2129,37 @@ public class MessageProcessorPersistent {
         return message4;
     }
 
-
     /* Error message functions */
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#isErrorMessage} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#isErrorMessage}
+     */
     protected boolean hasErrorMessageStructure(CBORObject[] myObjects) {
         // A CoAP message including an EDHOC error message is a CBOR sequence of
-        // CX - not true (optional); ERR_CODE - int (mandatory); ERR_INFO - any type (mandatory)
+        // CX - not true (optional); ERR_CODE - int (mandatory); ERR_INFO - any type
+        // (mandatory)
         if (myObjects.length != 3 && myObjects.length != 2) {
             return false;
         }
 
         if (edhocMapperState.receiveWithPrependedCX()) {
             // Received by CoAP server
-            // Error message is a request, this starts with C_X different from 'true' (0xf5),
+            // Error message is a request, this starts with C_X different from 'true'
+            // (0xf5),
             // followed by ERR_CODE as a CBOR integer
             return !myObjects[0].equals(CBORObject.True) && myObjects[1].getType() == CBORType.Integer;
-        }
-        else {
+        } else {
             // Received by CoAP client or CoAP server with CX correlation disabled
             // Error message is a response, this starts with ERR_CODE as a CBOR integer
             return myObjects[0].getType() == CBORType.Integer;
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#writeErrorMessage} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#writeErrorMessage}
+     */
     public byte[] writeErrorMessage(int errorCode, String errMsg) {
         LOGGER.debug("Start of writeErrorMessage");
 
@@ -2097,7 +2171,7 @@ public class MessageProcessorPersistent {
         }
 
         if (cipherSuites != null && cipherSuites.getType() == CBORType.Array) {
-            for (int i = 0 ; i < cipherSuites.size(); i++) {
+            for (int i = 0; i < cipherSuites.size(); i++) {
                 if (cipherSuites.get(i).getType() != CBORType.Integer) {
                     return null;
                 }
@@ -2106,7 +2180,8 @@ public class MessageProcessorPersistent {
 
         List<CBORObject> objectList = new ArrayList<>();
 
-        // Include C_X if error message sent from CoAP Client with CX correlation enabled
+        // Include C_X if error message sent from CoAP Client with CX correlation
+        // enabled
         if (edhocMapperState.sendWithPrependedCX()) {
             CBORObject cX = encodeIdentifier(edhocMapperState.getEdhocSessionPersistent().getPeerConnectionId());
             objectList.add(cX);
@@ -2123,7 +2198,8 @@ public class MessageProcessorPersistent {
             // Include DIAG_MSG
             objectList.add(CBORObject.FromObject(errMsg));
         } else if (errorCode == Constants.ERR_CODE_WRONG_SELECTED_CIPHER_SUITE) {
-            // Possibly include cipher suites, this implies that EDHOC Message 1 was good enough
+            // Possibly include cipher suites, this implies that EDHOC Message 1 was good
+            // enough
             // to yield a suite negotiation
             if (cipherSuites != null)
                 objectList.add(cipherSuites);
@@ -2136,7 +2212,10 @@ public class MessageProcessorPersistent {
         return payload;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#readErrorMessage} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#readErrorMessage}
+     */
     public boolean readErrorMessage(byte[] sequence) {
         LOGGER.debug("Start of readErrorMessage");
         Map<CBORObject, EdhocSessionPersistent> edhocSessions = edhocMapperState.getEdhocEndpointInfoPersistent()
@@ -2163,7 +2242,8 @@ public class MessageProcessorPersistent {
         }
 
         if (edhocMapperState.receiveWithPrependedCX()) {
-            // The connection identifier is expected as first element in the EDHOC Error Message
+            // The connection identifier is expected as first element in the EDHOC Error
+            // Message
             if (objectList[index].getType() != CBORType.ByteString
                     && objectList[index].getType() != CBORType.Integer) {
                 LOGGER.error("R_ERR: Invalid format of C_X");
@@ -2196,17 +2276,17 @@ public class MessageProcessorPersistent {
         index++;
 
         // Check that the rest of the message is consistent
-        if (objectList.length == index){
+        if (objectList.length == index) {
             LOGGER.error("R_ERR: ERR_INFO expected but not included");
             return false;
         }
 
-        if (objectList.length > (index + 1)){
+        if (objectList.length > (index + 1)) {
             LOGGER.error("R_ERR: Unexpected parameters following ERR_INFO");
             return false;
         }
 
-        switch(errorCode) {
+        switch (errorCode) {
             case Constants.ERR_CODE_SUCCESS -> {
                 LOGGER.warn("R_ERR: Error code success");
             }
@@ -2217,14 +2297,15 @@ public class MessageProcessorPersistent {
                     return false;
                 }
                 String errorMsg = objectList[index].AsString();
-                LOGGER.info("ERR_INFO: {} ~ {}", EdhocUtil.byteArrayToString(errorMsg.getBytes(StandardCharsets.UTF_8)), errorMsg);
+                LOGGER.info("ERR_INFO: {} ~ {}", EdhocUtil.byteArrayToString(errorMsg.getBytes(StandardCharsets.UTF_8)),
+                        errorMsg);
             }
 
             case Constants.ERR_CODE_WRONG_SELECTED_CIPHER_SUITE -> {
                 CBORObject suitesR = objectList[index];
                 List<Integer> peerSupportedCipherSuites = new ArrayList<>();
 
-                switch(suitesR.getType()) {
+                switch (suitesR.getType()) {
                     case Integer -> {
                         peerSupportedCipherSuites.add(suitesR.AsInt32());
                     }
@@ -2257,10 +2338,12 @@ public class MessageProcessorPersistent {
         return true;
     }
 
-
     /* General util functions */
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#encodeIdentifier} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#encodeIdentifier}
+     */
     protected CBORObject encodeIdentifier(byte[] identifier) {
         CBORObject identifierCBOR = null;
 
@@ -2273,13 +2356,14 @@ public class MessageProcessorPersistent {
             int byteValue = EdhocUtil.bytesToInt(identifier);
 
             if ((byteValue >= 0 && byteValue <= 23) || (byteValue >= 32 && byteValue <= 55)) {
-                // The EDHOC connection identifier is in the range 0x00-0x17 or in the range 0x20-0x37.
-                // That is, it happens to be the serialization of a CBOR integer with numeric value -24..23
+                // The EDHOC connection identifier is in the range 0x00-0x17 or in the range
+                // 0x20-0x37.
+                // That is, it happens to be the serialization of a CBOR integer with numeric
+                // value -24..23
 
                 // Encode the EDHOC connection identifier as a CBOR integer
                 identifierCBOR = CBORObject.DecodeFromBytes(identifier);
-            }
-            else {
+            } else {
                 // Encode the EDHOC connection identifier as a CBOR byte string
                 identifierCBOR = CBORObject.FromObject(identifier);
             }
@@ -2288,7 +2372,10 @@ public class MessageProcessorPersistent {
         return identifierCBOR;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#decodeIdentifier} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#decodeIdentifier}
+     */
     protected byte[] decodeIdentifier(CBORObject identifierCbor) {
         byte[] identifier = null;
 
@@ -2302,12 +2389,12 @@ public class MessageProcessorPersistent {
                     // This EDHOC connection identifier should have been encoded as a CBOR integer
                     identifier = null;
             }
-        }
-        else if (identifierCbor != null && identifierCbor.getType() == CBORType.Integer) {
+        } else if (identifierCbor != null && identifierCbor.getType() == CBORType.Integer) {
             identifier = identifierCbor.EncodeToBytes();
 
             if (identifier.length != 1) {
-                // This EDHOC connection identifier is not valid or was not encoded according to deterministic CBOR
+                // This EDHOC connection identifier is not valid or was not encoded according to
+                // deterministic CBOR
                 identifier = null;
             }
 
@@ -2315,7 +2402,10 @@ public class MessageProcessorPersistent {
         return identifier;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeTH2} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeTH2}
+     */
     protected byte[] computeTH2(String hashAlgorithm, byte[] gY, byte[] cR, byte[] hashMessage1) {
         int offset = 0;
         byte[] hashInput = new byte[gY.length + cR.length + hashMessage1.length];
@@ -2333,7 +2423,10 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computePRK2e} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computePRK2e}
+     */
     protected byte[] computePRK2e(byte[] th2, byte[] dhSecret, String hashAlgorithm) {
         if (hashAlgorithm.equals("SHA-256") || hashAlgorithm.equals("SHA-384") || hashAlgorithm.equals("SHA-512")) {
             try {
@@ -2346,25 +2439,29 @@ public class MessageProcessorPersistent {
         return null;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computePRK3e2m} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computePRK3e2m}
+     */
     protected byte[] computePRK3e2m(EdhocSessionPersistent session, byte[] prk2e, byte[] th2, OneKey peerLongTerm,
-                                    OneKey peerEphemeral) {
+            OneKey peerEphemeral) {
         byte[] prk3e2m = null;
         int authenticationMethod = session.getMethod();
         if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_0
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_2) {
-            // The responder uses signatures as authentication method, then PRK_3e2m is equal to PRK_2e
+            // The responder uses signatures as authentication method, then PRK_3e2m is
+            // equal to PRK_2e
             prk3e2m = new byte[prk2e.length];
             System.arraycopy(prk2e, 0, prk3e2m, 0, prk2e.length);
-        }
-        else if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_1
+        } else if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_1
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_3) {
-            // The responder does not use signatures as authentication method, then PRK_3e2m has to be computed
+            // The responder does not use signatures as authentication method, then PRK_3e2m
+            // has to be computed
             byte[] dhSecret;
             OneKey privateKey;
             OneKey publicKey;
 
-            if (session.isInitiator())  {
+            if (session.isInitiator()) {
                 // Use the long-term key of the Responder as public key
                 publicKey = peerLongTerm;
 
@@ -2429,12 +2526,17 @@ public class MessageProcessorPersistent {
         return prk3e2m;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeMAC2} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeMAC2}
+     */
     protected byte[] computeMAC2(EdhocSessionPersistent session, byte[] prk3e2m, byte[] th2,
-                                 CBORObject cR, CBORObject idCredR, byte[] credR, CBORObject[] ead2) {
+            CBORObject cR, CBORObject idCredR, byte[] credR, CBORObject[] ead2) {
 
-        // Build the CBOR sequence to use for 'context': ( ID_CRED_R, TH_2, CRED_R, ?EAD_2 )
-        // The actual 'context' is a CBOR byte string with value the serialization of the CBOR sequence
+        // Build the CBOR sequence to use for 'context': ( ID_CRED_R, TH_2, CRED_R,
+        // ?EAD_2 )
+        // The actual 'context' is a CBOR byte string with value the serialization of
+        // the CBOR sequence
         List<CBORObject> objectList = new ArrayList<>();
         if (!hasProtocolVersionLeqV22()) {
             objectList.add(cR);
@@ -2469,7 +2571,10 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeExternalData} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeExternalData}
+     */
     protected byte[] computeExternalData(byte[] th, byte[] cred, CBORObject[] ead) {
 
         if (th == null || cred == null)
@@ -2499,7 +2604,10 @@ public class MessageProcessorPersistent {
         return EdhocUtil.concatenateByteArrays(externalDataList);
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeSignatureOrMac2} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeSignatureOrMac2}
+     */
     protected byte[] computeSignatureOrMac2(EdhocSessionPersistent session, byte[] mac2, byte[] externalData) {
         // Used by Responder
         byte[] signatureOrMac2 = null;
@@ -2525,8 +2633,9 @@ public class MessageProcessorPersistent {
                     return null;
                 }
 
-                LOGGER.debug(EdhocUtil.byteArrayToString("External Data for signing MAC_2 to produce Signature_or_MAC_2",
-                        externalData));
+                LOGGER.debug(
+                        EdhocUtil.byteArrayToString("External Data for signing MAC_2 to produce Signature_or_MAC_2",
+                                externalData));
 
                 signatureOrMac2 = EdhocUtil.computeSignature(session.getIdCred(), externalData, mac2, identityKey);
 
@@ -2539,14 +2648,16 @@ public class MessageProcessorPersistent {
         return signatureOrMac2;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeKeystream2} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeKeystream2}
+     */
     protected byte[] computeKeystream2(EdhocSessionPersistent session, byte[] th2, byte[] prk2e, int length) {
         CBORObject context = CBORObject.FromObject(th2);
         int selectedCipherSuite = session.getSelectedCipherSuite();
         String hashAlg = EdhocSession.getEdhocHashAlg(selectedCipherSuite);
         int hashLength = EdhocSession.getEdhocHashAlgOutputSize(selectedCipherSuite);
         byte[] keystream2;
-
 
         if ((!hashAlg.equals("SHA-256") && !hashAlg.equals("SHA-384") && !hashAlg.equals("SHA-512"))
                 || (length <= 255 * hashLength)) {
@@ -2556,8 +2667,7 @@ public class MessageProcessorPersistent {
                 LOGGER.error("Generating KEYSTREAM_2 (whole): " + e.getMessage());
                 return null;
             }
-        }
-        else {
+        } else {
             byte[] part;
             int regularPartSize = 255 * hashLength;
             int lastPartSize = regularPartSize;
@@ -2588,9 +2698,12 @@ public class MessageProcessorPersistent {
         return keystream2;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#verifySignatureOrMac2} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#verifySignatureOrMac2}
+     */
     protected boolean verifySignatureOrMac2(EdhocSessionPersistent session, OneKey peerLongTerm, CBORObject peerIdCred,
-                                            byte[] signatureOrMac2, byte[] externalData, byte[] mac2) {
+            byte[] signatureOrMac2, byte[] externalData, byte[] mac2) {
         // Used by Initiator
         int authenticationMethod = session.getMethod();
 
@@ -2621,7 +2734,10 @@ public class MessageProcessorPersistent {
         return false;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeTH3} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeTH3}
+     */
     protected byte[] computeTH3(String hashAlgorithm, byte[] th2, byte[] plaintext2, byte[] credR) {
         int inputLength = th2.length + plaintext2.length + credR.length;
         int offset = 0;
@@ -2640,9 +2756,12 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computePRK4e3m} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computePRK4e3m}
+     */
     protected byte[] computePRK4e3m(EdhocSessionPersistent session, byte[] prk3e2m, byte[] th3, OneKey peerLongTerm,
-                                        OneKey peerEphemeral) {
+            OneKey peerEphemeral) {
         byte[] prk4e3m = null;
         int authenticationMethod = session.getMethod();
 
@@ -2730,12 +2849,16 @@ public class MessageProcessorPersistent {
         return prk4e3m;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeMAC3} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeMAC3}
+     */
     protected byte[] computeMAC3(EdhocSessionPersistent session, byte[] prk4e3m, byte[] th3, CBORObject idCredI,
-                                 byte[] credI, CBORObject[] ead3) {
+            byte[] credI, CBORObject[] ead3) {
 
         // Build the CBOR sequence for 'context': ( ID_CRED_I, TH_3, CRED_I, ?EAD_3 )
-        // The actual 'context' is a CBOR byte string with value the serialization of the CBOR sequence
+        // The actual 'context' is a CBOR byte string with value the serialization of
+        // the CBOR sequence
         List<CBORObject> objectList = new ArrayList<>();
         objectList.add(idCredI);
         objectList.add(CBORObject.FromObject(th3));
@@ -2766,7 +2889,10 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeSignatureOrMac3} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeSignatureOrMac3}
+     */
     protected byte[] computeSignatureOrMac3(EdhocSessionPersistent session, byte[] mac3, byte[] externalData) {
         // Used by Initiator
         byte[] signatureOrMac3 = null;
@@ -2792,8 +2918,9 @@ public class MessageProcessorPersistent {
                     return null;
                 }
 
-                LOGGER.debug(EdhocUtil.byteArrayToString("External Data for signing MAC_3 to produce Signature_or_MAC_3",
-                        externalData));
+                LOGGER.debug(
+                        EdhocUtil.byteArrayToString("External Data for signing MAC_3 to produce Signature_or_MAC_3",
+                                externalData));
 
                 signatureOrMac3 = EdhocUtil.computeSignature(session.getIdCred(), externalData, mac3, identityKey);
 
@@ -2807,8 +2934,11 @@ public class MessageProcessorPersistent {
 
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeKey}
-     * and {@link org.eclipse.californium.edhoc.MessageProcessor#computeKey} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeKey}
+     * and {@link org.eclipse.californium.edhoc.MessageProcessor#computeKey}
+     */
     protected byte[] computeKeyOrIV3(String keyName, EdhocSessionPersistent session, byte[] th3, byte[] prk3e2m) {
         int selectedCipherSuite = session.getSelectedCipherSuite();
         CBORObject context = CBORObject.FromObject(th3);
@@ -2817,7 +2947,7 @@ public class MessageProcessorPersistent {
         int length;
         int label;
 
-        switch(keyName) {
+        switch (keyName) {
             case "KEY" -> {
                 name = "K_3";
                 length = EdhocSession.getKeyLengthEdhocAEAD(selectedCipherSuite);
@@ -2845,9 +2975,12 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeCiphertext3} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeCiphertext3}
+     */
     protected byte[] computeCiphertext3(int selectedCipherSuite, byte[] externalData, byte[] plaintext, byte[] k3ae,
-                                        byte[] iv3ae) {
+            byte[] iv3ae) {
         AlgorithmID alg = EdhocSession.getEdhocAEADAlg(selectedCipherSuite);
 
         // Prepare the empty content for the COSE protected header
@@ -2861,7 +2994,10 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeTH4} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeTH4}
+     */
     protected byte[] computeTH4(String hashAlgorithm, byte[] th3, byte[] plaintext3, byte[] credI) {
         int inputLength = th3.length + plaintext3.length + credI.length;
         int offset = 0;
@@ -2880,7 +3016,10 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computePRKout} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computePRKout}
+     */
     protected byte[] computePRKout(EdhocSessionPersistent session, byte[] th4, byte[] prk4e3m) {
         int selectedCipherSuite = session.getSelectedCipherSuite();
         int length = EdhocSession.getEdhocHashAlgOutputSize(selectedCipherSuite);
@@ -2894,7 +3033,10 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computePRKexporter} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computePRKexporter}
+     */
     protected byte[] computePRKexporter(EdhocSessionPersistent session, byte[] prkOut) {
         int selectedCipherSuite = session.getSelectedCipherSuite();
         int length = EdhocSession.getEdhocHashAlgOutputSize(selectedCipherSuite);
@@ -2908,9 +3050,12 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#decryptCiphertext3} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#decryptCiphertext3}
+     */
     protected byte[] decryptCiphertext3(int selectedCipherSuite, byte[] externalData, byte[] ciphertext, byte[] k3ae,
-                                        byte[] iv3ae) {
+            byte[] iv3ae) {
         AlgorithmID alg = EdhocSession.getEdhocAEADAlg(selectedCipherSuite);
 
         // Prepare the empty content for the COSE protected header
@@ -2924,9 +3069,12 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#verifySignatureOrMac3} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#verifySignatureOrMac3}
+     */
     protected boolean verifySignatureOrMac3(EdhocSessionPersistent session, OneKey peerLongTerm, CBORObject peerIdCred,
-                                            byte[] signatureOrMac3, byte[] externalData, byte[] mac3) {
+            byte[] signatureOrMac3, byte[] externalData, byte[] mac3) {
         // Used by Responder
         int authenticationMethod = session.getMethod();
 
@@ -2935,8 +3083,7 @@ public class MessageProcessorPersistent {
             // The initiator does not use signatures as authentication method,
             // then Signature_or_MAC_3 has to be equal to MAC_3
             return Arrays.equals(signatureOrMac3, mac3);
-        }
-        else if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_0
+        } else if (authenticationMethod == Constants.EDHOC_AUTH_METHOD_0
                 || authenticationMethod == Constants.EDHOC_AUTH_METHOD_1) {
             // The initiator uses signatures as authentication method,
             // then Signature_or_MAC_3 is a signature to verify
@@ -2959,8 +3106,11 @@ public class MessageProcessorPersistent {
         return false;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeKey}
-     * and {@link org.eclipse.californium.edhoc.MessageProcessor#computeKey} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeKey}
+     * and {@link org.eclipse.californium.edhoc.MessageProcessor#computeKey}
+     */
     protected byte[] computeKeyOrIV4(String keyName, EdhocSessionPersistent session, byte[] th4, byte[] prk4e3m) {
         int selectedCipherSuite = session.getSelectedCipherSuite();
         CBORObject context = CBORObject.FromObject(th4);
@@ -2969,7 +3119,7 @@ public class MessageProcessorPersistent {
         int length;
         int label;
 
-        switch(keyName) {
+        switch (keyName) {
             case "KEY" -> {
                 name = "K_4";
                 length = EdhocSession.getKeyLengthEdhocAEAD(selectedCipherSuite);
@@ -2997,9 +3147,12 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#computeCiphertext4} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#computeCiphertext4}
+     */
     protected byte[] computeCiphertext4(int selectedCipherSuite, byte[] externalData, byte[] plaintext, byte[] k4m,
-                                        byte[] iv4m) {
+            byte[] iv4m) {
         AlgorithmID alg = EdhocSession.getEdhocAEADAlg(selectedCipherSuite);
 
         // Prepare the empty content for the COSE protected header
@@ -3013,9 +3166,12 @@ public class MessageProcessorPersistent {
         }
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#decryptCiphertext4} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#decryptCiphertext4}
+     */
     protected byte[] decryptCiphertext4(int selectedCipherSuite, byte[] externalData, byte[] ciphertext,
-                                            byte[] k4ae, byte[] iv4ae) {
+            byte[] k4ae, byte[] iv4ae) {
         AlgorithmID alg = EdhocSession.getEdhocAEADAlg(selectedCipherSuite);
 
         // Prepare the empty content for the COSE protected header
@@ -3030,28 +3186,28 @@ public class MessageProcessorPersistent {
     }
 
     protected boolean hasProtocolVersionLeqV15() {
-        return switch(edhocMapperState.getProtocolVersion()) {
+        return switch (edhocMapperState.getProtocolVersion()) {
             case v14, v15 -> true;
             default -> false;
         };
     }
 
     protected boolean hasProtocolVersionLeqV17() {
-        return hasProtocolVersionLeqV15() || switch(edhocMapperState.getProtocolVersion()) {
+        return hasProtocolVersionLeqV15() || switch (edhocMapperState.getProtocolVersion()) {
             case v16, v17 -> true;
             default -> false;
         };
     }
 
     protected boolean hasProtocolVersionLeqV19() {
-        return hasProtocolVersionLeqV17() || switch(edhocMapperState.getProtocolVersion()) {
+        return hasProtocolVersionLeqV17() || switch (edhocMapperState.getProtocolVersion()) {
             case v18, v19 -> true;
             default -> false;
         };
     }
 
     protected boolean hasProtocolVersionLeqV22() {
-        return hasProtocolVersionLeqV19() || switch(edhocMapperState.getProtocolVersion()) {
+        return hasProtocolVersionLeqV19() || switch (edhocMapperState.getProtocolVersion()) {
             case v20, v21, v22 -> true;
             default -> false;
         };
@@ -3075,7 +3231,8 @@ public class MessageProcessorPersistent {
 
         for (int i = baseIndex; i < objectList.length; i++) {
 
-            // The first element of each pair is an ead_label, and must be a non-zero CBOR integer
+            // The first element of each pair is an ead_label, and must be a non-zero CBOR
+            // integer
             if ((eadIndex & 1) == 0) {
                 if (objectList[i].getType() != CBORType.Integer || objectList[i].AsInt32() == 0) {
                     LOGGER.error("Malformed or Invalid EAD label");
@@ -3094,7 +3251,8 @@ public class MessageProcessorPersistent {
                 continue;
             }
 
-            // The second element of each pair is an ead_value, and must be a CBOR byte string
+            // The second element of each pair is an ead_value, and must be a CBOR byte
+            // string
             if ((eadIndex & 1) == 1) {
                 if (objectList[i].getType() != CBORType.ByteString) {
                     LOGGER.error("Malformed or invalid EAD value");
@@ -3126,7 +3284,10 @@ public class MessageProcessorPersistent {
         return eadArray;
     }
 
-    /** Adapted from {@link org.eclipse.californium.edhoc.MessageProcessor#preParseEAD} */
+    /**
+     * Adapted from
+     * {@link org.eclipse.californium.edhoc.MessageProcessor#preParseEAD}
+     */
     protected CBORObject[] preParseEAD(CBORObject[] objectList, int baseIndex, int msgNum, Set<Integer> supportedEADs) {
         int length = objectList.length - baseIndex;
         CBORObject[] eadArray = new CBORObject[length];
@@ -3139,34 +3300,38 @@ public class MessageProcessorPersistent {
 
         // The actual goal of each step is to go through one EAD item
         // At each step, the element with index 'i' must be an ead_label
-        // For EAD items that are supported or non-critical, the corresponding ead_value (if present) is
-        // handled during the same step, so that the next step will consider the next EAD item, if any
+        // For EAD items that are supported or non-critical, the corresponding ead_value
+        // (if present) is
+        // handled during the same step, so that the next step will consider the next
+        // EAD item, if any
         for (int i = baseIndex; i < objectList.length; i++) {
             CBORObject currObject = objectList[i];
 
             if (currObject.getType() != CBORType.Integer) {
-                 // Each EAD item must start with a CBOR integer encoding the ead_label
-                 LOGGER.error("Malformed or invalid EAD_" + msgNum);
-                 return null;
+                // Each EAD item must start with a CBOR integer encoding the ead_label
+                LOGGER.error("Malformed or invalid EAD_" + msgNum);
+                return null;
             }
 
-            if (i+1 < objectList.length
-                && objectList[i+1].getType() != CBORType.Integer
-                && objectList[i+1].getType() != CBORType.ByteString) {
+            if (i + 1 < objectList.length
+                    && objectList[i + 1].getType() != CBORType.Integer
+                    && objectList[i + 1].getType() != CBORType.ByteString) {
 
-                 // The immediately following item in the CBOR sequence (if any) must be a CBOR integer or a CBOR byte string
-                 LOGGER.error("Malformed or invalid EAD_" + msgNum);
-                 return null;
+                // The immediately following item in the CBOR sequence (if any) must be a CBOR
+                // integer or a CBOR byte string
+                LOGGER.error("Malformed or invalid EAD_" + msgNum);
+                return null;
             }
 
             int eadLabel = currObject.AsInt32();
 
             if (eadLabel == Constants.EAD_LABEL_PADDING) {
-                // This is the padding EAD item and it is not passed to the application for further processing
+                // This is the padding EAD item and it is not passed to the application for
+                // further processing
                 LOGGER.debug("EAD Label: {}", eadLabel);
 
-                if (i+1 < objectList.length && objectList[i+1].getType() == CBORType.ByteString) {
-                    LOGGER.debug(EdhocUtil.byteArrayToString("EAD Value", objectList[i+1].GetByteString()));
+                if (i + 1 < objectList.length && objectList[i + 1].getType() == CBORType.ByteString) {
+                    LOGGER.debug(EdhocUtil.byteArrayToString("EAD Value", objectList[i + 1].GetByteString()));
                     // Skip the corresponding ead_value, if present
                     i++;
                 }
@@ -3183,7 +3348,7 @@ public class MessageProcessorPersistent {
 
                 // The EAD item is non-critical and not supported,
                 // it is not passed to the application for further processing
-                if (i+1 < objectList.length && objectList[i+1].getType() == CBORType.ByteString) {
+                if (i + 1 < objectList.length && objectList[i + 1].getType() == CBORType.ByteString) {
                     // This will result in moving to the next EAD item, if any
                     i++;
                 }
@@ -3200,19 +3365,20 @@ public class MessageProcessorPersistent {
 
             LOGGER.debug("EAD Label: {}", eadLabel);
             // Make a hard copy of the ead_value, if present
-            if (i+1 < objectList.length && objectList[i+1].getType() == CBORType.ByteString) {
-                byte[] serializedObjectValue = objectList[i+1].EncodeToBytes();
+            if (i + 1 < objectList.length && objectList[i + 1].getType() == CBORType.ByteString) {
+                byte[] serializedObjectValue = objectList[i + 1].EncodeToBytes();
                 CBORObject elementValue = CBORObject.DecodeFromBytes(serializedObjectValue);
                 eadArray[eadIndex] = elementValue;
                 eadIndex++;
 
-                LOGGER.debug(EdhocUtil.byteArrayToString("EAD Value", objectList[i+1].GetByteString()));
+                LOGGER.debug(EdhocUtil.byteArrayToString("EAD Value", objectList[i + 1].GetByteString()));
                 // This will result in moving to the next EAD item, if any
                 i++;
             }
         }
 
-        // Prepare the subset of the EAD items to provide to the application for further processing
+        // Prepare the subset of the EAD items to provide to the application for further
+        // processing
         CBORObject[] ret = new CBORObject[eadIndex];
         for (int i = 0; i < eadIndex; i++) {
             ret[i] = eadArray[i];
