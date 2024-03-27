@@ -7,7 +7,7 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSu
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInputRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.InputSymbolXml;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.SymbolXml;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
@@ -49,8 +49,8 @@ public class MultiBuilderRA implements
         TestRunnerBuilder,
         TimingProbeBuilder {
 
-    protected AlphabetBuilderStandard<InputSymbolXml> alphabetBuilder = new AlphabetBuilderStandard<>(
-            new AlphabetSerializerXml<InputSymbolXml, EdhocAlphabetPojoXmlRA>(InputSymbolXml.class,
+    protected AlphabetBuilderStandard<SymbolXml> alphabetBuilder = new AlphabetBuilderStandard<>(
+            new AlphabetSerializerXml<SymbolXml, EdhocAlphabetPojoXmlRA>(SymbolXml.class,
                     EdhocAlphabetPojoXmlRA.class));
 
     protected AlphabetTransformerRA alphabetTransformer = new AlphabetTransformerRA(alphabetBuilder);
