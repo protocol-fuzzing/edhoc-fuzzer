@@ -3,21 +3,25 @@ package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inp
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "InputSymbol")
-public class InputSymbolXml {
+@XmlRootElement(name = "Symbol")
+public class SymbolXml {
 
-    @XmlElement(name="Name")
+    @XmlElement(name = "Name")
     private String name = null;
 
-    @XmlElement(name="DataTypes")
+    @XmlElement(name = "Type")
+    private Type symbolType = Type.INPUT;
+
+    @XmlElement(name = "DataTypes")
     private DataTypeXml[] types = {};
 
-    public InputSymbolXml(String name, DataTypeXml... types) {
+    public SymbolXml(String name, Type type, DataTypeXml... types) {
         this.name = name;
+        this.symbolType = type;
         this.types = types;
     }
 
-    public InputSymbolXml() {
+    public SymbolXml() {
     }
 
     public String getName() {
@@ -26,5 +30,14 @@ public class InputSymbolXml {
 
     public DataTypeXml[] getDataTypes() {
         return this.types;
+    }
+
+    public Type getSymbolType() {
+        return this.symbolType;
+    }
+
+    public enum Type {
+        INPUT,
+        OUTPUT
     }
 }

@@ -8,10 +8,9 @@ public class DataTypeXml {
 
     private String name = null;
 
-    // TODO: this might not be parsable by default, we might need to do lookup on a string.
     private Class<?> base = null;
 
-    public DataTypeXml (String name, Class<?> base) {
+    public DataTypeXml(String name, Class<?> base) {
         this.name = name;
         this.base = base;
     }
