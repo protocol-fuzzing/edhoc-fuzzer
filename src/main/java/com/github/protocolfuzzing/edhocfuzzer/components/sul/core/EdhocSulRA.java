@@ -13,16 +13,15 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.Serv
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocInputMapperRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocMapperComposerRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocOutputMapperRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInputRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputBuilderRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputCheckerRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.AbstractSul;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulAdapter;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.sulwrappers.DynamicPortProvider;
 import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
+import de.learnlib.ralib.words.PSymbolInstance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.californium.core.config.CoapConfig;
@@ -30,7 +29,7 @@ import org.eclipse.californium.core.config.CoapConfig;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA> {
+public class EdhocSulRA implements AbstractSul<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     protected SulConfig sulConfig;
@@ -84,8 +83,7 @@ public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, Edho
 
         this.edhocMapperComposer = new EdhocMapperComposerRA(
                 new EdhocInputMapperRA(edhocMapperConfig, new EdhocOutputCheckerRA(), edhocMapperConnector),
-                new EdhocOutputMapperRA(edhocMapperConfig, new EdhocOutputBuilderRA(), new EdhocOutputCheckerRA(),
-                        edhocMapperConnector));
+                new EdhocOutputMapperRA(edhocMapperConfig, new EdhocOutputBuilderRA(), edhocMapperConnector));
 
         return this;
     }
@@ -166,7 +164,7 @@ public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, Edho
     }
 
     @Override
-    public EdhocOutputRA step(EdhocInputRA abstractInput) {
+    public PSymbolInstance step(PSymbolInstance abstractInput) {
         // In case of server mapper, wait for initial message from client
         serverWaitForInitialMessage();
 
@@ -178,7 +176,7 @@ public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, Edho
             return edhocMapperComposer.getOutputMapper().disabled();
         }
 
-        EdhocOutputRA abstractOutput = executeInput(abstractInput);
+        PSymbolInstance abstractOutput = executeInput(abstractInput);
 
         if (edhocMapperComposer.getOutputChecker().isDisabled(abstractOutput)
                 || !edhocExecutionContext.isExecutionEnabled()) {
@@ -191,20 +189,25 @@ public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, Edho
         return abstractOutput;
     }
 
-    protected EdhocOutputRA executeInput(EdhocInputRA abstractInput) {
+    protected PSymbolInstance executeInput(PSymbolInstance abstractInput) {
         boolean timeoutChanged = false;
 
         // handle timeout from extendedWait and from inputResponse
-        if (abstractInput.getExtendedWait() != null) {
-            edhocMapperConnector.setTimeout(originalTimeout + abstractInput.getExtendedWait());
+        // TODO: Find a non-stupid solution. We could add a datatype ExtendedWait
+        // with the sole purpose to hold the value, but that is the definition of an
+        // ugly hack.
+        EdhocInputMapperRA inputMapper = (EdhocInputMapperRA) edhocMapperComposer.getInputMapper();
+        if (inputMapper.getTimeoutForSymbol(abstractInput) != 0L) {
+            edhocMapperConnector.setTimeout(originalTimeout + inputMapper.getTimeoutForSymbol(abstractInput));
             timeoutChanged = true;
         } else if (sulConfig.getInputResponseTimeout() != null &&
-                sulConfig.getInputResponseTimeout().containsKey(abstractInput.getName())) {
-            edhocMapperConnector.setTimeout(sulConfig.getInputResponseTimeout().get(abstractInput.getName()));
+                sulConfig.getInputResponseTimeout().containsKey(abstractInput.getBaseSymbol().getName())) {
+            edhocMapperConnector
+                    .setTimeout(sulConfig.getInputResponseTimeout().get(abstractInput.getBaseSymbol().getName()));
             timeoutChanged = true;
         }
 
-        EdhocOutputRA abstractOutput = edhocMapperComposer.execute(abstractInput, edhocExecutionContext);
+        PSymbolInstance abstractOutput = edhocMapperComposer.execute(abstractInput, edhocExecutionContext);
 
         // reset timeout
         if (timeoutChanged) {
@@ -227,12 +230,12 @@ public class EdhocSulRA implements AbstractSul<EdhocInputRA, EdhocOutputRA, Edho
         EdhocOutputCheckerRA edhocOutputChecker = edhocMapperComposer.getOutputChecker();
 
         serverMapperConnector.waitForClientMessage();
-        EdhocOutputRA abstractOutput = edhocMapperComposer.getOutputMapper().receiveOutput(edhocExecutionContext);
+        PSymbolInstance abstractOutput = edhocMapperComposer.getOutputMapper().receiveOutput(edhocExecutionContext);
         boolean isExpectedMessage = edhocOutputChecker.isMessage(abstractOutput, expectedMessageType);
 
         if (!isExpectedMessage) {
             throw new RuntimeException("After initial wait, instead of " + expectedMessageType + ", received " +
-                    abstractOutput.getName());
+                    abstractOutput.getBaseSymbol().getName());
         }
 
         LOGGER.debug("Received {} from client", expectedMessageType);

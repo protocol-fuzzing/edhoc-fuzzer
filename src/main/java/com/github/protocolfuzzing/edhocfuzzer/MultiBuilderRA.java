@@ -6,9 +6,7 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSu
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSulServerConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.EdhocInputRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.SymbolXml;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigRA;
@@ -28,24 +26,24 @@ import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.config.St
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.config.StateFuzzerServerConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.core.TestRunner;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.core.TestRunnerBuilder;
-import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.core.TestRunnerStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.core.config.TestRunnerConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.core.config.TestRunnerEnabler;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.TimingProbe;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.TimingProbeBuilder;
-import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.TimingProbeStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeEnabler;
 import de.learnlib.ralib.data.DataType;
 import de.learnlib.ralib.theory.Theory;
 import de.learnlib.ralib.tools.theories.IntegerEqualityTheory;
+import de.learnlib.ralib.words.PSymbolInstance;
+import de.learnlib.ralib.words.ParameterizedSymbol;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MultiBuilderRA implements
         StateFuzzerConfigBuilder,
-        StateFuzzerBuilder<RegisterAutomatonWrapper<EdhocInputRA>>,
+        StateFuzzerBuilder<RegisterAutomatonWrapper<ParameterizedSymbol, PSymbolInstance>>,
         TestRunnerBuilder,
         TimingProbeBuilder {
 
@@ -55,8 +53,8 @@ public class MultiBuilderRA implements
 
     protected AlphabetTransformerRA alphabetTransformer = new AlphabetTransformerRA(alphabetBuilder);
 
-    protected SulBuilder<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA> sulBuilder = new EdhocSulBuilderRA();
-    protected SulWrapper<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA> sulWrapper = new SulWrapperStandard<>();
+    protected SulBuilder<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> sulBuilder = new EdhocSulBuilderRA();
+    protected SulWrapper<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> sulWrapper = new SulWrapperStandard<>();
 
     @Override
     public StateFuzzerClientConfig buildClientConfig() {
@@ -77,24 +75,28 @@ public class MultiBuilderRA implements
     }
 
     @Override
-    public StateFuzzer<RegisterAutomatonWrapper<EdhocInputRA>> build(StateFuzzerEnabler stateFuzzerEnabler) {
+    public StateFuzzer<RegisterAutomatonWrapper<ParameterizedSymbol, PSymbolInstance>> build(
+            StateFuzzerEnabler stateFuzzerEnabler) {
         DataType T_CI = new DataType("C_I", Integer.class);
         @SuppressWarnings("rawtypes")
         final Map<DataType, Theory> teachers = new LinkedHashMap<>();
         teachers.put(T_CI, new IntegerEqualityTheory(T_CI));
-        final EdhocInputConverter converter = new EdhocInputConverter();
         return new StateFuzzerRA<>(
-                new StateFuzzerComposerRA<EdhocInputRA, EdhocOutputRA, EdhocExecutionContextRA>(stateFuzzerEnabler,
-                        alphabetTransformer, sulBuilder, sulWrapper, teachers, converter).initialize());
+                new StateFuzzerComposerRA<ParameterizedSymbol, EdhocExecutionContextRA>(stateFuzzerEnabler,
+                        alphabetTransformer, sulBuilder, sulWrapper, teachers).initialize());
     }
 
     @Override
     public TestRunner build(TestRunnerEnabler testRunnerEnabler) {
-        return new TestRunnerStandard<>(testRunnerEnabler, alphabetTransformer, sulBuilder, sulWrapper).initialize();
+        // return new TestRunnerStandard<>(testRunnerEnabler, alphabetTransformer,
+        // sulBuilder, sulWrapper).initialize();
+        return null; // FIXME: If this is used we have problems.
     }
 
     @Override
     public TimingProbe build(TimingProbeEnabler timingProbeEnabler) {
-        return new TimingProbeStandard<>(timingProbeEnabler, alphabetTransformer, sulBuilder, sulWrapper).initialize();
+        // return new TimingProbeStandard<>(timingProbeEnabler, alphabetTransformer,
+        // sulBuilder, sulWrapper).initialize();
+        return null; // FIXME: If this is used we have problems.
     }
 }

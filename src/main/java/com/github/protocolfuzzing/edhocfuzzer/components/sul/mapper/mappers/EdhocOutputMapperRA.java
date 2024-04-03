@@ -12,34 +12,33 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.U
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputBuilderRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputCheckerRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.OutputMapper;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.OutputMapperRA;
 import de.learnlib.ralib.data.DataType;
 import de.learnlib.ralib.data.DataValue;
 import de.learnlib.ralib.words.OutputSymbol;
-import de.learnlib.ralib.words.ParameterizedSymbol;
+import de.learnlib.ralib.words.PSymbolInstance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtocolMessage, EdhocExecutionContextRA> {
+public class EdhocOutputMapperRA
+        extends OutputMapperRA<PSymbolInstance, EdhocProtocolMessage, EdhocExecutionContextRA> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     EdhocMapperConnector edhocMapperConnector;
 
     public EdhocOutputMapperRA(MapperConfig mapperConfig, EdhocOutputBuilderRA edhocOutputBuilder,
-            EdhocOutputCheckerRA edhocOutputChecker, EdhocMapperConnector edhocMapperConnector) {
-        super(mapperConfig, edhocOutputBuilder, edhocOutputChecker);
+            EdhocMapperConnector edhocMapperConnector) {
+        super(mapperConfig, edhocOutputBuilder);
         this.edhocMapperConnector = edhocMapperConnector;
     }
 
     @Override
-    public EdhocOutputRA receiveOutput(EdhocExecutionContextRA context) {
+    public PSymbolInstance receiveOutput(EdhocExecutionContextRA context) {
         EdhocMapperState edhocMapperState = context.getState();
         byte[] responsePayload;
 
@@ -64,7 +63,7 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
             return edhocOutputRA(base);
         }
 
-        EdhocOutputRA abstractOutput;
+        PSymbolInstance abstractOutput;
 
         // Check for application related message
         // including message 3 combined with oscore
@@ -91,7 +90,7 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
         return outputBuilder.buildUnknown();
     }
 
-    protected EdhocOutputRA appOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
+    protected PSymbolInstance appOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         String messageType = edhocMapperState.isCoapClient() ? "response" : "request";
         DataType T_CI = new DataType("C_I", Integer.class);
 
@@ -134,7 +133,7 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
         return null;
     }
 
-    protected EdhocOutputRA edhocOutputRA(EdhocMapperState edhocMapperState, byte[] responsePayload) {
+    protected PSymbolInstance edhocOutputRA(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(edhocMapperState);
         boolean ok;
         DataType T_CI = new DataType("C_I", Integer.class);
@@ -230,7 +229,7 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
         }
     }
 
-    protected EdhocOutputRA coapOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
+    protected PSymbolInstance coapOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         String messageType = edhocMapperState.isCoapClient() ? "response" : "request";
 
         // Check for coap error message
@@ -274,7 +273,7 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
         return edhocOutputAfterCheck(responsePayload != null, base, new DataValue<?>[] {});
     }
 
-    protected EdhocOutputRA coapError() {
+    protected PSymbolInstance coapError() {
         if (((EdhocMapperConfig) mapperConfig).isCoapErrorAsEdhocError()) {
             OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_ERROR_MESSAGE.name(), new DataType[] {});
             return edhocOutputRA(base);
@@ -284,22 +283,17 @@ public class EdhocOutputMapperRA extends OutputMapper<EdhocOutputRA, EdhocProtoc
         }
     }
 
-    protected EdhocOutputRA edhocOutputAfterCheck(boolean successfulCheck, OutputSymbol baseSymbol,
+    protected PSymbolInstance edhocOutputAfterCheck(boolean successfulCheck, OutputSymbol baseSymbol,
             DataValue<?>... values) {
         return successfulCheck ? edhocOutputRA(baseSymbol, values) : null;
     }
 
-    protected EdhocOutputRA edhocOutputRA(OutputSymbol baseSymbol, DataValue<?>... values) {
-        return new EdhocOutputRA(baseSymbol, values);
-    }
-
-    protected EdhocOutputRA buildOutput(List<EdhocProtocolMessage> messages, ParameterizedSymbol baseSymbol,
-            DataValue<?>... parameterValues) {
-        return new EdhocOutputRA(messages, baseSymbol, parameterValues);
+    protected PSymbolInstance edhocOutputRA(OutputSymbol baseSymbol, DataValue<?>... values) {
+        return new PSymbolInstance(baseSymbol, values);
     }
 
     @Override
-    protected EdhocOutputRA buildOutput(String name, List<EdhocProtocolMessage> messages) {
+    protected PSymbolInstance buildOutput(String name, List<EdhocProtocolMessage> messages) {
         throw new UnsupportedOperationException("Unsupported output builder arguments");
     }
 }
