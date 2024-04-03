@@ -16,6 +16,11 @@ IO_RANDOM_WALK
 -skipNonDetTests
 -alphabet
 ./src/main/resources/alphabet_ra.xml
+-maxDepthRA
+4
+-depth
+4
+-ioMode
 
 ##### EdhocMapperConfig #####
 -protocolVersion
