@@ -15,7 +15,7 @@ IO_RANDOM_WALK
 -cacheTests
 -skipNonDetTests
 -alphabet
-./src/main/resources/alphabet_ra.xml
+./src/main/resources/small_alphabet.xml
 -maxDepthRA
 4
 -depth
