@@ -59,7 +59,7 @@ jobs:
 
       - name: Test Lakers Server
         run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/lakers/server -roundLimit 2
+          java -jar edhoc-fuzzer.jar @experiments/args/lakers/server_ra
           ./scripts/diff_hyps.sh experiments/saved_results/servers/lakers experiments/results/servers/lakers 2
 
   RISE-Client:
