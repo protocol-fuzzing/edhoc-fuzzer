@@ -106,6 +106,7 @@ setup_uoscore_uedhoc() {
   UOE_DIR="${SOURCES_DIR}/uoscore-uedhoc"
   cd "${UOE_DIR}"
   git checkout ${CHECKOUT}
+  git submodule update --checkout
   git apply "${PATCH_DIR}"/uoscore-uedhoc.patch
   make
   make -C samples/linux_edhoc/initiator
