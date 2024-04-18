@@ -21,9 +21,6 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outp
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.OutputChecker;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.InputMapperRA;
-import com.upokecenter.cbor.CBORObject;
-import de.learnlib.ralib.data.DataType;
-import de.learnlib.ralib.data.DataValue;
 import de.learnlib.ralib.words.InputSymbol;
 import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
@@ -37,7 +34,7 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
     EdhocMapperConnector edhocMapperConnector;
 
     private static Logger LOGGER = LogManager.getLogger();
-    protected DataType T_CI = new DataType("C_I", Integer.class);
+    // protected DataType T_CI = new DataType("C_I", Integer.class);
 
     protected EnumMap<MessageInputType, Long> timeoutMap = new EnumMap<MessageInputType, Long>(MessageInputType.class);
 
@@ -163,18 +160,18 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
         LOGGER.info("Running updateConnectionId method");
         LOGGER.info("Current ConnectionId: " + EdhocUtil.bytesToInt(session.getConnectionId()));
 
-        for (DataValue<?> dv : input.getParameterValues()) {
+        // for (DataValue<?> dv : input.getParameterValues()) {
 
-            LOGGER.info("Datavalue: " + dv.toString());
-            if (dv.getType().equals(T_CI)) {
-                CBORObject value = CBORObject.FromObject(dv.getId());
-                LOGGER.info("CBORObject version of DataValue id: " + value.toString());
+        // LOGGER.info("Datavalue: " + dv.toString());
+        // if (dv.getType().equals(T_CI)) {
+        // CBORObject value = CBORObject.FromObject(dv.getId());
+        // LOGGER.info("CBORObject version of DataValue id: " + value.toString());
 
-                // session.setConnectionId(value.EncodeToBytes());
-                LOGGER.info("ConnectionId after set: " +
-                        EdhocUtil.bytesToInt(session.getConnectionId()));
-            }
-        }
+        // // session.setConnectionId(value.EncodeToBytes());
+        // LOGGER.info("ConnectionId after set: " +
+        // EdhocUtil.bytesToInt(session.getConnectionId()));
+        // }
+        // }
     }
 
     public long getTimeoutForSymbol(PSymbolInstance input) {

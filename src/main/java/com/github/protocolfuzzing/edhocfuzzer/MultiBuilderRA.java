@@ -34,7 +34,6 @@ import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.tim
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.testrunner.timingprobe.config.TimingProbeEnabler;
 import de.learnlib.ralib.data.DataType;
 import de.learnlib.ralib.theory.Theory;
-import de.learnlib.ralib.tools.theories.IntegerEqualityTheory;
 import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
 
@@ -77,10 +76,10 @@ public class MultiBuilderRA implements
     @Override
     public StateFuzzer<RegisterAutomatonWrapper<ParameterizedSymbol, PSymbolInstance>> build(
             StateFuzzerEnabler stateFuzzerEnabler) {
-        DataType T_CI = new DataType("C_I", Integer.class);
+        // DataType T_CI = new DataType("C_I", Integer.class);
         @SuppressWarnings("rawtypes")
         final Map<DataType, Theory> teachers = new LinkedHashMap<>();
-        teachers.put(T_CI, new IntegerEqualityTheory(T_CI));
+        // teachers.put(T_CI, new IntegerEqualityTheory(T_CI));
         return new StateFuzzerRA<>(
                 new StateFuzzerComposerRA<ParameterizedSymbol, EdhocExecutionContextRA>(stateFuzzerEnabler,
                         alphabetTransformer, sulBuilder, sulWrapper, teachers).initialize());

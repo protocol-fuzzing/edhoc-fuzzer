@@ -15,7 +15,6 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outp
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.OutputMapperRA;
-import de.learnlib.ralib.data.DataType;
 import de.learnlib.ralib.data.DataValue;
 import de.learnlib.ralib.words.OutputSymbol;
 import de.learnlib.ralib.words.PSymbolInstance;
@@ -48,19 +47,16 @@ public class EdhocOutputMapperRA
             return socketClosed();
         } catch (TimeoutException e) {
             return timeout();
-        } catch (UnsupportedMessageException e) {
+        } catch (UnsupportedMessageException | UnsuccessfulMessageException e) {
             // special output to demonstrate that the input message the learner requested
             // was unable to be sent and deemed unsupported
-
-            OutputSymbol base = new OutputSymbol(MessageOutputType.UNSUPPORTED_MESSAGE.name(), new DataType[] {});
-            return edhocOutputRA(base);
-        } catch (UnsuccessfulMessageException e) {
+            // or
             // special output to demonstrate that the received message evoked an error
             // in a middle layer and did not reach the upper resource in the case of
             // server mapper
 
-            OutputSymbol base = new OutputSymbol(MessageOutputType.UNSUPPORTED_MESSAGE.name(), new DataType[] {});
-            return edhocOutputRA(base);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.UNSUPPORTED_MESSAGE.name());
+            return instanceFromOutputSymbol(base);
         }
 
         PSymbolInstance abstractOutput;
@@ -92,7 +88,7 @@ public class EdhocOutputMapperRA
 
     protected PSymbolInstance appOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         String messageType = edhocMapperState.isCoapClient() ? "response" : "request";
-        DataType T_CI = new DataType("C_I", Integer.class);
+        // DataType T_CI = new DataType("C_I", Integer.class);
 
         if (edhocMapperConnector.receivedMsg3WithOscoreApp()) {
             // received Message3_OSCORE_APP, from which application data propagated and
@@ -103,12 +99,12 @@ public class EdhocOutputMapperRA
 
             Integer parameter = EdhocUtil
                     .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
-            OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3_OSCORE_APP.name(), T_CI);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3_OSCORE_APP.name());
 
             LOGGER.info("Reading as EDHOC Message 3 Oscore App, DataValue: " + parameter);
-            DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
+            // DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
 
-            return edhocOutputRA(base, value);
+            return instanceFromOutputSymbol(base);
         }
 
         if (edhocMapperConnector.receivedOscoreAppMessage()) {
@@ -126,8 +122,8 @@ public class EdhocOutputMapperRA
                     messageType, EdhocUtil.byteArrayToString(responsePayload),
                     new String(responsePayload, StandardCharsets.UTF_8));
 
-            OutputSymbol base = new OutputSymbol(MessageOutputType.OSCORE_APP_MESSAGE.name(), new DataType[] {});
-            return edhocOutputRA(base);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.OSCORE_APP_MESSAGE_RESPONDER.name());
+            return instanceFromOutputSymbol(base);
         }
 
         return null;
@@ -136,13 +132,13 @@ public class EdhocOutputMapperRA
     protected PSymbolInstance edhocOutputRA(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(edhocMapperState);
         boolean ok;
-        DataType T_CI = new DataType("C_I", Integer.class);
+        // DataType T_CI = new DataType("C_I", Integer.class);
 
         switch (messageProcessorPersistent.messageTypeFromStructure(responsePayload)) {
             case EDHOC_ERROR_MESSAGE -> {
                 ok = messageProcessorPersistent.readErrorMessage(responsePayload);
 
-                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_ERROR_MESSAGE.name(), new DataType[] {});
+                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_ERROR_MESSAGE.name());
                 return edhocOutputAfterCheck(ok, base, new DataValue<?>[] {});
             }
 
@@ -151,10 +147,10 @@ public class EdhocOutputMapperRA
 
                 Integer parameter = EdhocUtil
                         .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
-                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_1.name(), T_CI);
+                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_1.name());
                 LOGGER.info("Reading as Message 1, DataValue: " + parameter);
-                DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
-                return edhocOutputAfterCheck(ok, base, value);
+                // DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
+                return edhocOutputAfterCheck(ok, base);
             }
 
             case EDHOC_MESSAGE_2 -> {
@@ -162,10 +158,10 @@ public class EdhocOutputMapperRA
 
                 Integer parameter = EdhocUtil
                         .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
-                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_2.name(), T_CI);
+                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_2.name());
                 LOGGER.info("Reading as Message 2, DataValue: " + parameter);
-                DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
-                return edhocOutputAfterCheck(ok, base, value);
+                // DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
+                return edhocOutputAfterCheck(ok, base);
             }
 
             case EDHOC_MESSAGE_3_OR_4 -> {
@@ -176,19 +172,19 @@ public class EdhocOutputMapperRA
                 if (ok) {
                     Integer parameter = EdhocUtil
                             .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
-                    OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3.name(), T_CI);
+                    OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3.name());
                     LOGGER.info("Reading as Message 3, DataValue: " + parameter);
-                    DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
-                    return edhocOutputRA(base, value);
+                    // DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
+                    return instanceFromOutputSymbol(base);
                 }
 
                 ok = messageProcessorPersistent.readMessage4(responsePayload);
                 Integer parameter = EdhocUtil
                         .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
-                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_4.name(), T_CI);
+                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_4.name());
                 LOGGER.info("Reading as Message 4, DataValue: " + parameter);
-                DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
-                return edhocOutputAfterCheck(ok, base, value);
+                // DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
+                return edhocOutputAfterCheck(ok, base);
             }
 
             case EDHOC_MESSAGE_2_OR_3_OR_4 -> {
@@ -198,29 +194,29 @@ public class EdhocOutputMapperRA
                 if (ok) {
                     Integer parameter = EdhocUtil
                             .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
-                    OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_2.name(), T_CI);
+                    OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_2.name());
                     LOGGER.info("Reading as Message 2, DataValue: " + parameter);
-                    DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
-                    return edhocOutputRA(base, value);
+                    // DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
+                    return instanceFromOutputSymbol(base);
                 }
 
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
                 if (ok) {
                     Integer parameter = EdhocUtil
                             .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
-                    OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3.name(), T_CI);
+                    OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_3.name());
                     LOGGER.info("Reading as Message 3, DataValue: " + parameter);
-                    DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
-                    return edhocOutputRA(base, value);
+                    // DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
+                    return instanceFromOutputSymbol(base);
                 }
 
                 ok = messageProcessorPersistent.readMessage4(responsePayload);
                 Integer parameter = EdhocUtil
                         .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
-                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_4.name(), T_CI);
+                OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_MESSAGE_4.name());
                 LOGGER.info("Reading as Message 4, DataValue: " + parameter);
-                DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
-                return edhocOutputAfterCheck(ok, base, value);
+                // DataValue<Integer> value = new DataValue<Integer>(T_CI, parameter);
+                return edhocOutputAfterCheck(ok, base);
             }
 
             default -> {
@@ -250,8 +246,8 @@ public class EdhocOutputMapperRA
              * Server Mapper:
              * received empty coap request for some reason
              */
-            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_EMPTY_MESSAGE.name(), new DataType[] {});
-            return edhocOutputRA(base);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_EMPTY_MESSAGE_RESPONDER.name());
+            return instanceFromOutputSymbol(base);
         }
 
         // Check for unprotected coap message
@@ -263,32 +259,39 @@ public class EdhocOutputMapperRA
             LOGGER.info("COAP_APP_MESSAGE ({}): {} ~ {}",
                     messageType, EdhocUtil.byteArrayToString(responsePayload),
                     new String(responsePayload, StandardCharsets.UTF_8));
-            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_APP_MESSAGE.name(), new DataType[] {});
-            return edhocOutputRA(base);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_APP_MESSAGE_RESPONDER.name());
+            return instanceFromOutputSymbol(base);
         }
 
         // if payload was not empty then a coap message is received
         // because no other transport protocol than coap is supported yet
-        OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_MESSAGE.name(), new DataType[] {});
-        return edhocOutputAfterCheck(responsePayload != null, base, new DataValue<?>[] {});
+        OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_MESSAGE.name());
+        if (responsePayload != null) {
+            LOGGER.info("COAP_MESSAGE ({}): {} ~ {}",
+                    messageType, EdhocUtil.byteArrayToString(responsePayload),
+                    new String(responsePayload, StandardCharsets.UTF_8));
+        } else {
+            LOGGER.info("COAP_MESSAGE payload is null.");
+        }
+        return edhocOutputAfterCheck(responsePayload != null, base);
     }
 
     protected PSymbolInstance coapError() {
         if (((EdhocMapperConfig) mapperConfig).isCoapErrorAsEdhocError()) {
-            OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_ERROR_MESSAGE.name(), new DataType[] {});
-            return edhocOutputRA(base);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.EDHOC_ERROR_MESSAGE.name());
+            return instanceFromOutputSymbol(base);
         } else {
-            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_ERROR_MESSAGE.name(), new DataType[] {});
-            return edhocOutputRA(base);
+            OutputSymbol base = new OutputSymbol(MessageOutputType.COAP_ERROR_MESSAGE.name());
+            return instanceFromOutputSymbol(base);
         }
     }
 
     protected PSymbolInstance edhocOutputAfterCheck(boolean successfulCheck, OutputSymbol baseSymbol,
             DataValue<?>... values) {
-        return successfulCheck ? edhocOutputRA(baseSymbol, values) : null;
+        return successfulCheck ? instanceFromOutputSymbol(baseSymbol, values) : null;
     }
 
-    protected PSymbolInstance edhocOutputRA(OutputSymbol baseSymbol, DataValue<?>... values) {
+    protected PSymbolInstance instanceFromOutputSymbol(OutputSymbol baseSymbol, DataValue<?>... values) {
         return new PSymbolInstance(baseSymbol, values);
     }
 
