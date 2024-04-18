@@ -8,7 +8,7 @@ ${results.learning.servers}/lakers
 
 ##### LearnerConfig #####
 -learningAlgorithm
-RaLambda
+RaStar
 -equivalenceAlgorithms
 IO_RANDOM_WALK
 -logQueries
@@ -20,7 +20,13 @@ IO_RANDOM_WALK
 4
 -depth
 4
--ioMode
+-roundLimit
+5
+-probNewDataValue
+0.5
+-seed
+7
+-ros
 
 ##### EdhocMapperConfig #####
 -protocolVersion
