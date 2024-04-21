@@ -97,7 +97,7 @@ setup_sifis_home() {
 
 setup_uoscore_uedhoc() {
   # uoscore-uedhoc
-  CHECKOUT="9c18a3503ad905e79e2dbe847cb14c1650524eee"
+  CHECKOUT="tags/v3.0.3"
 
   set -e
   echo "Setting up uOSCORE-uEDHOC in ${SOURCES_DIR}"
