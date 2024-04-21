@@ -2,7 +2,7 @@ diff --git a/samples/linux_edhoc_oscore/initiator_client/src/main.cpp b/samples/
 index cf4694d..b385a87 100644
 --- a/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
 +++ b/samples/linux_edhoc_oscore/initiator_client/src/main.cpp
-@@ -276,7 +276,7 @@ int main()
+@@ -277,7 +277,7 @@ int main()
  		protected_pdu->reset();
  		protected_pdu->setVersion(1);
  		protected_pdu->setType(CoapPDU::COAP_CONFIRMABLE);
