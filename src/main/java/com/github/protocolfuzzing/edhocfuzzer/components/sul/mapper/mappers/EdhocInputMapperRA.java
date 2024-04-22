@@ -1,5 +1,6 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers;
 
+import com.github.protocolfuzzing.edhocfuzzer.MessageInputTypeRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocSessionPersistent;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocUtil;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
@@ -16,7 +17,6 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messa
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.MessageInputType;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputCheckerRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.OutputChecker;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
@@ -36,7 +36,7 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
     private static Logger LOGGER = LogManager.getLogger();
     // protected DataType T_CI = new DataType("C_I", Integer.class);
 
-    protected EnumMap<MessageInputType, Long> timeoutMap = new EnumMap<MessageInputType, Long>(MessageInputType.class);
+    protected EnumMap<MessageInputTypeRA, Long> timeoutMap = new EnumMap<MessageInputTypeRA, Long>(MessageInputTypeRA.class);
 
     public EdhocInputMapperRA(MapperConfig mapperConfig, EdhocOutputCheckerRA outputChecker,
             EdhocMapperConnector edhocMapperConnector) {
@@ -64,8 +64,8 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
         String symbolName = input.getBaseSymbol().getName();
         EdhocSessionPersistent session = context.getState().getEdhocSessionPersistent();
 
-        switch (MessageInputType.valueOf(symbolName)) {
-            case EDHOC_MESSAGE_1:
+        switch (MessageInputTypeRA.valueOf(symbolName)) {
+            case EDHOC_MESSAGE_1_INPUT:
                 if (session.isInitiator()) {
                     // Initiator by sending message 1 starts a new key exchange session
                     // so previous session state must be cleaned unless reset is disabled
@@ -74,23 +74,23 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
                 updateConnectionId(session, input);
                 break;
 
-            case EDHOC_MESSAGE_2:
-            case EDHOC_MESSAGE_3:
-            case EDHOC_MESSAGE_4:
-            case OSCORE_APP_MESSAGE:
+            case EDHOC_MESSAGE_2_INPUT:
+            case EDHOC_MESSAGE_3_INPUT:
+            case EDHOC_MESSAGE_4_INPUT:
+            case OSCORE_APP_MESSAGE_INPUT:
                 updateConnectionId(session, input);
                 break;
 
-            case EDHOC_MESSAGE_3_OSCORE_APP:
+            case EDHOC_MESSAGE_3_OSCORE_APP_INPUT:
                 updateConnectionId(session, input);
                 // construct Message3 in order to store it in session 'message3' field,
                 // derive new oscore context and make Message3 available to oscore layer
                 new MessageProcessorPersistent(context.getState()).writeMessage3();
                 break;
 
-            case COAP_APP_MESSAGE:
-            case COAP_EMPTY_MESSAGE:
-            case EDHOC_ERROR_MESSAGE:
+            case COAP_APP_MESSAGE_INPUT:
+            case COAP_EMPTY_MESSAGE_INPUT:
+            case EDHOC_ERROR_MESSAGE_INPUT:
                 break;
         }
     }
@@ -103,32 +103,32 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
             // We can construct this here since the switch should always dispatch to only
             // one instance.
             MessageProcessorPersistent messageProcessor = new MessageProcessorPersistent(context.getState());
-            switch (MessageInputType.valueOf(symbolName)) {
-                case EDHOC_MESSAGE_1:
+            switch (MessageInputTypeRA.valueOf(symbolName)) {
+                case EDHOC_MESSAGE_1_INPUT:
                     return new EdhocMessage1(messageProcessor);
 
-                case EDHOC_MESSAGE_2:
+                case EDHOC_MESSAGE_2_INPUT:
                     return new EdhocMessage2(messageProcessor);
 
-                case EDHOC_MESSAGE_3:
+                case EDHOC_MESSAGE_3_INPUT:
                     return new EdhocMessage3(messageProcessor);
 
-                case EDHOC_MESSAGE_3_OSCORE_APP:
+                case EDHOC_MESSAGE_3_OSCORE_APP_INPUT:
                     return new EdhocMessage3OscoreApp(messageProcessor);
 
-                case EDHOC_MESSAGE_4:
+                case EDHOC_MESSAGE_4_INPUT:
                     return new EdhocMessage4(messageProcessor);
 
-                case OSCORE_APP_MESSAGE:
+                case OSCORE_APP_MESSAGE_INPUT:
                     return new OscoreAppMessage(messageProcessor);
 
-                case EDHOC_ERROR_MESSAGE:
+                case EDHOC_ERROR_MESSAGE_INPUT:
                     return new EdhocErrorMessage(messageProcessor);
 
-                case COAP_APP_MESSAGE:
+                case COAP_APP_MESSAGE_INPUT:
                     return new CoapAppMessage(messageProcessor);
 
-                case COAP_EMPTY_MESSAGE:
+                case COAP_EMPTY_MESSAGE_INPUT:
                     return new CoapEmptyMessage(messageProcessor);
             }
         }
@@ -176,13 +176,13 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
 
     public long getTimeoutForSymbol(PSymbolInstance input) {
         String baseSymbolName = input.getBaseSymbol().getName();
-        MessageInputType key = MessageInputType.valueOf(baseSymbolName);
+        MessageInputTypeRA key = MessageInputTypeRA.valueOf(baseSymbolName);
         return timeoutMap.getOrDefault(key, 0L);
     }
 
     public void setTimeoutForSymbol(PSymbolInstance input, long timeout) {
         String baseSymbolName = input.getBaseSymbol().getName();
-        MessageInputType key = MessageInputType.valueOf(baseSymbolName);
+        MessageInputTypeRA key = MessageInputTypeRA.valueOf(baseSymbolName);
         timeoutMap.put(key, timeout);
     }
 }
