@@ -42,7 +42,7 @@ public class AlphabetTransformerRA extends AlphabetBuilderTransformer<SymbolXml,
                 return new OutputSymbol(symbol.getName());
 
             default:
-                throw new RuntimeException("Invalid SymbolType for InputSymbolXml, not INPUT or OUTPUT");
+                throw new RuntimeException("Invalid SymbolType for SymbolXml, not INPUT or OUTPUT");
         }
     }
 }
