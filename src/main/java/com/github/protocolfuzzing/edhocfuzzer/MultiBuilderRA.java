@@ -1,14 +1,10 @@
 package com.github.protocolfuzzing.edhocfuzzer;
 
-import com.github.protocolfuzzing.edhocfuzzer.components.learner.EdhocAlphabetPojoXmlRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.EdhocSulBuilderRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSulClientConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSulServerConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.SymbolXml;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderStandard;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.RegisterAutomatonWrapper;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulBuilder;
@@ -36,6 +32,7 @@ import de.learnlib.ralib.data.DataType;
 import de.learnlib.ralib.theory.Theory;
 import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
+import net.automatalib.alphabet.Alphabet;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -46,11 +43,22 @@ public class MultiBuilderRA implements
         TestRunnerBuilder,
         TimingProbeBuilder {
 
-    protected AlphabetBuilderStandard<SymbolXml> alphabetBuilder = new AlphabetBuilderStandard<>(
-            new AlphabetSerializerXml<SymbolXml, EdhocAlphabetPojoXmlRA>(SymbolXml.class,
-                    EdhocAlphabetPojoXmlRA.class));
+    // protected AlphabetBuilderStandard<SymbolXml> alphabetBuilder = new
+    // AlphabetBuilderStandard<>(
+    // new AlphabetSerializerXml<SymbolXml, EdhocAlphabetPojoXmlRA>(SymbolXml.class,
+    // EdhocAlphabetPojoXmlRA.class));
 
-    protected AlphabetTransformerRA alphabetTransformer = new AlphabetTransformerRA(alphabetBuilder);
+    // protected AlphabetTransformerRA alphabetTransformer = new
+    // AlphabetTransformerRA(alphabetBuilder);
+
+    protected Alphabet<ParameterizedSymbol> alphabet = new EnumAlphabet.Builder()
+            .withInputs(MessageInputTypeRA.values())
+            .withOutputs(MessageOutputTypeRA.values())
+            .withOutputs(PSFOutputSymbols.values())
+            .build();
+
+    protected AlphabetDummyBuilder<ParameterizedSymbol> dummyBuilder = new AlphabetDummyBuilder<ParameterizedSymbol>(
+            alphabet);
 
     protected SulBuilder<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> sulBuilder = new EdhocSulBuilderRA();
     protected SulWrapper<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> sulWrapper = new SulWrapperStandard<>();
@@ -82,7 +90,7 @@ public class MultiBuilderRA implements
         // teachers.put(T_CI, new IntegerEqualityTheory(T_CI));
         return new StateFuzzerRA<>(
                 new StateFuzzerComposerRA<ParameterizedSymbol, EdhocExecutionContextRA>(stateFuzzerEnabler,
-                        alphabetTransformer, sulBuilder, sulWrapper, teachers).initialize());
+                        dummyBuilder, sulBuilder, sulWrapper, teachers).initialize());
     }
 
     @Override
