@@ -1,5 +1,5 @@
 diff --git a/bom/pom.xml b/bom/pom.xml
-index 15e2b4810..d79b11316 100644
+index 1e75e3908..a000edf9e 100644
 --- a/bom/pom.xml
 +++ b/bom/pom.xml
 @@ -129,7 +129,7 @@
@@ -12,10 +12,10 @@ index 15e2b4810..d79b11316 100644
  
  			<dependency>
 diff --git a/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java b/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java
-index 1ac6465fc..cb6c25e0b 100644
+index 21e7066d8..b6176fc32 100644
 --- a/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java
 +++ b/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java
-@@ -387,7 +387,7 @@ public final class CoapConfig {
+@@ -388,7 +388,7 @@ public final class CoapConfig {
  	 * target="_blank">RFC7252, 4.8. Transmission Parameters</a>.
  	 */
  	public static final IntegerDefinition MAX_RETRANSMIT = new IntegerDefinition(MODULE + "MAX_RETRANSMIT",
@@ -40,7 +40,7 @@ index 41d06c9cc..9bd3d912b 100644
  			if (1 > nstart) {
  				throw new IllegalStateException("Nstart " + nstart + " must not be less than 1!");
 diff --git a/cf-edhoc/pom.xml b/cf-edhoc/pom.xml
-index 5dd9cc4ac..02b2bf46c 100644
+index dc1f3f3d9..e0831e668 100644
 --- a/cf-edhoc/pom.xml
 +++ b/cf-edhoc/pom.xml
 @@ -71,7 +71,8 @@
@@ -85,7 +85,7 @@ index 40a137656..b4d4c5114 100644
  		final String digest = "SHA256"; // Hash to use
  
 diff --git a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
-index 78fc7c2f2..4ae366605 100644
+index 78fc7c2f2..2ecc18748 100644
 --- a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
 +++ b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
 @@ -286,7 +286,7 @@ public class SharedSecretCalculation {
@@ -160,7 +160,39 @@ index 78fc7c2f2..4ae366605 100644
  
          // Attempt to recalculate Y value if missing
  		if (publicKeyY == null) {
-@@ -530,7 +530,7 @@ public class SharedSecretCalculation {
+@@ -508,6 +508,31 @@ public class SharedSecretCalculation {
+ 		return key;
+ 	}
+ 
++	/**
++	 * Takes a byte array and returns a new left zero-padded array of the
++	 * specified length, if the input array is smaller than the specified length.
++	 * Otherwise the original array is returned.
++	 *
++	 * @param base the original byte array
++	 * @param length the desired length of the output
++	 *
++	 * @return a byte array of the specified length after adding leftmost zero-padding
++	 *         or the original byte array
++	 */
++	public static byte[] padLeft(byte[] base, int length) {
++		if (base.length >= length) {
++			return base;
++		}
++
++		int b_offset = 0;
++		int r_offset = length - base.length;
++		int r_length = base.length;
++		byte[] result = new byte[length];
++
++		System.arraycopy(base, b_offset, result, r_offset, r_length);
++		return result;
++	}
++
+ 	/**
+ 	 * Takes an ECDSA_256 X coordinate and computes a valid Y value for that X.
+ 	 * Will only only return one of the possible Y values.
+@@ -530,7 +555,7 @@ public class SharedSecretCalculation {
  	 * @return the recomputed Y value for that X
  	 * @throws CoseException if recomputation fails
  	 */
@@ -169,7 +201,27 @@ index 78fc7c2f2..4ae366605 100644
  
  		BigInteger x = new BigInteger(1, publicKeyX);
  
-@@ -642,7 +642,7 @@ public class SharedSecretCalculation {
+@@ -557,8 +582,8 @@ public class SharedSecretCalculation {
+ 		// System.out.println("Root2: " +
+ 		// StringUtil.byteArray2HexString(root2.toByteArray()));
+ 
+-		byte[] root1Bytes = root1.toByteArray();
+-		byte[] root2Bytes = root2.toByteArray();
++		byte[] root1Bytes = padLeft(root1.toByteArray(), 32);
++		byte[] root2Bytes = padLeft(root2.toByteArray(), 32);
+ 
+ 		if (root1Bytes.length == 33) {
+ 			root1Bytes = Arrays.copyOfRange(root1Bytes, 1, 33);
+@@ -567,7 +592,7 @@ public class SharedSecretCalculation {
+ 			root2Bytes = Arrays.copyOfRange(root2Bytes, 1, 33);
+ 		}
+ 
+-		byte[] xBytes = x.toByteArray();
++		byte[] xBytes = padLeft(x.toByteArray(), 32);
+ 		if (xBytes.length == 33) {
+ 			xBytes = Arrays.copyOfRange(xBytes, 1, 33);
+ 		}
+@@ -642,7 +667,7 @@ public class SharedSecretCalculation {
  	 * @return the recomputed Y value for that X
  	 * @throws CoseException if recomputation fails
  	 */
@@ -178,7 +230,27 @@ index 78fc7c2f2..4ae366605 100644
  
  		BigInteger x = new BigInteger(1, publicKeyX);
  
-@@ -752,7 +752,7 @@ public class SharedSecretCalculation {
+@@ -667,8 +692,8 @@ public class SharedSecretCalculation {
+ 		BigInteger root1 = squareMod(combined, prime);
+ 		BigInteger root2 = root1.negate().mod(prime);
+ 
+-		byte[] root1Bytes = root1.toByteArray();
+-		byte[] root2Bytes = root2.toByteArray();
++		byte[] root1Bytes = padLeft(root1.toByteArray(), 48);
++		byte[] root2Bytes = padLeft(root2.toByteArray(), 48);
+ 
+ 		if (root1Bytes.length == 49) {
+ 			root1Bytes = Arrays.copyOfRange(root1Bytes, 1, 49);
+@@ -677,7 +702,7 @@ public class SharedSecretCalculation {
+ 			root2Bytes = Arrays.copyOfRange(root2Bytes, 1, 49);
+ 		}
+ 
+-		byte[] xBytes = x.toByteArray();
++		byte[] xBytes = padLeft(x.toByteArray(), 48);
+ 		if (xBytes.length == 49) {
+ 			xBytes = Arrays.copyOfRange(xBytes, 1, 49);
+ 		}
+@@ -752,7 +777,7 @@ public class SharedSecretCalculation {
       * @param val the value to square
       * @return one of the square roots
       */
@@ -187,7 +259,7 @@ index 78fc7c2f2..4ae366605 100644
  
  		BigInteger three = new BigInteger("3");
  		BigInteger four = new BigInteger("4");
-@@ -777,7 +777,7 @@ public class SharedSecretCalculation {
+@@ -777,7 +802,7 @@ public class SharedSecretCalculation {
  	 * 
  	 * @return the shared secret, or null in case of error
  	 */
@@ -196,7 +268,7 @@ index 78fc7c2f2..4ae366605 100644
  
  		if (privateKey == null || publicKey == null) {
  			System.err.println("Public key and/or private key not found.");
-@@ -847,7 +847,7 @@ public class SharedSecretCalculation {
+@@ -847,7 +872,7 @@ public class SharedSecretCalculation {
  	 * 
  	 * @throws CoseException
  	 */
@@ -206,10 +278,10 @@ index 78fc7c2f2..4ae366605 100644
  		FieldElement y = null;
  		try {
 diff --git a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
-index 1e6e8a3fd..e305a8749 100644
+index 8b887aa6a..b6eab5b87 100644
 --- a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
 +++ b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
-@@ -1156,7 +1156,7 @@ public class Util {
+@@ -1186,7 +1186,7 @@ public class Util {
  		claimSetMap.Add(Constants.CWT_CLAIMS_SUB, subjectName);
  		claimSetMap.Add(Constants.CWT_CLAIMS_CNF, cnfMap);
  
@@ -219,7 +291,7 @@ index 1e6e8a3fd..e305a8749 100644
          return claimSetMap.EncodeToBytes();
  		
 diff --git a/cf-oscore/pom.xml b/cf-oscore/pom.xml
-index f730afadd..9416f1244 100644
+index 6d0cfe69d..cc02cec3c 100644
 --- a/cf-oscore/pom.xml
 +++ b/cf-oscore/pom.xml
 @@ -41,7 +41,8 @@
