@@ -2,7 +2,6 @@ package com.github.protocolfuzzing.edhocfuzzer;
 
 /**
  * Messages that can be received.
- * The last four are from the OutputBuilder.
  */
 public enum MessageOutputTypeRA {
     EDHOC_MESSAGE_1_OUTPUT,
