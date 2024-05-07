@@ -238,4 +238,12 @@ public abstract class EdhocMapperState {
         // only coap server can receive with prepended CX if it is enabled
         return !isCoapClient() && edhocMapperConfig.useCXCorrelation();
     }
+
+    public void updateEdhocSessionsPersistent(byte[] connectionId, EdhocSessionPersistent session) {
+        CBORObject ci = CBORObject.FromObject(connectionId);
+        if (!usedConnectionIds.contains(ci)) {
+            usedConnectionIds.add(ci);
+            edhocSessionsPersistent.put(ci, session);
+        }
+    }
 }

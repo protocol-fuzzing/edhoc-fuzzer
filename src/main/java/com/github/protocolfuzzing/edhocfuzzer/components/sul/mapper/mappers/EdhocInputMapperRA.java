@@ -17,10 +17,13 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messa
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputCheckerRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.OutputChecker;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.InputMapperRA;
+import com.upokecenter.cbor.CBORObject;
+import de.learnlib.ralib.data.DataValue;
 import de.learnlib.ralib.words.InputSymbol;
 import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
@@ -36,7 +39,8 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
     private static Logger LOGGER = LogManager.getLogger();
     // protected DataType T_CI = new DataType("C_I", Integer.class);
 
-    protected EnumMap<MessageInputTypeRA, Long> timeoutMap = new EnumMap<MessageInputTypeRA, Long>(MessageInputTypeRA.class);
+    protected EnumMap<MessageInputTypeRA, Long> timeoutMap = new EnumMap<MessageInputTypeRA, Long>(
+            MessageInputTypeRA.class);
 
     public EdhocInputMapperRA(MapperConfig mapperConfig, EdhocOutputCheckerRA outputChecker,
             EdhocMapperConnector edhocMapperConnector) {
@@ -47,7 +51,7 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
     @Override
     public void sendMessage(EdhocProtocolMessage message, EdhocExecutionContextRA context) {
         if (message == null) {
-            throw new RuntimeException("Null message provided to EdhocInputMapper in sendMessage");
+            throw new RuntimeException("Null message provided to EdhocInputMapperRA in sendMessage");
         }
 
         // enable or disable content format
@@ -62,27 +66,27 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
     @Override
     public void preSendUpdate(PSymbolInstance input, EdhocExecutionContextRA context) {
         String symbolName = input.getBaseSymbol().getName();
-        EdhocSessionPersistent session = context.getState().getEdhocSessionPersistent();
+        EdhocMapperState mapperState = context.getState();
 
         switch (MessageInputTypeRA.valueOf(symbolName)) {
             case EDHOC_MESSAGE_1_INPUT:
-                if (session.isInitiator()) {
+                if (mapperState.getEdhocSessionPersistent().isInitiator()) {
                     // Initiator by sending message 1 starts a new key exchange session
                     // so previous session state must be cleaned unless reset is disabled
-                    session.resetIfEnabled();
+                    mapperState.getEdhocSessionPersistent().resetIfEnabled();
                 }
-                updateConnectionId(session, input);
+                updateConnectionId(mapperState, input);
                 break;
 
             case EDHOC_MESSAGE_2_INPUT:
             case EDHOC_MESSAGE_3_INPUT:
             case EDHOC_MESSAGE_4_INPUT:
             case OSCORE_APP_MESSAGE_INPUT:
-                updateConnectionId(session, input);
+                updateConnectionId(mapperState, input);
                 break;
 
             case EDHOC_MESSAGE_3_OSCORE_APP_INPUT:
-                updateConnectionId(session, input);
+                updateConnectionId(mapperState, input);
                 // construct Message3 in order to store it in session 'message3' field,
                 // derive new oscore context and make Message3 available to oscore layer
                 new MessageProcessorPersistent(context.getState()).writeMessage3();
@@ -155,23 +159,27 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
      * a randomly selected integer in the learner to a corresponding bytestring is
      * possible.
      */
-    public void updateConnectionId(EdhocSessionPersistent session, PSymbolInstance input) {
-
+    public void updateConnectionId(EdhocMapperState state, PSymbolInstance input) {
+        EdhocSessionPersistent session = state.getEdhocSessionPersistent();
         LOGGER.info("Running updateConnectionId method");
         LOGGER.info("Current ConnectionId: " + EdhocUtil.bytesToInt(session.getConnectionId()));
 
-        // for (DataValue<?> dv : input.getParameterValues()) {
+        for (DataValue<?> dv : input.getParameterValues()) {
 
-        // LOGGER.info("Datavalue: " + dv.toString());
-        // if (dv.getType().equals(T_CI)) {
-        // CBORObject value = CBORObject.FromObject(dv.getId());
-        // LOGGER.info("CBORObject version of DataValue id: " + value.toString());
+            LOGGER.info("Datavalue: " + dv.toString());
+            CBORObject value = CBORObject.FromObject(dv.getId());
+            LOGGER.info("CBORObject version of DataValue id: " + value.toString());
 
-        // // session.setConnectionId(value.EncodeToBytes());
-        // LOGGER.info("ConnectionId after set: " +
-        // EdhocUtil.bytesToInt(session.getConnectionId()));
-        // }
-        // }
+            session.setConnectionId(value.EncodeToBytes());
+            LOGGER.info("ConnectionId after set: " +
+                    EdhocUtil.bytesToInt(session.getConnectionId()));
+        }
+
+        EdhocSessionPersistent new_session = state.getEdhocSessionPersistent();
+        byte[] new_CI = session.getConnectionId();
+
+        state.setEdhocSessionPersistent(new_session);
+        state.updateEdhocSessionsPersistent(new_CI, new_session);
     }
 
     public long getTimeoutForSymbol(PSymbolInstance input) {

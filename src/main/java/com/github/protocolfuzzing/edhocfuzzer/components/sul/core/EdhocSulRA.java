@@ -1,5 +1,6 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.core;
 
+import com.github.protocolfuzzing.edhocfuzzer.EnumAlphabet;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSulClientConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
@@ -41,12 +42,14 @@ public class EdhocSulRA implements AbstractSul<PSymbolInstance, PSymbolInstance,
     protected EdhocMapperState edhocMapperState;
     protected EdhocMapperConnector edhocMapperConnector;
     protected boolean serverWaitForInitialMessageDone;
+    protected EnumAlphabet alphabet;
 
-    public EdhocSulRA(SulConfig sulConfig, CleanupTasks cleanupTasks) {
+    public EdhocSulRA(SulConfig sulConfig, CleanupTasks cleanupTasks, EnumAlphabet alphabet) {
         this.sulConfig = sulConfig;
         this.cleanupTasks = cleanupTasks;
         this.edhocMapperConfig = (EdhocMapperConfig) sulConfig.getMapperConfig();
         this.originalTimeout = sulConfig.getResponseWait();
+        this.alphabet = alphabet;
     }
 
     public EdhocSulRA initialize() {
@@ -83,7 +86,7 @@ public class EdhocSulRA implements AbstractSul<PSymbolInstance, PSymbolInstance,
 
         this.edhocMapperComposer = new EdhocMapperComposerRA(
                 new EdhocInputMapperRA(edhocMapperConfig, new EdhocOutputCheckerRA(), edhocMapperConnector),
-                new EdhocOutputMapperRA(edhocMapperConfig, new EdhocOutputBuilderRA(), edhocMapperConnector));
+                new EdhocOutputMapperRA(edhocMapperConfig, new EdhocOutputBuilderRA(), edhocMapperConnector, alphabet));
 
         return this;
     }
