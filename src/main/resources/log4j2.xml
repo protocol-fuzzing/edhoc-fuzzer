@@ -6,7 +6,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.github.protocolfuzzing.edhocfuzzer.MessageProcessorPersistent" level="info" additivity="false">
+        <Logger name="com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="com.github.protocolfuzzing.edhocfuzzer" level="info" additivity="false">
@@ -33,7 +33,7 @@
         <Logger name="org.eclipse.californium" level="error">
             <AppenderRef ref="Console" />
         </Logger>
-        <Root level="error">
+                <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>
