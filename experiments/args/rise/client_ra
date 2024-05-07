@@ -3,7 +3,7 @@ state-fuzzer-client
 
 ##### StateFuzzerConfig #####
 -output
-experiments/results/client/lakers
+${results.learning.clients}/rise
 
 
 ##### LearnerConfig #####
@@ -26,42 +26,49 @@ IO_RANDOM_WALK
 -protocolVersion
 v23
 
+-combinedMessageVersion
+v07
+
 ## Mapper Auth ##
 
 -mapCredType
-CCS
+X509
 
 -mapIdCredType
-KID
+X5T
 
 ## Sul Auth ##
 
 -sulCredType
-CCS
+X509
 
 -sulIdCredType
-KID
+X5T
 
 # TestVector
 -testVectorJson
-./experiments/authentication/test_vectors/test_vectors_lakers.json
+${authentication.test_vectors}/test_vectors_rise.json
 
 -testVectorJsonKey
-test_vector_p256
+test_vector_ed25519
 
 -testVectorPeerKeyCurve
-P256
+Ed25519
 
 -edhocRole
 Responder
 
+-appCoapResource
+helloWorld
+
+
 ##### SulConfig #####
 -responseWait
-300
+400
 -processDir
-./experiments/models/clients/lakers
+${models.clients}/rise
 -cmd
-./coapclient
+java -cp cf-edhoc.jar org.eclipse.californium.edhoc.EdhocClient
 -startWait
 50
 

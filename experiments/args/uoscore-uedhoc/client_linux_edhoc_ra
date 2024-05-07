@@ -1,53 +1,45 @@
 state-fuzzer-client
 
-
 ##### StateFuzzerConfig #####
 -output
-experiments/results/client/lakers
+${results.learning.clients}/uoscore-uedhoc_linux_edhoc
 
 
 ##### LearnerConfig #####
 -learningAlgorithm
-RaStar
+TTT
 -equivalenceAlgorithms
-IO_RANDOM_WALK
+W_METHOD,WP_METHOD
 -logQueries
--alphabet
-./src/main/resources/small_alphabet.xml
--maxDepthRA
-4
--probNewDataValue
-0.5
--seed
-7
+-cacheTests
+-skipNonDetTests
 
 
 ##### EdhocMapperConfig #####
 -protocolVersion
-v23
-
+v16
 ## Mapper Auth ##
 
 -mapCredType
-CCS
+X509
 
 -mapIdCredType
-KID
+X5T
 
 ## Sul Auth ##
 
 -sulCredType
-CCS
+X509
 
 -sulIdCredType
-KID
+X5T
 
 # TestVector
 -testVectorJson
-./experiments/authentication/test_vectors/test_vectors_lakers.json
+${authentication.test_vectors}/test_vectors_v16_p256.json
 
 -testVectorJsonKey
-test_vector_p256
+test_vector_1
 
 -testVectorPeerKeyCurve
 P256
@@ -55,13 +47,19 @@ P256
 -edhocRole
 Responder
 
+-appCoapResource
+tv1
+
+-disableCXCorrelation
+
+
 ##### SulConfig #####
 -responseWait
-300
+500
 -processDir
-./experiments/models/clients/lakers
+${models.clients}/uoscore-uedhoc
 -cmd
-./coapclient
+./linux-edhoc-initiator
 -startWait
 50
 

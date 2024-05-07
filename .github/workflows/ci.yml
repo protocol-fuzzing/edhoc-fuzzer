@@ -29,6 +29,11 @@ jobs:
 
       - name: Test Lakers Client
         run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/lakers/client -roundLimit 3
+          ./scripts/diff_hyps.sh experiments/saved_results/clients/lakers experiments/results/clients/lakers 3
+      
+      - name: Test Lakers Client (RA)
+        run: |
           java -jar edhoc-fuzzer.jar @experiments/args/lakers/client_ra -roundLimit 3
           ./scripts/diff_hyps.sh experiments/saved_results/clients/lakers experiments/results/clients/lakers 3
 
@@ -59,7 +64,12 @@ jobs:
 
       - name: Test Lakers Server
         run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/lakers/server_ra
+          java -jar edhoc-fuzzer.jar @experiments/args/lakers/server -roundLimit 3
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/lakers experiments/results/servers/lakers 2
+      
+      - name: Test Lakers Server (RA)
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/lakers/server_ra -roundLimit 3
           ./scripts/diff_hyps.sh experiments/saved_results/servers/lakers experiments/results/servers/lakers 2
 
   RISE-Client:
@@ -87,6 +97,11 @@ jobs:
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/rise/client_m4_app -roundLimit 4
           ./scripts/diff_hyps.sh experiments/saved_results/clients/rise_m4_app experiments/results/clients/rise_m4_app 4
+      
+      - name: Test RISE Client (m4_app, RA) 
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/rise/client_m4_app_ra -roundLimit 4
+          ./scripts/diff_hyps.sh experiments/saved_results/clients/rise_m4_app experiments/results/clients/rise_m4_app 4
 
   RISE-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -113,58 +128,74 @@ jobs:
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/rise/server_m4_app -roundLimit 5
           ./scripts/diff_hyps.sh experiments/saved_results/servers/rise_m4_app experiments/results/servers/rise_m4_app 5
+      
+      - name: Test RISE Server (m4_app, RA)
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/rise/server_m4_app_ra -roundLimit 5
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/rise_m4_app experiments/results/servers/rise_m4_app 5
 
-#  SIFIS-HOME-Client:
-#    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-#    runs-on: ubuntu-latest
-#    strategy:
-#      fail-fast: true
-#    steps:
-#      - uses: actions/checkout@v6
-#      - uses: actions/setup-java@v5
-#        with:
-#          java-version: '21'
-#          distribution: 'temurin'
-#      - uses: ts-graphviz/setup-graphviz@v2
-#      - name: Install pydot
-#        run: pip3 install pydot
-#
-#      - name: Setup EDHOC-Fuzzer
-#        run: ./scripts/setup_fuzzer.sh -l
-#
-#      - name: Setup SIFIS-HOME
-#        run: ./scripts/setup_sul.sh sifis-home
-#
-#      - name: Test SIFIS-HOME Client (phase_1)
-#        run: |
-#          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/client_phase_1 -roundLimit 4
-#          ./scripts/diff_hyps.sh experiments/saved_results/clients/sifis-home_phase_1 experiments/results/clients/sifis-home_phase_1 4
-#
-#  SIFIS-HOME-Server:
-#    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-#    runs-on: ubuntu-latest
-#    strategy:
-#      fail-fast: true
-#    steps:
-#      - uses: actions/checkout@v6
-#      - uses: actions/setup-java@v5
-#        with:
-#          java-version: '21'
-#          distribution: 'temurin'
-#      - uses: ts-graphviz/setup-graphviz@v2
-#      - name: Install pydot
-#        run: pip3 install pydot
-#
-#      - name: Setup EDHOC-Fuzzer
-#        run: ./scripts/setup_fuzzer.sh -l
-#
-#      - name: Setup SIFIS-HOME
-#        run: ./scripts/setup_sul.sh sifis-home
-#
-#      - name: Test SIFIS-HOME Server (phase_1)
-#        run: |
-#          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1 -roundLimit 5
-#          ./scripts/diff_hyps.sh experiments/saved_results/servers/sifis-home_phase_1 experiments/results/servers/sifis-home_phase_1 5
+  SIFIS-HOME-Client:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v2
+      - name: Install pydot
+        run: pip3 install pydot
+
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer.sh -l
+
+      - name: Setup SIFIS-HOME
+        run: ./scripts/setup_sul.sh sifis-home
+
+      - name: Test SIFIS-HOME Client (phase_1)
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/client_phase_1 -roundLimit 4
+          ./scripts/diff_hyps.sh experiments/saved_results/clients/sifis-home_phase_1 experiments/results/clients/sifis-home_phase_1 4
+      
+      - name: Test SIFIS-HOME Client (phase_1, RA)
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/client_phase_1_ra -roundLimit 4
+          ./scripts/diff_hyps.sh experiments/saved_results/clients/sifis-home_phase_1 experiments/results/clients/sifis-home_phase_1 4
+
+  SIFIS-HOME-Server:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v2
+      - name: Install pydot
+        run: pip3 install pydot
+
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer.sh -l
+
+      - name: Setup SIFIS-HOME
+        run: ./scripts/setup_sul.sh sifis-home
+
+      - name: Test SIFIS-HOME Server (phase_1)
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1 -roundLimit 5
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/sifis-home_phase_1 experiments/results/servers/sifis-home_phase_1 5
+
+      - name: Test SIFIS-HOME Server (phase_1, RA)
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1_ra -roundLimit 5
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/sifis-home_phase_1 experiments/results/servers/sifis-home_phase_1 5
+  
 
   uOSCORE-uEDHOC-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -192,6 +223,11 @@ jobs:
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -roundLimit 3
           ./scripts/diff_hyps.sh experiments/saved_results/clients/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/uoscore-uedhoc_linux_edhoc_oscore 3
 
+      - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, RA)
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra -roundLimit 3
+          ./scripts/diff_hyps.sh experiments/saved_results/clients/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/uoscore-uedhoc_linux_edhoc_oscore 3
+
   uOSCORE-uEDHOC-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     runs-on: ubuntu-latest
@@ -216,4 +252,9 @@ jobs:
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -roundLimit 2
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/uoscore-uedhoc_linux_edhoc_oscore 2
+  
+      - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, RA)
+        run: |
+          java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra -roundLimit 2
           ./scripts/diff_hyps.sh experiments/saved_results/servers/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/uoscore-uedhoc_linux_edhoc_oscore 2

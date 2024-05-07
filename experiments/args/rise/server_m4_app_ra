@@ -12,19 +12,14 @@ RaStar
 -equivalenceAlgorithms
 IO_RANDOM_WALK
 -logQueries
--cacheTests
--skipNonDetTests
 -alphabet
 ./src/main/resources/small_alphabet.xml
 -maxDepthRA
-10
--depth
-10
+4
 -probNewDataValue
 0.5
 -seed
 7
--ros
 
 ##### EdhocMapperConfig #####
 -protocolVersion

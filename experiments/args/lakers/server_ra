@@ -3,7 +3,7 @@ state-fuzzer-server
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.servers}/lakers
+experiments/results/server/lakers
 
 
 ##### LearnerConfig #####
@@ -12,21 +12,14 @@ RaStar
 -equivalenceAlgorithms
 IO_RANDOM_WALK
 -logQueries
--cacheTests
--skipNonDetTests
 -alphabet
 ./src/main/resources/small_alphabet.xml
 -maxDepthRA
 4
--depth
-4
--roundLimit
-5
 -probNewDataValue
 0.5
 -seed
 7
--ros
 
 ##### EdhocMapperConfig #####
 -protocolVersion
@@ -50,7 +43,7 @@ KID
 
 # TestVector
 -testVectorJson
-${authentication.test_vectors}/test_vectors_lakers.json
+./experiments/authentication/test_vectors/test_vectors_lakers.json
 
 -testVectorJsonKey
 test_vector_p256
@@ -66,7 +59,7 @@ Initiator
 -responseWait
 300
 -processDir
-${models.servers}/lakers
+./experiments/models/servers/lakers
 -cmd
 ./coapserver
 -startWait
