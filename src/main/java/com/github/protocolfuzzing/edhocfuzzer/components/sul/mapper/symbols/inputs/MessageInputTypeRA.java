@@ -1,4 +1,4 @@
-package com.github.protocolfuzzing.edhocfuzzer;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs;
 
 public enum MessageInputTypeRA {
     EDHOC_MESSAGE_1_INPUT,

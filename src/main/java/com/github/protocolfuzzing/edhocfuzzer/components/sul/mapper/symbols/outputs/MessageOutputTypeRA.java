@@ -1,4 +1,4 @@
-package com.github.protocolfuzzing.edhocfuzzer;
+package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs;
 
 /**
  * Messages that can be received.
@@ -15,5 +15,4 @@ public enum MessageOutputTypeRA {
     COAP_MESSAGE_OUTPUT,
     COAP_ERROR_MESSAGE_OUTPUT,
     COAP_EMPTY_MESSAGE_OUTPUT
-    // The PSF specific symbols like timeout now lives in the PSFOutputSymbols
 }
