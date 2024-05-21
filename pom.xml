@@ -78,15 +78,6 @@
                 <scope>runtime</scope>
             </dependency>
 
-            <!-- FIXME: automatalib stolen from PSF, should ideally not be here. -->
-            <dependency>
-                <groupId>net.automatalib.distribution</groupId>
-                <artifactId>automata-distribution</artifactId>
-                <version>0.11.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
             <!-- ralib -->
             <dependency>
                 <groupId>de.learnlib</groupId>
@@ -166,18 +157,6 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/net.automatalib/automata-core FIXME: REMOVE -->
-        <dependency>
-            <groupId>net.automatalib</groupId>
-            <artifactId>automata-core</artifactId>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/net.automatalib/automata-api FIXME: REMOVE-->
-        <dependency>
-            <groupId>net.automatalib</groupId>
-            <artifactId>automata-api</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
@@ -216,6 +195,10 @@
                                 <ignoredUsedUndeclaredDependency>
                                     <!-- transitive -->
                                     de.learnlib:learnlib-api:jar:*
+                                </ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>
+                                    <!-- transitive -->
+                                    net.automatalib:automata-api:jar:*
                                 </ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                         </configuration>
