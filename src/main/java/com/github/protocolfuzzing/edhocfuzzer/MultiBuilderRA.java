@@ -5,9 +5,11 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSu
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config.EdhocSulServerConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContextRA;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.EdhocDataTypes;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.MessageInputTypeRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputTypeRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderWrapper;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.DataTypeMap;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.EnumAlphabet;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.PSFOutputSymbols;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigRA;
@@ -48,29 +50,19 @@ public class MultiBuilderRA implements
                 TestRunnerBuilder,
                 TimingProbeBuilder {
 
-        // protected AlphabetBuilderStandard<SymbolXml> alphabetBuilder = new
-        // AlphabetBuilderStandard<>(
-        // new AlphabetSerializerXml<SymbolXml, EdhocAlphabetPojoXmlRA>(SymbolXml.class,
-        // EdhocAlphabetPojoXmlRA.class));
-
-        // protected AlphabetTransformerRA alphabetTransformer = new
-        // AlphabetTransformerRA(alphabetBuilder);
-
         DataType T_CI = new DataType("C_I", Integer.class);
 
-        protected EnumAlphabet alphabet = new EnumAlphabet.Builder()
+        protected DataTypeMap<EdhocDataTypes> dtMap = new DataTypeMap.Builder<EdhocDataTypes>(EdhocDataTypes.class)
+                        .newDataTypes(EdhocDataTypes.values(), Integer.class)
+                        .build();
+
+        protected EnumAlphabet alphabet = new EnumAlphabet.Builder(dtMap)
                         .withInputs(MessageInputTypeRA.values())
                         .withOutputs(MessageOutputTypeRA.values())
                         .withOutputs(PSFOutputSymbols.values())
                         .withInput(MessageInputTypeRA.EDHOC_MESSAGE_1_INPUT, T_CI)
-                        .withInput(MessageInputTypeRA.EDHOC_MESSAGE_2_INPUT, T_CI)
-                        .withInput(MessageInputTypeRA.EDHOC_MESSAGE_3_INPUT, T_CI)
-                        .withInput(MessageInputTypeRA.EDHOC_MESSAGE_4_INPUT, T_CI)
                         .withInput(MessageInputTypeRA.EDHOC_MESSAGE_3_OSCORE_APP_INPUT, T_CI)
                         .withOutput(MessageOutputTypeRA.EDHOC_MESSAGE_1_OUTPUT, T_CI)
-                        .withOutput(MessageOutputTypeRA.EDHOC_MESSAGE_2_OUTPUT, T_CI)
-                        .withOutput(MessageOutputTypeRA.EDHOC_MESSAGE_3_OUTPUT, T_CI)
-                        .withOutput(MessageOutputTypeRA.EDHOC_MESSAGE_4_OUTPUT, T_CI)
                         .withOutput(MessageOutputTypeRA.EDHOC_MESSAGE_3_OSCORE_APP_OUTPUT, T_CI)
                         .build();
 

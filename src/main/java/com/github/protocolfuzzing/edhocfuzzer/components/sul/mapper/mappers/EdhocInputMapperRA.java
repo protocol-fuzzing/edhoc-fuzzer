@@ -79,10 +79,6 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
                 break;
 
             case EDHOC_MESSAGE_2_INPUT:
-            case EDHOC_MESSAGE_3_INPUT:
-            case EDHOC_MESSAGE_4_INPUT:
-            case OSCORE_APP_MESSAGE_INPUT:
-                updateConnectionId(mapperState, input);
                 break;
 
             case EDHOC_MESSAGE_3_OSCORE_APP_INPUT:
@@ -92,6 +88,9 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
                 new MessageProcessorPersistent(context.getState()).writeMessage3();
                 break;
 
+            case EDHOC_MESSAGE_3_INPUT:
+            case EDHOC_MESSAGE_4_INPUT:
+            case OSCORE_APP_MESSAGE_INPUT:
             case COAP_APP_MESSAGE_INPUT:
             case COAP_EMPTY_MESSAGE_INPUT:
             case EDHOC_ERROR_MESSAGE_INPUT:
@@ -151,29 +150,30 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
     public void postSendUpdate(PSymbolInstance input, EdhocExecutionContextRA context) {
     }
 
-    /*
-     * TODO This is bad in multiple ways:
-     * - We need to have access to the datatype, which means defining it multiple
-     * times. For teachers, EdhocInputRA and the EdhocOutputMapperRA.
-     * - If the C_I is a bytestring it is unclear if use of a mapper to convert from
-     * a randomly selected integer in the learner to a corresponding bytestring is
-     * possible.
-     */
+    public void updatePeerConnectionId(EdhocMapperState state, PSymbolInstance input) {
+        EdhocSessionPersistent session = state.getEdhocSessionPersistent();
+        LOGGER.info("Current PeerConnectionId: " + EdhocUtil.bytesToInt(session.getPeerConnectionId()));
+
+        assert input.getParameterValues().length == 1;
+        DataValue<?> dv = input.getParameterValues()[0];
+        CBORObject value = CBORObject.FromObject(dv.getId());
+        session.setPeerConnectionId(value.EncodeToBytes());
+
+        LOGGER.info("PeerConnectionId after set: " +
+                EdhocUtil.bytesToInt(session.getPeerConnectionId()));
+    }
+
     public void updateConnectionId(EdhocMapperState state, PSymbolInstance input) {
         EdhocSessionPersistent session = state.getEdhocSessionPersistent();
-        LOGGER.info("Running updateConnectionId method");
-        LOGGER.info("Current ConnectionId: " + EdhocUtil.bytesToInt(session.getConnectionId()));
+        LOGGER.info("Current ConnectionId: {}", EdhocUtil.bytesToInt(session.getConnectionId()));
 
-        for (DataValue<?> dv : input.getParameterValues()) {
+        assert input.getParameterValues().length == 1;
+        DataValue<?> dv = input.getParameterValues()[0];
+        CBORObject value = CBORObject.FromObject(dv.getId());
+        session.setConnectionId(value.EncodeToBytes());
 
-            LOGGER.info("Datavalue: " + dv.toString());
-            CBORObject value = CBORObject.FromObject(dv.getId());
-            LOGGER.info("CBORObject version of DataValue id: " + value.toString());
-
-            session.setConnectionId(value.EncodeToBytes());
-            LOGGER.info("ConnectionId after set: " +
-                    EdhocUtil.bytesToInt(session.getConnectionId()));
-        }
+        LOGGER.info("ConnectionId after set: " +
+                EdhocUtil.bytesToInt(session.getConnectionId()));
 
         EdhocSessionPersistent new_session = state.getEdhocSessionPersistent();
         byte[] new_CI = session.getConnectionId();

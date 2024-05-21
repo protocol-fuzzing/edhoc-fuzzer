@@ -13,9 +13,9 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.Edho
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputBuilderRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputTypeRA;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.EnumAlphabet;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.OutputMapperRA;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.EnumAlphabet;
 import de.learnlib.ralib.data.DataValue;
 import de.learnlib.ralib.words.OutputSymbol;
 import de.learnlib.ralib.words.PSymbolInstance;
@@ -158,15 +158,13 @@ public class EdhocOutputMapperRA
                         .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                 OutputSymbol base = newBaseSymbol(MessageOutputTypeRA.EDHOC_MESSAGE_1_OUTPUT);
                 LOGGER.info("Reading as Message 1, DataValue: " + parameter);
-                DataValue<Integer> value = new DataValue<Integer>(base.getPtypes()[0], parameter);
-                return instanceAfterCheck(ok, base, value);
+                return instanceAfterCheck(ok, base);
             }
 
             case EDHOC_MESSAGE_2 -> {
                 ok = messageProcessorPersistent.readMessage2(responsePayload);
 
                 Integer parameter = EdhocUtil
-                        .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                 OutputSymbol base = newBaseSymbol(MessageOutputTypeRA.EDHOC_MESSAGE_2_OUTPUT);
                 LOGGER.info("Reading as Message 2, DataValue: " + parameter);
                 DataValue<Integer> value = new DataValue<Integer>(base.getPtypes()[0], parameter);
@@ -179,21 +177,13 @@ public class EdhocOutputMapperRA
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
 
                 if (ok) {
-                    Integer parameter = EdhocUtil
-                            .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                     OutputSymbol base = newBaseSymbol(MessageOutputTypeRA.EDHOC_MESSAGE_3_OUTPUT);
-                    LOGGER.info("Reading as Message 3, DataValue: " + parameter);
-                    DataValue<Integer> value = new DataValue<Integer>(base.getPtypes()[0], parameter);
-                    return instanceFromOutputSymbol(base, value);
+                    return instanceFromOutputSymbol(base);
                 }
 
                 ok = messageProcessorPersistent.readMessage4(responsePayload);
-                Integer parameter = EdhocUtil
-                        .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                 OutputSymbol base = newBaseSymbol(MessageOutputTypeRA.EDHOC_MESSAGE_4_OUTPUT);
-                LOGGER.info("Reading as Message 4, DataValue: " + parameter);
-                DataValue<Integer> value = new DataValue<Integer>(base.getPtypes()[0], parameter);
-                return instanceAfterCheck(ok, base, value);
+                return instanceAfterCheck(ok, base);
             }
 
             case EDHOC_MESSAGE_2_OR_3_OR_4 -> {
@@ -202,7 +192,6 @@ public class EdhocOutputMapperRA
                 ok = messageProcessorPersistent.readMessage2(responsePayload);
                 if (ok) {
                     Integer parameter = EdhocUtil
-                            .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                     OutputSymbol base = newBaseSymbol(MessageOutputTypeRA.EDHOC_MESSAGE_2_OUTPUT);
                     LOGGER.info("Reading as Message 2, DataValue: " + parameter);
                     DataValue<Integer> value = new DataValue<Integer>(base.getPtypes()[0], parameter);
@@ -211,21 +200,13 @@ public class EdhocOutputMapperRA
 
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
                 if (ok) {
-                    Integer parameter = EdhocUtil
-                            .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                     OutputSymbol base = newBaseSymbol(MessageOutputTypeRA.EDHOC_MESSAGE_3_OUTPUT);
-                    LOGGER.info("Reading as Message 3, DataValue: " + parameter);
-                    DataValue<Integer> value = new DataValue<Integer>(base.getPtypes()[0], parameter);
-                    return instanceFromOutputSymbol(base, value);
+                    return instanceFromOutputSymbol(base);
                 }
 
                 ok = messageProcessorPersistent.readMessage4(responsePayload);
-                Integer parameter = EdhocUtil
-                        .bytesToInt(edhocMapperState.getEdhocSessionPersistent().getConnectionId());
                 OutputSymbol base = newBaseSymbol(MessageOutputTypeRA.EDHOC_MESSAGE_4_OUTPUT);
-                LOGGER.info("Reading as Message 4, DataValue: " + parameter);
-                DataValue<Integer> value = new DataValue<Integer>(base.getPtypes()[0], parameter);
-                return instanceAfterCheck(ok, base, value);
+                return instanceAfterCheck(ok, base);
             }
 
             default -> {
