@@ -16,6 +16,8 @@ IO_RANDOM_WALK
 ./src/main/resources/small_alphabet.xml
 -maxDepthRA
 4
+-depth
+4
 -probNewDataValue
 0.5
 -seed
@@ -57,7 +59,7 @@ Initiator
 
 ##### SulConfig #####
 -responseWait
-300
+100
 -processDir
 ./experiments/models/servers/lakers
 -cmd
