@@ -4,9 +4,9 @@ import com.github.protocolfuzzing.protocolstatefuzzer.entrypoints.CommandLinePar
 
 import java.util.List;
 
-public class Main {
+public class MainRA {
     public static void main(String[] args) {
-        MultiBuilder mb = new MultiBuilder();
+        MultiBuilderRA mb = new MultiBuilderRA();
         String[] parentLoggers = { Main.class.getPackageName() };
 
         CommandLineParser<?> commandLineParser = new CommandLineParser<>(mb, mb, mb, mb);

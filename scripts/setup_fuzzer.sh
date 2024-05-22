@@ -75,7 +75,8 @@ setup_fuzzer() {
     set -e
     cd "${BASE_DIR}"
     mvn clean verify
-    ln -sf "${BASE_DIR}"/target/edhoc-fuzzer-*-jar-with-dependencies.jar edhoc-fuzzer.jar
+    ln -sf "${BASE_DIR}"/target/edhoc-fuzzer-*-Mealy.jar edhoc-fuzzer.jar
+    ln -sf "${BASE_DIR}"/target/edhoc-fuzzer-*-RA.jar edhoc-fuzzerRA.jar
     set +e
 }
 
