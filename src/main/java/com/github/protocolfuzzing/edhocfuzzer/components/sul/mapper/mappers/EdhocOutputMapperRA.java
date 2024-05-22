@@ -163,12 +163,8 @@ public class EdhocOutputMapperRA
 
             case EDHOC_MESSAGE_2 -> {
                 ok = messageProcessorPersistent.readMessage2(responsePayload);
-
-                Integer parameter = EdhocUtil
                 OutputSymbol base = newBaseSymbol(MessageOutputTypeRA.EDHOC_MESSAGE_2_OUTPUT);
-                LOGGER.info("Reading as Message 2, DataValue: " + parameter);
-                DataValue<Integer> value = new DataValue<Integer>(base.getPtypes()[0], parameter);
-                return instanceAfterCheck(ok, base, value);
+                return instanceAfterCheck(ok, base);
             }
 
             case EDHOC_MESSAGE_3_OR_4 -> {
@@ -191,11 +187,8 @@ public class EdhocOutputMapperRA
                 LOGGER.info("Reading as EDHOC Message 2 or 3 or 4");
                 ok = messageProcessorPersistent.readMessage2(responsePayload);
                 if (ok) {
-                    Integer parameter = EdhocUtil
                     OutputSymbol base = newBaseSymbol(MessageOutputTypeRA.EDHOC_MESSAGE_2_OUTPUT);
-                    LOGGER.info("Reading as Message 2, DataValue: " + parameter);
-                    DataValue<Integer> value = new DataValue<Integer>(base.getPtypes()[0], parameter);
-                    return instanceFromOutputSymbol(base, value);
+                    return instanceFromOutputSymbol(base);
                 }
 
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
