@@ -15,11 +15,15 @@ IO_RANDOM_WALK
 -alphabet
 ./src/main/resources/small_alphabet.xml
 -maxDepthRA
-4
+10
+-maxRuns
+10000
 -probNewDataValue
 0.5
 -seed
 7
+-socketClosedAsTimeout
+-ceReruns 6
 
 ##### EdhocMapperConfig #####
 -protocolVersion
@@ -62,7 +66,7 @@ helloWorld
 
 ##### SulConfig #####
 -responseWait
-700
+650
 -processDir
 ./experiments/models/servers/rise
 -cmd
