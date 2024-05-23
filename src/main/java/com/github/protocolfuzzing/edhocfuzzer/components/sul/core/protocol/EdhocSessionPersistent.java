@@ -272,6 +272,8 @@ public class EdhocSessionPersistent extends EdhocSession {
 
     public void setConnectionId(byte[] id) {
         this.connectionId = id;
+        setPRKexporter(new byte[] { 1 });
+        setupOscoreContext();
     }
 
     /**
