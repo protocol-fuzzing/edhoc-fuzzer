@@ -12,10 +12,10 @@
         <Logger name="com.github.protocolfuzzing.edhocfuzzer" level="info" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="com.github.protocolfuzzing.protocolstatefuzzer" level="info" additivity="false">
+        <Logger name="com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.sulwrappers.LogginWrapper" level="debug" additivity="true">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.sulwrappers.LogginWrapper" level="debug">
+        <Logger name="com.github.protocolfuzzing.protocolstatefuzzer" level="info" additivity="true">
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="de.learnlib.ralib.learning.AutomatonBuilder" level="error">
