@@ -150,19 +150,6 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
     public void postSendUpdate(PSymbolInstance input, EdhocExecutionContextRA context) {
     }
 
-    public void updatePeerConnectionId(EdhocMapperState state, PSymbolInstance input) {
-        EdhocSessionPersistent session = state.getEdhocSessionPersistent();
-        LOGGER.info("Current PeerConnectionId: " + EdhocUtil.bytesToInt(session.getPeerConnectionId()));
-
-        assert input.getParameterValues().length == 1;
-        DataValue<?> dv = input.getParameterValues()[0];
-        CBORObject value = CBORObject.FromObject(dv.getId());
-        session.setPeerConnectionId(value.EncodeToBytes());
-
-        LOGGER.info("PeerConnectionId after set: " +
-                EdhocUtil.bytesToInt(session.getPeerConnectionId()));
-    }
-
     public void updateConnectionId(EdhocMapperState state, PSymbolInstance input) {
         EdhocSessionPersistent session = state.getEdhocSessionPersistent();
         LOGGER.info("Current ConnectionId: {}", EdhocUtil.bytesToInt(session.getConnectionId()));
