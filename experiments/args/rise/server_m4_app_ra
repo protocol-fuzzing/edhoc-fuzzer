@@ -20,6 +20,8 @@ IO_RANDOM_WALK
 0.5
 -seed
 7
+-memQueryRuns
+3
 
 ##### EdhocMapperConfig #####
 -protocolVersion
@@ -62,7 +64,7 @@ helloWorld
 
 ##### SulConfig #####
 -responseWait
-500
+1000
 -processDir
 ./experiments/models/servers/rise
 -cmd

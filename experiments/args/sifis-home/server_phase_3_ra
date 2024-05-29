@@ -68,13 +68,13 @@ POST
 
 ##### SulConfig #####
 -responseWait
-500
+1000
 -processDir
 ${models.servers}/sifis-home
 -cmd
 java -cp edhoc-applications.jar se.sics.edhocapps.Phase3Server
 -startWait
-400
+800
 
 
 ##### EdhocSulServerConfig #####

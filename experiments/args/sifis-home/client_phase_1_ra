@@ -65,13 +65,13 @@ light
 
 ##### SulConfig #####
 -responseWait
-400
+800
 -processDir
 ${models.clients}/sifis-home
 -cmd
 java -cp edhoc-applications.jar se.sics.edhocapps.Phase1Client -server coap://localhost:5683 1q
 -startWait
-50
+1000
 
 
 ##### EdhocSulClientConfig #####
