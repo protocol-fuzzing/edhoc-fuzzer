@@ -15,7 +15,7 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.Edho
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers.EdhocOutputMapperRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputBuilderRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputCheckerRA;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputTypeRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.EnumAlphabet;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.AbstractSul;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulAdapter;
@@ -196,9 +196,6 @@ public class EdhocSulRA implements AbstractSul<PSymbolInstance, PSymbolInstance,
         boolean timeoutChanged = false;
 
         // handle timeout from extendedWait and from inputResponse
-        // TODO: Find a non-stupid solution. We could add a datatype ExtendedWait
-        // with the sole purpose to hold the value, but that is the definition of an
-        // ugly hack.
         EdhocInputMapperRA inputMapper = (EdhocInputMapperRA) edhocMapperComposer.getInputMapper();
         if (inputMapper.getTimeoutForSymbol(abstractInput) != 0L) {
             edhocMapperConnector.setTimeout(originalTimeout + inputMapper.getTimeoutForSymbol(abstractInput));
@@ -222,8 +219,8 @@ public class EdhocSulRA implements AbstractSul<PSymbolInstance, PSymbolInstance,
     protected void serverWaitForInitialMessage() {
         boolean isServer = !edhocMapperState.isCoapClient();
         boolean isResponder = !edhocMapperState.getEdhocSessionPersistent().isInitiator();
-        MessageOutputType expectedMessageType = isResponder ? MessageOutputType.EDHOC_MESSAGE_1
-                : MessageOutputType.COAP_EMPTY_MESSAGE;
+        MessageOutputTypeRA expectedMessageType = isResponder ? MessageOutputTypeRA.EDHOC_MESSAGE_1_OUTPUT
+                : MessageOutputTypeRA.COAP_EMPTY_MESSAGE_OUTPUT;
 
         if (!isServer || serverWaitForInitialMessageDone) {
             return;

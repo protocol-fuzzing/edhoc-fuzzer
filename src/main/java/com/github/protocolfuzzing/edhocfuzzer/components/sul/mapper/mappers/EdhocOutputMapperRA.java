@@ -30,13 +30,11 @@ public class EdhocOutputMapperRA
     private static final Logger LOGGER = LogManager.getLogger();
 
     EdhocMapperConnector edhocMapperConnector;
-
     EnumAlphabet alphabet;
 
     // FIXME: Suppressing the warning that outputBuilder shadows the same name in
     // parent.
-    // If the enum approach is taken and is standardized this will be solved.
-    // Hack to allow building unsupportedMessage/unknownMessage.
+    // This is to allow building unsupportedMessage/unknownMessage.
     @SuppressWarnings("HidingField")
     EdhocOutputBuilderRA outputBuilder;
 
