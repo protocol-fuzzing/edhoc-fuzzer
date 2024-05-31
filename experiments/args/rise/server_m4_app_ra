@@ -64,13 +64,13 @@ helloWorld
 
 ##### SulConfig #####
 -responseWait
-1000
+500
 -processDir
 ./experiments/models/servers/rise
 -cmd
 java -cp cf-edhoc.jar org.eclipse.californium.edhoc.EdhocServer 5
 -startWait
-1000
+300
 
 
 ##### EdhocSulServerConfig #####

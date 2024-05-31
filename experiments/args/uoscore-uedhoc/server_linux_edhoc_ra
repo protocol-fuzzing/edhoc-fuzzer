@@ -68,7 +68,7 @@ ${models.servers}/uoscore-uedhoc/
 -cmd
 ./linux-edhoc-responder
 -startWait
-100
+50
 
 
 ##### EdhocSulServerConfig #####

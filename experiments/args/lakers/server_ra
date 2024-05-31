@@ -57,7 +57,7 @@ Initiator
 
 ##### SulConfig #####
 -responseWait
-100
+300
 -processDir
 ./experiments/models/servers/lakers
 -cmd
