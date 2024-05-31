@@ -3,7 +3,7 @@ state-fuzzer-server
 
 ##### StateFuzzerConfig #####
 -output
-./experiments/results/server/rise_m4_app
+${results.learning.servers}/rise_m4_app
 
 
 ##### LearnerConfig #####
@@ -48,7 +48,7 @@ X5T
 
 # TestVector
 -testVectorJson
-./experiments/authentication/test_vectors/test_vectors_rise.json
+${authentication.test_vectors}/test_vectors_rise.json
 
 -testVectorJsonKey
 test_vector_ed25519
@@ -66,7 +66,7 @@ helloWorld
 -responseWait
 500
 -processDir
-./experiments/models/servers/rise
+${models.servers}/rise
 -cmd
 java -cp cf-edhoc.jar org.eclipse.californium.edhoc.EdhocServer 5
 -startWait

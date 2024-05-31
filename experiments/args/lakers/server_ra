@@ -43,7 +43,7 @@ KID
 
 # TestVector
 -testVectorJson
-./experiments/authentication/test_vectors/test_vectors_lakers.json
+${authentication.test_vectors}/test_vectors_lakers.json
 
 -testVectorJsonKey
 test_vector_p256
@@ -59,7 +59,7 @@ Initiator
 -responseWait
 300
 -processDir
-./experiments/models/servers/lakers
+${models.servers}/lakers
 -cmd
 ./coapserver
 -startWait
