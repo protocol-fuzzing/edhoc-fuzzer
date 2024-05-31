@@ -20,6 +20,7 @@ IO_RANDOM_WALK
 0.5
 -seed
 7
+-socketClosedAsTimeout
 
 ##### EdhocMapperConfig #####
 -protocolVersion
@@ -57,13 +58,13 @@ Initiator
 
 ##### SulConfig #####
 -responseWait
-300
+400
 -processDir
 ${models.servers}/lakers
 -cmd
 ./coapserver
 -startWait
-50
+100
 
 
 ##### EdhocSulServerConfig #####
