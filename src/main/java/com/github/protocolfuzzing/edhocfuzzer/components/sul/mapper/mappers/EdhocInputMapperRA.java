@@ -152,14 +152,14 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
 
     public void updateConnectionId(EdhocMapperState state, PSymbolInstance input) {
         EdhocSessionPersistent session = state.getEdhocSessionPersistent();
-        LOGGER.info("Current ConnectionId: {}", EdhocUtil.bytesToInt(session.getConnectionId()));
+        LOGGER.debug("ConnectionId before set: {}", EdhocUtil.bytesToInt(session.getConnectionId()));
 
         assert input.getParameterValues().length == 1;
         DataValue<?> dv = input.getParameterValues()[0];
         CBORObject value = CBORObject.FromObject(dv.getId());
         session.setConnectionId(value.EncodeToBytes());
 
-        LOGGER.info("ConnectionId after set: " +
+        LOGGER.debug("ConnectionId after set: " +
                 EdhocUtil.bytesToInt(session.getConnectionId()));
 
         EdhocSessionPersistent new_session = state.getEdhocSessionPersistent();
