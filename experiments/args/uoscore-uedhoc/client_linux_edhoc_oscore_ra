@@ -12,7 +12,7 @@ RaLambda
 IO_RANDOM_WALK
 -logQueries
 -alphabet
-./src/main/resources/small_alphabet.xml
+./src/main/resources/alphabet_placeholder.xml
 -maxDepthRA
 4
 -probNewDataValue
