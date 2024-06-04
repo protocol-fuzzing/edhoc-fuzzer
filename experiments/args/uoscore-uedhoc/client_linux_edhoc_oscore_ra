@@ -7,7 +7,7 @@ ${results.learning.clients}/uoscore-uedhoc_linux_edhoc_oscore
 
 ##### LearnerConfig #####
 -learningAlgorithm
-RaStar
+RaLambda
 -equivalenceAlgorithms
 IO_RANDOM_WALK
 -logQueries
