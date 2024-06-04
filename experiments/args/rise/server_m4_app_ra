@@ -23,6 +23,8 @@ IO_RANDOM_WALK
 -socketClosedAsTimeout
 -memQueryRuns
 3
+-maxRuns
+1000
 
 ##### EdhocMapperConfig #####
 -protocolVersion
