@@ -329,7 +329,6 @@ public class MessageProcessorPersistent {
 
         CBORObject connectionIdentifierInitiatorCbor = CBORObject.FromObject(connectionIdentifierInitiator);
         EdhocSessionPersistent session = edhocSessions.get(connectionIdentifierInitiatorCbor);
-        LOGGER.info("Sessions: " + edhocSessions);
         if (session == null) {
             LOGGER.error("R_M2: EDHOC session not found");
             return false;
@@ -1366,7 +1365,6 @@ public class MessageProcessorPersistent {
         }
 
         byte[] connectionIdResponder = oldSession.getConnectionId();
-        LOGGER.info("Old Connection ID: " + EdhocUtil.bytesToInt(connectionIdResponder));
         if (edhocMapperState.getEdhocMapperConfig().generateOwnConnectionId()) {
             connectionIdResponder = Util.getConnectionId(endpointInfo.getUsedConnectionIds(),
                     endpointInfo.getOscoreDb(), connectionIdInitiator);
@@ -1418,8 +1416,6 @@ public class MessageProcessorPersistent {
         // Update edhocSessions
         edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent()
                 .put(CBORObject.FromObject(connectionIdResponder), newSession);
-        LOGGER.info("Sessions after update: "
-                + edhocMapperState.getEdhocEndpointInfoPersistent().getEdhocSessionsPersistent());
 
         LOGGER.debug("Successful processing of EDHOC Message 1");
         return true;
