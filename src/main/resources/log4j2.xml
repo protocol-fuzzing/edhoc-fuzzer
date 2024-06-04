@@ -12,23 +12,8 @@
         <Logger name="com.github.protocolfuzzing.edhocfuzzer" level="info" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.sulwrappers.LogginWrapper" level="debug" additivity="true">
+        <Logger name="com.github.protocolfuzzing.protocolstatefuzzer" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
-        </Logger>
-        <Logger name="com.github.protocolfuzzing.protocolstatefuzzer" level="info" additivity="true">
-            <AppenderRef ref="Console"/>
-        </Logger>
-        <Logger name="de.learnlib.ralib.learning.AutomatonBuilder" level="error">
-            <AppenderRef ref="Console" />
-        </Logger>
-        <Logger name="de.learnlib.ralib.learning.CounterexampleAnalysis" level="trace">
-            <AppenderRef ref="Console"/>
-        </Logger>
-        <Logger name="de.learnlib.ralib.learning.rastar.RaStar" level="info" additivity="false">
-            <AppenderRef ref="Console" />
-        </Logger>
-        <Logger name="de.learnlib.ralib.learning.rastar" level="error" additivity="false">
-            <AppenderRef ref="Console" />
         </Logger>
         <Logger name="de.learnlib.ralib" level="info" additivity="false">
             <AppenderRef ref="Console" />
@@ -36,7 +21,7 @@
         <Logger name="org.eclipse.californium" level="error">
             <AppenderRef ref="Console" />
         </Logger>
-                <Root level="error">
+        <Root level="error">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>
