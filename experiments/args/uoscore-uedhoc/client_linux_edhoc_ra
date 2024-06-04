@@ -2,7 +2,7 @@ state-fuzzer-client
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.clients}/uoscore-uedhoc_linux_edhoc
+${results.learning.clients.ra}/uoscore-uedhoc_linux_edhoc
 
 
 ##### LearnerConfig #####

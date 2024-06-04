@@ -3,7 +3,7 @@ state-fuzzer-client
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.clients}/sifis-home_phase_3
+${results.learning.clients.mealy}/sifis-home_phase_3
 
 
 ##### LearnerConfig #####

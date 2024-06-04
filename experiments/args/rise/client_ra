@@ -3,7 +3,7 @@ state-fuzzer-client
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.clients}/rise
+${results.learning.clients.ra}/rise
 
 
 ##### LearnerConfig #####
