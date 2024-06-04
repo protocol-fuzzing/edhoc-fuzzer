@@ -78,12 +78,12 @@ jobs:
       - name: Test Lakers Server (Mealy)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/lakers/server -roundLimit 3
-          ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/lakers experiments/results/servers/lakers 2
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/lakers experiments/results/servers/mealy/lakers 2
       
       - name: Test Lakers Server (RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra
-          ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/lakers experiments/results/servers/lakers 2
+          ./scripts/diff_hyps.sh experiments/saved_results/servers/lakers experiments/results/servers/ra/lakers 2
 
       - name: Compress results
         run: |
