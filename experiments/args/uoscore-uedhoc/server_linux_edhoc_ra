@@ -8,7 +8,7 @@ ${results.learning.servers.ra}/uoscore-uedhoc_linux_edhoc
 
 ##### LearnerConfig #####
 -learningAlgorithm
-RaLambda
+RaStar
 -equivalenceAlgorithms
 IO_RANDOM_WALK
 -logQueries
