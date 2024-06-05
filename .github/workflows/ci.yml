@@ -35,20 +35,14 @@ jobs:
       - name: Test Lakers Client (RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra
-          
-
-      - name: Compress results
-        run: |
-          tar -czf lakers_client_mealy.tar.gz experiments/results/clients/mealy/lakers
-          tar -czf lakers_client_ra.tar.gz experiments/results/clients/ra/lakers
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: Results
+          name: Lakers Client
           path: |
-            lakers_client_mealy.tar.gz
-            lakers_client_ra.tar.gz
+            experiments/results/clients/mealy/lakers
+            experiments/results/clients/ra/lakers
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/lakers experiments/results/clients/mealy/lakers 3
@@ -89,20 +83,14 @@ jobs:
       - name: Test Lakers Server (RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra
-          
-
-      - name: Compress results
-        run: |
-          tar -czf lakers_server_mealy.tar.gz experiments/results/servers/mealy/lakers
-          tar -czf lakers_server_ra.tar.gz experiments/results/servers/ra/lakers
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: Results
+          name: Lakers Server
           path: |
-            lakers_server_mealy.tar.gz
-            lakers_server_ra.tar.gz
+            experiments/results/servers/mealy/lakers
+            experiments/results/servers/ra/lakers
         
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/lakers experiments/results/servers/mealy/lakers 2
@@ -139,20 +127,14 @@ jobs:
       - name: Test RISE Client (m4_app, RA) 
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra
-          
-
-      - name: Compress results
-        run: |
-          tar -czf rise_m4_client_mealy.tar.gz experiments/results/clients/mealy/rise_m4_app
-          tar -czf rise_m4_client_ra.tar.gz experiments/results/clients/ra/rise_m4_app
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: Results
+          name: RISE Client
           path: |
-            rise_m4_client_mealy.tar.gz
-            rise_m4_client_ra.tar.gz
+            experiments/results/clients/mealy/rise_m4_app
+            experiments/results/clients/ra/rise_m4_app
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/rise_m4_app experiments/results/clients/mealy/rise_m4_app 4
@@ -189,20 +171,14 @@ jobs:
       - name: Test RISE Server (m4_app, RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/rise/server_m4_app_ra
-          
-
-      - name: Compress results
-        run: |
-          tar -czf rise_m4_server_mealy.tar.gz experiments/results/servers/mealy/rise_m4_app
-          tar -czf rise_m4_server_ra.tar.gz experiments/results/servers/ra/rise_m4_app
   
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: Results
+          name: RISE Server
           path: |
-            rise_m4_server_mealy.tar.gz
-            rise_m4_server_ra.tar.gz
+            experiments/results/servers/mealy/rise_m4_app
+            experiments/results/servers/ra/rise_m4_app
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/rise_m4_app experiments/results/servers/mealy/rise_m4_app 5
@@ -239,20 +215,14 @@ jobs:
       - name: Test SIFIS-HOME Client (phase_1, RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/sifis-home/client_phase_1_ra
-         
-
-      - name: Compress results
-        run: |
-          tar -czf sifis-home_phase_1_client_mealy.tar.gz experiments/results/clients/mealy/sifis-home_phase_1
-          tar -czf sifis-home_phase_1_client_ra.tar.gz experiments/results/clients/ra/sifis-home_phase_1
     
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: Results
+          name: SIFIS-HOME Client
           path: |
-            sifis-home_phase_1_client_mealy.tar.gz
-            sifis-home_phase_1_client_ra.tar.gz
+            experiments/results/clients/mealy/sifis-home_phase_1
+            experiments/results/clients/ra/sifis-home_phase_1
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/sifis-home_phase_1 experiments/results/clients/mealy/sifis-home_phase_1 4
@@ -301,8 +271,8 @@ jobs:
         with:
           name: Results
           path: |
-            sifis-home_phase_1_server_mealy.tar.gz
-            sifis-home_phase_1_server_ra.tar.gz
+            experiments/results/servers/mealy/sifis-home_phase_1
+            experiments/results/servers/ra/sifis-home_phase_1
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/sifis-home_phase_1 experiments/results/servers/mealy/sifis-home_phase_1 5
@@ -338,20 +308,14 @@ jobs:
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra
-          
-
-      - name: Compress results
-        run: |
-          tar -czf uoscore-uedhoc_linux_edhoc_client_mealy.tar.gz experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc
-          tar -czf uoscore-uedhoc_linux_edhoc_client_ra.tar.gz experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc
     
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: Results
+          name: uOSCORE-uEDHOC Client
           path: |
-            uoscore-uedhoc_linux_edhoc_client_mealy.tar.gz
-            uoscore-uedhoc_linux_edhoc_client_ra.tar.gz
+            experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore 
+            experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore 3
@@ -389,21 +353,16 @@ jobs:
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra
   
-
-      - name: Compress results
-        run: |
-          tar -czf uoscore-uedhoc_linux_edhoc_server_mealy.tar.gz experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc
-          tar -czf uoscore-uedhoc_linux_edhoc_server_ra.tar.gz experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc
-  
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: Results
+          name: uOSCORE-uEDHOC Server
           path: |
-            uoscore-uedhoc_linux_edhoc_server_mealy.tar.gz
-            uoscore-uedhoc_linux_edhoc_server_ra.tar.gz
+            experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore 
+            experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore 2
+        
       - name: Diff RA
         run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 2
