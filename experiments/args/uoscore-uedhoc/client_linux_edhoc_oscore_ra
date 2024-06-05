@@ -7,14 +7,14 @@ ${results.learning.clients.ra}/uoscore-uedhoc_linux_edhoc_oscore
 
 ##### LearnerConfig #####
 -learningAlgorithm
-RaLambda
+RaStar
 -equivalenceAlgorithms
 IO_RANDOM_WALK
 -logQueries
 -alphabet
 ./src/main/resources/alphabet_placeholder.xml
 -maxDepthRA
-4
+10
 -probNewDataValue
 0.5
 -seed
