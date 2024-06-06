@@ -45,10 +45,10 @@ jobs:
             experiments/results/clients/ra/lakers
 
       - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/lakers experiments/results/clients/mealy/lakers 3
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/lakers experiments/results/clients/mealy/lakers 3
 
       - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/lakers experiments/results/clients/ra/lakers 3
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/lakers experiments/results/clients/ra/lakers 4
 
   Lakers-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -93,10 +93,10 @@ jobs:
             experiments/results/servers/ra/lakers
         
       - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/lakers experiments/results/servers/mealy/lakers 2
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/lakers experiments/results/servers/mealy/lakers 2
 
       - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/lakers experiments/results/servers/ra/lakers 2
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/lakers experiments/results/servers/ra/lakers 7
 
   RISE-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -137,10 +137,10 @@ jobs:
             experiments/results/clients/ra/rise_m4_app
 
       - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/rise_m4_app experiments/results/clients/mealy/rise_m4_app 4
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/rise_m4_app experiments/results/clients/mealy/rise_m4_app 4
 
       - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/rise_m4_app experiments/results/clients/ra/rise_m4_app 4
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/rise_m4_app experiments/results/clients/ra/rise_m4_app 11
 
   RISE-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -181,10 +181,10 @@ jobs:
             experiments/results/servers/ra/rise_m4_app
 
       - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/rise_m4_app experiments/results/servers/mealy/rise_m4_app 5
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/rise_m4_app experiments/results/servers/mealy/rise_m4_app 5
 
       - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/rise_m4_app experiments/results/servers/ra/rise_m4_app 5
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/rise_m4_app experiments/results/servers/ra/rise_m4_app 12
   
   SIFIS-HOME-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -225,10 +225,10 @@ jobs:
             experiments/results/clients/ra/sifis-home_phase_1
 
       - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/sifis-home_phase_1 experiments/results/clients/mealy/sifis-home_phase_1 4
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/sifis-home_phase_1 experiments/results/clients/mealy/sifis-home_phase_1 4
 
       - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/sifis-home_phase_1 experiments/results/clients/ra/sifis-home_phase_1 4
+        run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/sifis-home_phase_1 experiments/results/clients/ra/sifis-home_phase_1 12
 
   SIFIS-HOME-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -275,10 +275,10 @@ jobs:
             experiments/results/servers/ra/sifis-home_phase_1
 
       - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/sifis-home_phase_1 experiments/results/servers/mealy/sifis-home_phase_1 5
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/sifis-home_phase_1 experiments/results/servers/mealy/sifis-home_phase_1 5
 
       - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/sifis-home_phase_1 experiments/results/servers/ra/sifis-home_phase_1 5
+        run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/sifis-home_phase_1 experiments/results/servers/ra/sifis-home_phase_1 16
     
   uOSCORE-uEDHOC-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -318,10 +318,10 @@ jobs:
             experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 
 
       - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore 3
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore 3
 
       - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 3
+        run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 9
     
   uOSCORE-uEDHOC-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -362,7 +362,7 @@ jobs:
             experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 
 
       - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore 2
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore 2
         
       - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 2
+        run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 5
