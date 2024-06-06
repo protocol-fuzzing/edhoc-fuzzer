@@ -15,7 +15,7 @@ IO_RANDOM_WALK
 -alphabet
 ./src/main/resources/alphabet_placeholder.xml
 -maxDepthRA
-4
+10
 -maxRuns
 10000
 -probNewDataValue
