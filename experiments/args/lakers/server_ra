@@ -8,7 +8,7 @@ ${results.learning.servers.ra}/lakers
 
 ##### LearnerConfig #####
 -learningAlgorithm
-RaLambda
+RaStar
 -equivalenceAlgorithms
 IO_RANDOM_WALK
 -logQueries
