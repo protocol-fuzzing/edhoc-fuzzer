@@ -24,7 +24,7 @@ IO_RANDOM_WALK
 -memQueryRuns
 3
 -timeLimit
-PT5H45M
+PT5H30M
 
 ##### EdhocMapperConfig #####
 -protocolVersion
