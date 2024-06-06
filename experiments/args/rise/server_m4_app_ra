@@ -8,7 +8,7 @@ ${results.learning.servers.ra}/rise_m4_app
 
 ##### LearnerConfig #####
 -learningAlgorithm
-RaStar
+RaLambda
 -equivalenceAlgorithms
 IO_RANDOM_WALK
 -logQueries

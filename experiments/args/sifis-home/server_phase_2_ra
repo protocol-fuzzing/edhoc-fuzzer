@@ -8,7 +8,7 @@ ${results.learning.servers.ra}/sifis-home_phase_2
 
 ##### LearnerConfig #####
 -learningAlgorithm
-RaStar
+RaLambda
 -equivalenceAlgorithms
 IO_RANDOM_WALK
 -logQueries
