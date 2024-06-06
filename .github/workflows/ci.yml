@@ -269,7 +269,7 @@ jobs:
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: Results
+          name: SIFIS-HOME Server
           path: |
             experiments/results/servers/mealy/sifis-home_phase_1
             experiments/results/servers/ra/sifis-home_phase_1
