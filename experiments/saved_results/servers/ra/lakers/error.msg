@@ -1,5 +1,5 @@
-Index -1 out of bounds for length 6
-java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 6
+Index -1 out of bounds for length 16
+java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 16
 	at de.learnlib.ralib.learning.CounterexampleAnalysis.binarySearch(CounterexampleAnalysis.java:263)
 	at de.learnlib.ralib.learning.CounterexampleAnalysis.analyzeCounterexample(CounterexampleAnalysis.java:75)
 	at de.learnlib.ralib.learning.rastar.RaStar.analyzeCounterExample(RaStar.java:173)
