@@ -21,6 +21,8 @@ IO_RANDOM_WALK
 -seed
 7
 -socketClosedAsTimeout
+-timeLimit
+PT5H50M
 
 
 ##### EdhocMapperConfig #####

@@ -58,13 +58,13 @@ Initiator
 
 ##### SulConfig #####
 -responseWait
-500
+600
 -processDir
 ${models.servers}/lakers
 -cmd
 ./coapserver
 -startWait
-200
+500
 
 
 ##### EdhocSulServerConfig #####
