@@ -15,14 +15,12 @@ IO_RANDOM_WALK
 -alphabet
 ./src/main/resources/alphabet_placeholder.xml
 -maxDepthRA
-10
+4
 -probNewDataValue
 0.5
 -seed
 7
 -socketClosedAsTimeout
--timeLimit
-PT5H50M
 
 
 ##### EdhocMapperConfig #####
