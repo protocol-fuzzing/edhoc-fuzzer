@@ -15,7 +15,7 @@ setup_psf() {
     git clone "https://github.com/protocol-fuzzing/protocol-state-fuzzer.git"
     cd protocol-state-fuzzer
     git checkout ${CHECKOUT}
-    mvn install
+    mvn install -DskipTests
 
     cd "${BASE_DIR}"
     rm -rf ./protocol-state-fuzzer/
