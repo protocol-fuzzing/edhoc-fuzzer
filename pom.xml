@@ -15,7 +15,7 @@
 
         <protocol-state-fuzzer.version>1.0.0</protocol-state-fuzzer.version>
         <cf-edhoc.version>0.0.0</cf-edhoc.version>
-        <error-prone.version>2.31.0</error-prone.version>
+        <error-prone.version>2.32.0</error-prone.version>
         <gson.version>2.11.0</gson.version>
         <guava.version>33.3.0-jre</guava.version>
         <jakarta-xml.version>4.0.2</jakarta-xml.version>
