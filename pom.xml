@@ -20,7 +20,7 @@
         <guava.version>33.3.1-jre</guava.version>
         <jakarta-xml.version>4.0.2</jakarta-xml.version>
         <jcommander.version>1.82</jcommander.version>
-        <log4j.version>2.24.1</log4j.version>
+        <log4j.version>2.24.2</log4j.version>
     </properties>
 
     <dependencyManagement>
