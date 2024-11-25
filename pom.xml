@@ -242,6 +242,7 @@
                        <arg>-Werror</arg>
                        <arg>-Xlint:all</arg>
                        <arg>-XDcompilePolicy=simple</arg>
+                       <arg>--should-stop=ifError=FLOW</arg>
                        <arg>-Xplugin:ErrorProne -Xep:AddressSelection:OFF -Xep:NonApiType:OFF -Xep:WaitNotInLoop:OFF</arg>
                    </compilerArgs>
                    <annotationProcessorPaths>
