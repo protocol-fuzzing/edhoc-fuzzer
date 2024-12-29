@@ -163,12 +163,12 @@ public class EdhocLayerPersistent extends AbstractLayer {
             }
 
             // Prepare the actual OSCORE request, by replacing the payload
-            byte[] oscorePayload = combinedMessagePair.oscorePayload();
+            byte[] oscorePayload = combinedMessagePair.oscorePayload;
             LOGGER.debug(EdhocUtil.byteArrayToString("OSCORE request payload", oscorePayload));
             request.setPayload(oscorePayload);
 
             // Rebuild the full message_3 sequence
-            CBORObject edhocMessage3 = combinedMessagePair.edhocMessage3();
+            CBORObject edhocMessage3 = combinedMessagePair.edhocMessage3;
             List<CBORObject> edhocObjectList = new ArrayList<>();
 
             // Find C_R, by encoding the 'kid' from the OSCORE option
@@ -296,7 +296,15 @@ public class EdhocLayerPersistent extends AbstractLayer {
         return combinedMessage;
     }
 
-    protected record CombinedMessagePair(CBORObject edhocMessage3, byte[] oscorePayload) {}
+    protected static class CombinedMessagePair {
+        public CBORObject edhocMessage3;
+        public byte[] oscorePayload;
+
+        public CombinedMessagePair(CBORObject edhocMessage3, byte[] oscorePayload) {
+            this.edhocMessage3 = edhocMessage3;
+            this.oscorePayload = oscorePayload;
+        }
+    }
 
     protected CombinedMessagePair splitCombinedMessage(byte[] combinedMessage) {
         if (combinedMessage == null) {
