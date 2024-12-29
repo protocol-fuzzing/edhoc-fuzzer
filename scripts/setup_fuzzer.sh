@@ -8,7 +8,7 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    CHECKOUT="generics"
+    CHECKOUT="d665cb9d4396ced98131df70adb445150b4d3704"
 
     set -e
     cd "${BASE_DIR}"
@@ -32,7 +32,7 @@ setup_ralib() {
     git clone "https://github.com/LearnLib/ralib"
     cd ralib
     git checkout ${CHECKOUT}
-    mvn install
+    bash ./install.sh
 
     cd "${BASE_DIR}"
     rm -rf ./ralib/
