@@ -64,6 +64,9 @@ public class EdhocMapperConfig extends MapperConfigStandard {
     @Parameter(names = "-disableContentFormat", description = "Do not add CoAP Content-Format in sending messages")
     protected boolean disableContentFormat = false;
 
+    @Parameter(names = "-useOldContentFormat", description = "Use the old CoAP Content-Format (6500x) in sending messages")
+    protected boolean useOldContentFormat = false;
+
     @Parameter(names = "-enableSessionReset", description = "Reset to default old session data, when Initiator mapper "
             + "sends a message to start a new session. Reset does not affect a Responder mapper")
     protected boolean enableSessionReset = false;
@@ -154,6 +157,10 @@ public class EdhocMapperConfig extends MapperConfigStandard {
 
     public boolean useContentFormat() {
         return !disableContentFormat;
+    }
+
+    public boolean useOldContentFormat() {
+        return useOldContentFormat;
     }
 
     public boolean useSessionReset() {
@@ -248,6 +255,7 @@ public class EdhocMapperConfig extends MapperConfigStandard {
         printWriter.println("App Message Payload To Coap Client: " + getAppMessagePayloadToCoapClient());
         printWriter.println("Coap Error As Edhoc Error: " + isCoapErrorAsEdhocError());
         printWriter.println("use Content Format: " + useContentFormat());
+        printWriter.println("use Old Content Format: " + useOldContentFormat());
         printWriter.println("use Session Reset: " + useSessionReset());
         printWriter.println("use CX Correlation: " + useCXCorrelation());
         printWriter.println("Own Connection Id: " + this.ownConnectionId);
