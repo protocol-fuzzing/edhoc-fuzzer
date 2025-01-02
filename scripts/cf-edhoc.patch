@@ -160,39 +160,7 @@ index 78fc7c2f2..2ecc18748 100644
  
          // Attempt to recalculate Y value if missing
  		if (publicKeyY == null) {
-@@ -508,6 +508,31 @@ public class SharedSecretCalculation {
- 		return key;
- 	}
- 
-+	/**
-+	 * Takes a byte array and returns a new left zero-padded array of the
-+	 * specified length, if the input array is smaller than the specified length.
-+	 * Otherwise the original array is returned.
-+	 *
-+	 * @param base the original byte array
-+	 * @param length the desired length of the output
-+	 *
-+	 * @return a byte array of the specified length after adding leftmost zero-padding
-+	 *         or the original byte array
-+	 */
-+	public static byte[] padLeft(byte[] base, int length) {
-+		if (base.length >= length) {
-+			return base;
-+		}
-+
-+		int b_offset = 0;
-+		int r_offset = length - base.length;
-+		int r_length = base.length;
-+		byte[] result = new byte[length];
-+
-+		System.arraycopy(base, b_offset, result, r_offset, r_length);
-+		return result;
-+	}
-+
- 	/**
- 	 * Takes an ECDSA_256 X coordinate and computes a valid Y value for that X.
- 	 * Will only only return one of the possible Y values.
-@@ -530,7 +555,7 @@ public class SharedSecretCalculation {
+@@ -530,7 +530,7 @@ public class SharedSecretCalculation {
  	 * @return the recomputed Y value for that X
  	 * @throws CoseException if recomputation fails
  	 */
@@ -201,26 +169,6 @@ index 78fc7c2f2..2ecc18748 100644
  
  		BigInteger x = new BigInteger(1, publicKeyX);
  
-@@ -557,8 +582,8 @@ public class SharedSecretCalculation {
- 		// System.out.println("Root2: " +
- 		// StringUtil.byteArray2HexString(root2.toByteArray()));
- 
--		byte[] root1Bytes = root1.toByteArray();
--		byte[] root2Bytes = root2.toByteArray();
-+		byte[] root1Bytes = padLeft(root1.toByteArray(), 32);
-+		byte[] root2Bytes = padLeft(root2.toByteArray(), 32);
- 
- 		if (root1Bytes.length == 33) {
- 			root1Bytes = Arrays.copyOfRange(root1Bytes, 1, 33);
-@@ -567,7 +592,7 @@ public class SharedSecretCalculation {
- 			root2Bytes = Arrays.copyOfRange(root2Bytes, 1, 33);
- 		}
- 
--		byte[] xBytes = x.toByteArray();
-+		byte[] xBytes = padLeft(x.toByteArray(), 32);
- 		if (xBytes.length == 33) {
- 			xBytes = Arrays.copyOfRange(xBytes, 1, 33);
- 		}
 @@ -642,7 +667,7 @@ public class SharedSecretCalculation {
  	 * @return the recomputed Y value for that X
  	 * @throws CoseException if recomputation fails
@@ -230,26 +178,6 @@ index 78fc7c2f2..2ecc18748 100644
  
  		BigInteger x = new BigInteger(1, publicKeyX);
  
-@@ -667,8 +692,8 @@ public class SharedSecretCalculation {
- 		BigInteger root1 = squareMod(combined, prime);
- 		BigInteger root2 = root1.negate().mod(prime);
- 
--		byte[] root1Bytes = root1.toByteArray();
--		byte[] root2Bytes = root2.toByteArray();
-+		byte[] root1Bytes = padLeft(root1.toByteArray(), 48);
-+		byte[] root2Bytes = padLeft(root2.toByteArray(), 48);
- 
- 		if (root1Bytes.length == 49) {
- 			root1Bytes = Arrays.copyOfRange(root1Bytes, 1, 49);
-@@ -677,7 +702,7 @@ public class SharedSecretCalculation {
- 			root2Bytes = Arrays.copyOfRange(root2Bytes, 1, 49);
- 		}
- 
--		byte[] xBytes = x.toByteArray();
-+		byte[] xBytes = padLeft(x.toByteArray(), 48);
- 		if (xBytes.length == 49) {
- 			xBytes = Arrays.copyOfRange(xBytes, 1, 49);
- 		}
 @@ -752,7 +777,7 @@ public class SharedSecretCalculation {
       * @param val the value to square
       * @return one of the square roots

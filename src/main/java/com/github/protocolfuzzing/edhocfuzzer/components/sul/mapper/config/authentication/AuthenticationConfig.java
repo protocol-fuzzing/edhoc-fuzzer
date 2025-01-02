@@ -26,10 +26,9 @@ public class AuthenticationConfig implements RunDescriptionPrinter {
     protected IdCredType sulIdCredType = null;
 
     @Parameter(names = "-trustModel", description = "Trust Model for verifying authentication credentials of the SUL. "
-            + "Notes: STRICT means 'Trust and use only a stored and valid credential', "
-            + "LOFU means 'Trust and use a stored and valid credential or a valid credential with stored credential identifier', "
-            + "TOFU means 'Trust and use any (new) valid credential'.")
-    protected TrustModel trustModel = TrustModel.STRICT;
+            + "Notes: NO_LEARNING means 'Trust and use only a stored and valid credential', "
+            + "LEARNING means 'Trust and use any (new) valid credential'.")
+    protected TrustModel trustModel = TrustModel.NO_LEARNING;
 
     @ParametersDelegate
     protected ManyFilesAuthenticationConfig manyFilesAuthenticationConfig;
@@ -125,9 +124,8 @@ public class AuthenticationConfig implements RunDescriptionPrinter {
     }
 
     protected enum TrustModel {
-        STRICT(Constants.TRUST_MODEL_STRICT),
-        LOFU(Constants.TRUST_MODEL_LOFU),
-        TOFU(Constants.TRUST_MODEL_TOFU);
+        NO_LEARNING(Constants.TRUST_MODEL_NO_LEARNING),
+        LEARNING(Constants.TRUST_MODEL_LEARNING);
 
         private final Integer integer;
 

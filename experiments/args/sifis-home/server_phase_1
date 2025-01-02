@@ -22,6 +22,8 @@ v22
 -combinedMessageVersion
 v07
 
+-useOldContentFormat
+
 ## Mapper Auth ##
 
 -mapCredType
