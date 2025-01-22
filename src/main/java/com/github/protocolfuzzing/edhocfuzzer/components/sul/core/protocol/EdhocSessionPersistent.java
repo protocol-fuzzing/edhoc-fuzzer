@@ -65,6 +65,7 @@ public class EdhocSessionPersistent extends EdhocSession {
 
         SideProcessor sideProcessor = new SideProcessor(
             edhocEndpointInfoPersistent.getTrustModel(),
+            edhocEndpointInfoPersistent.getPeerPublicKeys(),
             edhocEndpointInfoPersistent.getPeerCredentials(),
             edhocEndpointInfoPersistent.getEadProductionInput()
         );

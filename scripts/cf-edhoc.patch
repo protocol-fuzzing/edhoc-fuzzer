@@ -88,24 +88,6 @@ diff --git a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCa
 index 78fc7c2f2..2ecc18748 100644
 --- a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
 +++ b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/SharedSecretCalculation.java
-@@ -286,7 +286,7 @@ public class SharedSecretCalculation {
- 	 * 
- 	 * @return a OneKey representing the input material
- 	 */
--	static OneKey buildEd25519OneKey(byte[] privateKey, byte[] publicKey) {
-+	public static OneKey buildEd25519OneKey(byte[] privateKey, byte[] publicKey) {
- 		byte[] rgbX = publicKey;
- 		byte[] rgbD = privateKey;
- 
-@@ -321,7 +321,7 @@ public class SharedSecretCalculation {
- 	 * 
- 	 * @return a OneKey representing the input material
- 	 */
--	static OneKey buildCurve25519OneKey(byte[] privateKey, byte[] publicKey) {
-+	public static OneKey buildCurve25519OneKey(byte[] privateKey, byte[] publicKey) {
- 		byte[] rgbX = publicKey;
- 		byte[] rgbD = privateKey;
- 
 @@ -346,7 +346,7 @@ public class SharedSecretCalculation {
  	 * @param publicKey the public key bytes
  	 * @return a Java KeyPair representing the input material
@@ -151,15 +133,6 @@ index 78fc7c2f2..2ecc18748 100644
  		// Recalculate Y value
  		byte[] publicKeyY = null;
  		try {
-@@ -476,7 +476,7 @@ public class SharedSecretCalculation {
- 	 * 
- 	 * @return a OneKey representing the input material
- 	 */
--	static OneKey buildEcdsa256OneKey(byte[] privateKey, byte[] publicKeyX, byte[] publicKeyY) {
-+	public static OneKey buildEcdsa256OneKey(byte[] privateKey, byte[] publicKeyX, byte[] publicKeyY) {
- 
-         // Attempt to recalculate Y value if missing
- 		if (publicKeyY == null) {
 @@ -530,7 +530,7 @@ public class SharedSecretCalculation {
  	 * @return the recomputed Y value for that X
  	 * @throws CoseException if recomputation fails
@@ -209,8 +182,8 @@ diff --git a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java b/cf
 index 8b887aa6a..b6eab5b87 100644
 --- a/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
 +++ b/cf-edhoc/src/main/java/org/eclipse/californium/edhoc/Util.java
-@@ -1186,7 +1186,7 @@ public class Util {
- 		claimSetMap.Add(Constants.CWT_CLAIMS_SUB, subjectName);
+@@ -1193,7 +1193,7 @@ public class Util {
+ 		
  		claimSetMap.Add(Constants.CWT_CLAIMS_CNF, cnfMap);
  
 -		System.out.println("CCS serialization: " + StringUtil.byteArray2HexString(claimSetMap.EncodeToBytes()));
