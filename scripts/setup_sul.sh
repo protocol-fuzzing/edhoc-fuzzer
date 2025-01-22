@@ -35,7 +35,7 @@ setup_lakers() {
 
 setup_rise() {
   # rise
-  CHECKOUT="d96b10d00f2e5a6af9c9315e2f922d2360c8cb15"
+  CHECKOUT="b08bf12dae965044925eb58ee25717a4d2f8105b"
   PREFIX="${SOURCES_DIR}/californium/cf-edhoc/src"
   POSTFIX="java/org/eclipse/californium/edhoc"
   CF_EDHOC_MAIN_DIR="${PREFIX}/main/${POSTFIX}"
