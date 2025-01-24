@@ -14,7 +14,7 @@ mkdir -p "${SOURCES_DIR}" "${SERVERS_DIR}" "${CLIENTS_DIR}"
 
 setup_lakers() {
   # lakers
-  CHECKOUT="tags/v0.5.0"
+  CHECKOUT="tags/v0.7.2"
 
   set -e
   echo "Setting up Lakers in ${SOURCES_DIR}"
