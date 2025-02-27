@@ -1,15 +1,15 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs;
 
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.initiator.EdhocMessage3;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.protocol.ProtocolMessage;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.ExecutionContext;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContext;
 
 public class EdhocMessage3Input extends EdhocInput {
 
     @Override
-    public ProtocolMessage generateProtocolMessage(ExecutionContext context) {
-        return new EdhocMessage3(new MessageProcessorPersistent(getEdhocMapperState(context)));
+    public EdhocProtocolMessage generateProtocolMessage(EdhocExecutionContext context) {
+        return new EdhocMessage3(new MessageProcessorPersistent(context.getState()));
     }
 
     @Override
