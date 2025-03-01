@@ -12,7 +12,6 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authe
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.authentication.TestVectorAuthenticationConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.CoapExchanger;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.State;
 import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import com.upokecenter.cbor.CBORObject;
 import net.i2p.crypto.eddsa.EdDSASecurityProvider;
@@ -26,13 +25,7 @@ import java.security.Security;
 import java.util.*;
 
 /** Adapted from test files EdhocClient / EdhocServer from edhoc repo */
-public abstract class EdhocMapperState implements State {
-
-    // The protocol version of edhoc used for the session of this state
-    protected ProtocolVersion protocolVersion;
-
-    // The combined message (EDHOC+OSCORE) version used for the session of this state
-    protected CombinedMessageVersion combinedMessageVersion;
+public abstract class EdhocMapperState {
 
     // The authentication method to include in EDHOC message_1 (relevant only when Initiator)
     protected int authenticationMethod;
@@ -98,12 +91,9 @@ public abstract class EdhocMapperState implements State {
 
     protected CleanupTasks cleanupTasks;
 
-    public EdhocMapperState(ProtocolVersion protocolVersion, EdhocMapperConfig edhocMapperConfig,
-                            String edhocSessionUri, String oscoreUri, CleanupTasks cleanupTasks) {
+    public EdhocMapperState(EdhocMapperConfig edhocMapperConfig, String edhocSessionUri, String oscoreUri, CleanupTasks cleanupTasks) {
 
-        this.protocolVersion = protocolVersion;
         this.edhocMapperConfig = edhocMapperConfig;
-        this.combinedMessageVersion = edhocMapperConfig.getCombinedMessageVersion();
         this.cleanupTasks = cleanupTasks;
 
         // Insert security providers
@@ -198,11 +188,11 @@ public abstract class EdhocMapperState implements State {
     }
 
     public ProtocolVersion getProtocolVersion() {
-        return protocolVersion;
+        return edhocMapperConfig.getProtocolVersion();
     }
 
     public CombinedMessageVersion getCombinedMessageVersion() {
-        return combinedMessageVersion;
+        return edhocMapperConfig.getCombinedMessageVersion();
     }
 
     public EdhocSessionPersistent getEdhocSessionPersistent() {

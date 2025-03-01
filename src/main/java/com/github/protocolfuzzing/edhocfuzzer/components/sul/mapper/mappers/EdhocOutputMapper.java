@@ -2,32 +2,41 @@ package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.mappers;
 
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocUtil;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.*;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.EdhocMapperConnector;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.GenericErrorException;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.TimeoutException;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.UnsuccessfulMessageException;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors.UnsupportedMessageException;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContext;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutput;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputBuilder;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.ExecutionContext;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.OutputMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
-public class EdhocOutputMapper extends OutputMapper {
+public class EdhocOutputMapper extends OutputMapper<EdhocOutput, EdhocProtocolMessage, EdhocExecutionContext> {
     private static final Logger LOGGER = LogManager.getLogger();
 
     EdhocMapperConnector edhocMapperConnector;
 
-    public EdhocOutputMapper(MapperConfig mapperConfig, EdhocMapperConnector edhocMapperConnector) {
-        super(mapperConfig);
+    public EdhocOutputMapper(MapperConfig mapperConfig, EdhocOutputBuilder edhocOutputBuilder,
+        EdhocOutputChecker edhocOutputChecker, EdhocMapperConnector edhocMapperConnector) {
+        super(mapperConfig, edhocOutputBuilder, edhocOutputChecker);
         this.edhocMapperConnector = edhocMapperConnector;
     }
 
     @Override
-    public AbstractOutput receiveOutput(ExecutionContext context) {
-        EdhocMapperState edhocMapperState = (EdhocMapperState) context.getState();
+    public EdhocOutput receiveOutput(EdhocExecutionContext context) {
+        EdhocMapperState edhocMapperState = context.getState();
         byte[] responsePayload;
 
         try {
@@ -39,15 +48,15 @@ public class EdhocOutputMapper extends OutputMapper {
         } catch (UnsupportedMessageException e) {
             // special output to demonstrate that the input message the learner requested
             // was unable to be sent and deemed unsupported
-            return new AbstractOutput(MessageOutputType.UNSUPPORTED_MESSAGE.name());
+            return edhocOutput(MessageOutputType.UNSUPPORTED_MESSAGE);
         } catch (UnsuccessfulMessageException e) {
             // special output to demonstrate that the received message evoked an error
             // in a middle layer and did not reach the upper resource in the case of
             // server mapper
-            return new AbstractOutput(MessageOutputType.UNSUCCESSFUL_MESSAGE.name());
+            return edhocOutput(MessageOutputType.UNSUCCESSFUL_MESSAGE);
         }
 
-        AbstractOutput abstractOutput;
+        EdhocOutput abstractOutput;
 
         // Check for application related message
         // including message 3 combined with oscore
@@ -71,10 +80,10 @@ public class EdhocOutputMapper extends OutputMapper {
             return abstractOutput;
         }
 
-        return AbstractOutput.unknown();
+        return outputBuilder.buildUnknown();
     }
 
-    protected AbstractOutput appOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
+    protected EdhocOutput appOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         String messageType = edhocMapperState.isCoapClient() ? "response" : "request";
 
         if (edhocMapperConnector.receivedMsg3WithOscoreApp()) {
@@ -83,7 +92,7 @@ public class EdhocOutputMapper extends OutputMapper {
                     messageType, EdhocUtil.byteArrayToString(responsePayload),
                     new String(responsePayload, StandardCharsets.UTF_8));
 
-            return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_3_OSCORE_APP.name());
+            return edhocOutput(MessageOutputType.EDHOC_MESSAGE_3_OSCORE_APP);
         }
 
         if (edhocMapperConnector.receivedOscoreAppMessage()) {
@@ -101,30 +110,30 @@ public class EdhocOutputMapper extends OutputMapper {
                     messageType, EdhocUtil.byteArrayToString(responsePayload),
                     new String(responsePayload, StandardCharsets.UTF_8));
 
-            return new AbstractOutput(MessageOutputType.OSCORE_APP_MESSAGE.name());
+            return edhocOutput(MessageOutputType.OSCORE_APP_MESSAGE);
         }
 
         return null;
     }
 
-    protected AbstractOutput edhocOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
+    protected EdhocOutput edhocOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(edhocMapperState);
         boolean ok;
 
         switch(messageProcessorPersistent.messageTypeFromStructure(responsePayload)) {
             case EDHOC_ERROR_MESSAGE -> {
                 ok = messageProcessorPersistent.readErrorMessage(responsePayload);
-                return abstractOutputAfterCheck(ok, MessageOutputType.EDHOC_ERROR_MESSAGE.name());
+                return edhocOutputAfterCheck(ok, MessageOutputType.EDHOC_ERROR_MESSAGE);
             }
 
             case EDHOC_MESSAGE_1 -> {
                 ok = messageProcessorPersistent.readMessage1(responsePayload);
-                return abstractOutputAfterCheck(ok, MessageOutputType.EDHOC_MESSAGE_1.name());
+                return edhocOutputAfterCheck(ok, MessageOutputType.EDHOC_MESSAGE_1);
             }
 
             case EDHOC_MESSAGE_2 -> {
                 ok = messageProcessorPersistent.readMessage2(responsePayload);
-                return abstractOutputAfterCheck(ok, MessageOutputType.EDHOC_MESSAGE_2.name());
+                return edhocOutputAfterCheck(ok, MessageOutputType.EDHOC_MESSAGE_2);
             }
 
             case EDHOC_MESSAGE_3_OR_4 -> {
@@ -132,11 +141,11 @@ public class EdhocOutputMapper extends OutputMapper {
                 LOGGER.info("Reading as EDHOC Message 3 or 4");
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
                 if (ok) {
-                    return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_3.name());
+                    return edhocOutput(MessageOutputType.EDHOC_MESSAGE_3);
                 }
 
                 ok = messageProcessorPersistent.readMessage4(responsePayload);
-                return abstractOutputAfterCheck(ok, MessageOutputType.EDHOC_MESSAGE_4.name());
+                return edhocOutputAfterCheck(ok, MessageOutputType.EDHOC_MESSAGE_4);
             }
 
             case EDHOC_MESSAGE_2_OR_3_OR_4 -> {
@@ -144,16 +153,16 @@ public class EdhocOutputMapper extends OutputMapper {
                 LOGGER.info("Reading as EDHOC Message 2 or 3 or 4");
                 ok = messageProcessorPersistent.readMessage2(responsePayload);
                 if (ok) {
-                    return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_2.name());
+                    return edhocOutput(MessageOutputType.EDHOC_MESSAGE_2);
                 }
 
                 ok = messageProcessorPersistent.readMessage3(responsePayload);
                 if (ok) {
-                    return new AbstractOutput(MessageOutputType.EDHOC_MESSAGE_3.name());
+                    return edhocOutput(MessageOutputType.EDHOC_MESSAGE_3);
                 }
 
                 ok = messageProcessorPersistent.readMessage4(responsePayload);
-                return abstractOutputAfterCheck(ok, MessageOutputType.EDHOC_MESSAGE_4.name());
+                return edhocOutputAfterCheck(ok, MessageOutputType.EDHOC_MESSAGE_4);
             }
 
             default -> {
@@ -162,7 +171,7 @@ public class EdhocOutputMapper extends OutputMapper {
         }
     }
 
-    protected AbstractOutput coapOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
+    protected EdhocOutput coapOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         String messageType = edhocMapperState.isCoapClient() ? "response" : "request";
 
         // Check for coap error message
@@ -183,7 +192,7 @@ public class EdhocOutputMapper extends OutputMapper {
                 Server Mapper:
                     received empty coap request for some reason
              */
-            return new AbstractOutput(MessageOutputType.COAP_EMPTY_MESSAGE.name());
+            return edhocOutput(MessageOutputType.COAP_EMPTY_MESSAGE);
         }
 
         // Check for unprotected coap message
@@ -193,24 +202,32 @@ public class EdhocOutputMapper extends OutputMapper {
             LOGGER.info("COAP_APP_MESSAGE ({}): {} ~ {}",
                 messageType, EdhocUtil.byteArrayToString(responsePayload),
                 new String(responsePayload, StandardCharsets.UTF_8));
-            return new AbstractOutput(MessageOutputType.COAP_APP_MESSAGE.name());
+            return edhocOutput(MessageOutputType.COAP_APP_MESSAGE);
         }
 
         // if payload was not empty then a coap message is received
         // because no other transport protocol than coap is supported yet
-        return abstractOutputAfterCheck(responsePayload != null, MessageOutputType.COAP_MESSAGE.name());
+        return edhocOutputAfterCheck(responsePayload != null, MessageOutputType.COAP_MESSAGE);
     }
 
-    protected AbstractOutput abstractOutputAfterCheck(boolean successfulCheck, String outputName) {
-        return successfulCheck ? new AbstractOutput(outputName) : null;
-    }
-
-    protected AbstractOutput coapError() {
+    protected EdhocOutput coapError() {
         if (((EdhocMapperConfig) mapperConfig).isCoapErrorAsEdhocError()) {
-            return new AbstractOutput(MessageOutputType.EDHOC_ERROR_MESSAGE.name());
+            return edhocOutput(MessageOutputType.EDHOC_ERROR_MESSAGE);
         } else {
-            return new AbstractOutput(MessageOutputType.COAP_ERROR_MESSAGE.name());
+            return edhocOutput(MessageOutputType.COAP_ERROR_MESSAGE);
         }
     }
 
+    protected EdhocOutput edhocOutputAfterCheck(boolean successfulCheck, MessageOutputType type) {
+        return successfulCheck ? edhocOutput(type) : null;
+    }
+
+    protected EdhocOutput edhocOutput(MessageOutputType type) {
+        return new EdhocOutput(type.name());
+    }
+
+    @Override
+    protected EdhocOutput buildOutput(String name, List<EdhocProtocolMessage> messages) {
+        return new EdhocOutput(name, messages);
+    }
 }

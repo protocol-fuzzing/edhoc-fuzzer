@@ -1,11 +1,10 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages;
 
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.protocol.ProtocolMessage;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.edhoc.Constants;
 
-public abstract class EdhocProtocolMessage implements ProtocolMessage {
+public abstract class EdhocProtocolMessage {
     // payload of the message
     protected byte[] payload;
 

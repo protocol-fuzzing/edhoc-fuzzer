@@ -8,15 +8,14 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    # this is the commit _just_ before Generics were introduced
-    CHECKOUT="398c9bc526c94294569e46286d43692b5171c175"
+    CHECKOUT="d4d5730bbd9f7f93d8e9eee5165592586e03c833"
 
     set -e
     cd "${BASE_DIR}"
     git clone "https://github.com/protocol-fuzzing/protocol-state-fuzzer.git"
     cd protocol-state-fuzzer
     git checkout ${CHECKOUT}
-    mvn install -DskipTests
+    bash ./install.sh
 
     cd "${BASE_DIR}"
     rm -rf ./protocol-state-fuzzer/

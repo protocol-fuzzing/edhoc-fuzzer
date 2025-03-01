@@ -9,7 +9,7 @@ public class Main {
         MultiBuilder mb = new MultiBuilder();
         String[] parentLoggers = {Main.class.getPackageName()};
 
-        CommandLineParser commandLineParser = new CommandLineParser(mb, mb, mb, mb);
+        CommandLineParser<?> commandLineParser = new CommandLineParser<>(mb, mb, mb, mb);
         commandLineParser.setExternalParentLoggers(parentLoggers);
 
         commandLineParser.parse(args, true, List.of(EdhocDotProcessor::beautify));
