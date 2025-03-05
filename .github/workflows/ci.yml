@@ -24,6 +24,7 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
           source "${HOME}/.cargo/env"
+          rustup toolchain install nightly-2024-06-22-x86_64-unknown-linux-gnu
           ./scripts/setup_sul.sh lakers
 
       - name: Test Lakers Client
@@ -53,6 +54,7 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
           source "${HOME}/.cargo/env"
+          rustup toolchain install nightly-2024-06-22-x86_64-unknown-linux-gnu
           ./scripts/setup_sul.sh lakers
 
       - name: Test Lakers Server
