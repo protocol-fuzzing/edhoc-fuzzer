@@ -45,12 +45,12 @@ public class EdhocDotProcessor {
             // SUL is a client implementation
             MapperConfig mapperConfig = stateFuzzerEnabler.getSulConfig().getMapperConfig();
 
-            if (!(mapperConfig instanceof EdhocMapperConfig)) {
+            if (!(mapperConfig instanceof EdhocMapperConfig edhocMapperConfig)) {
                 LOGGER.error("MapperConfig of StateFuzzerEnabler is not EdhocMapperConfig");
                 return;
             }
 
-            boolean isFuzzerInitiator = ((EdhocMapperConfig) mapperConfig).isInitiator();
+            boolean isFuzzerInitiator = edhocMapperConfig.isInitiator();
 
             // when Fuzzer is Initiator then SUL is Responder
             // when Fuzzer is Responder then SUL is Initiator
