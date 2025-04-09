@@ -195,10 +195,14 @@
                     <formats>
                         <format>
                             <includes>
-                                <include>*.md</include>
-                                <include>*.xml</include>
-                                <include>scripts/*.sh</include>
+                                <include>**/*.md</include>
+                                <include>**/*.xml</include>
+                                <include>**/*.sh</include>
                             </includes>
+                            <excludes>
+                                <exclude>experiments/models/sources/**</exclude>
+                                <exclude>target/**</exclude>
+                            </excludes>
                             <endWithNewline />
                             <trimTrailingWhitespace />
                             <indent>
