@@ -21,7 +21,7 @@ setup_lakers() {
   cd "${SOURCES_DIR}"
   git clone https://github.com/openwsn-berkeley/lakers.git
   cd lakers
-  git checkout ${CHECKOUT}
+  git checkout "${CHECKOUT}"
   cargo build --release
   TGT_DIR=${SOURCES_DIR}/lakers/target/release
 
@@ -50,7 +50,7 @@ setup_rise() {
   git clone https://github.com/rikard-sics/californium.git
   cd californium
   git checkout edhoc
-  git checkout ${CHECKOUT}
+  git checkout "${CHECKOUT}"
   git apply "${PATCH_DIR}"/rise.patch
   cp "${APP_PROFILE_BUILDER}" "${EDHOC_CLIENT}" "${EDHOC_SERVER}" "${CF_EDHOC_MAIN_DIR}"
   mvn package -DskipTests -am -pl cf-edhoc
@@ -75,7 +75,7 @@ setup_sifis_home() {
   SF_HOME_DIR="${SOURCES_DIR}/wp3-solutions"
 
   cd "${SF_HOME_DIR}"
-  git checkout ${CHECKOUT}
+  git checkout "${CHECKOUT}"
   git apply "${PATCH_DIR}"/sifis-home.patch
 
   # install in local repository, in order for the edhoc-applications'
@@ -105,7 +105,7 @@ setup_uoscore_uedhoc() {
   git clone --recurse-submodules https://github.com/eriptic/uoscore-uedhoc.git
   UOE_DIR="${SOURCES_DIR}/uoscore-uedhoc"
   cd "${UOE_DIR}"
-  git checkout ${CHECKOUT}
+  git checkout "${CHECKOUT}"
   git submodule update --checkout
   git apply "${PATCH_DIR}"/uoscore-uedhoc.patch
   make
