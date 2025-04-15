@@ -14,7 +14,7 @@ setup_psf() {
     cd "${BASE_DIR}"
     git clone "https://github.com/protocol-fuzzing/protocol-state-fuzzer.git"
     cd protocol-state-fuzzer
-    git checkout ${CHECKOUT}
+    git checkout "${CHECKOUT}"
     bash ./install.sh
 
     cd "${BASE_DIR}"
@@ -33,7 +33,7 @@ setup_cf_edhoc() {
     git clone "https://github.com/rikard-sics/californium.git"
     cd californium
     git checkout edhoc
-    git checkout ${CHECKOUT}
+    git checkout "${CHECKOUT}"
     git apply "${PATCH_FILE}"
     mvn package -DskipTests -am -pl cf-edhoc
     JAR_FILE=$(ls ./cf-edhoc/target/cf-edhoc-*-SNAPSHOT.jar)
