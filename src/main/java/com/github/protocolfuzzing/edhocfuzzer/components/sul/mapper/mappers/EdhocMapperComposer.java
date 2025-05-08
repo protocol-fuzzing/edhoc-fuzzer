@@ -8,6 +8,7 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outp
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputBuilder;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.MapperComposer;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.OutputBuilder;
 
 public class EdhocMapperComposer extends MapperComposer<EdhocInput, EdhocOutput, EdhocProtocolMessage, EdhocExecutionContext, EdhocMapperState> {
     public EdhocMapperComposer(EdhocInputMapper edhocInputMapper, EdhocOutputMapper edhocOutputMapper) {
@@ -20,7 +21,7 @@ public class EdhocMapperComposer extends MapperComposer<EdhocInput, EdhocOutput,
     }
 
     @Override
-    public EdhocOutputBuilder getOutputBuilder() {
-        return (EdhocOutputBuilder) super.getOutputBuilder();
+    public OutputBuilder<EdhocOutput> getOutputBuilder() {
+        return super.getOutputBuilder();
     }
 }

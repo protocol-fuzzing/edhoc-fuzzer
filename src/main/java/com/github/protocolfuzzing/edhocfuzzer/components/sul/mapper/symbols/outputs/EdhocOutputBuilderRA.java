@@ -5,7 +5,7 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abst
 import de.learnlib.ralib.words.OutputSymbol;
 import de.learnlib.ralib.words.PSymbolInstance;
 
-public class EdhocOutputBuilderRA implements OutputBuilder<PSymbolInstance> {
+public class EdhocOutputBuilderRA extends OutputBuilder<PSymbolInstance> {
 
     @Override
     public PSymbolInstance buildOutput(String name) {

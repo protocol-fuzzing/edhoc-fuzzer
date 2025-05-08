@@ -7,6 +7,7 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outp
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputCheckerRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.mappers.MapperComposerRA;
 import de.learnlib.ralib.words.PSymbolInstance;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.OutputBuilder;
 
 public class EdhocMapperComposerRA extends
         MapperComposerRA<PSymbolInstance, EdhocProtocolMessage, EdhocExecutionContextRA, EdhocMapperState> {
@@ -20,7 +21,7 @@ public class EdhocMapperComposerRA extends
     }
 
     @Override
-    public EdhocOutputBuilderRA getOutputBuilder() {
-        return (EdhocOutputBuilderRA) super.getOutputBuilder();
+    public OutputBuilder<PSymbolInstance> getOutputBuilder() {
+        return super.getOutputBuilder();
     }
 }

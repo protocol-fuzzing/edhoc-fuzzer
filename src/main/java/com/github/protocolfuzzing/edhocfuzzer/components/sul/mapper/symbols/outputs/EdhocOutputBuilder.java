@@ -2,7 +2,7 @@ package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.out
 
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.OutputBuilder;
 
-public class EdhocOutputBuilder implements OutputBuilder<EdhocOutput> {
+public class EdhocOutputBuilder extends OutputBuilder<EdhocOutput> {
     @Override
     public EdhocOutput buildOutput(String name) {
         return new EdhocOutput(name);
