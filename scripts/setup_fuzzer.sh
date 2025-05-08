@@ -8,7 +8,7 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    CHECKOUT="d665cb9d4396ced98131df70adb445150b4d3704"
+    CHECKOUT="469ced8267e28f4670be24f15982449829a26422"
 
     set -e
     cd "${BASE_DIR}"
@@ -43,7 +43,7 @@ setup_cf_edhoc() {
     # setup cf-edhoc library
 
     PATCH_FILE="${SCRIPT_DIR}/cf-edhoc.patch"
-    CHECKOUT="9bdb7561147a36a2064c2f7968291436b742d2e9"
+    CHECKOUT="b08bf12dae965044925eb58ee25717a4d2f8105b"
 
     set -e
     cd "${BASE_DIR}"
