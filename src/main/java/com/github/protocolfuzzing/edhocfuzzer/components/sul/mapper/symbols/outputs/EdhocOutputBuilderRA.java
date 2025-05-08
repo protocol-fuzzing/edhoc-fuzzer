@@ -8,7 +8,7 @@ import de.learnlib.ralib.words.PSymbolInstance;
 public class EdhocOutputBuilderRA extends OutputBuilder<PSymbolInstance> {
 
     @Override
-    public PSymbolInstance buildOutput(String name) {
+    public PSymbolInstance buildOutputExact(String name) {
         OutputSymbol baseSymbol = new OutputSymbol(name);
         return new PSymbolInstance(baseSymbol);
     }
