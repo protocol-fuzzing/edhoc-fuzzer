@@ -32,7 +32,7 @@ setup_ralib() {
     git clone "https://github.com/LearnLib/ralib"
     cd ralib
     git checkout ${CHECKOUT}
-    mvn install
+    mvn install -DskipTests=true
 
     cd "${BASE_DIR}"
     rm -rf ./ralib/

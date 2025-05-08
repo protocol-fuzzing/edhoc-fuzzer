@@ -56,7 +56,7 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
 
         // enable or disable content format
         EdhocMapperConfig edhocMapperConfig = (EdhocMapperConfig) mapperConfig;
-        int contentFormat = edhocMapperConfig.useContentFormat() ? message.getContentFormat()
+        int contentFormat = edhocMapperConfig.useContentFormat() ? message.getContentFormat(edhocMapperConfig.useOldContentFormat())
                 : MediaTypeRegistry.UNDEFINED;
 
         edhocMapperConnector.send(message.getPayload(), message.getPayloadType(), message.getMessageCode(),
