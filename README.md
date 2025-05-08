@@ -46,7 +46,7 @@ java -version
 mvn -version
 dot -V
 python3 --version
-pip show pydot
+pip3 show pydot
 ```
 
 2. To set up EDHOC-Fuzzer use:

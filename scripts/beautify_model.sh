@@ -9,7 +9,7 @@ start_edge_label=""
 # uncomment next line to remove all edges with transitions '_ / UNSUPPORTED_MESSAGE'
 # remove_edge_pattern="o_UNSUPPORTED_MESSAGE"
 
-if [ ${#} = 0 ]; then
+if [[ ${#} = 0 ]]; then
     echo "Usage: ${0##*/} [-cI|--clientInitiator] [-cR|--clientResponder] dot_model"
 else
     while [[ "${1}" =~ ^- ]]; do case ${1} in

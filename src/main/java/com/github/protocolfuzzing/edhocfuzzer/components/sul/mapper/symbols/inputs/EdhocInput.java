@@ -1,28 +1,23 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs;
 
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocSessionPersistent;
-import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocMapperState;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutputChecker;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.xml.AbstractInputXml;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.context.ExecutionContext;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.EdhocProtocolMessage;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.EdhocExecutionContext;
+import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutput;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractInputXml;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.OutputChecker;
 
-public abstract class EdhocInput extends AbstractInputXml {
-    public EdhocMapperState getEdhocMapperState(ExecutionContext context) {
-        return (EdhocMapperState) context.getState();
-    }
-
-    public EdhocSessionPersistent getEdhocSessionPersistent(ExecutionContext context) {
-        return getEdhocMapperState(context).getEdhocSessionPersistent();
-    }
+public abstract class EdhocInput extends AbstractInputXml<EdhocOutput, EdhocProtocolMessage, EdhocExecutionContext> {
+    public abstract Enum<MessageInputType> getInputType();
 
     @Override
-    public void preSendUpdate(ExecutionContext context) {}
+    public void preSendUpdate(EdhocExecutionContext context) {}
 
     @Override
-    public void postSendUpdate(ExecutionContext context) {}
+    public void postSendUpdate(EdhocExecutionContext context) {}
 
     @Override
-    public void postReceiveUpdate(AbstractOutput output, AbstractOutputChecker abstractOutputChecker,
-                                  ExecutionContext context) {}
+    public void postReceiveUpdate(
+        EdhocOutput output,
+        OutputChecker<EdhocOutput> abstractOutputChecker,
+        EdhocExecutionContext context) {}
 }

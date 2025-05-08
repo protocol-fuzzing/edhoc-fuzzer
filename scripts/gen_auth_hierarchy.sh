@@ -145,7 +145,7 @@ gen_p256 () {
     # generate private key
     echo "Generate private key"
     openssl ecparam -name secp256r1 -genkey -out "${tgt_dir}"/priv.pem
-    openssl pkcs8 -topk8 -nocrypt -in "$p256_dir"/priv.pem -out "${tgt_dir}"/npriv.pem
+    openssl pkcs8 -topk8 -nocrypt -in "${p256_dir}"/priv.pem -out "${tgt_dir}"/npriv.pem
     mv "${tgt_dir}"/npriv.pem "${tgt_dir}"/priv.pem
     openssl pkcs8 -topk8 -nocrypt -in "${tgt_dir}"/priv.pem -outform der -out "${tgt_dir}"/priv.der
 

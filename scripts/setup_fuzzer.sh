@@ -8,14 +8,14 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    CHECKOUT="4d7d6256d0be4cce240399b65ce9e486700b15bb"
+    CHECKOUT="469ced8267e28f4670be24f15982449829a26422"
 
     set -e
     cd "${BASE_DIR}"
     git clone "https://github.com/protocol-fuzzing/protocol-state-fuzzer.git"
     cd protocol-state-fuzzer
-    git checkout ${CHECKOUT}
-    mvn install -DskipTests
+    git checkout "${CHECKOUT}"
+    bash ./install.sh
 
     cd "${BASE_DIR}"
     rm -rf ./protocol-state-fuzzer/
@@ -33,7 +33,7 @@ setup_cf_edhoc() {
     git clone "https://github.com/rikard-sics/californium.git"
     cd californium
     git checkout edhoc
-    git checkout ${CHECKOUT}
+    git checkout "${CHECKOUT}"
     git apply "${PATCH_FILE}"
     mvn package -DskipTests -am -pl cf-edhoc
     JAR_FILE=$(ls ./cf-edhoc/target/cf-edhoc-*-SNAPSHOT.jar)

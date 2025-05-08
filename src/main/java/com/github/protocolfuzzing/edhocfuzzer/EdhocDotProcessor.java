@@ -14,7 +14,11 @@ import java.util.List;
 public class EdhocDotProcessor {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static void beautify(LearnerResult learnerResult) {
+    public static void beautify(LearnerResult<?> learnerResult) {
+        if (learnerResult.isFromTest()) {
+            return;
+        }
+
         if (learnerResult.isEmpty()) {
             LOGGER.warn("Provided empty LearnerResult");
             return;
@@ -41,12 +45,12 @@ public class EdhocDotProcessor {
             // SUL is a client implementation
             MapperConfig mapperConfig = stateFuzzerEnabler.getSulConfig().getMapperConfig();
 
-            if (!(mapperConfig instanceof EdhocMapperConfig)) {
+            if (!(mapperConfig instanceof EdhocMapperConfig edhocMapperConfig)) {
                 LOGGER.error("MapperConfig of StateFuzzerEnabler is not EdhocMapperConfig");
                 return;
             }
 
-            boolean isFuzzerInitiator = ((EdhocMapperConfig) mapperConfig).isInitiator();
+            boolean isFuzzerInitiator = edhocMapperConfig.isInitiator();
 
             // when Fuzzer is Initiator then SUL is Responder
             // when Fuzzer is Responder then SUL is Initiator

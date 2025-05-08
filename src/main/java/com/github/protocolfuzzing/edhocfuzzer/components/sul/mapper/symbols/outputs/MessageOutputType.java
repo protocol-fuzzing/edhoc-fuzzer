@@ -1,10 +1,8 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs;
 
 /** Messages that can be received.
- *  Possible additional messages not included are those generated from
- *  {@link com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput#unknown() AbstractOutput.unknown()},
- *  {@link com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput#socketClosed() AbstractOutput.socketClosed()},
- *  {@link com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.abstractsymbols.AbstractOutput#timeout() AbstractOutput.timeout()} */
+ * The last four are from the OutputBuilder.
+ */
 public enum MessageOutputType {
     EDHOC_MESSAGE_1,
     EDHOC_MESSAGE_2,
@@ -18,5 +16,9 @@ public enum MessageOutputType {
     COAP_ERROR_MESSAGE,
     COAP_EMPTY_MESSAGE,
     UNSUPPORTED_MESSAGE,
-    UNSUCCESSFUL_MESSAGE
+    UNSUCCESSFUL_MESSAGE,
+    TIMEOUT,
+    UNKNOWN,
+    SOCKET_CLOSED,
+    DISABLED
 }
