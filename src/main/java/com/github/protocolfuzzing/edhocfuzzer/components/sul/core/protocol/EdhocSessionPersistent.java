@@ -67,10 +67,13 @@ public class EdhocSessionPersistent extends EdhocSession {
         this.forceOscoreRecipientId = forceOscoreRecipientId;
         this.connectionId = connectionId;
 
+
         SideProcessor sideProcessor = new SideProcessor(
-                edhocEndpointInfoPersistent.getTrustModel(),
-                edhocEndpointInfoPersistent.getPeerCredentials(),
-                edhocEndpointInfoPersistent.getEadProductionInput());
+            edhocEndpointInfoPersistent.getTrustModel(),
+            edhocEndpointInfoPersistent.getPeerPublicKeys(),
+            edhocEndpointInfoPersistent.getPeerCredentials(),
+            edhocEndpointInfoPersistent.getEadProductionInput()
+        );
         sideProcessor.setEdhocSession(this);
         this.setSideProcessor(sideProcessor);
 
