@@ -13,8 +13,8 @@ readonly CLIENTS_DIR="${MODEL_DIR}/clients"
 mkdir -p "${SOURCES_DIR}" "${SERVERS_DIR}" "${CLIENTS_DIR}"
 
 setup_lakers() {
-  # lakers
-  CHECKOUT="tags/v0.8.0"
+  # lakers - commit SHA of 12/05/2025 updating to rust 182
+  CHECKOUT="13d9fcbf00922d7c87f940512dee1d6f18392a3b"
 
   set -e
   echo "Setting up Lakers in ${SOURCES_DIR}"
