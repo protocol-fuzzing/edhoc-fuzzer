@@ -14,8 +14,6 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabe
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.MealyMachineWrapper;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulBuilder;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulWrapper;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulWrapperStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzer;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerComposerStandard;
@@ -48,7 +46,6 @@ public class MultiBuilder implements
     );
 
     protected SulBuilder<EdhocInput, EdhocOutput, EdhocExecutionContext> sulBuilder = new EdhocSulBuilder();
-    protected SulWrapper<EdhocInput, EdhocOutput, EdhocExecutionContext> sulWrapper = new SulWrapperStandard<>();
 
     @Override
     public StateFuzzerClientConfig buildClientConfig() {
@@ -73,17 +70,17 @@ public class MultiBuilder implements
     @Override
     public StateFuzzer<MealyMachineWrapper<EdhocInput, EdhocOutput>> build(StateFuzzerEnabler stateFuzzerEnabler) {
         return new StateFuzzerStandard<>(
-            new StateFuzzerComposerStandard<>(stateFuzzerEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize()
+            new StateFuzzerComposerStandard<>(stateFuzzerEnabler, alphabetBuilder, sulBuilder).initialize()
         );
     }
 
     @Override
     public TestRunner build(TestRunnerEnabler testRunnerEnabler) {
-        return new TestRunnerStandard<>(testRunnerEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize();
+        return new TestRunnerStandard<>(testRunnerEnabler, alphabetBuilder, sulBuilder).initialize();
     }
 
     @Override
     public TimingProbe build(TimingProbeEnabler timingProbeEnabler) {
-        return new TimingProbeStandard<>(timingProbeEnabler, alphabetBuilder, sulBuilder, sulWrapper).initialize();
+        return new TimingProbeStandard<>(timingProbeEnabler, alphabetBuilder, sulBuilder).initialize();
     }
 }
