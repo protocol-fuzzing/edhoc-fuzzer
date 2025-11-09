@@ -91,6 +91,7 @@ public abstract class EdhocMapperState {
 
     protected CleanupTasks cleanupTasks;
 
+    @SuppressWarnings("this-escape")
     public EdhocMapperState(EdhocMapperConfig edhocMapperConfig, String edhocSessionUri, String oscoreUri, CleanupTasks cleanupTasks) {
 
         this.edhocMapperConfig = edhocMapperConfig;

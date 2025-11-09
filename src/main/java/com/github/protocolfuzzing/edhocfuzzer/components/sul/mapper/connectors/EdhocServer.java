@@ -13,6 +13,7 @@ import java.net.InetSocketAddress;
 public class EdhocServer extends CoapServer {
     private static final Logger LOGGER = LogManager.getLogger();
 
+    @SuppressWarnings("this-escape")
     public EdhocServer(String host, int port, String edhocResource, String appResource,
                        EdhocStackFactoryPersistent edhocStackFactoryPersistent,
                        CoapExchanger coapExchanger) {

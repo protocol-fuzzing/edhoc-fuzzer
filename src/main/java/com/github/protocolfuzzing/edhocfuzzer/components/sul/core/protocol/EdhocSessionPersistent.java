@@ -41,6 +41,7 @@ public class EdhocSessionPersistent extends EdhocSession {
     protected byte[] forceOscoreSenderId;
     protected byte[] forceOscoreRecipientId;
 
+    @SuppressWarnings("this-escape")
     public EdhocSessionPersistent(
             String sessionUri, boolean initiator, boolean clientInitiated, int method, byte[] connectionId,
             EdhocEndpointInfoPersistent edhocEndpointInfoPersistent, List<Integer> peerSupportedCipherSuites,
