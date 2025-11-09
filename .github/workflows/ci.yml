@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - uses: ts-graphviz/setup-graphviz@v2
       - name: Install pydot
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - uses: ts-graphviz/setup-graphviz@v2
       - name: Install pydot
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - uses: ts-graphviz/setup-graphviz@v2
       - name: Install pydot
@@ -97,7 +97,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - uses: ts-graphviz/setup-graphviz@v2
       - name: Install pydot
@@ -123,7 +123,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - uses: ts-graphviz/setup-graphviz@v2
       - name: Install pydot
@@ -149,7 +149,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - uses: ts-graphviz/setup-graphviz@v2
       - name: Install pydot
@@ -175,7 +175,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - uses: ts-graphviz/setup-graphviz@v2
       - name: Install pydot
@@ -201,7 +201,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - uses: ts-graphviz/setup-graphviz@v2
       - name: Install pydot
