@@ -53,7 +53,7 @@ setup_rise() {
   git checkout "${CHECKOUT}"
   git apply "${PATCH_DIR}"/rise.patch
   cp "${APP_PROFILE_BUILDER}" "${EDHOC_CLIENT}" "${EDHOC_SERVER}" "${CF_EDHOC_MAIN_DIR}"
-  mvn package -DskipTests -am -pl cf-edhoc
+  mvn package -DskipTests -Dmaven.javadoc.skip=true -am -pl cf-edhoc
 
   cd "${MODEL_DIR}"
   mkdir -p "${SERVERS_DIR}"/rise "${CLIENTS_DIR}"/rise
@@ -81,10 +81,10 @@ setup_sifis_home() {
   # install in local repository, in order for the edhoc-applications'
   # dependencies to be found
   cd "${SF_HOME_DIR}"/californium-extended
-  mvn install -DskipTests -am -pl cf-edhoc
+  mvn install -DskipTests -Dmaven.javadoc.skip=true -am -pl cf-edhoc
 
   cd "${SF_HOME_DIR}"/edhoc-applications
-  mvn -DskipTests compile assembly:single
+  mvn -DskipTests -Dmaven.javadoc.skip=true compile assembly:single
 
   cd "${MODEL_DIR}"
   mkdir -p "${SERVERS_DIR}"/sifis-home "${CLIENTS_DIR}"/sifis-home
