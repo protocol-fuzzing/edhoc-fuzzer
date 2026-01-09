@@ -10,6 +10,7 @@ import org.eclipse.californium.oscore.ObjectSecurityLayer;
 /** Adapted from {@link org.eclipse.californium.edhoc.EdhocStack} */
 public class EdhocStackPersistent extends BaseCoapStack {
 
+    @SuppressWarnings("this-escape")
     public EdhocStackPersistent(String tag, final Configuration config, final Outbox outbox,
                                 EndpointContextMatcher matchingStrategy,
                                 EdhocEndpointInfoPersistent edhocEndpointInfoPersistent,
