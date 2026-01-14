@@ -13,8 +13,8 @@ readonly CLIENTS_DIR="${MODEL_DIR}/clients"
 mkdir -p "${SOURCES_DIR}" "${SERVERS_DIR}" "${CLIENTS_DIR}"
 
 setup_lakers() {
-  # lakers
-  CHECKOUT="tags/v0.8.0"
+  # lakers - commit SHA of 11/09/2025 fixing some issues with dependencies
+  CHECKOUT="76a1402d594d530e860f7483c3d0a9b4f6f7ed04"
 
   set -e
   echo "Setting up Lakers in ${SOURCES_DIR}"
@@ -53,7 +53,7 @@ setup_rise() {
   git checkout "${CHECKOUT}"
   git apply "${PATCH_DIR}"/rise.patch
   cp "${APP_PROFILE_BUILDER}" "${EDHOC_CLIENT}" "${EDHOC_SERVER}" "${CF_EDHOC_MAIN_DIR}"
-  mvn package -DskipTests -am -pl cf-edhoc
+  mvn package -DskipTests -Dmaven.javadoc.skip=true -am -pl cf-edhoc
 
   cd "${MODEL_DIR}"
   mkdir -p "${SERVERS_DIR}"/rise "${CLIENTS_DIR}"/rise
@@ -81,10 +81,10 @@ setup_sifis_home() {
   # install in local repository, in order for the edhoc-applications'
   # dependencies to be found
   cd "${SF_HOME_DIR}"/californium-extended
-  mvn install -DskipTests -am -pl cf-edhoc
+  mvn install -DskipTests -Dmaven.javadoc.skip=true -am -pl cf-edhoc
 
   cd "${SF_HOME_DIR}"/edhoc-applications
-  mvn -DskipTests compile assembly:single
+  mvn -DskipTests -Dmaven.javadoc.skip=true compile assembly:single
 
   cd "${MODEL_DIR}"
   mkdir -p "${SERVERS_DIR}"/sifis-home "${CLIENTS_DIR}"/sifis-home
