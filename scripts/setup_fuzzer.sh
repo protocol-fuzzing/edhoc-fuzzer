@@ -8,7 +8,7 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    CHECKOUT="2ec09644043e66b9f5139b18d489763c4fc0e8ec"
+    CHECKOUT="42392348464ab4cebb3a4c7b149c21caf6ee9c4e"
 
     set -e
     cd "${BASE_DIR}"
