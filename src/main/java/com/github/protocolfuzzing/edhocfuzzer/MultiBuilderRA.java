@@ -69,9 +69,7 @@ public class MultiBuilderRA implements
         protected AlphabetBuilderWrapper<ParameterizedSymbol> dummyBuilder = new AlphabetBuilderWrapper<ParameterizedSymbol>(
                         alphabet);
 
-        protected SulBuilder<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> sulBuilder = new EdhocSulBuilderRA(
-                        alphabet);
-        protected SulWrapper<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> sulWrapper = new SulWrapperStandard<>();
+    protected SulBuilder<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> sulBuilder = new EdhocSulBuilderRA(alphabet);
 
         @Override
         public StateFuzzerClientConfig buildClientConfig() {

@@ -4,6 +4,8 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.Edho
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.EnumAlphabet;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.AbstractSul;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulBuilder;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulWrapper;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulWrapperStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import de.learnlib.ralib.words.PSymbolInstance;
@@ -16,8 +18,12 @@ public class EdhocSulBuilderRA implements SulBuilder<PSymbolInstance, PSymbolIns
     }
 
     @Override
-    public AbstractSul<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> build(SulConfig sulConfig,
-            CleanupTasks cleanupTasks) {
+    public AbstractSul<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> buildSul(SulConfig sulConfig, CleanupTasks cleanupTasks) {
         return new EdhocSulRA(sulConfig, cleanupTasks, alphabet).initialize();
+    }
+
+    @Override
+    public SulWrapper<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> buildWrapper() {
+        return new SulWrapperStandard<>();
     }
 }
