@@ -69,32 +69,30 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
         EdhocMapperState mapperState = context.getState();
 
         switch (MessageInputTypeRA.valueOf(symbolName)) {
-            case EDHOC_MESSAGE_1_INPUT:
+            case EDHOC_MESSAGE_1_INPUT -> {
                 if (mapperState.getEdhocSessionPersistent().isInitiator()) {
                     // Initiator by sending message 1 starts a new key exchange session
                     // so previous session state must be cleaned unless reset is disabled
                     mapperState.getEdhocSessionPersistent().resetIfEnabled();
                 }
                 updateConnectionId(mapperState, input);
-                break;
-
-            case EDHOC_MESSAGE_2_INPUT:
-                break;
-
-            case EDHOC_MESSAGE_3_OSCORE_APP_INPUT:
+            }
+            case EDHOC_MESSAGE_3_OSCORE_APP_INPUT -> {
                 updateConnectionId(mapperState, input);
                 // construct Message3 in order to store it in session 'message3' field,
                 // derive new oscore context and make Message3 available to oscore layer
-                new MessageProcessorPersistent(context.getState()).writeMessage3();
-                break;
-
-            case EDHOC_MESSAGE_3_INPUT:
-            case EDHOC_MESSAGE_4_INPUT:
-            case OSCORE_APP_MESSAGE_INPUT:
-            case COAP_APP_MESSAGE_INPUT:
-            case COAP_EMPTY_MESSAGE_INPUT:
-            case EDHOC_ERROR_MESSAGE_INPUT:
-                break;
+                new MessageProcessorPersistent(
+                    context.getState()
+                ).writeMessage3();
+            }
+            case
+                EDHOC_MESSAGE_2_INPUT,
+                EDHOC_MESSAGE_3_INPUT,
+                EDHOC_MESSAGE_4_INPUT,
+                OSCORE_APP_MESSAGE_INPUT,
+                COAP_APP_MESSAGE_INPUT,
+                COAP_EMPTY_MESSAGE_INPUT,
+                EDHOC_ERROR_MESSAGE_INPUT -> {}
         }
     }
 
@@ -105,35 +103,38 @@ public class EdhocInputMapperRA extends InputMapperRA<PSymbolInstance, EdhocProt
         if (baseSymbol instanceof InputSymbol) {
             // We can construct this here since the switch should always dispatch to only
             // one instance.
-            MessageProcessorPersistent messageProcessor = new MessageProcessorPersistent(context.getState());
-            switch (MessageInputTypeRA.valueOf(symbolName)) {
-                case EDHOC_MESSAGE_1_INPUT:
-                    return new EdhocMessage1(messageProcessor);
+            MessageProcessorPersistent messageProcessor =
+                new MessageProcessorPersistent(context.getState());
 
-                case EDHOC_MESSAGE_2_INPUT:
-                    return new EdhocMessage2(messageProcessor);
-
-                case EDHOC_MESSAGE_3_INPUT:
-                    return new EdhocMessage3(messageProcessor);
-
-                case EDHOC_MESSAGE_3_OSCORE_APP_INPUT:
-                    return new EdhocMessage3OscoreApp(messageProcessor);
-
-                case EDHOC_MESSAGE_4_INPUT:
-                    return new EdhocMessage4(messageProcessor);
-
-                case OSCORE_APP_MESSAGE_INPUT:
-                    return new OscoreAppMessage(messageProcessor);
-
-                case EDHOC_ERROR_MESSAGE_INPUT:
-                    return new EdhocErrorMessage(messageProcessor);
-
-                case COAP_APP_MESSAGE_INPUT:
-                    return new CoapAppMessage(messageProcessor);
-
-                case COAP_EMPTY_MESSAGE_INPUT:
-                    return new CoapEmptyMessage(messageProcessor);
-            }
+            return switch (MessageInputTypeRA.valueOf(symbolName)) {
+                case EDHOC_MESSAGE_1_INPUT -> new EdhocMessage1(
+                    messageProcessor
+                );
+                case EDHOC_MESSAGE_2_INPUT -> new EdhocMessage2(
+                    messageProcessor
+                );
+                case EDHOC_MESSAGE_3_INPUT -> new EdhocMessage3(
+                    messageProcessor
+                );
+                case EDHOC_MESSAGE_3_OSCORE_APP_INPUT -> new EdhocMessage3OscoreApp(
+                    messageProcessor
+                );
+                case EDHOC_MESSAGE_4_INPUT -> new EdhocMessage4(
+                    messageProcessor
+                );
+                case OSCORE_APP_MESSAGE_INPUT -> new OscoreAppMessage(
+                    messageProcessor
+                );
+                case EDHOC_ERROR_MESSAGE_INPUT -> new EdhocErrorMessage(
+                    messageProcessor
+                );
+                case COAP_APP_MESSAGE_INPUT -> new CoapAppMessage(
+                    messageProcessor
+                );
+                case COAP_EMPTY_MESSAGE_INPUT -> new CoapEmptyMessage(
+                    messageProcessor
+                );
+            };
         }
 
         throw new RuntimeException(
