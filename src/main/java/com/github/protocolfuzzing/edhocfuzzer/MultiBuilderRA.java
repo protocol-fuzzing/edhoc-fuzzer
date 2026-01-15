@@ -96,7 +96,7 @@ public class MultiBuilderRA implements
                 return new StateFuzzerRA<>(
                                 new StateFuzzerComposerRA<ParameterizedSymbol, EdhocExecutionContextRA>(
                                                 stateFuzzerEnabler,
-                                                dummyBuilder, sulBuilder, sulWrapper, teachers).initialize());
+                                                dummyBuilder, sulBuilder, teachers).initialize());
         }
 
         @Override
