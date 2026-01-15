@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.protocolfuzzing</groupId>
@@ -265,10 +267,12 @@
                    <compilerArgs>
                        <arg>-Werror</arg>
                        <arg>-Xlint:all</arg>
+                       <arg>-Xlint:-this-escape</arg>
                        <arg>-XDcompilePolicy=simple</arg>
                        <arg>--should-stop=ifError=FLOW</arg>
                        <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
-                       <arg>-Xplugin:ErrorProne -Xep:AddressSelection:OFF -Xep:NonApiType:OFF -Xep:WaitNotInLoop:OFF</arg>
+                       <arg
+                        >-Xplugin:ErrorProne -Xep:AddressSelection:OFF -Xep:NonApiType:OFF -Xep:WaitNotInLoop:OFF</arg>
                    </compilerArgs>
                    <annotationProcessorPaths>
                        <path>
@@ -307,16 +311,19 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.github.protocolfuzzing.edhocfuzzer.Main</mainClass>
+                                    <mainClass
+                                    >com.github.protocolfuzzing.edhocfuzzer.Main</mainClass>
                                 </manifest>
                                 <manifestEntries>
                                     <Multi-Release>true</Multi-Release>
                                 </manifestEntries>
                             </archive>
                             <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                                <descriptorRef
+                                >jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>${project.artifactId}-${project.version}-mealy</finalName>
+                            <finalName
+                            >${project.artifactId}-${project.version}-mealy</finalName>
                         </configuration>
                         <goals>
                             <goal>single</goal>
@@ -328,16 +335,19 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>com.github.protocolfuzzing.edhocfuzzer.MainRA</mainClass>
+                                    <mainClass
+                                    >com.github.protocolfuzzing.edhocfuzzer.MainRA</mainClass>
                                 </manifest>
                                 <manifestEntries>
                                     <Multi-Release>true</Multi-Release>
                                 </manifestEntries>
                             </archive>
                             <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                                <descriptorRef
+                                >jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>${project.artifactId}-${project.version}-ra</finalName>
+                            <finalName
+                            >${project.artifactId}-${project.version}-ra</finalName>
                         </configuration>
                         <goals>
                             <goal>single</goal>
