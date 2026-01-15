@@ -15,8 +15,6 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabe
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.RegisterAutomatonWrapper;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulBuilder;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulWrapper;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulWrapperStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzer;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerComposerRA;
