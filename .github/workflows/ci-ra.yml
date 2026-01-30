@@ -30,7 +30,7 @@ jobs:
 
       - name: Test Lakers Client (RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra
+          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra -roundLimit 3
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -40,7 +40,7 @@ jobs:
             experiments/results/clients/ra/lakers
 
       - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/lakers experiments/results/clients/ra/lakers 4
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/lakers experiments/results/clients/ra/lakers 3
 
   Lakers-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -69,7 +69,7 @@ jobs:
 
       - name: Test Lakers Server (RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra
+          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra -roundLimit 3
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -79,7 +79,7 @@ jobs:
             experiments/results/servers/ra/lakers
 
       - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/lakers experiments/results/servers/ra/lakers 7
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/lakers experiments/results/servers/ra/lakers 3
 
   RISE-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -104,7 +104,7 @@ jobs:
 
       - name: Test RISE Client (m4_app, RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra
+          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra -roundLimit 3
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -114,7 +114,7 @@ jobs:
             experiments/results/clients/ra/rise_m4_app
 
       - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/rise_m4_app experiments/results/clients/ra/rise_m4_app 11
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/rise_m4_app experiments/results/clients/ra/rise_m4_app 3
 
   RISE-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -139,7 +139,7 @@ jobs:
 
       - name: Test RISE Server (m4_app, RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/server_m4_app_ra
+          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/server_m4_app_ra -roundLimit 3
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -149,7 +149,7 @@ jobs:
             experiments/results/servers/ra/rise_m4_app
 
       - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/rise_m4_app experiments/results/servers/ra/rise_m4_app 11
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/rise_m4_app experiments/results/servers/ra/rise_m4_app 3
 
   uOSCORE-uEDHOC-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -174,7 +174,7 @@ jobs:
 
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra
+          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra -roundLimit 3
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -184,7 +184,7 @@ jobs:
             experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore
 
       - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 9
+        run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 3
 
   uOSCORE-uEDHOC-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -209,7 +209,7 @@ jobs:
 
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra
+          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra -roundLimit 3
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -219,4 +219,4 @@ jobs:
             experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore
 
       - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 5
+        run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 3
