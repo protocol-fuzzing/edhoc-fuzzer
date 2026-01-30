@@ -30,7 +30,7 @@ jobs:
 
       - name: Test Lakers Client (RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra -roundLimit 3
+          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra -roundLimit 5
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -69,7 +69,7 @@ jobs:
 
       - name: Test Lakers Server (RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra -roundLimit 3
+          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra -roundLimit 5
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -104,7 +104,7 @@ jobs:
 
       - name: Test RISE Client (m4_app, RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra -roundLimit 3
+          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra -roundLimit 5
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -174,7 +174,7 @@ jobs:
 
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra -roundLimit 3
+          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra -roundLimit 5
 
       - name: Upload results
         uses: actions/upload-artifact@v4
@@ -209,7 +209,7 @@ jobs:
 
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, RA)
         run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra -roundLimit 3
+          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra -roundLimit 5
 
       - name: Upload results
         uses: actions/upload-artifact@v4
