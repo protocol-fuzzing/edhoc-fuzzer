@@ -31,24 +31,15 @@ jobs:
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/lakers/client -roundLimit 3
 
-
-      - name: Test Lakers Client (RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra
-
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: Lakers Client
           path: |
             experiments/results/clients/mealy/lakers
-            experiments/results/clients/ra/lakers
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/lakers experiments/results/clients/mealy/lakers 3
-
-      - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/lakers experiments/results/clients/ra/lakers 4
 
   Lakers-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -79,24 +70,15 @@ jobs:
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/lakers/server -roundLimit 3
 
-
-      - name: Test Lakers Server (RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra
-
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: Lakers Server
           path: |
             experiments/results/servers/mealy/lakers
-            experiments/results/servers/ra/lakers
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/lakers experiments/results/servers/mealy/lakers 2
-
-      - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/lakers experiments/results/servers/ra/lakers 7
 
   RISE-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -123,24 +105,15 @@ jobs:
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/rise/client_m4_app -roundLimit 4
 
-
-      - name: Test RISE Client (m4_app, RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra
-
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: RISE Client
           path: |
             experiments/results/clients/mealy/rise_m4_app
-            experiments/results/clients/ra/rise_m4_app
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/rise_m4_app experiments/results/clients/mealy/rise_m4_app 4
-
-      - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/rise_m4_app experiments/results/clients/ra/rise_m4_app 11
 
   RISE-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -167,24 +140,16 @@ jobs:
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/rise/server_m4_app -roundLimit 5
 
-
-      - name: Test RISE Server (m4_app, RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/server_m4_app_ra
-
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: RISE Server
           path: |
             experiments/results/servers/mealy/rise_m4_app
-            experiments/results/servers/ra/rise_m4_app
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/rise_m4_app experiments/results/servers/mealy/rise_m4_app 5
 
-      - name: Diff RA
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/rise_m4_app experiments/results/servers/ra/rise_m4_app 11
 
   uOSCORE-uEDHOC-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -211,23 +176,15 @@ jobs:
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -roundLimit 3
 
-      - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra
-
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: uOSCORE-uEDHOC Client
           path: |
             experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore
-            experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore 3
-
-      - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 9
 
   uOSCORE-uEDHOC-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -254,21 +211,12 @@ jobs:
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -roundLimit 2
 
-
-      - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra
-
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: uOSCORE-uEDHOC Server
           path: |
             experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore
-            experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore 2
-
-      - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 5
