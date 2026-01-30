@@ -73,6 +73,7 @@ App Message Code To Coap Client: CHANGED
 App Message Payload To Coap Client: Server Application Data
 Coap Error As Edhoc Error: false
 use Content Format: true
+use Old Content Format: false
 use Session Reset: false
 use CX Correlation: true
 Own Connection Id: 36
@@ -85,7 +86,7 @@ Map Cred Type: CCS
 Map Id Cred Type: KID
 Sul Cred Type: CCS
 Sul Id Cred Type: KID
-Trust Model: STRICT
+Trust Model: NO_LEARNING
 
 TestVectorAuthenticationConfig Parameters
 Test Vector File: experiments/authentication/test_vectors/test_vectors_lakers.json
@@ -97,27 +98,29 @@ Adapter Port: null
 Adapter Address: localhost
 
 === STATISTICS ===
-Learning finished: true
+Learning finished: false
+Reason: Index -1 out of bounds for length 8
 Size of the input alphabet: 26
 Number of states: 15
 Number of hypotheses: 7
-Number of inputs: 41240
-Number of tests: 10447
+Number of inputs: 29968
+Number of tests: 7638
 Number of learning inputs: 1245
 Number of learning tests: 447
 Number of inputs up to last hypothesis: 1500
 Number of tests up to last hypothesis: 512
-Time (ms) to learn model: 16982028
+Time (ms) to learn model: 12336181
 Counterexamples:
 CE 1:Query[ε|EDHOC_MESSAGE_4_INPUT[] TIMEOUT[] COAP_EMPTY_MESSAGE_INPUT[] SOCKET_CLOSED[] / true]
-CE 2:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_3_INPUT[] COAP_EMPTY_MESSAGE_OUTPUT[] / true]
+CE 2:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_3_INPUT[] EDHOC_MESSAGE_4_OUTPUT[] / true]
 CE 3:Query[ε|EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_1_INPUT[1[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] TIMEOUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] COAP_ERROR_MESSAGE_OUTPUT[] / true]
 CE 4:Query[ε|COAP_APP_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] OSCORE_APP_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] TIMEOUT[] / true]
-CE 5:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] COAP_APP_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_INPUT[] COAP_EMPTY_MESSAGE_OUTPUT[] / true]
-CE 6:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] TIMEOUT[] EDHOC_MESSAGE_3_INPUT[] COAP_EMPTY_MESSAGE_OUTPUT[] / true]
+CE 5:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] COAP_APP_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_INPUT[] EDHOC_MESSAGE_4_OUTPUT[] / true]
+CE 6:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] TIMEOUT[] EDHOC_MESSAGE_3_INPUT[] EDHOC_MESSAGE_4_OUTPUT[] / true]
+CE 7:Query[ε|OSCORE_APP_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_3_INPUT[] TIMEOUT[] / true]
 Number of inputs when hypothesis was generated: [27, 110, 206, 809, 1039, 1270, 1500]
 Number of tests when hypothesis was generated: [27, 70, 116, 296, 373, 440, 512]
-Time (ms) when hypothesis was generated: [36940, 106176, 168941, 475163, 581146, 682372, 813825]
-Number of inputs when counterexample was found: [29, 113, 266, 853, 1150, 1305]
-Number of tests when counterexample was found: [28, 71, 131, 307, 401, 449]
-Time (ms) when counterexample was found: [38551, 107193, 193086, 492855, 628569, 698040]
+Time (ms) when hypothesis was generated: [36927, 106220, 169048, 473786, 579288, 680024, 809781]
+Number of inputs when counterexample was found: [29, 113, 266, 853, 1150, 1305, 29848]
+Number of tests when counterexample was found: [28, 71, 131, 307, 401, 449, 7599]
+Time (ms) when counterexample was found: [38539, 107240, 193233, 490892, 626156, 695709, 12296762]
