@@ -30,8 +30,8 @@ jobs:
       - name: Test Lakers Client (Mealy)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/lakers/client -roundLimit 3
-          
-      
+
+
       - name: Test Lakers Client (RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra
@@ -78,8 +78,8 @@ jobs:
       - name: Test Lakers Server (Mealy)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/lakers/server -roundLimit 3
-          
-      
+
+
       - name: Test Lakers Server (RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra
@@ -91,7 +91,7 @@ jobs:
           path: |
             experiments/results/servers/mealy/lakers
             experiments/results/servers/ra/lakers
-        
+
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/lakers experiments/results/servers/mealy/lakers 2
 
@@ -122,9 +122,9 @@ jobs:
       - name: Test RISE Client (m4_app, Mealy)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/rise/client_m4_app -roundLimit 4
-          
-      
-      - name: Test RISE Client (m4_app, RA) 
+
+
+      - name: Test RISE Client (m4_app, RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra
 
@@ -166,12 +166,12 @@ jobs:
       - name: Test RISE Server (m4_app, Mealy)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/rise/server_m4_app -roundLimit 5
-          
-      
+
+
       - name: Test RISE Server (m4_app, RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/rise/server_m4_app_ra
-  
+
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
@@ -185,101 +185,7 @@ jobs:
 
       - name: Diff RA
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/rise_m4_app experiments/results/servers/ra/rise_m4_app 11
-  
-  SIFIS-HOME-Client:
-    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - uses: ts-graphviz/setup-graphviz@v2
-      - name: Install pydot
-        run: pip3 install pydot
 
-      - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer.sh -l
-
-      - name: Setup SIFIS-HOME
-        run: ./scripts/setup_sul.sh sifis-home
-
-      - name: Test SIFIS-HOME Client (phase_1, Mealy)
-        run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/client_phase_1 -roundLimit 4
-          
-      
-      - name: Test SIFIS-HOME Client (phase_1, RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/sifis-home/client_phase_1_ra
-    
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: SIFIS-HOME Client
-          path: |
-            experiments/results/clients/mealy/sifis-home_phase_1
-            experiments/results/clients/ra/sifis-home_phase_1
-
-      - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/sifis-home_phase_1 experiments/results/clients/mealy/sifis-home_phase_1 4
-
-      - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/sifis-home_phase_1 experiments/results/clients/ra/sifis-home_phase_1 12
-
-  SIFIS-HOME-Server:
-    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - uses: ts-graphviz/setup-graphviz@v2
-      - name: Install pydot
-        run: pip3 install pydot
-
-      - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer.sh -l
-
-      - name: Setup SIFIS-HOME
-        run: ./scripts/setup_sul.sh sifis-home
-
-      - name: Test SIFIS-HOME Server (phase_1, Mealy)
-        run: |
-          java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1 -roundLimit 5
-          
-
-      - name: Test SIFIS-HOME Server (phase_1, RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/sifis-home/server_phase_1_ra
-          
-
-      - name: Compress results
-        run: |
-          tar -czf sifis-home_phase_1_server_mealy.tar.gz experiments/results/servers/mealy/sifis-home_phase_1
-          tar -czf sifis-home_phase_1_server_ra.tar.gz experiments/results/servers/ra/sifis-home_phase_1
-          
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: SIFIS-HOME Server
-          path: |
-            experiments/results/servers/mealy/sifis-home_phase_1
-            experiments/results/servers/ra/sifis-home_phase_1
-
-      - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/sifis-home_phase_1 experiments/results/servers/mealy/sifis-home_phase_1 5
-
-      - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/sifis-home_phase_1 experiments/results/servers/ra/sifis-home_phase_1 16
-    
   uOSCORE-uEDHOC-Client:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     runs-on: ubuntu-latest
@@ -304,25 +210,25 @@ jobs:
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, Mealy)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -roundLimit 3
-          
+
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra
-    
+
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: uOSCORE-uEDHOC Client
           path: |
-            experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore 
-            experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 
+            experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore
+            experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore 3
 
       - name: Diff RA
         run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 9
-    
+
   uOSCORE-uEDHOC-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     runs-on: ubuntu-latest
@@ -347,22 +253,22 @@ jobs:
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, Mealy)
         run: |
           java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -roundLimit 2
-          
-  
+
+
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, RA)
         run: |
           java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra
-  
+
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: uOSCORE-uEDHOC Server
           path: |
-            experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore 
-            experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 
+            experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore
+            experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore 2
-        
+
       - name: Diff RA
         run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 5
