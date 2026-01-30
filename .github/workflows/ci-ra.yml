@@ -1,0 +1,222 @@
+name: CI RA-learning
+on: [push, pull_request]
+
+jobs:
+  Lakers-Client:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v2
+      - name: Install pydot
+        run: pip3 install pydot
+
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer.sh -l
+
+      - name: Setup Lakers
+        run: |
+          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+          source "${HOME}/.cargo/env"
+          rustup toolchain install nightly-2025-05-10-x86_64-unknown-linux-gnu
+          ./scripts/setup_sul.sh lakers
+
+
+      - name: Test Lakers Client (RA)
+        run: |
+          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lakers Client
+          path: |
+            experiments/results/clients/ra/lakers
+
+      - name: Diff RA
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/lakers experiments/results/clients/ra/lakers 4
+
+  Lakers-Server:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v2
+      - name: Install pydot
+        run: pip3 install pydot
+
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer.sh -l
+
+      - name: Setup Lakers
+        run: |
+          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+          source "${HOME}/.cargo/env"
+          rustup toolchain install nightly-2025-05-10-x86_64-unknown-linux-gnu
+          ./scripts/setup_sul.sh lakers
+
+      - name: Test Lakers Server (RA)
+        run: |
+          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lakers Server
+          path: |
+            experiments/results/servers/ra/lakers
+
+      - name: Diff RA
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/lakers experiments/results/servers/ra/lakers 7
+
+  RISE-Client:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v2
+      - name: Install pydot
+        run: pip3 install pydot
+
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer.sh -l
+
+      - name: Setup RISE
+        run: ./scripts/setup_sul.sh rise
+
+      - name: Test RISE Client (m4_app, RA)
+        run: |
+          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: RISE Client
+          path: |
+            experiments/results/clients/ra/rise_m4_app
+
+      - name: Diff RA
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/rise_m4_app experiments/results/clients/ra/rise_m4_app 11
+
+  RISE-Server:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v2
+      - name: Install pydot
+        run: pip3 install pydot
+
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer.sh -l
+
+      - name: Setup RISE
+        run: ./scripts/setup_sul.sh rise
+
+      - name: Test RISE Server (m4_app, RA)
+        run: |
+          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/server_m4_app_ra
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: RISE Server
+          path: |
+            experiments/results/servers/ra/rise_m4_app
+
+      - name: Diff RA
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/rise_m4_app experiments/results/servers/ra/rise_m4_app 11
+
+  uOSCORE-uEDHOC-Client:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v2
+      - name: Install pydot
+        run: pip3 install pydot
+
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer.sh -l
+
+      - name: Setup uOSCORE-uEDHOC
+        run: ./scripts/setup_sul.sh uoscore-uedhoc
+
+      - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, RA)
+        run: |
+          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: uOSCORE-uEDHOC Client
+          path: |
+            experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore
+
+      - name: Diff RA
+        run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 9
+
+  uOSCORE-uEDHOC-Server:
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: ts-graphviz/setup-graphviz@v2
+      - name: Install pydot
+        run: pip3 install pydot
+
+      - name: Setup EDHOC-Fuzzer
+        run: ./scripts/setup_fuzzer.sh -l
+
+      - name: Setup uOSCORE-uEDHOC
+        run: ./scripts/setup_sul.sh uoscore-uedhoc
+
+      - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, RA)
+        run: |
+          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: uOSCORE-uEDHOC Server
+          path: |
+            experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore
+
+      - name: Diff RA
+        run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 5
