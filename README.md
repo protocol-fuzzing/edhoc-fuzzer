@@ -18,7 +18,7 @@
 EDHOC-Fuzzer is a protocol state fuzzer of EDHOC clients and servers.
 It is built upon [ProtocolState-Fuzzer](https://github.com/protocol-fuzzing/protocol-state-fuzzer).
 
-EDHOC-Fuzzer supports the following functionality for a protocol-specific client or server implementation:
+EDHOC-Fuzzer supports the following functionality for an EDHOC client or server implementation:
 
 1. Learning the state machine model of the implementation.
 2. Testing the implementation by executing test input sequences.
@@ -32,8 +32,8 @@ published in the proceedings of ISSTA 2023.
 
 ## Prerequisites
 
-* Java 17 JDK.
-* maven correctly setup to point to Java 17 JDK.
+* Java 21 JDK.
+* maven correctly setup to point to Java 21 JDK.
 * graphviz library, containing the dot utility, which should be located in the system's PATH.
 * python >=3.6 and pydot interface >=1.4.2, in order to use the [beautify_model.sh](scripts/beautify_model.sh) script.
 * (suggested) make utility, rust and cargo required by the setup of some SULs.
