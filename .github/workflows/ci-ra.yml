@@ -21,23 +21,19 @@ jobs:
         run: ./scripts/setup_fuzzer.sh -l
 
       - name: Setup Lakers
-        run: |
-          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+        run: curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
           source "${HOME}/.cargo/env"
           rustup toolchain install nightly-2025-05-10-x86_64-unknown-linux-gnu
           ./scripts/setup_sul.sh lakers
 
-
       - name: Test Lakers Client (RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra -roundLimit 3
+        run: java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra -roundLimit 3
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: Lakers Client
-          path: |
-            experiments/results/clients/ra/lakers
+          path:   experiments/results/clients/ra/lakers
 
       - name: Diff RA
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/lakers experiments/results/clients/ra/lakers 2
@@ -61,22 +57,19 @@ jobs:
         run: ./scripts/setup_fuzzer.sh -l
 
       - name: Setup Lakers
-        run: |
-          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+        run: curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
           source "${HOME}/.cargo/env"
           rustup toolchain install nightly-2025-05-10-x86_64-unknown-linux-gnu
           ./scripts/setup_sul.sh lakers
 
       - name: Test Lakers Server (RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra -roundLimit 5
+        run: java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra -roundLimit 5
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: Lakers Server
-          path: |
-            experiments/results/servers/ra/lakers
+          path:   experiments/results/servers/ra/lakers
 
       - name: Diff RA
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/lakers experiments/results/servers/ra/lakers 3
@@ -103,15 +96,13 @@ jobs:
         run: ./scripts/setup_sul.sh rise
 
       - name: Test RISE Client (m4_app, RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra -roundLimit 5
+        run: java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra -roundLimit 5
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: RISE Client
-          path: |
-            experiments/results/clients/ra/rise_m4_app
+          path: experiments/results/clients/ra/rise_m4_app
 
       - name: Diff RA
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/rise_m4_app experiments/results/clients/ra/rise_m4_app 3
@@ -138,15 +129,13 @@ jobs:
         run: ./scripts/setup_sul.sh rise
 
       - name: Test RISE Server (m4_app, RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/rise/server_m4_app_ra -roundLimit 2
+        run: java -jar edhoc-fuzzerRA.jar @experiments/args/rise/server_m4_app_ra -roundLimit 2
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: RISE Server
-          path: |
-            experiments/results/servers/ra/rise_m4_app
+          path: experiments/results/servers/ra/rise_m4_app
 
       - name: Diff RA
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/rise_m4_app experiments/results/servers/ra/rise_m4_app 2
@@ -173,18 +162,16 @@ jobs:
         run: ./scripts/setup_sul.sh uoscore-uedhoc
 
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra -roundLimit 5
+        run: java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra -roundLimit 5
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: uOSCORE-uEDHOC Client
-          path: |
-            experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore
+          path: experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore
 
       - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 3
+        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 3
 
   uOSCORE-uEDHOC-Server:
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -208,15 +195,82 @@ jobs:
         run: ./scripts/setup_sul.sh uoscore-uedhoc
 
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, RA)
-        run: |
-          java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra -roundLimit 4
+        run: java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra -roundLimit 4
 
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
           name: uOSCORE-uEDHOC Server
-          path: |
-            experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore
+          path: experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore
 
       - name: Diff RA
-        run:  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 3
+        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 3
+
+  SIFIS-HOME-Client:
+      if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+      runs-on: ubuntu-latest
+      strategy:
+        fail-fast: true
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-java@v4
+          with:
+            java-version: '17'
+            distribution: 'temurin'
+        - uses: ts-graphviz/setup-graphviz@v2
+        - name: Install pydot
+          run: pip3 install pydot
+
+        - name: Setup EDHOC-Fuzzer
+          run: ./scripts/setup_fuzzer.sh -l
+
+        - name: Setup SIFIS-HOME
+          run: ./scripts/setup_sul.sh sifis-home
+
+        - name: Test SIFIS-HOME Client (phase_1, RA)
+          run: java -jar edhoc-fuzzerRA.jar @experiments/args/sifis-home/client_phase_1_ra
+
+        - name: Upload results
+          uses: actions/upload-artifact@v4
+          with:
+            name: SIFIS-HOME Client
+            path: experiments/results/clients/ra/sifis-home_phase_1
+
+        - name: Diff RA
+          run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/sifis-home_phase_1 experiments/results/clients/ra/sifis-home_phase_1 3
+
+  # SIFIS-HOME-Server:
+  #   if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: true
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-java@v4
+  #       with:
+  #         java-version: '17'
+  #         distribution: 'temurin'
+  #     - uses: ts-graphviz/setup-graphviz@v2
+  #     - name: Install pydot
+  #       run: pip3 install pydot
+
+  #     - name: Setup EDHOC-Fuzzer
+  #       run: ./scripts/setup_fuzzer.sh -l
+
+  #     - name: Setup SIFIS-HOME
+  #       run: ./scripts/setup_sul.sh sifis-home
+
+  #     - name: Test SIFIS-HOME Server (phase_1, RA)
+  #       run: java -jar edhoc-fuzzerRA.jar @experiments/args/sifis-home/server_phase_1_ra
+
+  #     - name: Compress results
+  #       run: tar -czf sifis-home_phase_1_server_ra.tar.gz experiments/results/servers/ra/sifis-home_phase_1
+
+  #     - name: Upload results
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: SIFIS-HOME Server
+  #         path: experiments/results/servers/ra/sifis-home_phase_1
+
+  #     - name: Diff RA
+  #       run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/sifis-home_phase_1 experiments/results/servers/ra/sifis-home_phase_1 16
