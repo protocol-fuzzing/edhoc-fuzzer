@@ -7,6 +7,7 @@
 * [Setup](#setup)
 * [Learning](#learning)
 * [Testing](#testing)
+* [Timing](#timing)
 * [Visualizing](#visualizing)
 * [File Structure](#file-structure)
 
@@ -17,10 +18,12 @@
 EDHOC-Fuzzer is a protocol state fuzzer of EDHOC clients and servers.
 It is built upon [ProtocolState-Fuzzer](https://github.com/protocol-fuzzing/protocol-state-fuzzer).
 
-EDHOC-Fuzzer supports the following functionality:
+EDHOC-Fuzzer supports the following functionality for an EDHOC client or server implementation:
 
-1. Learning a state machine model of an EDHOC client or server implementation.
-2. Testing (executing sequences of inputs) of an EDHOC client or server implementation.
+1. Learning the state machine model of the implementation.
+2. Testing the implementation by executing test input sequences.
+3. Timing the implementation on test input sequences to suggest timeout values
+   for avoiding time-related non-determinism during Learning or Testing.
 
 More information about the functionality of EDHOC-Fuzzer, its design and architecture,
 and some of its early uses cases can be found in this
@@ -29,8 +32,8 @@ published in the proceedings of ISSTA 2023.
 
 ## Prerequisites
 
-* Java 17 JDK.
-* maven correctly setup to point to Java 17 JDK.
+* Java 21 JDK.
+* maven correctly setup to point to Java 21 JDK.
 * graphviz library, containing the dot utility, which should be located in the system's PATH.
 * python >=3.6 and pydot interface >=1.4.2, in order to use the [beautify_model.sh](scripts/beautify_model.sh) script.
 * (suggested) make utility, rust and cargo required by the setup of some SULs.
@@ -74,10 +77,10 @@ and the following directories should be created:
 After setting up the EDHOC-Fuzzer and the SUL of interest, one can learn the model of that SUL
 using one of the argument files in the [experiments/args](experiments/args) subdirectories
 (or using a file similar to them).
-Command-line arguments can be also provided, in order to overwrite those in the argument file.
+Command-line arguments can also be provided to overwrite those in the argument file.
 The `@` symbol before the argument file can be omitted.
 The simplest command is:
-```bash
+```
 java -jar edhoc-fuzzer.jar @path/to/argfile
 ```
 The above command without the argument file lists all the available command line options.
@@ -102,6 +105,46 @@ Additional Testing Parameters:
 
 -showTransitionSequence
   Shows the sequence of transitions at the end in a nicer format
+```
+
+
+## Timing
+Timing is an extension of testing and requires the `-test` and `-probeCmd` parameters to be specified.
+It is used to find timing values that prevent non-deterministic outputs from the SUL.
+It uses the same initial range for all commands in `-probeCmd` and performs the search
+based **only** on the provided tests of `-test`. Thus for learning, the timing values
+might need further manual adjustment.
+The timing probe command is:
+```
+java -jar edhoc-fuzzer.jar @path/to/arg/file -test path/to/test/file -probeCmd <probe commands> [-additional_param]
+
+
+Available comma-separated probe commands:
+    - responseWait    (time to wait for an SUL response)
+    - startWait       (time to wait after starting the SUL)
+    - <input symbol>  (time to wait for the response of this alphabet input symbol)
+
+    Example: -probeCmd responseWait,startWait,input1,input2
+
+
+Additional Timing Parameters:
+
+-times N
+  Run each test sequence N number of times, defaults to 1
+
+-probeLow N
+  The lowest non-negative integer probe timing value, defaults to 0
+
+-probeHigh N
+  The highest integer probe timing value, defaults to 1000
+
+-probeTol N
+  Search tolerance value that defines the desired precision, defaults to 10
+  Small tolerance increases accuracy but may require more iterations
+
+-probeExport path/to/alphabet/out
+  The output file for the alphabet augmented with timing values
+  Useful when an input symbol has been provided in -probeCmd
 ```
 
 
