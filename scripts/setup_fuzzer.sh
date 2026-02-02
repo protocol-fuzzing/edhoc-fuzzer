@@ -12,7 +12,7 @@ setup_psf() {
 
     set -e
     cd "${BASE_DIR}"
-    git clone "https://github.com/00oskpet/protocol-state-fuzzer.git"
+    git clone "https://github.com/protocol-fuzzing/protocol-state-fuzzer.git"
     cd protocol-state-fuzzer
     git checkout "${CHECKOUT}"
     bash ./install.sh
