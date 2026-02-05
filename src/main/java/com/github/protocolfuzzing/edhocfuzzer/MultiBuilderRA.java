@@ -8,7 +8,7 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.context.Edho
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.EdhocDataTypes;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.inputs.MessageInputTypeRA;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputTypeRA;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderWrapper;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.AlphabetBuilderEnum;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.DataTypeMap;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.EnumAlphabet;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.PSFOutputSymbols;
@@ -64,7 +64,7 @@ public class MultiBuilderRA implements
                         .withOutput(MessageOutputTypeRA.EDHOC_MESSAGE_3_OSCORE_APP_OUTPUT, T_CI)
                         .build();
 
-        protected AlphabetBuilderWrapper<ParameterizedSymbol> dummyBuilder = new AlphabetBuilderWrapper<ParameterizedSymbol>(
+        protected AlphabetBuilderEnum<ParameterizedSymbol> dummyBuilder = new AlphabetBuilderEnum<ParameterizedSymbol>(
                         alphabet);
 
     protected SulBuilder<PSymbolInstance, PSymbolInstance, EdhocExecutionContextRA> sulBuilder = new EdhocSulBuilderRA(alphabet);
