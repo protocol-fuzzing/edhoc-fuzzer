@@ -2,246 +2,218 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  Lakers-Client:
-    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-      - uses: ts-graphviz/setup-graphviz@v2
-      - name: Install pydot
-        run: pip3 install pydot
+    Lakers-Client:
+        if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/setup-java@v5
+              with:
+                  java-version: "21"
+                  distribution: "temurin"
+            - uses: ts-graphviz/setup-graphviz@v2
+            - name: Install pydot
+              run: pip3 install pydot
 
-      - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer.sh -l
+            - name: Setup EDHOC-Fuzzer
+              run: ./scripts/setup_fuzzer.sh -l
 
-      - name: Setup Lakers
-        run: |
-          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
-          source "${HOME}/.cargo/env"
-          rustup toolchain install nightly-2025-05-10-x86_64-unknown-linux-gnu
-          ./scripts/setup_sul.sh lakers
+            - name: Setup Lakers
+              run: |
+                  curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+                  source "${HOME}/.cargo/env"
+                  rustup toolchain install nightly-2025-05-10-x86_64-unknown-linux-gnu
+                  ./scripts/setup_sul.sh lakers
 
-      - name: Test Lakers Client (Mealy)
-        run: java -jar edhoc-fuzzer.jar @experiments/args/lakers/client -roundLimit 3
+            - name: Test Lakers Client (Mealy)
+              run: |
+                  java -jar edhoc-fuzzer.jar @experiments/args/lakers/client -roundLimit 3
+                  ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/lakers experiments/results/clients/mealy/lakers 3
 
-      - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/lakers experiments/results/clients/mealy/lakers 3
+    Lakers-Server:
+        if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/setup-java@v5
+              with:
+                  java-version: "21"
+                  distribution: "temurin"
+            - uses: ts-graphviz/setup-graphviz@v2
+            - name: Install pydot
+              run: pip3 install pydot
 
-  Lakers-Server:
-    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-      - uses: ts-graphviz/setup-graphviz@v2
-      - name: Install pydot
-        run: pip3 install pydot
+            - name: Setup EDHOC-Fuzzer
+              run: ./scripts/setup_fuzzer.sh -l
 
-      - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer.sh -l
+            - name: Setup Lakers
+              run: |
+                  curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+                  source "${HOME}/.cargo/env"
+                  rustup toolchain install nightly-2025-05-10-x86_64-unknown-linux-gnu
+                  ./scripts/setup_sul.sh lakers
 
-      - name: Setup Lakers
-        run: |
-          curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
-          source "${HOME}/.cargo/env"
-          rustup toolchain install nightly-2025-05-10-x86_64-unknown-linux-gnu
-          ./scripts/setup_sul.sh lakers
+            - name: Test Lakers Server (Mealy)
+              run: |
+                  java -jar edhoc-fuzzer.jar @experiments/args/lakers/server -roundLimit 3
+                  ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/lakers experiments/results/servers/mealy/lakers 2
 
-      - name: Test Lakers Server (Mealy)
-        run: java -jar edhoc-fuzzer.jar @experiments/args/lakers/server -roundLimit 3
+    RISE-Client:
+        if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/setup-java@v5
+              with:
+                  java-version: "21"
+                  distribution: "temurin"
+            - uses: ts-graphviz/setup-graphviz@v2
+            - name: Install pydot
+              run: pip3 install pydot
 
-      - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/lakers experiments/results/servers/mealy/lakers 2
+            - name: Setup EDHOC-Fuzzer
+              run: ./scripts/setup_fuzzer.sh -l
 
-  RISE-Client:
-    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-      - uses: ts-graphviz/setup-graphviz@v2
-      - name: Install pydot
-        run: pip3 install pydot
+            - name: Setup RISE
+              run: ./scripts/setup_sul.sh rise
 
-      - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer.sh -l
+            - name: Test RISE Client (m4_app, Mealy)
+              run: |
+                  java -jar edhoc-fuzzer.jar @experiments/args/rise/client_m4_app -roundLimit 4
+                  ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/rise_m4_app experiments/results/clients/mealy/rise_m4_app 4
 
-      - name: Setup RISE
-        run: ./scripts/setup_sul.sh rise
+    RISE-Server:
+        if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/setup-java@v5
+              with:
+                  java-version: "21"
+                  distribution: "temurin"
+            - uses: ts-graphviz/setup-graphviz@v2
+            - name: Install pydot
+              run: pip3 install pydot
 
-      - name: Test RISE Client (m4_app, Mealy)
-        run: java -jar edhoc-fuzzer.jar @experiments/args/rise/client_m4_app -roundLimit 4
+            - name: Setup EDHOC-Fuzzer
+              run: ./scripts/setup_fuzzer.sh -l
 
-      - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/rise_m4_app experiments/results/clients/mealy/rise_m4_app 4
+            - name: Setup RISE
+              run: ./scripts/setup_sul.sh rise
 
-  RISE-Server:
-    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-      - uses: ts-graphviz/setup-graphviz@v2
-      - name: Install pydot
-        run: pip3 install pydot
+            - name: Test RISE Server (m4_app, Mealy)
+              run: |
+                  java -jar edhoc-fuzzer.jar @experiments/args/rise/server_m4_app -roundLimit 5
+                  ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/rise_m4_app experiments/results/servers/mealy/rise_m4_app 5
 
-      - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer.sh -l
+    # SIFIS-HOME-Client:
+    #   if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    #   runs-on: ubuntu-latest
+    #   strategy:
+    #     fail-fast: true
+    #   steps:
+    #     - uses: actions/checkout@v4
+    #     - uses: actions/setup-java@v4
+    #       with:
+    #         java-version: '17'
+    #         distribution: 'temurin'
+    #     - uses: ts-graphviz/setup-graphviz@v2
+    #     - name: Install pydot
+    #       run: pip3 install pydot
 
-      - name: Setup RISE
-        run: ./scripts/setup_sul.sh rise
+    #     - name: Setup EDHOC-Fuzzer
+    #       run: ./scripts/setup_fuzzer.sh -l
 
-      - name: Test RISE Server (m4_app, Mealy)
-        run: java -jar edhoc-fuzzer.jar @experiments/args/rise/server_m4_app -roundLimit 5
+    #     - name: Setup SIFIS-HOME
+    #       run: ./scripts/setup_sul.sh sifis-home
 
-      - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/rise_m4_app experiments/results/servers/mealy/rise_m4_app 5
+    #     - name: Test SIFIS-HOME Client (phase_1, Mealy)
+    #       run: |
+    #         java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/client_phase_1 -roundLimit 4
+    #         ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/sifis-home_phase_1 experiments/results/clients/mealy/sifis-home_phase_1 4
 
-  uOSCORE-uEDHOC-Client:
-    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-      - uses: ts-graphviz/setup-graphviz@v2
-      - name: Install pydot
-        run: pip3 install pydot
+    # SIFIS-HOME-Server:
+    #   if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    #   runs-on: ubuntu-latest
+    #   strategy:
+    #     fail-fast: true
+    #   steps:
+    #     - uses: actions/checkout@v4
+    #     - uses: actions/setup-java@v4
+    #       with:
+    #         java-version: '17'
+    #         distribution: 'temurin'
+    #     - uses: ts-graphviz/setup-graphviz@v2
+    #     - name: Install pydot
+    #       run: pip3 install pydot
 
-      - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer.sh -l
+    #     - name: Setup EDHOC-Fuzzer
+    #       run: ./scripts/setup_fuzzer.sh -l
 
-      - name: Setup uOSCORE-uEDHOC
-        run: ./scripts/setup_sul.sh uoscore-uedhoc
+    #     - name: Setup SIFIS-HOME
+    #       run: ./scripts/setup_sul.sh sifis-home
 
-      - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, Mealy)
-        run: java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -roundLimit 3
+    #     - name: Test SIFIS-HOME Server (phase_1, Mealy)
+    #       run: |
+    #         java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1 -roundLimit 5
+    #         ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/sifis-home_phase_1 experiments/results/servers/mealy/sifis-home_phase_1 5
 
-      - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore 3
+    uOSCORE-uEDHOC-Client:
+        if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/setup-java@v5
+              with:
+                  java-version: "21"
+                  distribution: "temurin"
+            - uses: ts-graphviz/setup-graphviz@v2
+            - name: Install pydot
+              run: pip3 install pydot
 
-  uOSCORE-uEDHOC-Server:
-    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-      - uses: ts-graphviz/setup-graphviz@v2
-      - name: Install pydot
-        run: pip3 install pydot
+            - name: Setup EDHOC-Fuzzer
+              run: ./scripts/setup_fuzzer.sh -l
 
-      - name: Setup EDHOC-Fuzzer
-        run: ./scripts/setup_fuzzer.sh -l
+            - name: Setup uOSCORE-uEDHOC
+              run: ./scripts/setup_sul.sh uoscore-uedhoc
 
-      - name: Setup uOSCORE-uEDHOC
-        run: ./scripts/setup_sul.sh uoscore-uedhoc
+            - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, Mealy)
+              run: |
+                  java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -roundLimit
+                  3./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore 3
 
-      - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, Mealy)
-        run: java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -roundLimit 2
+    uOSCORE-uEDHOC-Server:
+        if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/setup-java@v5
+              with:
+                  java-version: "21"
+                  distribution: "temurin"
+            - uses: ts-graphviz/setup-graphviz@v2
+            - name: Install pydot
+              run: pip3 install pydot
 
-      - name: Diff Mealy
-        run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore 2
+            - name: Setup EDHOC-Fuzzer
+              run: ./scripts/setup_fuzzer.sh -l
 
-  # SIFIS-HOME-Client:
-  #   if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: true
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-java@v4
-  #       with:
-  #         java-version: '17'
-  #         distribution: 'temurin'
-  #     - uses: ts-graphviz/setup-graphviz@v2
-  #     - name: Install pydot
-  #       run: pip3 install pydot
+            - name: Setup uOSCORE-uEDHOC
+              run: ./scripts/setup_sul.sh uoscore-uedhoc
 
-  #     - name: Setup EDHOC-Fuzzer
-  #       run: ./scripts/setup_fuzzer.sh -l
-
-  #     - name: Setup SIFIS-HOME
-  #       run: ./scripts/setup_sul.sh sifis-home
-
-  #     - name: Test SIFIS-HOME Client (phase_1, Mealy)
-  #       run: |
-  #         java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/client_phase_1 -roundLimit 4
-
-  #     - name: Upload results
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: SIFIS-HOME Client
-  #         path: |
-  #           experiments/results/clients/mealy/sifis-home_phase_1
-
-  #     - name: Diff Mealy
-  #       run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/sifis-home_phase_1 experiments/results/clients/mealy/sifis-home_phase_1 4
-
-  # SIFIS-HOME-Server:
-  #   if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     fail-fast: true
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-java@v4
-  #       with:
-  #         java-version: '17'
-  #         distribution: 'temurin'
-  #     - uses: ts-graphviz/setup-graphviz@v2
-  #     - name: Install pydot
-  #       run: pip3 install pydot
-
-  #     - name: Setup EDHOC-Fuzzer
-  #       run: ./scripts/setup_fuzzer.sh -l
-
-  #     - name: Setup SIFIS-HOME
-  #       run: ./scripts/setup_sul.sh sifis-home
-
-  #     - name: Test SIFIS-HOME Server (phase_1, Mealy)
-  #       run: |
-  #         java -jar edhoc-fuzzer.jar @experiments/args/sifis-home/server_phase_1 -roundLimit 5
-
-  #     - name: Compress results
-  #       run: |
-  #         tar -czf sifis-home_phase_1_server_mealy.tar.gz experiments/results/servers/mealy/sifis-home_phase_1
-
-  #     - name: Upload results
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: SIFIS-HOME Server
-  #         path: |
-  #           experiments/results/servers/mealy/sifis-home_phase_1
-
-  #     - name: Diff Mealy
-  #       run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/sifis-home_phase_1 experiments/results/servers/mealy/sifis-home_phase_1 5
+            - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, Mealy)
+              run: |
+                  java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -roundLimit 2
+                  ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore 2
