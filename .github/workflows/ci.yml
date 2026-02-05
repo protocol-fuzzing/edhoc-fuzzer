@@ -30,12 +30,6 @@ jobs:
       - name: Test Lakers Client (Mealy)
         run: java -jar edhoc-fuzzer.jar @experiments/args/lakers/client -roundLimit 3
 
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: Lakers Client
-          path: experiments/results/clients/mealy/lakers
-
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/lakers experiments/results/clients/mealy/lakers 3
 
@@ -67,12 +61,6 @@ jobs:
       - name: Test Lakers Server (Mealy)
         run: java -jar edhoc-fuzzer.jar @experiments/args/lakers/server -roundLimit 3
 
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: Lakers Server
-          path: experiments/results/servers/mealy/lakers
-
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/lakers experiments/results/servers/mealy/lakers 2
 
@@ -99,12 +87,6 @@ jobs:
 
       - name: Test RISE Client (m4_app, Mealy)
         run: java -jar edhoc-fuzzer.jar @experiments/args/rise/client_m4_app -roundLimit 4
-
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: RISE Client
-          path: experiments/results/clients/mealy/rise_m4_app
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/rise_m4_app experiments/results/clients/mealy/rise_m4_app 4
@@ -133,12 +115,6 @@ jobs:
       - name: Test RISE Server (m4_app, Mealy)
         run: java -jar edhoc-fuzzer.jar @experiments/args/rise/server_m4_app -roundLimit 5
 
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: RISE Server
-          path: experiments/results/servers/mealy/rise_m4_app
-
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/rise_m4_app experiments/results/servers/mealy/rise_m4_app 5
 
@@ -166,12 +142,6 @@ jobs:
       - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, Mealy)
         run: java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore -roundLimit 3
 
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: uOSCORE-uEDHOC Client
-          path: experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore
-
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/mealy/uoscore-uedhoc_linux_edhoc_oscore 3
 
@@ -198,12 +168,6 @@ jobs:
 
       - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, Mealy)
         run: java -jar edhoc-fuzzer.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore -roundLimit 2
-
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: uOSCORE-uEDHOC Server
-          path: experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore
 
       - name: Diff Mealy
         run: ./scripts/diff_hyps.sh experiments/saved_results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/mealy/uoscore-uedhoc_linux_edhoc_oscore 2
