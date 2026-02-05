@@ -28,10 +28,9 @@ jobs:
                   ./scripts/setup_sul.sh lakers
 
             - name: Test Lakers Client (RA)
-              run: java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra -roundLimit 3
-
-            - name: Diff RA
-              run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/lakers experiments/results/clients/ra/lakers 2
+              run: |
+                  java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/client_ra -roundLimit 3
+                  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/lakers experiments/results/clients/ra/lakers 2
 
     Lakers-Server:
         if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -59,10 +58,9 @@ jobs:
                   ./scripts/setup_sul.sh lakers
 
             - name: Test Lakers Server (RA)
-              run: java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra -roundLimit 5
-
-            - name: Diff RA
-              run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/lakers experiments/results/servers/ra/lakers 3
+              run: |
+                  java -jar edhoc-fuzzerRA.jar @experiments/args/lakers/server_ra -roundLimit 5
+                  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/lakers experiments/results/servers/ra/lakers 3
 
     RISE-Client:
         if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -86,10 +84,9 @@ jobs:
               run: ./scripts/setup_sul.sh rise
 
             - name: Test RISE Client (m4_app, RA)
-              run: java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra -roundLimit 5
-
-            - name: Diff RA
-              run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/rise_m4_app experiments/results/clients/ra/rise_m4_app 3
+              run: |
+                  java -jar edhoc-fuzzerRA.jar @experiments/args/rise/client_m4_app_ra -roundLimit 5
+                  ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/rise_m4_app experiments/results/clients/ra/rise_m4_app 3
 
     RISE-Server:
         if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -113,10 +110,9 @@ jobs:
               run: ./scripts/setup_sul.sh rise
 
             - name: Test RISE Server (m4_app, RA)
-              run: java -jar edhoc-fuzzerRA.jar @experiments/args/rise/server_m4_app_ra -roundLimit 2
-
-            - name: Diff RA
-              run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/rise_m4_app experiments/results/servers/ra/rise_m4_app 2
+              run: |
+                  java -jar edhoc-fuzzerRA.jar @experiments/args/rise/server_m4_app_ra -roundLimit 2
+                  ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/rise_m4_app experiments/results/servers/ra/rise_m4_app 2
 
     uOSCORE-uEDHOC-Client:
         if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -140,10 +136,9 @@ jobs:
               run: ./scripts/setup_sul.sh uoscore-uedhoc
 
             - name: Test uOSCORE-uEDHOC Client (linux_edhoc_oscore, RA)
-              run: java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra -roundLimit 5
-
-            - name: Diff RA
-              run: ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 3
+              run: |
+                java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/client_linux_edhoc_oscore_ra -roundLimit 5
+                ./scripts/diff_hyps.sh experiments/saved_results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/clients/ra/uoscore-uedhoc_linux_edhoc_oscore 3
 
     uOSCORE-uEDHOC-Server:
         if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
@@ -167,10 +162,9 @@ jobs:
               run: ./scripts/setup_sul.sh uoscore-uedhoc
 
             - name: Test uOSCORE-uEDHOC Server (linux_edhoc_oscore, RA)
-              run: java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra -roundLimit 4
-
-            - name: Diff RA
-              run: ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 3
+              run: |
+                java -jar edhoc-fuzzerRA.jar @experiments/args/uoscore-uedhoc/server_linux_edhoc_oscore_ra -roundLimit 4
+                ./scripts/diff_hyps.sh experiments/saved_results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore 3
 
     # SIFIS-HOME-Client:
     #     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
