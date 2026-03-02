@@ -1,0 +1,72 @@
+state-fuzzer-server
+
+
+##### StateFuzzerConfig #####
+-output
+${results.learning.servers.ra}/lakers
+
+
+##### LearnerConfig #####
+-learningAlgorithm
+RaStar
+-equivalenceAlgorithms
+IO_RANDOM_WALK
+-logQueries
+-alphabet
+./src/main/resources/alphabet_placeholder.xml
+-maxDepthRA
+4
+-probNewDataValue
+0.5
+-seed
+7
+-socketClosedAsTimeout
+
+##### EdhocMapperConfig #####
+-protocolVersion
+v23
+
+## Mapper Auth ##
+
+-mapCredType
+CCS
+
+-mapIdCredType
+KID
+
+## Sul Auth ##
+
+-sulCredType
+CCS
+
+-sulIdCredType
+KID
+
+# TestVector
+-testVectorJson
+${authentication.test_vectors}/test_vectors_lakers.json
+
+-testVectorJsonKey
+test_vector_p256
+
+-testVectorPeerKeyCurve
+P256
+
+-edhocRole
+Initiator
+
+
+##### SulConfig #####
+-responseWait
+600
+-processDir
+${models.servers}/lakers
+-cmd
+./coapserver
+-startWait
+500
+
+
+##### EdhocSulServerConfig #####
+-connect
+localhost:5683

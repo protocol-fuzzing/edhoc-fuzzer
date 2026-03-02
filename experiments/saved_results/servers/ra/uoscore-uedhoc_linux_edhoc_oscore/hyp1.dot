@@ -1,0 +1,20 @@
+digraph RA {
+"" [shape=none,label=<>]
+"l0" [shape=doublecircle]
+"l1" [shape=doublecircle]
+"l2" [shape=circle]
+"l3" [shape=circle]
+"l4" [shape=doublecircle]
+"" -> "l0"
+"l0" -> "l1" [label=<?EDHOC_MESSAGE_1_INPUT[C_I]|TRUE>]
+"l0" -> "l4" [label=<?EDHOC_MESSAGE_3_INPUT[]>]
+"l0" -> "l4" [label=<?EDHOC_ERROR_MESSAGE_INPUT[]>]
+"l0" -> "l4" [label=<?COAP_APP_MESSAGE_INPUT[]>]
+"l0" -> "l4" [label=<?COAP_EMPTY_MESSAGE_INPUT[]>]
+"l0" -> "l4" [label=<?EDHOC_MESSAGE_2_INPUT[]>]
+"l0" -> "l4" [label=<?EDHOC_MESSAGE_4_INPUT[]>]
+"l0" -> "l4" [label=<?EDHOC_MESSAGE_3_OSCORE_APP_INPUT[C_I]|TRUE>]
+"l0" -> "l4" [label=<?OSCORE_APP_MESSAGE_INPUT[]>]
+"l1" -> "l0" [label=<!EDHOC_MESSAGE_2_OUTPUT[]>]
+"l4" -> "l0" [label=<!TIMEOUT[]>]
+}

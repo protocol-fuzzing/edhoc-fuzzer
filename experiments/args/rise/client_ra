@@ -1,0 +1,78 @@
+state-fuzzer-client
+
+
+##### StateFuzzerConfig #####
+-output
+${results.learning.clients.ra}/rise
+
+
+##### LearnerConfig #####
+-learningAlgorithm
+RaStar
+-equivalenceAlgorithms
+IO_RANDOM_WALK
+-logQueries
+-alphabet
+./src/main/resources/alphabet_placeholder.xml
+-maxDepthRA
+10
+-probNewDataValue
+0.5
+-seed
+7
+
+
+##### EdhocMapperConfig #####
+-protocolVersion
+v23
+
+-combinedMessageVersion
+v07
+
+## Mapper Auth ##
+
+-mapCredType
+X509
+
+-mapIdCredType
+X5T
+
+## Sul Auth ##
+
+-sulCredType
+X509
+
+-sulIdCredType
+X5T
+
+# TestVector
+-testVectorJson
+${authentication.test_vectors}/test_vectors_rise.json
+
+-testVectorJsonKey
+test_vector_ed25519
+
+-testVectorPeerKeyCurve
+Ed25519
+
+-edhocRole
+Responder
+
+-appCoapResource
+helloWorld
+
+
+##### SulConfig #####
+-responseWait
+400
+-processDir
+${models.clients}/rise
+-cmd
+java -cp cf-edhoc.jar org.eclipse.californium.edhoc.EdhocClient
+-startWait
+50
+
+
+##### EdhocSulClientConfig #####
+-port
+5683

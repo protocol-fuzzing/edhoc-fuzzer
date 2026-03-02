@@ -3,7 +3,7 @@ state-fuzzer-server
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.servers}/lakers
+${results.learning.servers.mealy}/lakers
 
 
 ##### LearnerConfig #####

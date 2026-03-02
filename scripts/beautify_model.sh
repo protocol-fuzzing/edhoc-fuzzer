@@ -2,15 +2,17 @@
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 readonly SCRIPT_DIR
-readonly REPL_FILE="${SCRIPT_DIR}/replacements.txt"
+REPL_FILE="${SCRIPT_DIR}/replacements.txt"
+REPL_FILE_RA="${SCRIPT_DIR}/replacementsRA.txt"
 readonly PY_SCRIPT="${SCRIPT_DIR}/beautify_model.py"
 
 start_edge_label=""
+RA_FLAG=""
 # uncomment next line to remove all edges with transitions '_ / UNSUPPORTED_MESSAGE'
 # remove_edge_pattern="o_UNSUPPORTED_MESSAGE"
 
-if [[ ${#} = 0 ]]; then
-    echo "Usage: ${0##*/} [-cI|--clientInitiator] [-cR|--clientResponder] dot_model"
+if [ ${#} = 0 ]; then
+    echo "Usage: ${0##*/} [-cI|--clientInitiator] [-cR|--clientResponder] [-RA|--registerAutomata] dot_model"
 else
     while [[ "${1}" =~ ^- ]]; do case ${1} in
         -cI | --clientInitiator )
@@ -18,6 +20,10 @@ else
             ;;
         -cR | --clientResponder )
             start_edge_label='"TIMEOUT / COAP_EMPTY_MESSAGE"'
+            ;;
+        -RA | --registerAutomata )
+            REPL_FILE=${REPL_FILE_RA}
+            RA_FLAG='--register-automata'
             ;;
         * )
             echo "Unsupported option ${1}"
@@ -36,5 +42,7 @@ else
         exit 1
     fi
 
-    python3 "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" --start-edge-label "${start_edge_label}" #--remove-edge-pattern "${remove_edge_pattern}"
+    echo "RA_FLAG: ${RA_FLAG} REPL_FILE: ${REPL_FILE}"
+
+    python3 "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" --start-edge-label "${start_edge_label}" ${RA_FLAG} #--remove-edge-pattern "${remove_edge_pattern}"
 fi

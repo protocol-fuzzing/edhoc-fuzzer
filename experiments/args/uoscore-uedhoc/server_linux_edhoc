@@ -3,7 +3,7 @@ state-fuzzer-server
 
 ##### StateFuzzerConfig #####
 -output
-${results.learning.servers}/uoscore-uedhoc_linux_edhoc
+${results.learning.servers.mealy}/uoscore-uedhoc_linux_edhoc
 
 
 ##### LearnerConfig #####

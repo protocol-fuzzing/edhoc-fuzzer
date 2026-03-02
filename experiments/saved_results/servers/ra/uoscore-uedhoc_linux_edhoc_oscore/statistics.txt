@@ -1,0 +1,122 @@
+=== RUN DESCRIPTION ===
+Alphabet: [?EDHOC_MESSAGE_1_INPUT[C_I], !EDHOC_MESSAGE_1_OUTPUT[C_I], !EDHOC_MESSAGE_2_OUTPUT[], ?EDHOC_MESSAGE_3_INPUT[], !EDHOC_MESSAGE_3_OUTPUT[], !EDHOC_MESSAGE_4_OUTPUT[], !UNSUCCESSFUL_MESSAGE[], !COAP_EMPTY_MESSAGE_OUTPUT[], !EDHOC_MESSAGE_3_OSCORE_APP_OUTPUT[C_I], ?EDHOC_ERROR_MESSAGE_INPUT[], !COAP_APP_MESSAGE_OUTPUT[], !COAP_MESSAGE_OUTPUT[], !COAP_ERROR_MESSAGE_OUTPUT[], ?COAP_APP_MESSAGE_INPUT[], ?COAP_EMPTY_MESSAGE_INPUT[], !OSCORE_APP_MESSAGE_OUTPUT[], !SOCKET_CLOSED[], !EDHOC_ERROR_MESSAGE_OUTPUT[], ?EDHOC_MESSAGE_2_INPUT[], !DISABLED[], ?EDHOC_MESSAGE_4_INPUT[], !UNSUPPORTED_MESSAGE[], !TIMEOUT[], !UNKNOWN[], ?EDHOC_MESSAGE_3_OSCORE_APP_INPUT[C_I], ?OSCORE_APP_MESSAGE_INPUT[]]
+
+StateFuzzerConfig Parameters
+Help: false
+Debug: false
+Quiet: false
+Output Directory: experiments/results/servers/ra/uoscore-uedhoc_linux_edhoc_oscore
+Fuzzing Client: false
+
+LearnerConfigStandard Parameters
+Alphabet: ./src/main/resources/alphabet_placeholder.xml
+Learning Algorithm: RASTAR
+Equivalence Algorithms: [IO_RANDOM_WALK]
+Max Depth: 1
+Min Length: 5
+Max Length: 15
+Max Equivalence Queries: 1000
+Runs Per Membership Query: 1
+Random Length: 5
+Membership Query Retries: 3
+Log Queries: true
+Prob Reset: 0.0
+Test File: null
+Seed: 7
+Cache Tests: false
+Ce Sanitization: true
+Skip Non Det Tests: false
+Ce Reruns: 3
+Probabilistic Sanitization: true
+Time Limit: PT5H45M
+Test Limit: null
+Round Limit: null
+IOMode: true
+Probability of Choosing a New DataValue: 0.5
+Max Runs: 10000
+Max Depth for Register Automata: 4
+Reset Runs: false
+Seed transitions: false
+Draw symbols uniformly: false
+
+SulConfig Parameters
+Fuzzing Role: client
+Fuzzing Client: true
+Response Wait: 100
+Input Response Timeout: null
+Command: null
+Terminate Command: null
+Process Dir: null
+Redirect Output Streams: false
+Process Trigger: NEW_TEST
+Start Wait: 0
+
+SulServerConfigStandard Parameters
+Connect to: localhost:5683
+
+MapperConfig Parameters
+Mapper Connection Config: null
+Repeating Outputs: null
+Socket Closed as Timeout: false
+Disabled as Timeout: false
+Merge Repeating: true
+
+EdhocMapperConfig Parameters
+Protocol Version: v16
+Combined Message Version: v06
+Edhoc Role: Initiator
+Edhoc Coap Resource: .well-known/edhoc
+App Coap Resource: tv1
+App Message Code To Coap Server: GET
+App Message Payload To Coap Server: 
+App Message Code To Coap Client: CHANGED
+App Message Payload To Coap Client: Server Application Data
+Coap Error As Edhoc Error: false
+use Content Format: true
+use Session Reset: false
+use CX Correlation: false
+Own Connection Id: 36
+Generate Own Connection Id: true
+Force Oscore Sender Id: []
+Force Oscore Recipient Id: 01
+
+AuthenticationConfig Parameters
+Map Cred Type: X509
+Map Id Cred Type: X5T
+Sul Cred Type: X509
+Sul Id Cred Type: X5T
+Trust Model: STRICT
+
+TestVectorAuthenticationConfig Parameters
+Test Vector File: experiments/authentication/test_vectors/test_vectors_v16_p256.json
+Test Vector Key: test_vector_1
+Test Vector Peer Key Curve: P256
+
+SulAdapterConfig Parameters
+Adapter Port: null
+Adapter Address: localhost
+
+=== STATISTICS ===
+Learning finished: false
+Reason: time limit reached
+Size of the input alphabet: 26
+Number of states: 13
+Number of hypotheses: 5
+Number of inputs: 25476
+Number of tests: 6483
+Number of learning inputs: 1242
+Number of learning tests: 423
+Number of inputs up to last hypothesis: 1796
+Number of tests up to last hypothesis: 563
+Time (ms) to learn model: 20700921
+Counterexamples:
+CE 1:Query[ε|EDHOC_MESSAGE_4_INPUT[] TIMEOUT[] COAP_EMPTY_MESSAGE_INPUT[] SOCKET_CLOSED[] / true]
+CE 2:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_1_INPUT[0[C_I]] TIMEOUT[] / true]
+CE 3:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_3_INPUT[] TIMEOUT[] EDHOC_MESSAGE_3_INPUT[] COAP_MESSAGE_OUTPUT[] / true]
+CE 4:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] TIMEOUT[] COAP_EMPTY_MESSAGE_INPUT[] TIMEOUT[] / true]
+Number of inputs when hypothesis was generated: [27, 104, 184, 870, 1796]
+Number of tests when hypothesis was generated: [27, 67, 107, 308, 563]
+Time (ms) when hypothesis was generated: [75556, 199976, 306560, 968022, 2007341]
+Number of inputs when counterexample was found: [29, 106, 507, 1097]
+Number of tests when counterexample was found: [28, 68, 188, 365]
+Time (ms) when counterexample was found: [78665, 203093, 558318, 1148117]
