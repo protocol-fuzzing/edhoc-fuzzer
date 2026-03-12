@@ -1,7 +1,6 @@
 import argparse
 import pydot
 
-
 def create_pattern_dct(pattern_string):
     pattern_dct = {
         'i': set(),
@@ -130,7 +129,7 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, label_symbol
     def replace_label(label):
         if label == "" or ' / ' not in label:
             return label
-
+        
         i, o = label.strip('\' "').split(' / ')
         ri = replace_symbol(i)
         ro = replace_symbol(o)
@@ -145,8 +144,7 @@ def get_info_from_graph(graph_name, shorten_node_names, remove_dct, label_symbol
     for node in graph.get_nodes():
         name = node.get_name()
         if name.startswith('s'):
-            if shorten_node_names:
-                node.set_label('"' + node.get_label().strip('\' "').lstrip('s') + '"')
+            node.set_label('"' + node.get_label().strip('\' "').lstrip('s') + '"')
 
         elif name != initial_hidden_node_name:
             if graph.del_node(node):
@@ -320,6 +318,31 @@ def format_and_write_dot_string(graph_raw_string, initial_hidden_node_name, file
                 # other non-empty line
                 f.write(prefix + line + '\n')
 
+def beautify_ra(args):
+    replacement_dict = read_replacement_file(args.r, args.replacement_sep)
+
+    input_file = args.i
+    output_file = args.i if args.overwrite_dot_input else args.i.replace('.dot', 'btf.dot')
+    
+    with open(input_file, 'r') as dot_file:
+        lines = dot_file.readlines()
+    
+    for old, new in replacement_dict.items():
+        for index, line in enumerate(lines):
+            lines[index] = line.replace(old, new)
+
+    with open(output_file, 'w') as dot_file:
+        dot_file.writelines(lines)
+
+    graph, *_ = pydot.graph_from_dot_file(output_file)
+
+    prefix = args.o.replace('.dot', '') if args.o else (args.i.replace('.dot', '') + 'btf')
+    other_format_pairs = [ (prefix + '.' + fmt, fmt) for fmt in args.other_formats ]
+    for graph_name, format in other_format_pairs:
+        graph.write(graph_name, format=format)
+        print(f"Written {graph_name} with {format} formatting.")
+    
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -360,73 +383,77 @@ if __name__ == '__main__':
                         "with the output dot file in case they have the same name")
     parser.add_argument('--no-dot-output', default=False, action='store_true', help='Do not output the resulting .dot file')
     parser.add_argument('--other-formats', nargs='*', default=['pdf'], help='Additional output formats other than .dot')
+    parser.add_argument('--register-automata', default=False, action='store_true', help="Beautify a Register Automata instead of a Mealy Machine.")
+    parser.set_defaults(register_automata=False)
 
     args = parser.parse_args()
 
+    if args.register_automata:
+        beautify_ra(args)
+    else:
+        def set_if_default(var, new, default):
+            return new if var == default else var
 
-    def set_if_default(var, new, default):
-        return new if var == default else var
+        # check same edges op
+        if args.same_edges_op not in ['stack', 'merge']:
+            print(f"Invalid --same-edge-op value '{args.same_edges_op}'. Available: stack, merge.")
+            exit(1)
 
-    # check same edges op
-    if args.same_edges_op not in ['stack', 'merge']:
-        print(f"Invalid --same-edge-op value '{args.same_edges_op}'. Available: stack, merge.")
-        exit(1)
+        if args.html_like_labels:
+            args.stack_sep = set_if_default(args.stack_sep, ' <br align="left"/> ', '\l ')
+            args.merge_label_sep = set_if_default(args.merge_label_sep, ' <br align="left"/> ', '\l ')
+            args.end_padding = set_if_default(args.end_padding, 1, 5)
 
-    if args.html_like_labels:
-        args.stack_sep = set_if_default(args.stack_sep, ' <br align="left"/> ', '\l ')
-        args.merge_label_sep = set_if_default(args.merge_label_sep, ' <br align="left"/> ', '\l ')
-        args.end_padding = set_if_default(args.end_padding, 1, 5)
+        # print some visual separators in command line
+        cmd_line_sep = 100 * '='
+        print(cmd_line_sep)
 
-    # print some visual separators in command line
-    cmd_line_sep = 100 * '='
-    print(cmd_line_sep)
+        remove_dct = create_pattern_dct(args.remove_edge_pattern)
+        original_label_symbol_dct = create_pattern_dct_with_label_symbol(args.set_label_symbol_pattern)
+        replacement_dct = read_replacement_file(args.r, args.replacement_sep)
 
-    remove_dct = create_pattern_dct(args.remove_edge_pattern)
-    original_label_symbol_dct = create_pattern_dct_with_label_symbol(args.set_label_symbol_pattern)
-    replacement_dct = read_replacement_file(args.r, args.replacement_sep)
+        nodes, edge_info_dct, initial_edge, label_symbol_dct = get_info_from_graph(
+            args.i, not args.disable_shorten_nodes, remove_dct, original_label_symbol_dct,
+            replacement_dct, args.start_node_name, args.start_edge_label)
 
-    nodes, edge_info_dct, initial_edge, label_symbol_dct = get_info_from_graph(
-        args.i, not args.disable_shorten_nodes, remove_dct, original_label_symbol_dct,
-        replacement_dct, args.start_node_name, args.start_edge_label)
+        label_info_dct = {
+            'same_edges_op': args.same_edges_op,
+            'stack_sep': args.stack_sep,
+            'merge_input_sep': args.merge_input_sep,
+            'merge_label_sep': args.merge_label_sep,
+            'start_padding': args.start_padding * " ",
+            'end_padding': args.end_padding * " ",
+            'html_like_labels': args.html_like_labels
+        }
 
-    label_info_dct = {
-        'same_edges_op': args.same_edges_op,
-        'stack_sep': args.stack_sep,
-        'merge_input_sep': args.merge_input_sep,
-        'merge_label_sep': args.merge_label_sep,
-        'start_padding': args.start_padding * " ",
-        'end_padding': args.end_padding * " ",
-        'html_like_labels': args.html_like_labels
-    }
+        new_graph = create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct, label_symbol_dct)
 
-    new_graph = create_new_graph(nodes, edge_info_dct, initial_edge, label_info_dct, label_symbol_dct)
+        prefix = args.o.replace('.dot', '') if args.o else (args.i.replace('.dot', '') + 'btf')
+        new_graph_dot_name = prefix + '.dot'
+        other_format_pairs = [ (prefix + '.' + fmt, fmt) for fmt in args.other_formats ]
 
-    prefix = args.o.replace('.dot', '') if args.o else (args.i.replace('.dot', '') + 'btf')
-    new_graph_dot_name = prefix + '.dot'
-    other_format_pairs = [ (prefix + '.' + fmt, fmt) for fmt in args.other_formats ]
+        print(cmd_line_sep)
 
-    print(cmd_line_sep)
+        if not args.no_dot_output:
+            if args.i == new_graph_dot_name:
+                print("Output dot file name coincides with the input dot file name")
 
-    if not args.no_dot_output:
-        if args.i == new_graph_dot_name:
-            print("Output dot file name coincides with the input dot file name")
+                if not args.overwrite_dot_input:
+                    new_graph_dot_name = new_graph_dot_name.replace('.dot', '') + 'btf.dot'
+                    print(f"The new output dot file name will be {new_graph_dot_name}")
+                    print("Add --overwrite-dot-input option to overwrite the input dot file")
+                else:
+                    print("Option --overwrite-dot-input is applicable")
+                    print("Input dot file will be overwritten by output dot file")
 
-            if not args.overwrite_dot_input:
-                new_graph_dot_name = new_graph_dot_name.replace('.dot', '') + 'btf.dot'
-                print(f"The new output dot file name will be {new_graph_dot_name}")
-                print("Add --overwrite-dot-input option to overwrite the input dot file")
-            else:
-                print("Option --overwrite-dot-input is applicable")
-                print("Input dot file will be overwritten by output dot file")
+                print(cmd_line_sep)
 
-            print(cmd_line_sep)
+            # alternative without formatting: new_graph.write(new_graph_dot_name, format='raw')
+            format_and_write_dot_string(new_graph.to_string(), args.start_node_name, new_graph_dot_name)
+            print(f"Written {new_graph_dot_name}")
 
-        # alternative without formatting: new_graph.write(new_graph_dot_name, format='raw')
-        format_and_write_dot_string(new_graph.to_string(), args.start_node_name, new_graph_dot_name)
-        print(f"Written {new_graph_dot_name}")
+        for graph_name, fmt in other_format_pairs:
+            new_graph.write(graph_name, format=fmt)
+            print(f"Written {graph_name}")
 
-    for graph_name, fmt in other_format_pairs:
-        new_graph.write(graph_name, format=fmt)
-        print(f"Written {graph_name}")
-
-    print(cmd_line_sep)
+        print(cmd_line_sep)

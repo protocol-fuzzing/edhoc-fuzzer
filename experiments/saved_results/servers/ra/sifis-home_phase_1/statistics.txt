@@ -1,0 +1,132 @@
+=== RUN DESCRIPTION ===
+Alphabet: [?EDHOC_MESSAGE_1_INPUT[C_I], !EDHOC_MESSAGE_1_OUTPUT[C_I], !EDHOC_MESSAGE_2_OUTPUT[], ?EDHOC_MESSAGE_3_INPUT[], !EDHOC_MESSAGE_3_OUTPUT[], !EDHOC_MESSAGE_4_OUTPUT[], !UNSUCCESSFUL_MESSAGE[], !COAP_EMPTY_MESSAGE_OUTPUT[], !EDHOC_MESSAGE_3_OSCORE_APP_OUTPUT[C_I], ?EDHOC_ERROR_MESSAGE_INPUT[], !COAP_APP_MESSAGE_OUTPUT[], !COAP_MESSAGE_OUTPUT[], !COAP_ERROR_MESSAGE_OUTPUT[], ?COAP_APP_MESSAGE_INPUT[], ?COAP_EMPTY_MESSAGE_INPUT[], !OSCORE_APP_MESSAGE_OUTPUT[], !SOCKET_CLOSED[], !EDHOC_ERROR_MESSAGE_OUTPUT[], ?EDHOC_MESSAGE_2_INPUT[], !DISABLED[], ?EDHOC_MESSAGE_4_INPUT[], !UNSUPPORTED_MESSAGE[], !TIMEOUT[], !UNKNOWN[], ?EDHOC_MESSAGE_3_OSCORE_APP_INPUT[C_I], ?OSCORE_APP_MESSAGE_INPUT[]]
+
+StateFuzzerConfig Parameters
+Help: false
+Debug: false
+Quiet: false
+Output Directory: experiments/results/servers/ra/sifis-home_phase_1
+Fuzzing Client: false
+
+LearnerConfigStandard Parameters
+Alphabet: ./src/main/resources/alphabet_placeholder.xml
+Learning Algorithm: RASTAR
+Equivalence Algorithms: [IO_RANDOM_WALK]
+Max Depth: 1
+Min Length: 5
+Max Length: 15
+Max Equivalence Queries: 1000
+Runs Per Membership Query: 1
+Random Length: 5
+Membership Query Retries: 3
+Log Queries: true
+Prob Reset: 0.0
+Test File: null
+Seed: 7
+Cache Tests: false
+Ce Sanitization: true
+Skip Non Det Tests: false
+Ce Reruns: 3
+Probabilistic Sanitization: true
+Time Limit: null
+Test Limit: null
+Round Limit: null
+IOMode: true
+Probability of Choosing a New DataValue: 0.5
+Max Runs: 10000
+Max Depth for Register Automata: 4
+Reset Runs: false
+Seed transitions: false
+Draw symbols uniformly: false
+
+SulConfig Parameters
+Fuzzing Role: client
+Fuzzing Client: true
+Response Wait: 100
+Input Response Timeout: null
+Command: null
+Terminate Command: null
+Process Dir: null
+Redirect Output Streams: false
+Process Trigger: NEW_TEST
+Start Wait: 0
+
+SulServerConfigStandard Parameters
+Connect to: localhost:5694
+
+MapperConfig Parameters
+Mapper Connection Config: null
+Repeating Outputs: null
+Socket Closed as Timeout: true
+Disabled as Timeout: false
+Merge Repeating: true
+
+EdhocMapperConfig Parameters
+Protocol Version: v22
+Combined Message Version: v07
+Edhoc Role: Initiator
+Edhoc Coap Resource: .well-known/edhoc
+App Coap Resource: light
+App Message Code To Coap Server: POST
+App Message Payload To Coap Server: 1
+App Message Code To Coap Client: CHANGED
+App Message Payload To Coap Client: Server Application Data
+Coap Error As Edhoc Error: false
+use Content Format: true
+use Session Reset: false
+use CX Correlation: true
+Own Connection Id: 36
+Generate Own Connection Id: true
+Force Oscore Sender Id: null
+Force Oscore Recipient Id: null
+
+AuthenticationConfig Parameters
+Map Cred Type: X509
+Map Id Cred Type: X5T
+Sul Cred Type: X509
+Sul Id Cred Type: X5T
+Trust Model: STRICT
+
+TestVectorAuthenticationConfig Parameters
+Test Vector File: experiments/authentication/test_vectors/test_vectors_sifis_home.json
+Test Vector Key: test_vector_ed25519_phases_1_3
+Test Vector Peer Key Curve: Ed25519
+
+SulAdapterConfig Parameters
+Adapter Port: null
+Adapter Address: localhost
+
+=== STATISTICS ===
+Learning finished: true
+Size of the input alphabet: 26
+Number of states: 42
+Number of hypotheses: 16
+Number of inputs: 46482
+Number of tests: 11665
+Number of learning inputs: 6489
+Number of learning tests: 1665
+Number of inputs up to last hypothesis: 29994
+Number of tests up to last hypothesis: 7543
+Time (ms) to learn model: 13819934
+Counterexamples:
+CE 1:Query[ε|EDHOC_MESSAGE_4_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] COAP_EMPTY_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] TIMEOUT[] / true]
+CE 2:Query[ε|EDHOC_MESSAGE_2_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] COAP_ERROR_MESSAGE_OUTPUT[] / true]
+CE 3:Query[ε|EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_2_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] / true]
+CE 4:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] COAP_APP_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] EDHOC_ERROR_MESSAGE_OUTPUT[] / true]
+CE 5:Query[ε|EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] COAP_ERROR_MESSAGE_OUTPUT[] COAP_EMPTY_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] TIMEOUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] TIMEOUT[] / true]
+CE 6:Query[ε|EDHOC_ERROR_MESSAGE_INPUT[] TIMEOUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_ERROR_MESSAGE_INPUT[] TIMEOUT[] / true]
+CE 7:Query[ε|EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] COAP_ERROR_MESSAGE_OUTPUT[] COAP_APP_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_ERROR_MESSAGE_INPUT[] TIMEOUT[] EDHOC_MESSAGE_4_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] / true]
+CE 8:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] COAP_EMPTY_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] EDHOC_ERROR_MESSAGE_OUTPUT[] / true]
+CE 9:Query[ε|EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] TIMEOUT[] EDHOC_ERROR_MESSAGE_INPUT[] TIMEOUT[] / true]
+CE 10:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] COAP_APP_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_ERROR_MESSAGE_INPUT[] COAP_EMPTY_MESSAGE_OUTPUT[] EDHOC_ERROR_MESSAGE_INPUT[] TIMEOUT[] / true]
+CE 11:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_3_INPUT[] COAP_EMPTY_MESSAGE_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_ERROR_MESSAGE_INPUT[] COAP_EMPTY_MESSAGE_OUTPUT[] / true]
+CE 12:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] EDHOC_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] EDHOC_ERROR_MESSAGE_OUTPUT[] / true]
+CE 13:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_1_INPUT[1[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] EDHOC_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] EDHOC_ERROR_MESSAGE_OUTPUT[] / true]
+CE 14:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] COAP_EMPTY_MESSAGE_INPUT[] COAP_ERROR_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] EDHOC_ERROR_MESSAGE_OUTPUT[] / true]
+CE 15:Query[ε|EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_1_INPUT[0[C_I]] EDHOC_MESSAGE_2_OUTPUT[] EDHOC_MESSAGE_3_INPUT[] COAP_EMPTY_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] EDHOC_ERROR_MESSAGE_OUTPUT[] / true]
+Number of inputs when hypothesis was generated: [27, 280, 461, 1306, 1634, 1848, 3093, 3360, 4016, 4382, 4967, 9586, 13503, 15000, 17993, 29994]
+Number of tests when hypothesis was generated: [27, 136, 205, 410, 511, 575, 843, 915, 1094, 1188, 1338, 2498, 3481, 3823, 4575, 7543]
+Time (ms) when hypothesis was generated: [25091, 143795, 221057, 479728, 573482, 680462, 1036584, 1131784, 1358846, 1482714, 1661585, 3023182, 4161999, 4589182, 5477949, 9001809]
+Number of inputs when counterexample was found: [31, 290, 475, 1337, 1638, 1863, 3165, 3452, 4259, 4838, 9067, 13362, 14139, 17924, 29121]
+Number of tests when counterexample was found: [28, 139, 209, 418, 512, 579, 861, 938, 1155, 1302, 2363, 3442, 3640, 4554, 7357]
+Time (ms) when counterexample was found: [26443, 146342, 226046, 487611, 575331, 685442, 1056810, 1162003, 1431520, 1616081, 2869622, 4122003, 4343425, 5455747, 8767257]

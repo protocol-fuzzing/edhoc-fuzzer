@@ -1,0 +1,128 @@
+=== RUN DESCRIPTION ===
+Alphabet: [?EDHOC_MESSAGE_1_INPUT[C_I], !EDHOC_MESSAGE_1_OUTPUT[C_I], !EDHOC_MESSAGE_2_OUTPUT[], ?EDHOC_MESSAGE_3_INPUT[], !EDHOC_MESSAGE_3_OUTPUT[], !EDHOC_MESSAGE_4_OUTPUT[], !UNSUCCESSFUL_MESSAGE[], !COAP_EMPTY_MESSAGE_OUTPUT[], !EDHOC_MESSAGE_3_OSCORE_APP_OUTPUT[C_I], ?EDHOC_ERROR_MESSAGE_INPUT[], !COAP_APP_MESSAGE_OUTPUT[], !COAP_MESSAGE_OUTPUT[], !COAP_ERROR_MESSAGE_OUTPUT[], ?COAP_APP_MESSAGE_INPUT[], ?COAP_EMPTY_MESSAGE_INPUT[], !OSCORE_APP_MESSAGE_OUTPUT[], !SOCKET_CLOSED[], !EDHOC_ERROR_MESSAGE_OUTPUT[], ?EDHOC_MESSAGE_2_INPUT[], !DISABLED[], ?EDHOC_MESSAGE_4_INPUT[], !UNSUPPORTED_MESSAGE[], !TIMEOUT[], !UNKNOWN[], ?EDHOC_MESSAGE_3_OSCORE_APP_INPUT[C_I], ?OSCORE_APP_MESSAGE_INPUT[]]
+
+StateFuzzerConfig Parameters
+Help: false
+Debug: false
+Quiet: false
+Output Directory: experiments/results/clients/ra/rise_m4_app
+Fuzzing Client: true
+
+LearnerConfigStandard Parameters
+Alphabet: ./src/main/resources/alphabet_placeholder.xml
+Learning Algorithm: RASTAR
+Equivalence Algorithms: [IO_RANDOM_WALK]
+Max Depth: 1
+Min Length: 5
+Max Length: 15
+Max Equivalence Queries: 1000
+Runs Per Membership Query: 1
+Random Length: 5
+Membership Query Retries: 3
+Log Queries: true
+Prob Reset: 0.0
+Test File: null
+Seed: 7
+Cache Tests: false
+Ce Sanitization: true
+Skip Non Det Tests: false
+Ce Reruns: 3
+Probabilistic Sanitization: true
+Time Limit: null
+Test Limit: null
+Round Limit: null
+IOMode: true
+Probability of Choosing a New DataValue: 0.5
+Max Runs: 10000
+Max Depth for Register Automata: 10
+Reset Runs: false
+Seed transitions: false
+Draw symbols uniformly: false
+
+SulConfig Parameters
+Fuzzing Role: client
+Fuzzing Client: true
+Response Wait: 100
+Input Response Timeout: null
+Command: null
+Terminate Command: null
+Process Dir: null
+Redirect Output Streams: false
+Process Trigger: NEW_TEST
+Start Wait: 0
+
+SulClientConfig Parameters
+Client Wait: 50
+Port: 5683
+
+MapperConfig Parameters
+Mapper Connection Config: null
+Repeating Outputs: null
+Socket Closed as Timeout: true
+Disabled as Timeout: false
+Merge Repeating: true
+
+EdhocMapperConfig Parameters
+Protocol Version: v23
+Combined Message Version: v07
+Edhoc Role: Responder
+Edhoc Coap Resource: .well-known/edhoc
+App Coap Resource: helloWorld
+App Message Code To Coap Server: GET
+App Message Payload To Coap Server: 
+App Message Code To Coap Client: CHANGED
+App Message Payload To Coap Client: Server Application Data
+Coap Error As Edhoc Error: false
+use Content Format: true
+use Session Reset: false
+use CX Correlation: true
+Own Connection Id: 36
+Generate Own Connection Id: true
+Force Oscore Sender Id: null
+Force Oscore Recipient Id: null
+
+AuthenticationConfig Parameters
+Map Cred Type: X509
+Map Id Cred Type: X5T
+Sul Cred Type: X509
+Sul Id Cred Type: X5T
+Trust Model: STRICT
+
+TestVectorAuthenticationConfig Parameters
+Test Vector File: experiments/authentication/test_vectors/test_vectors_rise.json
+Test Vector Key: test_vector_ed25519
+Test Vector Peer Key Curve: Ed25519
+
+SulAdapterConfig Parameters
+Adapter Port: null
+Adapter Address: localhost
+
+=== STATISTICS ===
+Learning finished: true
+Size of the input alphabet: 26
+Number of states: 22
+Number of hypotheses: 11
+Number of inputs: 101125
+Number of tests: 10444
+Number of learning inputs: 1191
+Number of learning tests: 444
+Number of inputs up to last hypothesis: 18825
+Number of tests up to last hypothesis: 2214
+Time (ms) to learn model: 10500455
+Counterexamples:
+CE 1:Query[ε|EDHOC_MESSAGE_4_INPUT[] TIMEOUT[] COAP_EMPTY_MESSAGE_INPUT[] SOCKET_CLOSED[] / true]
+CE 2:Query[ε|EDHOC_MESSAGE_2_INPUT[] EDHOC_MESSAGE_3_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] OSCORE_APP_MESSAGE_OUTPUT[] / true]
+CE 3:Query[ε|EDHOC_MESSAGE_2_INPUT[] EDHOC_MESSAGE_3_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] OSCORE_APP_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] UNSUPPORTED_MESSAGE[] EDHOC_MESSAGE_2_INPUT[] TIMEOUT[] / true]
+CE 4:Query[ε|EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] UNSUPPORTED_MESSAGE[] EDHOC_MESSAGE_2_INPUT[] EDHOC_MESSAGE_3_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] UNSUCCESSFUL_MESSAGE[] / true]
+CE 5:Query[ε|EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] UNSUPPORTED_MESSAGE[] EDHOC_MESSAGE_2_INPUT[] EDHOC_MESSAGE_3_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[1[C_I]] UNSUPPORTED_MESSAGE[] EDHOC_MESSAGE_4_INPUT[] UNSUCCESSFUL_MESSAGE[] / true]
+CE 6:Query[ε|OSCORE_APP_MESSAGE_INPUT[] UNSUPPORTED_MESSAGE[] EDHOC_MESSAGE_2_INPUT[] EDHOC_MESSAGE_3_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] OSCORE_APP_MESSAGE_OUTPUT[] / true]
+CE 7:Query[ε|EDHOC_MESSAGE_2_INPUT[] EDHOC_MESSAGE_3_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] UNSUPPORTED_MESSAGE[] EDHOC_MESSAGE_2_INPUT[] EDHOC_ERROR_MESSAGE_OUTPUT[] / true]
+CE 8:Query[ε|EDHOC_MESSAGE_2_INPUT[] EDHOC_MESSAGE_3_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] UNSUPPORTED_MESSAGE[] EDHOC_MESSAGE_3_INPUT[] EDHOC_ERROR_MESSAGE_OUTPUT[] OSCORE_APP_MESSAGE_INPUT[] UNSUPPORTED_MESSAGE[] EDHOC_MESSAGE_2_INPUT[] TIMEOUT[] / true]
+CE 9:Query[ε|EDHOC_MESSAGE_2_INPUT[] EDHOC_MESSAGE_3_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] OSCORE_APP_MESSAGE_OUTPUT[] OSCORE_APP_MESSAGE_INPUT[] TIMEOUT[] / true]
+CE 10:Query[ε|OSCORE_APP_MESSAGE_INPUT[] UNSUPPORTED_MESSAGE[] EDHOC_MESSAGE_2_INPUT[] EDHOC_MESSAGE_3_OUTPUT[] EDHOC_MESSAGE_4_INPUT[] OSCORE_APP_MESSAGE_OUTPUT[] EDHOC_MESSAGE_3_OSCORE_APP_INPUT[0[C_I]] UNSUPPORTED_MESSAGE[] OSCORE_APP_MESSAGE_INPUT[] TIMEOUT[] / true]
+Number of inputs when hypothesis was generated: [27, 110, 367, 754, 1091, 1329, 3378, 3698, 8479, 13271, 18825]
+Number of tests when hypothesis was generated: [27, 70, 134, 209, 292, 353, 582, 624, 1117, 1632, 2214]
+Time (ms) when hypothesis was generated: [23821, 67516, 126177, 195225, 265706, 312883, 538180, 576613, 1074422, 1589191, 2169689]
+Number of inputs when counterexample was found: [29, 262, 631, 917, 1155, 3252, 3671, 8413, 13112, 18696]
+Number of tests when counterexample was found: [28, 86, 161, 226, 299, 546, 612, 1096, 1581, 2175]
+Time (ms) when counterexample was found: [24850, 83515, 153853, 212014, 272309, 508492, 568123, 1056148, 1546409, 2139940]

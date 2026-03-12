@@ -2,6 +2,8 @@ package com.github.protocolfuzzing.edhocfuzzer;
 
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.LearnerResult;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigRA;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.config.StateFuzzerEnabler;
 import org.apache.logging.log4j.LogManager;
@@ -54,17 +56,24 @@ public class EdhocDotProcessor {
 
             // when Fuzzer is Initiator then SUL is Responder
             // when Fuzzer is Responder then SUL is Initiator
-            String cIR = isFuzzerInitiator ? "--clientResponder" : "--clientInitiator";
-            commandArgList.add(1, cIR);
+            String argument = isFuzzerInitiator ? "--clientResponder" : "--clientInitiator";
+
+            commandArgList.add(1, argument);
+        }
+
+        LearnerConfig learnerConfig = stateFuzzerEnabler.getLearnerConfig();
+        if (learnerConfig instanceof LearnerConfigRA) {
+            commandArgList.add(1, "--registerAutomata");
         }
 
         try {
             LOGGER.info("Running {}", script);
+            LOGGER.info("Shell script arguments {}", commandArgList);
             new ProcessBuilder(commandArgList)
-                .redirectErrorStream(true)
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .start()
-                .waitFor();
+                    .redirectErrorStream(true)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .start()
+                    .waitFor();
         } catch (IOException | InterruptedException e) {
             LOGGER.warn("Could not beautify {}: {}", learnedModelPath, e.getMessage());
         }
