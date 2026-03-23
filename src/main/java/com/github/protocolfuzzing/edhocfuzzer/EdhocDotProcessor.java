@@ -43,7 +43,7 @@ public class EdhocDotProcessor {
 
         if (stateFuzzerEnabler.isFuzzingClient()) {
             // SUL is a client implementation
-            MapperConfig mapperConfig = stateFuzzerEnabler.getSulConfig().getMapperConfig();
+            MapperConfig mapperConfig = stateFuzzerEnabler.getSULConfig().getMapperConfig();
 
             if (!(mapperConfig instanceof EdhocMapperConfig edhocMapperConfig)) {
                 LOGGER.error("MapperConfig of StateFuzzerEnabler is not EdhocMapperConfig");
