@@ -13,7 +13,7 @@ import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabe
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.alphabet.xml.AlphabetSerializerXml;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.config.LearnerConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.statistics.MealyMachineWrapper;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulBuilder;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SULBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzer;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerBuilder;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.StateFuzzerComposerStandard;
@@ -45,7 +45,7 @@ public class MultiBuilder implements
         new AlphabetSerializerXml<EdhocInput, EdhocAlphabetPojoXml>(EdhocInput.class, EdhocAlphabetPojoXml.class)
     );
 
-    protected SulBuilder<EdhocInput, EdhocOutput, EdhocExecutionContext> sulBuilder = new EdhocSulBuilder();
+    protected SULBuilder<EdhocInput, EdhocOutput, EdhocExecutionContext> sulBuilder = new EdhocSulBuilder();
 
     @Override
     public StateFuzzerClientConfig buildClientConfig() {

@@ -18,9 +18,9 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outp
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputBuilder;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.EdhocOutputChecker;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.symbols.outputs.MessageOutputType;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.AbstractSul;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SulAdapter;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.AbstractSUL;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.SULAdapter;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SULConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.sulwrappers.DynamicPortProvider;
 import com.github.protocolfuzzing.protocolstatefuzzer.utils.CleanupTasks;
 import org.apache.logging.log4j.LogManager;
@@ -30,10 +30,10 @@ import org.eclipse.californium.core.config.CoapConfig;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-public class EdhocSul implements AbstractSul<EdhocInput, EdhocOutput, EdhocExecutionContext> {
+public class EdhocSul implements AbstractSUL<EdhocInput, EdhocOutput, EdhocExecutionContext> {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    protected SulConfig sulConfig;
+    protected SULConfig sulConfig;
     protected CleanupTasks cleanupTasks;
     protected EdhocMapperConfig edhocMapperConfig;
     protected EdhocMapperComposer edhocMapperComposer;
@@ -43,7 +43,7 @@ public class EdhocSul implements AbstractSul<EdhocInput, EdhocOutput, EdhocExecu
     protected EdhocMapperConnector edhocMapperConnector;
     protected boolean serverWaitForInitialMessageDone;
 
-    public EdhocSul(SulConfig sulConfig, CleanupTasks cleanupTasks) {
+    public EdhocSul(SULConfig sulConfig, CleanupTasks cleanupTasks) {
         this.sulConfig = sulConfig;
         this.cleanupTasks = cleanupTasks;
         this.edhocMapperConfig = (EdhocMapperConfig) sulConfig.getMapperConfig();
@@ -91,7 +91,7 @@ public class EdhocSul implements AbstractSul<EdhocInput, EdhocOutput, EdhocExecu
     }
 
     @Override
-    public SulConfig getSulConfig() {
+    public SULConfig getSULConfig() {
         return sulConfig;
     }
 
@@ -116,7 +116,7 @@ public class EdhocSul implements AbstractSul<EdhocInput, EdhocOutput, EdhocExecu
     }
 
     @Override
-    public SulAdapter getSulAdapter() {
+    public SULAdapter getSULAdapter() {
         throw new RuntimeException("No sul adapter available");
     }
 

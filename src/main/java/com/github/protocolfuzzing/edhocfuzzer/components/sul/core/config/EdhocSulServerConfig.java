@@ -2,14 +2,14 @@ package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.config;
 
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConnectionConfig;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulAdapterConfig;
-import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SulServerConfigStandard;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SULAdapterConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.core.config.SULServerConfigStandard;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
 import org.eclipse.californium.elements.config.Configuration;
 
-public class EdhocSulServerConfig extends SulServerConfigStandard {
+public class EdhocSulServerConfig extends SULServerConfigStandard {
     public EdhocSulServerConfig(EdhocMapperConfig edhocMapperConfig) {
-        super(edhocMapperConfig, new SulAdapterConfig(){});
+        super(edhocMapperConfig, new SULAdapterConfig(){});
     }
 
     @Override
