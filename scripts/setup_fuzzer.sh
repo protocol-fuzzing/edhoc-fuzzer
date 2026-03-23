@@ -8,14 +8,14 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    CHECKOUT="d8fcb525168c0a570248504c214599c9807fd7b1"
+    CHECKOUT="83bcc0e1b8d6e093a656d41cc1fb59f2c600e86a"
 
     set -e
     cd "${BASE_DIR}"
     git clone "https://github.com/protocol-fuzzing/protocol-state-fuzzer.git"
     cd protocol-state-fuzzer
     git checkout "${CHECKOUT}"
-    bash ./install.sh
+    mvn install
 
     cd "${BASE_DIR}"
     rm -rf ./protocol-state-fuzzer/
