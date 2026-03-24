@@ -22,6 +22,23 @@ setup_psf() {
     set +e
 }
 
+setup_ralib() {
+    # setup RALib
+
+    CHECKOUT="main"
+
+    set -e
+    cd "${BASE_DIR}"
+    git clone "https://github.com/LearnLib/ralib"
+    cd ralib
+    git checkout ${CHECKOUT}
+    mvn install -DskipTests=true
+
+    cd "${BASE_DIR}"
+    rm -rf ./ralib/
+    set +e
+}
+
 setup_cf_edhoc() {
     # setup cf-edhoc library
 
@@ -58,7 +75,8 @@ setup_fuzzer() {
     set -e
     cd "${BASE_DIR}"
     mvn clean verify
-    ln -sf "${BASE_DIR}"/target/edhoc-fuzzer-*-jar-with-dependencies.jar edhoc-fuzzer.jar
+    ln -sf "${BASE_DIR}"/target/edhoc-fuzzer-*-mealy-jar-with-dependencies.jar edhoc-fuzzer.jar
+    ln -sf "${BASE_DIR}"/target/edhoc-fuzzer-*-ra-jar-with-dependencies.jar edhoc-fuzzerRA.jar
     set +e
 }
 
@@ -68,21 +86,23 @@ usage() {
   Options (library setup prior to EDHOC-Fuzzer):
     -p  Fetch and setup only protocol-state-fuzzer library
     -e  Fetch and setup only cf-edhoc library
-    -l  Fetch and setup protocol-state-fuzzer and cf-edhoc libraries
+    -r  Fetch and setup only ralib
+    -l  Fetch and setup protocol-state-fuzzer, ralib and cf-edhoc libraries
+    -f  Only setup fuzzer
     -h  Show usage message
 END
   exit 0
 }
 
 
-while getopts :pelh flag
+while getopts :pelrfh flag
 do
   case "${flag}" in
-    p) setup_psf ;;
-    e) setup_cf_edhoc ;;
-    l) setup_psf; setup_cf_edhoc ;;
+    p) setup_psf; setup_fuzzer ;;
+    e) setup_cf_edhoc; setup_fuzzer ;;
+    r) setup_ralib; setup_fuzzer ;;
+    l) setup_ralib; setup_psf; setup_cf_edhoc; setup_fuzzer ;;
+    f) setup_fuzzer ;;
     : | \? | h | *) usage ;;
   esac
 done
-
-setup_fuzzer

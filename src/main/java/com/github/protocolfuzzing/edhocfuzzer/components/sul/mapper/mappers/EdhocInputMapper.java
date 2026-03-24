@@ -27,9 +27,7 @@ public class EdhocInputMapper extends InputMapper<EdhocInput, EdhocOutput, Edhoc
 
         // enable or disable content format
         EdhocMapperConfig edhocMapperConfig = (EdhocMapperConfig) mapperConfig;
-        int contentFormat = edhocMapperConfig.useContentFormat() ?
-            message.getContentFormat(edhocMapperConfig.useOldContentFormat()) :
-            MediaTypeRegistry.UNDEFINED;
+        int contentFormat = edhocMapperConfig.useContentFormat() ? message.getContentFormat(edhocMapperConfig.useOldContentFormat()) : MediaTypeRegistry.UNDEFINED;
 
         edhocMapperConnector.send(message.getPayload(), message.getPayloadType(), message.getMessageCode(), contentFormat);
     }

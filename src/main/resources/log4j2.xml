@@ -6,11 +6,20 @@
         </Console>
     </Appenders>
     <Loggers>
+        <Logger name="com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.MessageProcessorPersistent" level="info" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
         <Logger name="com.github.protocolfuzzing.edhocfuzzer" level="info" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Logger name="com.github.protocolfuzzing.protocolstatefuzzer" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="de.learnlib.ralib" level="info" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Logger name="org.eclipse.californium" level="error">
+            <AppenderRef ref="Console" />
         </Logger>
         <Root level="error">
             <AppenderRef ref="Console"/>

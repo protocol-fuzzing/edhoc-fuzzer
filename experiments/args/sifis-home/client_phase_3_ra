@@ -1,0 +1,79 @@
+state-fuzzer-client
+
+
+##### StateFuzzerConfig #####
+-output
+${results.learning.clients.ra}/sifis-home_phase_3
+
+
+##### LearnerConfig #####
+-learningAlgorithm
+RaStar
+-equivalenceAlgorithms
+IO_RANDOM_WALK
+-logQueries
+-alphabet
+./src/main/resources/alphabet_placeholder.xml
+-maxDepthRA
+10
+-probNewDataValue
+0.5
+-seed
+7
+
+
+
+##### EdhocMapperConfig #####
+-protocolVersion
+v22
+
+-combinedMessageVersion
+v07
+
+## Mapper Auth ##
+
+-mapCredType
+X509
+
+-mapIdCredType
+X5T
+
+## Sul Auth ##
+
+-sulCredType
+X509
+
+-sulIdCredType
+X5T
+
+# TestVector
+-testVectorJson
+${authentication.test_vectors}/test_vectors_sifis_home.json
+
+-testVectorJsonKey
+test_vector_ed25519_phases_1_3
+
+-testVectorPeerKeyCurve
+Ed25519
+
+-edhocRole
+Responder
+
+-appCoapResource
+light
+
+
+##### SulConfig #####
+-responseWait
+400
+-processDir
+${models.clients}/sifis-home
+-cmd
+java -cp edhoc-applications.jar se.sics.edhocapps.Phase3Client -server coap://localhost:5683 1q
+-startWait
+50
+
+
+##### EdhocSulClientConfig #####
+-port
+5683
