@@ -85,7 +85,15 @@ public class P256KeyStatConfig implements KeyConfig {
 
     @Override
     public void printRunDescriptionSelf(PrintWriter printWriter) {
-        printWriter.println("P256KeyStatConfig Parameters");
-        KeyConfig.super.printRunDescriptionSelf(printWriter);
+        printWriter.println("### P256KeyStatConfig Parameters");
+        printRunDescriptionNullableParam(printWriter, "-mapP256PrivKeyStat", mapPrivateFilename);
+        printRunDescriptionNullableParam(printWriter, "-mapP256PubKeyStat", mapPublicFilename);
+        printRunDescriptionNullableParam(printWriter, "-mapP256KidStat", mapKid);
+        printRunDescriptionNullableParam(printWriter, "-mapP256X509CertStat", mapX509Filename);
+        printRunDescriptionNullableParam(printWriter, "-mapP256X5uLinkStat", mapX5uLink);
+        printRunDescriptionNullableParam(printWriter, "-sulP256PubKeyStat", sulPublicFilename);
+        printRunDescriptionNullableParam(printWriter, "-sulP256KidStat", sulKid);
+        printRunDescriptionNullableParam(printWriter, "-sulP256X509CertStat", sulX509Filename);
+        printRunDescriptionNullableParam(printWriter, "-sulP256X5uLinkStat", sulX5uLink);
     }
 }

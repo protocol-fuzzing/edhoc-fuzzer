@@ -85,7 +85,15 @@ public class P256KeySigConfig implements KeyConfig {
 
     @Override
     public void printRunDescriptionSelf(PrintWriter printWriter) {
-        printWriter.println("P256KeySigConfig Parameters");
-        KeyConfig.super.printRunDescriptionSelf(printWriter);
+        printWriter.println("### P256KeySigConfig Parameters");
+        printRunDescriptionNullableParam(printWriter, "-mapP256PrivKeySig", mapPrivateFilename);
+        printRunDescriptionNullableParam(printWriter, "-mapP256PubKeySig", mapPublicFilename);
+        printRunDescriptionNullableParam(printWriter, "-mapP256KidSig", mapKid);
+        printRunDescriptionNullableParam(printWriter, "-mapP256X509CertSig", mapX509Filename);
+        printRunDescriptionNullableParam(printWriter, "-mapP256X5uLinkSig", mapX5uLink);
+        printRunDescriptionNullableParam(printWriter, "-sulP256PubKeySig", sulPublicFilename);
+        printRunDescriptionNullableParam(printWriter, "-sulP256KidSig", sulKid);
+        printRunDescriptionNullableParam(printWriter, "-sulP256X509CertSig", sulX509Filename);
+        printRunDescriptionNullableParam(printWriter, "-sulP256X5uLinkSig", sulX5uLink);
     }
 }

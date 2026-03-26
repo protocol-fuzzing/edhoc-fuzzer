@@ -71,9 +71,9 @@ public class ManyFilesAuthenticationConfig implements RunDescriptionPrinter {
 
     @Override
     public void printRunDescriptionSelf(PrintWriter printWriter) {
-        printWriter.println("ManyFilesAuthenticationConfig Parameters");
-        printWriter.println("Map Authentication Method" + mapAuthenticationMethod);
-        printWriter.println("Map Supported Cipher Suites" + mapSupportedCipherSuites);
+        printWriter.println("### ManyFilesAuthenticationConfig Parameters");
+        printRunDescriptionNullableParam(printWriter, "-mapAuthenticationMethod", mapAuthenticationMethod);
+        printRunDescriptionNullableParam(printWriter, "-mapSupportedCipherSuites\n", mapSupportedCipherSuites);
     }
 
     @Override
