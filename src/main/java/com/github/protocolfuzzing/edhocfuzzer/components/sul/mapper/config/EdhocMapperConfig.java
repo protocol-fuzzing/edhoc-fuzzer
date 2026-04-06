@@ -244,24 +244,24 @@ public class EdhocMapperConfig extends MapperConfigStandard {
         super.printRunDescriptionSelf(printWriter);
         printWriter.println();
         printWriter.println("### EdhocMapperConfig Parameters");
-        printRunDescriptionNullableParam(printWriter, "-protocolVersion", protocolVersion);
-        printWriter.println("-combinedMessageVersion\n" + combinedMessageVersion);
-        printWriter.println("-edhocRole\n" + edhocRole);
-        printWriter.println("-edhocCoapResource\n" + edhocCoapResource);
-        printWriter.println("-appCoapResource\n" + appCoapResource);
-        printWriter.println("-appMessageCodeToCoapServer\n" + appMessageCodeToCoapServer);
-        printWriter.println("-appMessagePayloadToCoapServer\n" + appMessagePayloadToCoapServer);
-        printWriter.println("-appMessageCodeToCoapClient\n" + appMessageCodeToCoapClient);
-        printWriter.println("-appMessagePayloadToCoapClient\n" + appMessagePayloadToCoapClient);
-        printRunDescriptionBooleanParam(printWriter, "-coapErrorAsEdhocError", coapErrorAsEdhocError, false);
-        printRunDescriptionBooleanParam(printWriter, "-disableContentFormat", disableContentFormat, false);
-        printRunDescriptionBooleanParam(printWriter, "-useOldContentFormat", useOldContentFormat, false);
-        printRunDescriptionBooleanParam(printWriter, "-enableSessionReset", enableSessionReset, false);
-        printRunDescriptionBooleanParam(printWriter, "-disableCXCorrelation", disableCXCorrelation, false);
-        printWriter.println("-ownConnectionId\n" + ownConnectionId);
-        printRunDescriptionBooleanParam(printWriter, "-disableOwnConnectionIdGeneration\n", disableOwnConnectionIdGeneration, false);
-        printRunDescriptionNullableParam(printWriter, "-forceOscoreSenderId", forceOscoreSenderId);
-        printRunDescriptionNullableParam(printWriter, "-forceOscoreRecipientId", forceOscoreRecipientId);
+        printRDParam(printWriter, "-protocolVersion", protocolVersion);
+        printRDParam(printWriter, "-combinedMessageVersion", combinedMessageVersion);
+        printRDParam(printWriter, "-edhocRole", edhocRole);
+        printRDStringParam(printWriter, "-edhocCoapResource", edhocCoapResource);
+        printRDStringParam(printWriter, "-appCoapResource", appCoapResource);
+        printRDStringParam(printWriter, "-appMessageCodeToCoapServer", appMessageCodeToCoapServer);
+        printRDStringParam(printWriter, "-appMessagePayloadToCoapServer", appMessagePayloadToCoapServer);
+        printRDStringParam(printWriter, "-appMessageCodeToCoapClient", appMessageCodeToCoapClient);
+        printRDStringParam(printWriter, "-appMessagePayloadToCoapClient", appMessagePayloadToCoapClient);
+        printRDBooleanParam(printWriter, "-coapErrorAsEdhocError", coapErrorAsEdhocError);
+        printRDBooleanParam(printWriter, "-disableContentFormat", disableContentFormat);
+        printRDBooleanParam(printWriter, "-useOldContentFormat", useOldContentFormat);
+        printRDBooleanParam(printWriter, "-enableSessionReset", enableSessionReset);
+        printRDBooleanParam(printWriter, "-disableCXCorrelation", disableCXCorrelation);
+        printRDStringParam(printWriter, "-ownConnectionId", ownConnectionId);
+        printRDBooleanParam(printWriter, "-disableOwnConnectionIdGeneration", disableOwnConnectionIdGeneration);
+        printRDStringParam(printWriter, "-forceOscoreSenderId", forceOscoreSenderId);
+        printRDStringParam(printWriter, "-forceOscoreRecipientId", forceOscoreRecipientId);
     }
 
     @Override
