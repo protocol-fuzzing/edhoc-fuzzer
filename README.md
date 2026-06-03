@@ -35,7 +35,7 @@ published in the proceedings of ISSTA 2023.
 * Java 21 JDK.
 * maven correctly setup to point to Java 21 JDK.
 * graphviz library, containing the dot utility, which should be located in the system's PATH.
-* python >=3.6 and pydot interface >=1.4.2, in order to use the [beautify_model.sh](scripts/beautify_model.sh) script.
+* [uv](https://docs.astral.sh/uv/) to use the [beautify_model.sh](scripts/beautify_model.sh), [beautify_model.py](scripts/beautify_model.py) scripts.
 * (suggested) make utility, rust and cargo required by the setup of some SULs.
 * (optional) openssl utility, required by the [gen_auth_hierarchy.sh](scripts/gen_auth_hierarchy.sh) script.
 
@@ -45,14 +45,20 @@ Assuming the commands are executed from the root directory:
 
 1. To check the prerequisites use:
 ```bash
-java -version
-mvn -version
-dot -V
-python3 --version
-pip3 show pydot
+java --version
+mvn --version
+dot --version
+uv --version
 ```
 
-2. To set up EDHOC-Fuzzer use:
+2. Setup python virtual environment
+```bash
+uv sync
+```
+
+The virtual environment `.venv` should have been created.
+
+3. To set up EDHOC-Fuzzer use:
 ```bash
 ./scripts/setup_fuzzer.sh -l
 ```
@@ -61,7 +67,7 @@ The fetched source files are deleted after the installation. After the first ins
 be used without the `-l` flag, in order to rebuild the project. After a successful build, the soft link `edhoc-fuzzer.jar`
 is created in the root directory.
 
-3. To set up a System Under Learning (SUL) use:
+4. To set up a System Under Learning (SUL) use:
 ```bash
 ./scripts/setup_sul.sh
 ```
@@ -172,7 +178,7 @@ the client implementation sends to start the EDHOC protocol.
 
 The above script is just a convenient wrapper of the following more customizable script:
 ```bash
-python3 ./scripts/beautify_model.py -h
+uv run ./scripts/beautify_model.py -h
 ```
 
 

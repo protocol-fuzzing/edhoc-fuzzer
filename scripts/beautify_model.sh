@@ -37,5 +37,5 @@ else
         exit 1
     fi
 
-    python3 "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" --start-edge-label "${start_edge_label}" #--remove-edge-pattern "${remove_edge_pattern}"
+    uv run "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" --start-edge-label "${start_edge_label}" #--remove-edge-pattern "${remove_edge_pattern}"
 fi
