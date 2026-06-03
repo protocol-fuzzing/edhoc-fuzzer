@@ -8,7 +8,7 @@ readonly BASE_DIR
 setup_psf() {
     # setup protocol-state-fuzzer library
 
-    CHECKOUT="658a49d8b73ffca644ef3b05bf254177ed37d18b"
+    CHECKOUT="d076ce0e7de2eaac71f99fbf5345ddd80fe38963"
 
     set -e
     cd "${BASE_DIR}"
@@ -63,7 +63,7 @@ setup_fuzzer() {
 }
 
 usage() {
-  cat << END
+    cat <<END
   Usage: ${0##*/} [-opt]
   Options (library setup prior to EDHOC-Fuzzer):
     -p  Fetch and setup only protocol-state-fuzzer library
@@ -71,18 +71,19 @@ usage() {
     -l  Fetch and setup protocol-state-fuzzer and cf-edhoc libraries
     -h  Show usage message
 END
-  exit 0
+    exit 0
 }
 
-
-while getopts :pelh flag
-do
-  case "${flag}" in
+while getopts :pelh flag; do
+    case "${flag}" in
     p) setup_psf ;;
     e) setup_cf_edhoc ;;
-    l) setup_psf; setup_cf_edhoc ;;
+    l)
+        setup_psf
+        setup_cf_edhoc
+        ;;
     : | \? | h | *) usage ;;
-  esac
+    esac
 done
 
 setup_fuzzer
