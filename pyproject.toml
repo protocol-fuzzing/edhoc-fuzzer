@@ -1,0 +1,9 @@
+[project]
+name = "edhoc-fuzzer"
+version = "0.0.0"
+description = "A protocol state fuzzer of EDHOC clients and servers."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pydot>=4.0.1",
+]
