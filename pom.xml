@@ -203,6 +203,7 @@
                             <excludes>
                                 <exclude>experiments/models/sources/**</exclude>
                                 <exclude>target/**</exclude>
+                                <exclude>.venv/**</exclude>
                             </excludes>
                             <endWithNewline />
                             <trimTrailingWhitespace />
