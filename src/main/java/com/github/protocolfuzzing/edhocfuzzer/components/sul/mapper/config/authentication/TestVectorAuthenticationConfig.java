@@ -70,9 +70,9 @@ public class TestVectorAuthenticationConfig implements RunDescriptionPrinter {
 
     @Override
     public void printRunDescriptionSelf(PrintWriter printWriter) {
-        printWriter.println("TestVectorAuthenticationConfig Parameters");
-        printWriter.println("Test Vector File: " + getTestVectorFile());
-        printWriter.println("Test Vector Key: " + getTestVectorKey());
-        printWriter.println("Test Vector Peer Key Curve: " + getTestVectorPeerKeyCurve());
+        printWriter.println("### TestVectorAuthenticationConfig Parameters");
+        printRDStringParam(printWriter, "-testVectorJson", testVectorFile);
+        printRDStringParam(printWriter, "-testVectorJsonKey", testVectorJsonKey);
+        printRDStringParam(printWriter, "-testVectorPeerKeyCurve", testVectorPeerKeyCurve);
     }
 }

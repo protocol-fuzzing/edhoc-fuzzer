@@ -84,7 +84,15 @@ public class X25519KeyStatConfig implements KeyConfig {
 
     @Override
     public void printRunDescriptionSelf(PrintWriter printWriter) {
-        printWriter.println("X25519KeyStatConfig Parameters");
-        KeyConfig.super.printRunDescriptionSelf(printWriter);
+        printWriter.println("### X25519KeyStatConfig Parameters");
+        printRDStringParam(printWriter, "-mapX25519PrivKeyStat", mapPrivateFilename);
+        printRDStringParam(printWriter, "-mapX25519PubKeyStat", mapPublicFilename);
+        printRDStringParam(printWriter, "-mapX25519KidStat", mapKid);
+        printRDStringParam(printWriter, "-mapX25519X509CertStat", mapX509Filename);
+        printRDStringParam(printWriter, "-mapX25519X5uLinkStat", mapX5uLink);
+        printRDStringParam(printWriter, "-sulX25519PubKeyStat", sulPublicFilename);
+        printRDStringParam(printWriter, "-sulX25519KidStat", sulKid);
+        printRDStringParam(printWriter, "-sulX25519X509CertStat", sulX509Filename);
+        printRDStringParam(printWriter, "-sulX25519X5uLinkStat", sulX5uLink);
     }
 }

@@ -85,7 +85,15 @@ public class Ed25519KeySigConfig implements KeyConfig {
 
     @Override
     public void printRunDescriptionSelf(PrintWriter printWriter) {
-        printWriter.println("Ed25519KeySigConfig Parameters");
-        KeyConfig.super.printRunDescriptionSelf(printWriter);
+        printWriter.println("### Ed25519KeySigConfig Parameters");
+        printRDStringParam(printWriter, "-mapEd25519PrivKeySig", mapPrivateFilename);
+        printRDStringParam(printWriter, "-mapEd25519PubKeySig", mapPublicFilename);
+        printRDStringParam(printWriter, "-mapEd25519KidSig", mapKid);
+        printRDStringParam(printWriter, "-mapEd25519X509CertSig", mapX509Filename);
+        printRDStringParam(printWriter, "-mapEd25519X5uLinkSig", mapX5uLink);
+        printRDStringParam(printWriter, "-sulEd25519PubKeySig", sulPublicFilename);
+        printRDStringParam(printWriter, "-sulEd25519KidSig", sulKid);
+        printRDStringParam(printWriter, "-sulEd25519X509CertSig", sulX509Filename);
+        printRDStringParam(printWriter, "-sulEd25519X5uLinkSig", sulX5uLink);
     }
 }
