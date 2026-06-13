@@ -12,14 +12,15 @@ start_edge_label=""
 if [[ ${#} = 0 ]]; then
     echo "Usage: ${0##*/} [-cI|--clientInitiator] [-cR|--clientResponder] dot_model"
 else
-    while [[ "${1}" =~ ^- ]]; do case ${1} in
-        -cI | --clientInitiator )
+    while [[ "${1}" =~ ^- ]]; do
+        case ${1} in
+        -cI | --clientInitiator)
             start_edge_label='"TIMEOUT / EDHOC_MESSAGE_1"'
             ;;
-        -cR | --clientResponder )
+        -cR | --clientResponder)
             start_edge_label='"TIMEOUT / COAP_EMPTY_MESSAGE"'
             ;;
-        * )
+        *)
             echo "Unsupported option ${1}"
             ;;
         esac
@@ -36,5 +37,5 @@ else
         exit 1
     fi
 
-    python3 "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" --start-edge-label "${start_edge_label}" #--remove-edge-pattern "${remove_edge_pattern}"
+    uv run "${PY_SCRIPT}" "${1}" -r "${REPL_FILE}" --start-edge-label "${start_edge_label}" #--remove-edge-pattern "${remove_edge_pattern}"
 fi
