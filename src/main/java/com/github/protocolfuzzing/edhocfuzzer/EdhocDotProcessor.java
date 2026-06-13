@@ -3,6 +3,7 @@ package com.github.protocolfuzzing.edhocfuzzer;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.config.EdhocMapperConfig;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.learner.LearnerResult;
 import com.github.protocolfuzzing.protocolstatefuzzer.components.sul.mapper.config.MapperConfig;
+import com.github.protocolfuzzing.protocolstatefuzzer.entrypoints.ProcessResult;
 import com.github.protocolfuzzing.protocolstatefuzzer.statefuzzer.core.config.StateFuzzerEnabler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +15,12 @@ import java.util.List;
 public class EdhocDotProcessor {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static void beautify(LearnerResult<?> learnerResult) {
+    public static void beautify(ProcessResult<?> processResult) {
+        if (!processResult.hasLearnerResult()) {
+            return;
+        }
+        LearnerResult<?> learnerResult = processResult.getLearnerResult();
+
         if (learnerResult.isFromTest()) {
             return;
         }
