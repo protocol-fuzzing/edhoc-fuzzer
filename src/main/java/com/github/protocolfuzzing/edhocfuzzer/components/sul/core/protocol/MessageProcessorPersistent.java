@@ -42,6 +42,7 @@ public class MessageProcessorPersistent {
     }
 
     /** Tries to match the byte sequence's structure of CBOR elements with an edhoc message */
+    @SuppressWarnings("RefactorSwitch")
     public StructureCodes messageTypeFromStructure(byte[] sequence) {
         LOGGER.debug("Start of messageTypeFromStructure");
         if (sequence == null) {

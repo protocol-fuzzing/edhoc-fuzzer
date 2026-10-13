@@ -108,6 +108,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
     }
 
     @Override
+    @SuppressWarnings("RefactorSwitch")
     public byte[] receive() throws GenericErrorException, TimeoutException, UnsupportedMessageException {
         // save code and reset it to maintain neutral state
         int code = exceptionCodeOccurred;

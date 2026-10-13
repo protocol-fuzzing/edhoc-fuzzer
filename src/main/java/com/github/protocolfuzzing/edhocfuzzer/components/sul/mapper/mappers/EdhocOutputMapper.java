@@ -116,6 +116,7 @@ public class EdhocOutputMapper extends OutputMapper<EdhocOutput, EdhocProtocolMe
         return null;
     }
 
+    @SuppressWarnings("RefactorSwitch")
     protected EdhocOutput edhocOutput(EdhocMapperState edhocMapperState, byte[] responsePayload) {
         MessageProcessorPersistent messageProcessorPersistent = new MessageProcessorPersistent(edhocMapperState);
         boolean ok;

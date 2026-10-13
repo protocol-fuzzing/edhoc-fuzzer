@@ -312,6 +312,7 @@ public class ManyFilesAuthenticator implements Authenticator {
         }
     }
 
+    @SuppressWarnings("RefactorSwitch")
     protected byte[] buildCred(int credType, byte[] kid, OneKey keyPair, String subjectName, byte[] serializedCert) {
         switch (credType) {
             case Constants.CRED_TYPE_CWT -> throw new UnsupportedOperationException("Cred type: CWT");
@@ -339,6 +340,7 @@ public class ManyFilesAuthenticator implements Authenticator {
         }
     }
 
+    @SuppressWarnings("RefactorSwitch")
     protected CBORObject buildIdCred(int idCredType, byte[] kid, byte[] cred, byte[] serializedCert, String x5uLink) {
         switch (idCredType) {
             case Constants.ID_CRED_TYPE_KID -> {
@@ -378,7 +380,6 @@ public class ManyFilesAuthenticator implements Authenticator {
 
     protected void addOwnCredentials(int credType, int idCredType, OneKey keyPair, KeyConfig keyConfig,
                                      int keyUsage, int keyCurve, String subjectName){
-
         if (keyPair == null) {
             throw new RuntimeException("Null provided keyPair");
         }
