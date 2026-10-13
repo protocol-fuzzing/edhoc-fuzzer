@@ -1,16 +1,3 @@
-diff --git a/bom/pom.xml b/bom/pom.xml
-index 9a37b944c..a73e3406e 100644
---- a/bom/pom.xml
-+++ b/bom/pom.xml
-@@ -123,7 +123,7 @@
- 				<groupId>net.i2p.crypto</groupId>
- 				<artifactId>eddsa</artifactId>
- 				<version>${eddsa.version}</version>
--				<scope>runtime</scope>
-+				<!-- <scope>runtime</scope> -->
- 			</dependency>
- 
- 			<dependency>
 diff --git a/cf-edhoc/pom.xml b/cf-edhoc/pom.xml
 index 8847ec87f..cc45e3998 100644
 --- a/cf-edhoc/pom.xml
@@ -181,17 +168,3 @@ index e80583f8f..71b0fc3c4 100644
  		appProfiles.put("/.well-known/edhoc", appProfile);
  		
  		try {
-diff --git a/cf-oscore/pom.xml b/cf-oscore/pom.xml
-index d1abd4e7d..7c8701b3a 100644
---- a/cf-oscore/pom.xml
-+++ b/cf-oscore/pom.xml
-@@ -38,7 +38,8 @@
-         	<dependency> <!-- Rikard: Added this dependency -->
- 	            <groupId>net.i2p.crypto</groupId>
- 	            <artifactId>eddsa</artifactId>
--	            <version>0.2.0</version>
-+	            <!-- <version>0.2.0</version> -->
-+	            <version>${eddsa.version}</version>
- 	            <type>jar</type>
-         	</dependency>
- 		<dependency> <!-- Rikard: Added this dependency (Curve25519) -->

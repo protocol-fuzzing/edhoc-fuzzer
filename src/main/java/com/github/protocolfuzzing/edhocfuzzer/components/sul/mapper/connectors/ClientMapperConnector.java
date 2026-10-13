@@ -93,7 +93,7 @@ public class ClientMapperConnector implements EdhocMapperConnector {
                 }
                 case EDHOC_MESSAGE_3_OSCORE_APP -> {
                     expectedAppResponse = true;
-                    request.getOptions().setEdhoc(true);
+                    request.getOptions().setEdhoc();
                     request.getOptions().setOscore(new byte[0]);
                     response = appClient.advanced(request);
                 }

@@ -3,10 +3,10 @@ package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors;
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.EdhocStackFactoryPersistent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.californium.core.CoapExchange;
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapServer;
 import org.eclipse.californium.core.network.CoapEndpoint;
-import org.eclipse.californium.core.server.resources.CoapExchange;
 
 import java.net.InetSocketAddress;
 

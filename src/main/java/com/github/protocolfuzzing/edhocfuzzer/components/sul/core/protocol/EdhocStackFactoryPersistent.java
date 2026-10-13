@@ -1,14 +1,14 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol;
 
 import org.eclipse.californium.core.coap.CoAP;
-import org.eclipse.californium.core.network.ExtendedCoapStackFactory;
+import org.eclipse.californium.core.network.CoapStackFactory;
 import org.eclipse.californium.core.network.Outbox;
 import org.eclipse.californium.core.network.stack.CoapStack;
 import org.eclipse.californium.elements.EndpointContextMatcher;
 import org.eclipse.californium.elements.config.Configuration;
 
 /** Adapted from {@link org.eclipse.californium.edhoc.EdhocCoapStackFactory} */
-public class EdhocStackFactoryPersistent implements ExtendedCoapStackFactory {
+public class EdhocStackFactoryPersistent implements CoapStackFactory {
 
     protected EdhocEndpointInfoPersistent edhocEndpointInfoPersistent;
     protected MessageProcessorPersistent messageProcessorPersistent;
@@ -33,12 +33,5 @@ public class EdhocStackFactoryPersistent implements ExtendedCoapStackFactory {
 
         return new EdhocStackPersistent(tag, config, outbox, matchingStrategy,
                 edhocEndpointInfoPersistent, messageProcessorPersistent);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public CoapStack createCoapStack(String protocol, String tag, Configuration config, Outbox outbox,
-                                     Object customStackArgument) {
-        throw new UnsupportedOperationException("Deprecated function call");
     }
 }

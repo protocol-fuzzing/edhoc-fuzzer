@@ -4,10 +4,10 @@ import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.Edhoc
 import com.github.protocolfuzzing.edhocfuzzer.components.sul.core.protocol.messages.PayloadType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.californium.core.CoapExchange;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
-import org.eclipse.californium.core.server.resources.CoapExchange;
 
 import java.util.concurrent.TimeUnit;
 
