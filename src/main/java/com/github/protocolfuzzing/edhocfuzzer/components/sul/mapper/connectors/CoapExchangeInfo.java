@@ -1,6 +1,6 @@
 package com.github.protocolfuzzing.edhocfuzzer.components.sul.mapper.connectors;
 
-import org.eclipse.californium.core.server.resources.CoapExchange;
+import org.eclipse.californium.core.CoapExchange;
 
 public class CoapExchangeInfo {
     protected CoapExchange coapExchange;

@@ -1,31 +1,18 @@
-diff --git a/bom/pom.xml b/bom/pom.xml
-index 1e75e3908..a000edf9e 100644
---- a/bom/pom.xml
-+++ b/bom/pom.xml
-@@ -129,7 +129,7 @@
- 				<groupId>net.i2p.crypto</groupId>
- 				<artifactId>eddsa</artifactId>
- 				<version>${eddsa.version}</version>
--				<scope>runtime</scope>
-+				<!-- <scope>runtime</scope> -->
- 			</dependency>
- 
- 			<dependency>
 diff --git a/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java b/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java
-index 21e7066d8..b6176fc32 100644
+index cbbaa4783..0c153cd1f 100644
 --- a/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java
 +++ b/californium-core/src/main/java/org/eclipse/californium/core/config/CoapConfig.java
-@@ -388,7 +388,7 @@ public final class CoapConfig {
+@@ -387,7 +387,7 @@ public final class CoapConfig {
  	 * target="_blank">RFC7252, 4.8. Transmission Parameters</a>.
  	 */
  	public static final IntegerDefinition MAX_RETRANSMIT = new IntegerDefinition(MODULE + "MAX_RETRANSMIT",
 -			"Maximum number of CoAP retransmissions.", 4, 1);
 +			"Maximum number of CoAP retransmissions.", 4, 0);
  	/**
- 	 * The EXCHANGE_LIFETIME for CON requests. See
- 	 * <a href="https://datatracker.ietf.org/doc/html/rfc7252#section-4.8.2"
+ 	 * The EXCHANGE_LIFETIME for CON requests.
+ 	 * <p>
 diff --git a/californium-core/src/main/java/org/eclipse/californium/core/network/stack/ReliabilityLayerParameters.java b/californium-core/src/main/java/org/eclipse/californium/core/network/stack/ReliabilityLayerParameters.java
-index 41d06c9cc..9bd3d912b 100644
+index cbbaa4783..0c153cd1f 100644
 --- a/californium-core/src/main/java/org/eclipse/californium/core/network/stack/ReliabilityLayerParameters.java
 +++ b/californium-core/src/main/java/org/eclipse/californium/core/network/stack/ReliabilityLayerParameters.java
 @@ -281,8 +281,8 @@ public class ReliabilityLayerParameters {
@@ -191,20 +178,6 @@ index 8b887aa6a..b6eab5b87 100644
  		
          return claimSetMap.EncodeToBytes();
  		
-diff --git a/cf-oscore/pom.xml b/cf-oscore/pom.xml
-index 6d0cfe69d..cc02cec3c 100644
---- a/cf-oscore/pom.xml
-+++ b/cf-oscore/pom.xml
-@@ -41,7 +41,8 @@
-         	<dependency> <!-- Rikard: Added this dependency -->
- 	            <groupId>net.i2p.crypto</groupId>
- 	            <artifactId>eddsa</artifactId>
--	            <version>0.2.0</version>
-+	            <!-- <version>0.2.0</version> -->
-+	            <version>${eddsa.version}</version>
- 	            <type>jar</type>
-         	</dependency>
- 		<dependency> <!-- Rikard: Added this dependency (Curve25519) -->
 diff --git a/cf-oscore/src/main/java/org/eclipse/californium/cose/EncryptCommon.java b/cf-oscore/src/main/java/org/eclipse/californium/cose/EncryptCommon.java
 index 7112a06d6..169430d76 100644
 --- a/cf-oscore/src/main/java/org/eclipse/californium/cose/EncryptCommon.java
