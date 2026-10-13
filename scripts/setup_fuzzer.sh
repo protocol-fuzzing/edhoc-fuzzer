@@ -26,7 +26,7 @@ setup_cf_edhoc() {
     # setup cf-edhoc library
 
     PATCH_FILE="${SCRIPT_DIR}/cf-edhoc.patch"
-    CHECKOUT="8122775ecb3fc892e7f96c12cfd0984c64fcf26e"
+    CHECKOUT="a417ac23715d3ce5f0e4a26bcbb68661e672773f"	# May 9, 2026
 
     set -e
     cd "${BASE_DIR}"
