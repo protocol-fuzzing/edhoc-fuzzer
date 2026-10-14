@@ -56,8 +56,8 @@ public class EdhocLayerPersistent extends AbstractLayer {
         if (path != null) {
             this.sendConcretizer = new Concretizer(path, "send");
             this.recvConcretizer = new Concretizer(path, "recv");
-            cleanupTasks.submit(sendConcretizer::close);
-            cleanupTasks.submit(recvConcretizer::close);
+            cleanupTasks.submit(() -> sendConcretizer.close());
+            cleanupTasks.submit(() -> recvConcretizer.close());
         }
     }
 
