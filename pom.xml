@@ -181,6 +181,10 @@
                                     <!-- transitive -->
                                     org.slf4j:slf4j-api
                                 </ignoredUsedUndeclaredDependency>
+                                <ignoredUsedUndeclaredDependency>
+                                    <!-- transitive -->
+                                    de.learnlib:learnlib-api
+                                </ignoredUsedUndeclaredDependency>
                             </ignoredUsedUndeclaredDependencies>
                         </configuration>
                     </execution>
