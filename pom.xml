@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.protocolfuzzing</groupId>
+    <groupId>io.github.protocol-fuzzing</groupId>
     <artifactId>edhoc-fuzzer</artifactId>
     <version>1.0.0</version>
 
@@ -14,7 +14,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
 
-        <protocol-state-fuzzer.version>0.1.0</protocol-state-fuzzer.version>
+        <protocol-state-fuzzer.version>0.3.0</protocol-state-fuzzer.version>
         <cf-edhoc.version>0.0.0</cf-edhoc.version>
         <error-prone.version>2.50.0</error-prone.version>
         <gson.version>2.14.0</gson.version>
@@ -28,8 +28,8 @@
         <dependencies>
             <!-- protocol-state-fuzzer -->
             <dependency>
-                <groupId>com.github.protocolfuzzing</groupId>
-                <artifactId>protocolstatefuzzer</artifactId>
+                <groupId>io.github.protocol-fuzzing</groupId>
+                <artifactId>protocol-state-fuzzer</artifactId>
                 <version>${protocol-state-fuzzer.version}</version>
             </dependency>
 
@@ -89,8 +89,8 @@
     <dependencies>
         <!-- https://github.com/protocol-fuzzing/protocol-state-fuzzer -->
         <dependency>
-            <groupId>com.github.protocolfuzzing</groupId>
-            <artifactId>protocolstatefuzzer</artifactId>
+            <groupId>io.github.protocol-fuzzing</groupId>
+            <artifactId>protocol-state-fuzzer</artifactId>
         </dependency>
 
         <!-- manually modified and built jar and locally installed cf-edhoc
@@ -290,7 +290,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.protocolfuzzing.edhocfuzzer.Main</mainClass>
+                            <mainClass>io.github.protocolfuzzing.edhocfuzzer.Main</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Multi-Release>true</Multi-Release>
