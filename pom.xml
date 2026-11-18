@@ -14,7 +14,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
 
-        <protocol-state-fuzzer.version>0.3.0</protocol-state-fuzzer.version>
+        <protocol-state-fuzzer.version>0.4.0</protocol-state-fuzzer.version>
         <cf-edhoc.version>0.0.0</cf-edhoc.version>
         <error-prone.version>2.52.0</error-prone.version>
         <gson.version>2.15.0</gson.version>
